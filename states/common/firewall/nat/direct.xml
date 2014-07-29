@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<direct>
+  <rule priority="0" table="nat" ipv="ipv4" chain="POSTROUTING">-j MASQUERADE</rule>
+</direct>
