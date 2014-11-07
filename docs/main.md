@@ -9,6 +9,19 @@ These are links to project-specific documentation:
 The exhaustive details how multiple porjects are used can be found
 [here](approach_for_multiple_projects.md).
 
+Resources are all other files which are not supposed to be under source
+control. There are multiple ways to provide resources. The most flexible
+approach is to use external file server (FTP or HTTP).
+However, the simples solution is to use Salt itself. Salt can be used as
+a file server (with `salt://` URL scheme to access files from states).
+For this case there is a directory called `resources`. Just like any other
+directory, there are project-specify sub-directory (i.e. `common`) which
+contains `.gitignore` which is supposed to document all resources under
+this specific directory, for example:
+```
+resources/common/.gitignore
+```
+
 ## Highlights for Salt master setup
 
 The following section highlights some important configuration Salt master
