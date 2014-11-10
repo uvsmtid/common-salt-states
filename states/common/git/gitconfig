@@ -1,0 +1,53 @@
+# Custom Git configuration
+
+{% set git_config = pillar['system_features']['source_version_control_tools_config']['git'] %}
+
+[core]
+
+    editor = vim
+
+    sparseCheckout = true
+
+[color]
+
+    ui = auto
+
+[user]
+
+    name = {{ git_config['user_config']['name'] }}
+    email = {{ git_config['user_config']['email'] }}
+
+[diff]
+
+    # Increase diff context (default: 3)
+    # Generally, bigger context helps more often.
+    context = 15
+
+[alias]
+
+    # Draw a history graph with full decoration
+    glog = log --decorate=full --graph
+
+    # In addition to `glog` follow file's history beyond renames
+    flog = log --decorate=full --graph --follow
+
+    # Merge using fast-forward only
+    ffmerge = merge --ff-only
+
+    # Merge two branches into one (avoid fast-forward)
+    bbmerge = merge --no-ff
+
+    # Shod diff of staged changes
+    sdiff = diff --staged
+
+[push]
+
+{#
+This is only supported in the latest Git versions not available on Cygwin.
+#}
+{% if grains['os'] not in [ 'Windows' ] %}
+    # When no refspec is given, push only current branch only if
+    # upstream branch's name is the same as local one.
+    default = simple
+{% endif %}
+
