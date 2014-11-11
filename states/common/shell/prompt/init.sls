@@ -7,9 +7,9 @@ include:
 # <<< Any RedHat-originated OS
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-/etc/profile.d/neldev.custom.prompt.sh:
+/etc/profile.d/common.custom.prompt.sh:
     file.managed:
-        - source: salt://common/shell/prompt/neldev.custom.prompt.sh
+        - source: salt://common/shell/prompt/common.custom.prompt.sh
         - mode: 555
         - template: jinja
         - require:
@@ -18,7 +18,6 @@ include:
 {% endif %}
 # >>>
 ###############################################################################
-
 
 ###############################################################################
 # <<<

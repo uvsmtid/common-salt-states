@@ -5,13 +5,15 @@
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
 include:
+    - common.shell
 
-/etc/profile.d/neldev.custom.variables.sh:
-  file.managed:
-    - mode: 555
-    - template: jinja
-    - require:
-        - pkg: shell
+/etc/profile.d/common.custom.variables.sh:
+    file.managed:
+        - source: salt://common/shell/variables/common.custom.variables.sh
+        - mode: 555
+        - template: jinja
+        - require:
+            - pkg: shell
 
 {% endif %}
 # >>>

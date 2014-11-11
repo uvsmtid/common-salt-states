@@ -33,11 +33,3 @@ fi
 
 {% endif %}
 
-
-{% if 'enable_NELWATCHDOGMODE_environment_variable' in pillar['system_features'] %}
-{% if pillar['system_features']['enable_NELWATCHDOGMODE_environment_variable'] %}
-export NELWATCHDOGMODE=1
-{% endif %}
-{% endif %}
-
-

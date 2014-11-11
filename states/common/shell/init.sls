@@ -1,23 +1,12 @@
-# Custom vim configuration.
+# Install shell package.
 
 ###############################################################################
 # <<< Any RedHat-originated OS
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-vim_enhanced:
+shell:
     pkg.installed:
-        - name: vim-enhanced
-
-/etc/vimrc:
-    file.managed:
-        - source: salt://common/vim/vimrc
-        - template: jinja
-        - user: root
-        - group: root
-        - mode: 644
-        - template: jinja
-        - require:
-            - pkg: vim_enhanced
+        - name: bash
 
 {% endif %}
 # >>>
