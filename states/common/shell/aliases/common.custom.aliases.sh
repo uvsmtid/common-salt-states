@@ -12,13 +12,23 @@ alias ll="ls -l"
 # Function to show full path of specified sub-path (or current directory).
 lll ()
 {
-    ls --color=auto -ld "$(pwd)/$1"
+    if [ "${1:0:1}" == '/' ]
+    then
+        ls --color=auto -ld "$1"
+    else
+        ls --color=auto -ld "$(pwd)/$1"
+    fi
 }
 
 # Function to show full path as `lll` + ssh destination.
 llll ()
 {
-    echo "$(whoami)@$(hostname):$(ls -d "$(pwd)/$1")"
+    if [ "${1:0:1}" == '/' ]
+    then
+        echo "$(whoami)@$(hostname):$(ls --color=auto -d "$1")"
+    else
+        echo "$(whoami)@$(hostname):$(ls --color=auto -d "$(pwd)/$1")"
+    fi
 }
 
 # This is more convenient for long running jobs.
