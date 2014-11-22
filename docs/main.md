@@ -89,6 +89,16 @@ this_system_keys:
     # ...
 ```
 
+### Selected customizer
+
+Customizer can be used for personal configuration.
+```
+this_system_keys:
+    # ...
+    customizer: some_personal_id # <-- selected customizer
+    # ...
+```
+
 ### Selected Salt minions
 
 Use `salt-key` to list registered minions ("Accepted Keys"):

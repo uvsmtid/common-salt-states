@@ -46,6 +46,8 @@ salt-call --local state.sls common.dummy test=True
 this_system_keys:
 
     # The most neutral project is `common`.
+    # If no project-related config is required, use any
+    # unknown name in the list (i.e. `none`).
     projects:
         - common
 
@@ -56,6 +58,12 @@ this_system_keys:
 
     # Environment is normally named after hostname.
     environment: this_minion_id
+
+    # Customizer is supposed to be a personal id (account name,
+    # nick name, etc.) which uniquely identifies person so
+    # that individual customized states are kept separately
+    # (under different sub-directories and files).
+    customizer: some_personal_id
 ```
 
 * Run highstate to test configuration:

@@ -33,6 +33,7 @@ this_system_keys:
             # Master's id when `salt-run` is used:
 
     environment: blackbox
+    customizer: some_personal_id
 ```
 
 ## Identified issues
