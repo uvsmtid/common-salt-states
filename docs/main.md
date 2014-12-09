@@ -34,8 +34,19 @@ This should be reviewed when Salt is changed to use one project or another.
 ```
 file_roots:
     base:
-        - /srv/states
+        # Conventionally, the following directory is a symlink pointing to
+        # `/home/[username]/Works/common-salt-states.git/states`
+        - /srv/states 
+
+        # The following directory is a common place for all additional
+        # symlinks pointing to various source code repositories.
+        # These symlinks are configured automatically by using
+        # (TODO: it should be renamed into `common.source_links`).
         - /srv/sources
+```
+Set `/srv/states` symlink to the Salt configuration sources:
+```
+ln -sfn /home/[username]/Works/common-salt-states.git/states /srv/states
 ```
 
 Note that sub-items (directories or files) from the `sources` are only
@@ -49,6 +60,10 @@ first before it even has a chance to be looked up as `/srv/sources/whatever`.
 pillar_roots:
     base:
         - /srv/pillars
+```
+Set `/srv/pillars` symlink to the Salt configuration sources:
+```
+ln -sfn /home/[username]/Works/project-salt-pillars.git/pillars /srv/pillars
 ```
 
 ### Selected project
@@ -89,4 +104,46 @@ Accept keys of those minions which are     supposed to be controlled.
 salt -d <key> # delete
 salt -a <key> # accept
 ```
+
+TODO: List of registered minions should substitute the need to add
+nodegroups and lists of minions assigned for specific project, for
+example:
+
+```
+this_system_keys:
+    # ...
+    assignments:
+            - blackbox
+            - blackbox
+            - observer_server
+            - observer_client
+    # ...
+```
+
+### Run state to setup symlinks
+
+* Test (dry run):
+```
+```
+* Apply:
+```
+```
+
+## Next steps
+
+See project-specific documentation which states to run to complete setup.
+
+In majority of cases, when all minions are already connected,
+all what is required is to run:
+```
+salt '*' state.highstate test=False
+```
+This will bring all minions to the fully configured state.
+
+In a more complicated system especially when some minions should be
+set up first to provide services for other minions (cross-host dependency
+on services), orchestration can be used.
+* TODO: add link to generic orchestration documentation.
+
+
 
