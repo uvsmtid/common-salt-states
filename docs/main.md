@@ -41,7 +41,7 @@ file_roots:
         # The following directory is a common place for all additional
         # symlinks pointing to various source code repositories.
         # These symlinks are configured automatically by using
-        # (TODO: it should be renamed into `common.source_links`).
+        # `common.source_links` state - see below.
         - /srv/sources
 ```
 Set `/srv/states` symlink to the Salt configuration sources:
@@ -134,9 +134,11 @@ this_system_keys:
 
 * Test (dry run):
 ```
+salt '*' state.sls common.source_links test=True
 ```
 * Apply:
 ```
+salt '*' state.sls common.source_links test=False
 ```
 
 ## Next steps
