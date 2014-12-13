@@ -32,7 +32,7 @@ this_system_keys:
 
             # Master's id when `salt-run` is used:
 
-    environment: blackbox
+    profile: blackbox
     customizer: some_personal_id
 ```
 
@@ -60,7 +60,6 @@ NOTE: There are many ways to use Salt grains from minion side to split the state
 * Forget about using `*` for targeting minion *anywhere* (including orchestration stages) - use only node groups. There is no way to make Salt avoid contacting minions (when `*` is used, minion must be online for the state to succeed even if it won't do anything).
 * Forget about convenience of automatically re-loading config after changes. When node groups or `project_name` are changed, Salt master has to be re-started - there is no way out of it under current requirements.
 * Do not wory about issue of loading conflicting pillars from different projects anymore. It is solved because `project_name` variable renders pillars top files as required.
-* **By the way:** rename `environment` to `profile` to avoid confusion with concept of Salt environments.
 
 ## Final turn
 

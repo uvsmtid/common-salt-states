@@ -17,13 +17,11 @@ include:
 
 {% set sudo_username = pillar['system_hosts'][grains['id']]['primary_user']['username'] %}
 
-{% set selected_environment = 'none' %}
-
 ###############################################################################
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-/etc/sudoers_{{ case_name }}_{{ sudo_username }}_{{ selected_environment }}:
+/etc/sudoers_{{ case_name }}_{{ sudo_username }}:
     file.blockreplace:
         - name: /etc/sudoers
         - user: root

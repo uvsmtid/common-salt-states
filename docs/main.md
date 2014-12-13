@@ -78,14 +78,12 @@ this_system_keys:
 
 This will rendeer templates using correct pillars and states.
 
-### Selected environment
-
-TODO: `environment` should be renamed into `profile` everywhere.
+### Selected profile
 
 ```
 this_system_keys:
     # ...
-    environment: blackbox # <-- selected environment
+    profile: blackbox # <-- selected profile
     # ...
 ```
 

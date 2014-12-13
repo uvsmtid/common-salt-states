@@ -41,7 +41,7 @@ echo some_minion_id > /etc/salt/minion_id
 salt-call --local state.sls common.dummy test=True
 ```
 
-* Define environment, project, list of minions (`/etc/salt/minion`):
+* Define profile, project, list of minions (`/etc/salt/minion`):
 ```
 this_system_keys:
 
@@ -56,8 +56,8 @@ this_system_keys:
         common:
             - this_minion_id
 
-    # Environment is normally named after hostname.
-    environment: this_minion_id
+    # Profile is normally named after hostname.
+    profile: this_minion_id
 
     # Customizer is supposed to be a personal id (account name,
     # nick name, etc.) which uniquely identifies person so
@@ -77,6 +77,6 @@ a routine Salt usage which is all about listing required states
 directly in `^/states/top.sls` (or indirectly) and updating pillar
 data mostly provided through enfironment file:
 ```
-^/pillars/[project]/environment/[some_minion_id].sls
+^/pillars/[project]/profile/[some_minion_id].sls
 ```
 
