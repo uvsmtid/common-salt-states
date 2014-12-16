@@ -21,5 +21,5 @@
 
 ## How to troubleshoot?
 
-* TODO
+* [troubleshooting.md](troubleshooting.md)
 
