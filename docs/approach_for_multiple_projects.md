@@ -1,44 +1,10 @@
 
-This document was initally created for issue #8. Now it is supposed to be
-updated to reflect current status.
-
-## Initial status
-
-At the moment all states are split per project using custom configuration data on Salt master.
-
-For example, look at this snippet from Salt master config file `/etc/salt/master`:
-```
-# ...
-
-nodegroups:
-
-# ...
-
-this_system_keys:
-    projects:
-    assignments:
-        # Unfortunately, you cannot target minions (i.e. select them in
-        # `salt` command) using these custom data structure.
-        # Therefore, the following lists are duplicated in `nodegroups`.
-            - blackbox
-
-
-            # Master's id when `salt-run` is used:
-
-            - blackbox
-
-            - observer_server
-            - observer_client
-
-            # Master's id when `salt-run` is used:
-
-    profile: blackbox
-    customizer: some_personal_id
-```
+Several approaches were tried:
+* nodegroups - naming list of minions in master config to be used in targeting
+* assignments - use special dict in master config to assign list of minions to specific project
 
 ## Identified issues
 
-There are multiple issues with this approach:
 * If more than one project is listed under `this_system_keys`/`projects`, some hosts (i.e. Salt master when `salt-run` is used) load conflicting pillar (containing the same top-level keys) from these projects.
 * Every time the configuration changes, Salt master has to be restarted to re-load it (because it is part of `/etc/salt/master`).
 * In order to target all hosts from specific project, `*` cannot be used anymore. Instead, nodegroups should be configured which is a duplicate of what `this_system_keys`/`assignments` lists provide.
@@ -65,7 +31,19 @@ NOTE: There are many ways to use Salt grains from minion side to split the state
 
 * The idea to use nodegroups was dropped. Instead, required minions should be
   listed by modifying list of accepted keys through `salt-key`.
+* The idea to use multiple projects were dropped either.
+  If minions need to get states from other projects, they can still be assigned
+  these states as nothing prevents setup for one project call states from other.
+* Targeting entire system of minions under the same project is done by `*`.
+  In other words, whether minion is for the project or not is defined by
+  connection to the master - simply check who is connected using `salt-key`.
 
+For example, look at the current snippet from Salt master config file `/etc/salt/master`:
+```
+this_system_keys:
+    profile: blackbox
+    customizer: some_personal_id
+```
 
  
 

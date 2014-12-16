@@ -1,5 +1,5 @@
 
-This is a stub page for common parts used by many projects.
+This is a stub page for common automation used by many projects.
 
 Useful state implemented for `common` part:
 

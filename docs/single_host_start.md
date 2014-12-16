@@ -47,9 +47,8 @@ this_system_keys:
 
     # The most neutral project is `common`.
     # If no project-related config is required, use any
-    # unknown name in the list (i.e. `none`).
-    projects:
-        - common
+    # unknown name (i.e. `none`).
+    project: common
 
     # Profile is normally named after hostname.
     profile: this_minion_id

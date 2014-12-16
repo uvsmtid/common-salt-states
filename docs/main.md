@@ -71,9 +71,8 @@ ln -sfn /home/[username]/Works/project-salt-pillars.git/pillars /srv/pillars
 ```
 this_system_keys:
     # ...
-    projects:
-        # Leave only one project from this list:
-        - project_name
+    # Salt master orchestrates only one project:
+    # ...
 ```
 
 This will rendeer templates using correct pillars and states.
