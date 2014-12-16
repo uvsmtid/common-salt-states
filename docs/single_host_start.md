@@ -51,11 +51,6 @@ this_system_keys:
     projects:
         - common
 
-    # In case of master-less setup, only this single minion is seen.
-    assignments:
-        common:
-            - this_minion_id
-
     # Profile is normally named after hostname.
     profile: this_minion_id
 

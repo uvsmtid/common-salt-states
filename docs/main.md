@@ -113,21 +113,6 @@ salt -d <key> # delete
 salt -a <key> # accept
 ```
 
-TODO: List of registered minions should substitute the need to add
-nodegroups and lists of minions assigned for specific project, for
-example:
-
-```
-this_system_keys:
-    # ...
-    assignments:
-            - blackbox
-            - blackbox
-            - observer_server
-            - observer_client
-    # ...
-```
-
 ### Run state to setup symlinks
 
 * Test (dry run):
