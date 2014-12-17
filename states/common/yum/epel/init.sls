@@ -11,6 +11,7 @@
 # EPEL is created only for RHEL-based OSes (Fedora does not need it).
 {% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
 
+{% if False %}
 /etc/yum.repos.d/epel.repo:
     file.managed:
         - source: salt://common/yum/epel/epel.repo
@@ -20,6 +21,7 @@
         - template: jinja
         - require:
             - file: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL
+{% endif %}
 
 /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL:
     file.managed:

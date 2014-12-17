@@ -13,7 +13,7 @@ include:
         - mode: 555
         - template: jinja
         - require:
-            - pkg: shell
+            - sls: common.shell
 
 {% endif %}
 # >>>
