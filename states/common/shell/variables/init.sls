@@ -1,11 +1,14 @@
 # Configure custom values for shell environment variables.
 
+include:
+    - common.shell
+{% if grains['os'] in [ 'Windows' ] %}
+    - common.cygwin.package
+{% endif %}
+
 ###############################################################################
 # <<< Any RedHat-originated OS
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
-
-include:
-    - common.shell
 
 /etc/profile.d/common.custom.variables.sh:
     file.managed:
@@ -31,20 +34,28 @@ include:
 
 include:
 
-'{{ cygwin_root_dir }}\etc\profile.d\neldev.custom.variables.sh':
+'{{ cygwin_root_dir }}\etc\profile.d\common.custom.variables.sh':
     file.managed:
+        - source: salt://common/shell/variables/common.custom.variables.sh
         - template: jinja
         - require:
+            - sls: common.cygwin.package
+            - sls: common.shell
 
-{{ cygwin_root_dir }}\etc\profile.d\neldev.custom.variables.sh_dos2unix:
+{{ cygwin_root_dir }}\etc\profile.d\common.custom.variables.sh_dos2unix:
     cmd.run:
-        - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\etc\profile.d\neldev.custom.variables.sh'
+        - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\etc\profile.d\common.custom.variables.sh'
         - require:
+            - sls: common.cygwin.package
+            - sls: common.shell
 
 '{{ cygwin_root_dir }}\etc\profile.d\import_environment_to_cygwin.sh':
     file.managed:
+        - source: salt://common/shell/variables/import_environment_to_cygwin.sh
         - template: jinja
         - require:
+            - sls: common.cygwin.package
+            - sls: common.shell
 
 {{ cygwin_root_dir }}\etc\profile.d\import_environment_to_cygwin.sh_dos2unix:
     cmd.run:

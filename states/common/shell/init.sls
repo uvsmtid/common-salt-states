@@ -23,6 +23,20 @@ shell:
 # <<<
 {% if grains['os'] in [ 'Windows' ] %}
 
+{% set cygwin_content_config = pillar['registered_content_items']['cygwin_package_64_bit_windows'] %}
+
+{% if cygwin_content_config['enable_installation'] %}
+
+include:
+    - common.cygwin.package
+
+shell_in_cygwin_dummy:
+    cmd.run:
+        - name: 'echo shell_in_cygwin_dummy'
+        - require:
+            - sls: common.cygwin.package
+
+{% endif %}
 
 {% endif %}
 # >>>
