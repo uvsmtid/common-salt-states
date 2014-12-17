@@ -51,8 +51,5 @@ include:
 # End of 1.
 
 
-# 2. See another example to configure additional users (not only primary ones)
-
-
 {% endif %}
 
