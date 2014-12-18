@@ -31,6 +31,9 @@
     # In addition to `glog` follow file's history beyond renames
     flog = log --decorate=full --graph --follow
 
+    # One line commit with graph
+    llog = log --decorate=full --graph --pretty=oneline --abbrev-commit
+
     # Merge using fast-forward only
     ffmerge = merge --ff-only
 
