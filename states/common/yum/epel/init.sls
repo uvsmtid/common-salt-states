@@ -11,23 +11,33 @@
 # EPEL is created only for RHEL-based OSes (Fedora does not need it).
 {% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
 
-{% if False %}
+# set defaul epel version = 7
+{% set epel_version = '7' %}
+{% if grains['osrelease'] == '5.5' %}
+    {% set epel_version = '5' %}
+{% endif %}
+
+# set default epel key name = RPM-PGP-KEY-EPEL-7
+{% set epel_key_name = 'EPEL_KEY_7' %}
+{% if grains['osrelease'] == '5.5' %}
+    {% set epel_key_name = '217521F6.txt' %}
+{% endif %}
+
 /etc/yum.repos.d/epel.repo:
     file.managed:
-        - source: salt://common/yum/epel/epel.repo
+        - source: salt://common/yum/epel/{{epel_version}}/epel.repo
         - user: root
         - group: root
         - mode: 644
         - template: jinja
         - require:
             - file: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL
-{% endif %}
 
 /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL:
     file.managed:
         # This file can be downloaded from:
         #   http://fedoraproject.org/static/217521F6.txt
-        - source: salt://common/yum/epel/217521F6.txt
+        - source: salt://common/yum/epel/{{epel_version}}/{{epel_key_name}}
         - user: root
         - group: root
         - mode: 644
@@ -35,7 +45,9 @@
 
 
 {% endif %}
-# >>> RHEL5
-###############################################################################
 
+{% endif %}
+
+# >>> RHEL 5 & 7
+#######################################################################
 
