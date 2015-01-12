@@ -7,25 +7,13 @@
 #       Salt minion. This config can be used for validation.
 
 ###############################################################################
-# <<< RHEL5
+# <<< RHEL5 & 7
 # EPEL is created only for RHEL-based OSes (Fedora does not need it).
 {% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
 
-# set defaul epel version = 7
-{% set epel_version = '7' %}
-{% if grains['osrelease'] == '5.5' %}
-    {% set epel_version = '5' %}
-{% endif %}
-
-# set default epel key name = RPM-PGP-KEY-EPEL-7
-{% set epel_key_name = 'EPEL_KEY_7' %}
-{% if grains['osrelease'] == '5.5' %}
-    {% set epel_key_name = '217521F6.txt' %}
-{% endif %}
-
 /etc/yum.repos.d/epel.repo:
     file.managed:
-        - source: salt://common/yum/epel/{{epel_version}}/epel.repo
+        - source: salt://common/yum/epel/epel.repo
         - user: root
         - group: root
         - mode: 644
@@ -37,12 +25,29 @@
     file.managed:
         # This file can be downloaded from:
         #   http://fedoraproject.org/static/217521F6.txt
-        - source: salt://common/yum/epel/{{epel_version}}/{{epel_key_name}}
+        - source: salt://common/yum/epel/EPEL_KEY_{{grains['osmajorrelease']}}
         - user: root
         - group: root
         - mode: 644
 
+{% if pillar['system_features']['offline_yum_repo']['feature_enabled'] %}
+{% set offline_yum_repo_ip = pillar['system_features']['offline_yum_repo']['ip'] %}
 
+yum_epel:
+    pkgrepo.managed:
+        - name: epel
+        - baseurl: http://{{offline_yum_repo_ip}}/mirror/epel/$releasever/$basearch/
+        - enabled: 1
+
+yum_epel_debug_info:
+    pkgrepo.managed:
+        - name: epel-debuginfo
+        - enabled: 0
+
+yum_epel_source:
+    pkgrepo.managed:
+        - name: epel-source
+        - enabled: 0
 
 {% endif %}
 
