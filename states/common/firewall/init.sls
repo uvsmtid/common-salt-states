@@ -1,8 +1,22 @@
+##############################################################################
+# Determine task based on different os flavor
+##############################################################################
+
+{% if grains['os'] == 'Fedora' %}
+    {% set task = 'firewalld' %}
+{% elif grains['os'] in [ 'CentOS', 'RedHat' ] %}
+    {% if grains['osmajorrelease'] == '7' %}
+        {% set task = 'firewalld' %}
+    {% else %}
+        {% set task = 'iptables' %}
+    {% endif %}
+{% elif grains['os'] == 'Windows' %}
+    {% set task = 'windows' %}
+{% endif %}
 
 ###############################################################################
 # <<< Fedora
-{% if grains['os'] == 'Fedora' %}
-
+{% if task  == 'firewalld' %}
 # Configuration file for `firewalld`.
 # NOTE: On Fedora, we don't disable firewall, we remove all restrictions.
 #       We also assume it hosts VMs and the better option is to have NAT
@@ -45,7 +59,7 @@ firewall:
 
 ###############################################################################
 # <<< RHEL5
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if task == 'iptables' %}
 
 # Simply disable iptables on all RHEL5 nodes.
 firewall:
@@ -59,7 +73,7 @@ firewall:
 
 ###############################################################################
 # <<< Windows
-{% if grains['os'] in [ 'Windows' ] %}
+{% if task == 'Windows' %}
 
 # See also:
 #   http://technet.microsoft.com/en-us/library/cc766337(v=ws.10).aspx
