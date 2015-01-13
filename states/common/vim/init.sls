@@ -10,10 +10,12 @@ include:
 # <<< Any RedHat-originated OS
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-{% if False %} # Installed manually.
+{% if pillar['system_features']['disable_package_installation']['feature_enabled'] %}
+
 vim_enhanced:
     pkg.installed:
         - name: vim-enhanced
+
 {% endif %}
 
 /etc/vimrc:
@@ -24,7 +26,7 @@ vim_enhanced:
         - group: root
         - mode: 644
         - template: jinja
-{% if False %} # Installed manually.
+{% if pillar['system_features']['disable_package_installation']['feature_enabled'] %}
         - require:
             - pkg: vim_enhanced
 {% endif %}

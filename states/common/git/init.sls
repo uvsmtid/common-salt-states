@@ -4,10 +4,12 @@
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-{% if False %} # Installed manually.
+{% if pillar['system_features']['disable_package_installation']['feature_enabled'] %}
+
 git:
     pkg.installed:
         - name: git
+
 {% endif %}
 
 /etc/gitconfig:
@@ -17,7 +19,7 @@ git:
         - group: root
         - mode: 644
         - template: jinja
-{% if False %} # Installed manually.
+{% if pillar['system_features']['disable_package_installation']['feature_enabled'] %}
         - require:
             - pkg: git
 {% endif %}
