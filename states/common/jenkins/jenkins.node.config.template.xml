@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<slave>
+  <name>{{ node_name }}</name>
+  <description></description>
+  <remoteFS>{{ jenkins_path }}</remoteFS>
+  <numExecutors>1</numExecutors>
+  <mode>NORMAL</mode>
+  <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
+  <launcher class="hudson.plugins.sshslaves.SSHLauncher" plugin="ssh-slaves@1.5">
+    <host>{{ node_name }}</host>
+    <port>22</port>
+    <!--
+    DISABLED: No API to create credentials and no yet finilized ID
+              how to add them using different way.
+    {#
+    <credentialsId>{{ credential_UUID }}</credentialsId>
+    #}
+    -->
+  </launcher>
+  <label></label>
+  <nodeProperties/>
+  <userId>anonymous</userId>
+</slave>
