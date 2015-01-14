@@ -4,7 +4,7 @@
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-{% if pillar['system_features']['disable_package_installation']['feature_enabled'] %}
+{% if pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
 
 git:
     pkg.installed:
@@ -19,7 +19,7 @@ git:
         - group: root
         - mode: 644
         - template: jinja
-{% if pillar['system_features']['disable_package_installation']['feature_enabled'] %}
+{% if pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
         - require:
             - pkg: git
 {% endif %}
