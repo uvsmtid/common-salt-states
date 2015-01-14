@@ -25,7 +25,7 @@ include:
 
 '{{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_cygwin_plugin']['item_base_name'] }}':
     file.managed:
-        - source: '{{ URI_prefix }}/{{ pillar['registered_content_items']['jenkins_cygwin_plugin']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['jenkins_cygwin_plugin']['item_base_name'] }}
+        - source: "{{ URI_prefix }}/{{ pillar['registered_content_items']['jenkins_cygwin_plugin']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['jenkins_cygwin_plugin']['item_base_name'] }}"
         - source_hash: {{ pillar['registered_content_items']['jenkins_cygwin_plugin']['item_content_hash'] }}
         - makedirs: True
 
