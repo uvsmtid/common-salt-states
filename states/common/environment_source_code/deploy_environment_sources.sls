@@ -3,6 +3,7 @@
 # for system.
 
 include:
+    - common.json_for_python
 
 ###############################################################################
 # <<<
@@ -71,6 +72,7 @@ include:
         - cwd: '{{ path_to_sources }}'
 {% endif %}
         - require:
+            - sls: common.json_for_python
 
 {% endif %}
 
