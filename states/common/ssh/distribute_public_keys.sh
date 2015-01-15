@@ -8,6 +8,19 @@ HOSTNAME="$1"
 USERNAME="$2"
 OS_TYPE="$3"
 
+
+CURRENT_USERNAME="$(whoami)"
+CURRENT_HOSTNAME="$(hostname)"
+
+if [ -z "${SSHPASS+SOME_STRING}" ]
+then
+    # If SSHPASS is unset, nothing is substitued - the whole string is empty ("").
+    echo "SSHPASS is unset" 1>&2
+else
+    # If SSHPASS is set, "SOME_STRING" is substitued - the whole string is not empty.
+    echo "SSHPASS is set" 1>&2
+fi
+
 # Allow using default user (current local username or from `~/.ssh/config).
 # If username is empty string, no '@' is used.
 SEPARATOR=""

@@ -10,6 +10,9 @@ set -x
 HOSTNAME="$1"
 USERNAME="$2"
 
+CURRENT_USERNAME="$(whoami)"
+CURRENT_HOSTNAME="$(hostname)"
+
 # Allow using default user (current local username or from `~/.ssh/config).
 # If username is empty string, no '@' is used.
 SEPARATOR=""
