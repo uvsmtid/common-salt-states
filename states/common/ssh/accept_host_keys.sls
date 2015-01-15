@@ -26,8 +26,6 @@
 
 {% if pillar['system_features']['initialize_ssh_connections']['feature_enabled'] %}
 
-{% set cygwin_root_dir = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] %}
-
 ###############################################################################
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
@@ -56,6 +54,8 @@ include:
 
 include:
     - common.ssh
+
+{% set cygwin_root_dir = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] %}
 
 '{{ config_temp_dir }}\accept_host_keys.sh':
     file.managed:
@@ -203,150 +203,6 @@ include:
 
 {% endfor %} # Outer loop of 2.
 # End of 2.
-
-
-
-# TODO: It's code duplication due to poor Python logic/loop support in Jinja templates:
-#       https://groups.google.com/forum/#!topic/salt-users/gUNUEFWds1U
-#
-# 3. All SCADA server environments.
-
-
-
-
-
-{% else %}
-{% endif %}
-
-{% for selected_role_name in selected_roles %}
-
-{% for minion_id in pillar['system_host_roles'][selected_role_name]['assigned_hosts'] %}
-
-{% set host_config = pillar['system_hosts'][minion_id] %}
-
-{% if host_config['consider_online_for_remote_connections'] %}
-
-# Compose expected data object:
-{% set selected_host = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}
-
-#------------------------------------------------------------------------------
-
-###############################################################################
-# <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
-
-'{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
-    cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - require:
-            - sls: common.ssh
-            - file: '{{ config_temp_dir }}/ssh/accept_host_keys.sh'
-
-{% endif %}
-# >>>
-###############################################################################
-
-###############################################################################
-# <<<
-{% if grains['os'] in [ 'Windows' ] %}
-
-'{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
-    cmd.run:
-        # The script file potentially does not have execute permissions.
-        # Execute through bash-interpreter.
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
-        - require:
-            - sls: common.ssh
-            - file: '{{ config_temp_dir }}\accept_host_keys.sh'
-            - cmd: 'accept_host_keys_script_dos2unix'
-
-{% endif %}
-# >>>
-###############################################################################
-
-#------------------------------------------------------------------------------
-
-{% endif %} # "online"
-
-{% endfor %} # `minion_id`
-
-{% endfor %} # `selected_role_name`
-
-{% endif %} # `enabled`
-
-{% endfor %} # `selected_server_env`
-
-# End of 3.
-
-
-# TODO: It's code duplication due to poor Python logic/loop support in Jinja templates:
-#       https://groups.google.com/forum/#!topic/salt-users/gUNUEFWds1U
-#
-# 4. All SCADA client environments.
-
-
-
-
-
-
-{% for minion_id in pillar['system_host_roles'][selected_role_name]['assigned_hosts'] %}
-
-{% set host_config = pillar['system_hosts'][minion_id] %}
-
-{% if host_config['consider_online_for_remote_connections'] %}
-
-# Compose expected data object:
-{% set selected_host = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}
-
-#------------------------------------------------------------------------------
-
-###############################################################################
-# <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
-
-'{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
-    cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - require:
-            - sls: common.ssh
-            - file: '{{ config_temp_dir }}/ssh/accept_host_keys.sh'
-
-{% endif %}
-# >>>
-###############################################################################
-
-###############################################################################
-# <<<
-{% if grains['os'] in [ 'Windows' ] %}
-
-'{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
-    cmd.run:
-        # The script file potentially does not have execute permissions.
-        # Execute through bash-interpreter.
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
-        - require:
-            - sls: common.ssh
-            - file: '{{ config_temp_dir }}\accept_host_keys.sh'
-            - cmd: 'accept_host_keys_script_dos2unix'
-
-{% endif %}
-# >>>
-###############################################################################
-
-#------------------------------------------------------------------------------
-
-{% endif %} # "online"
-
-{% endfor %} # `minion_id`
-
-{% endif %} # `enabled`
-
-{% endfor %} # `selected_client_env`
-
-# End of 4.
-
 
 
 # TODO: It's code duplication due to poor Python logic/loop support in Jinja templates:
