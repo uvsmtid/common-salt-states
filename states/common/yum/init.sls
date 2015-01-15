@@ -19,17 +19,22 @@ yum_conf:
 {% set offline_yum_repo_ip = pillar['system_features']['offline_yum_repo']['ip'] %}
 
 {% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['osrelease'] in [ '5.5' ] %}
+{% set releasever='5.5' %}
+{% else %}
+{% set releasever='$releasever' %}
+{% endif %}
 
 yum_base:
     pkgrepo.managed:
         - name: base
-        - baseurl: http://{{offline_yum_repo_ip}}/mirror/centos/$releasever/os/$basearch/
+        - baseurl: http://{{offline_yum_repo_ip}}/mirror/centos/{{releasever}}/os/$basearch/
         - enabled: 1
 
 yum_updates:
     pkgrepo.managed:
         - name: updates
-        - baseurl: http://{{offline_yum_repo_ip}}/mirror/centos/$releasever/updates/$basearch/
+        - baseurl: http://{{offline_yum_repo_ip}}/mirror/centos/{{releasever}}/updates/$basearch/
         - enabled: 1
 
 yum_extras:
