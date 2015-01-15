@@ -5,15 +5,22 @@
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
 snmp:
+
+{% if pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
+
     pkg.installed:
         - pkgs:
             - net-snmp
             - net-snmp-utils
+{% endif %}
+
     service.running:
         - name: snmpd
         - enable: True
+{% if pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
         - require:
             - pkg: snmp
+{% endif %}
         - watch:
             - file: /etc/snmp/snmpd.conf
 
