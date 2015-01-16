@@ -31,7 +31,7 @@ include:
 {% set assigned_slave_host = pillar['system_host_roles'][restricted_to_role]['assigned_hosts'][0] %}
 {% set assigned_slave_host_config = pillar['system_hosts'][assigned_slave_host] %}
 
-{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
+{% set URI_prefix = pillar['system_features']['deploy_central_control_directory']['URI_prefix'] %}
 
 # Put job configuration:
 '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml':
