@@ -26,7 +26,7 @@
 [alias]
 
     # Draw a history graph with full decoration
-    glog = log --decorate=full --graph
+    glog = log --decorate=full --graph --stat
 
     # In addition to `glog` follow file's history beyond renames
     flog = log --decorate=full --graph --follow
