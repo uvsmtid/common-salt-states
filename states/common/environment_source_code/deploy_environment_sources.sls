@@ -48,7 +48,7 @@ include:
 '{{ path_to_sources }}\control\conf\jobs\environment_sources.conf':
 {% endif %}
     file.managed:
-        - source: salt://common/environment_source_code/environment.source.deployment.job.conf
+        - source: salt://common/environment_source_code/deployment.job.environment.sources.conf
         - template: jinja
 {% if grains['kernel'] == 'Linux' %}
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
