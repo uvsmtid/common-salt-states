@@ -37,6 +37,8 @@
 {% set control_scripts_repo_sources_path = pillar['system_features']['deploy_environment_sources']['source_repositories'][control_scripts_repo_name][control_scripts_repo_type]['salt_master_local_path'] %}
 {% set control_scripts_dir_path = pillar['system_features']['deploy_environment_sources']['control_scripts_dir_path'] %}
 
+{% set control_scripts_dir_basename = pillar['system_features']['deploy_environment_sources']['control_scripts_dir_basename'] %}
+
 # Loop through all defined hosts and execute `scp` to them.
 # Password is provided.
 {% for host_config in pillar['system_hosts'].values() %}
@@ -56,7 +58,7 @@
 # `scp`-copy sources on remote host.
 'deploy_control_scripts_on_remote_host_{{ host_config['hostname'] }}_cmd':
     cmd.run:
-        - name: 'scp -r "{{ control_scripts_repo_sources_path }}/{{ control_scripts_dir_path }}" "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}":"{{ remote_path_to_sources }}"'
+        - name: 'scp -r "{{ control_scripts_repo_sources_path }}/{{ control_scripts_dir_path }}" "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}":"{{ remote_path_to_sources }}/{{ control_scripts_dir_basename }}"'
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         # Assume SSH keys are already distributed to make this state faster.
         #- require:

@@ -13,6 +13,8 @@ include:
 
 {% set selected_host = pillar['system_hosts'][grains['id']] %}
 
+{% set control_scripts_dir_basename = pillar['system_features']['deploy_environment_sources']['control_scripts_dir_basename'] %}
+
 {% if grains['kernel'] == 'Linux' %}
 {% set path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][selected_host['os_type']]['path'] %}
 {% elif grains['kernel'] == 'Windows' %}
@@ -26,9 +28,9 @@ include:
 
 # Descriptor configuration:
 {% if grains['kernel'] == 'Linux' %}
-'{{ path_to_sources }}/control/conf/descriptor.conf':
+'{{ path_to_sources }}/{{ control_scripts_dir_basename }}/conf/descriptor.conf':
 {% elif grains['kernel'] == 'Windows' %}
-'{{ path_to_sources }}\control\conf\descriptor.conf':
+'{{ path_to_sources }}\{{ control_scripts_dir_basename }}\conf\descriptor.conf':
 {% endif %}
     file.managed:
         - source: salt://common/environment_source_code/environment.source.deployment.descriptor.conf
@@ -43,9 +45,9 @@ include:
 
 # Job configuration:
 {% if grains['kernel'] == 'Linux' %}
-'{{ path_to_sources }}/control/conf/jobs/environment_sources.conf':
+'{{ path_to_sources }}/{{ control_scripts_dir_basename }}/conf/jobs/environment_sources.conf':
 {% elif grains['kernel'] == 'Windows' %}
-'{{ path_to_sources }}\control\conf\jobs\environment_sources.conf':
+'{{ path_to_sources }}\{{ control_scripts_dir_basename }}\conf\jobs\environment_sources.conf':
 {% endif %}
     file.managed:
         - source: salt://common/environment_source_code/deployment.job.environment.sources.conf
@@ -63,12 +65,12 @@ include:
     cmd.run:
 {% if grains['kernel'] == 'Linux' %}
         # On Windows it is executed by Cygwin python using posix paths.
-        - name: '         /usr/bin/python control/init.py --skip_branch_control -j environment_sources -l debug -c file://{{ path_to_sources        }}/control/conf/'
+        - name: '         /usr/bin/python {{ control_scripts_dir_basename }}/init.py --skip_branch_control -j environment_sources -l debug -c file://{{ path_to_sources        }}/control/conf/'
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         - cwd: '{{ path_to_sources }}'
 {% elif grains['kernel'] == 'Windows' %}
         # On Windows it is executed by Cygwin python using posix paths.
-        - name: 'bash -c "/usr/bin/python control/init.py --skip_branch_control -j environment_sources -l debug -c file://{{ path_to_sources_cygwin }}/control/conf/"'
+        - name: 'bash -c "/usr/bin/python {{ control_scripts_dir_basename }}/init.py --skip_branch_control -j environment_sources -l debug -c file://{{ path_to_sources_cygwin }}/control/conf/"'
         - cwd: '{{ path_to_sources }}'
 {% endif %}
         - require:
