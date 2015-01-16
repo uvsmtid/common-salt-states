@@ -9,13 +9,14 @@
 
 {% set depository_role_content_parent_dir = pillar['system_features']['validate_depository_role_content']['depository_role_content_parent_dir'] %}
 
-{% set repo_name = 'ci-job-control' %}
+{% set repo_name = pillar['system_features']['deploy_environment_sources']['control_scripts_repo_name'] %}
 
 include:
     - common.webserver.depository_role
 
-'{{ pillar['system_features']['deploy_central_control_directory']['control_dir_fs_path'] }}':
+setup_control_directory_recursively_from_sources:
     file.recurse:
+        - name: '{{ pillar['system_features']['deploy_central_control_directory']['control_dir_fs_path'] }}'
         - source: salt://source_roots/{{ repo_name }}/{{ pillar['system_features']['deploy_central_control_directory']['control_dir_src_path'] }}
         - user: apache
         - group: apache
