@@ -55,11 +55,21 @@
 {% set remote_path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][remote_host_type]['path'] %}
 {% endif %}
 
+# Remove destination directory before copying.
+# If `path/to/dest/dir` is not removed, copying by `cp -r dir path/to/dest/dir`
+# will create a directory `path/to/dest/dir/dir`.
+'remove_destination_directory_on_remote_host_{{ host_config['hostname'] }}_cmd':
+    cmd.run:
+        - name: 'ssh "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}" "rm -rf {{ remote_path_to_sources }}/{{ control_scripts_dir_basename }}"'
+        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+
 # `scp`-copy sources on remote host.
 'deploy_control_scripts_on_remote_host_{{ host_config['hostname'] }}_cmd':
     cmd.run:
         - name: 'scp -r "{{ control_scripts_repo_sources_path }}/{{ control_scripts_dir_path }}" "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}":"{{ remote_path_to_sources }}/{{ control_scripts_dir_basename }}"'
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        - require:
+            - cmd: 'remove_destination_directory_on_remote_host_{{ host_config['hostname'] }}_cmd'
         # Assume SSH keys are already distributed to make this state faster.
         #- require:
         #    - sls: common.ssh.distribute_public_keys
