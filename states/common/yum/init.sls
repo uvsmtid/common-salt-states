@@ -15,7 +15,7 @@ yum_conf:
 
 
 
-{% if pillar['system_features']['offline_yum_repo']['feature_enabled'] %}
+{% if 'offline_yum_repo' in pillar['system_features'] and pillar['system_features']['offline_yum_repo']['feature_enabled'] %}
 {% set offline_yum_repo_ip = pillar['system_features']['offline_yum_repo']['ip'] %}
 
 {% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
