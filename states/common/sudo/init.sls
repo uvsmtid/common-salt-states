@@ -10,7 +10,7 @@ include:
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-{% if pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
+{% if 'disable_package_installation' in pillar['system_features'] and pillar['system_features']['disable_package_installation']['feature_enabled'] %}
 
 sudo_package:
     pkg.installed:
