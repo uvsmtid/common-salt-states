@@ -52,6 +52,7 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa'
+        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_private_key_URI'] }}'
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 600
@@ -63,6 +64,7 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
+        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_public_key_URI'] }}'
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 644
@@ -91,6 +93,7 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
+        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_private_key_URI'] }}'
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -98,6 +101,7 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
+        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_public_key_URI'] }}'
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -134,6 +138,7 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa'
+        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_private_key_URI'] }}'
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 600
@@ -145,6 +150,7 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
+        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_public_key_URI'] }}'
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 644
@@ -173,6 +179,7 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
+        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_private_key_URI'] }}'
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -180,6 +187,7 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
+        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_public_key_URI'] }}'
         - makedirs: True
         - require:
             - sls: common.cygwin.package
