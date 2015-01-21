@@ -25,6 +25,7 @@
 {% set cygwin_installation_completion_file_indicator = pillar['registered_content_items']['cygwin_package_64_bit_windows']['completion_file_indicator'] %}
 
 include:
+    - common.7zip
 
 # Run cygwin installation:
 install_cygwin_package:
