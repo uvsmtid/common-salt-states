@@ -4,22 +4,21 @@
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-snmp:
-
 {% if pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
-
+install_snmp_packages:
     pkg.installed:
         - pkgs:
             - net-snmp
             - net-snmp-utils
 {% endif %}
 
+enable_snmp_service:
     service.running:
         - name: snmpd
         - enable: True
 {% if pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
         - require:
-            - pkg: snmp
+            - pkg: install_snmp_packages
 {% endif %}
         - watch:
             - file: /etc/snmp/snmpd.conf
@@ -32,6 +31,10 @@ snmpd_conf:
         - group: root
         - mode: 644
         - template: jinja
+{% if pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
+        - require:
+            - pkg: install_snmp_packages
+{% endif %}
 
 
 {% endif %}
