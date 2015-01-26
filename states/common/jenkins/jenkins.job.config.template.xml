@@ -59,7 +59,7 @@ ln -s -f "{{ control_sripts_repo_dir }}/{{ control_scripts_dir_path }}" "{{ cont
 # Override via command line:
 # - Use preferred repo type: {{ repo_types }}
 # - For Git, use common repo: {{ git_repo_local_paths }}
-/usr/bin/python control/init.py -j {{ job_name }} -l debug -c {{ control_url }} --repo_types='{{ repo_types|json }}' --override_git_repo_local_paths='{{ git_repo_local_paths|json }}'
+/usr/bin/python "{{ control_scripts_dir_basename }}/init.py" -j {{ job_name }} -l debug -c {{ control_url }} --repo_types='{{ repo_types|json }}' --override_git_repo_local_paths='{{ git_repo_local_paths|json }}'
       </command>
     </hudson.tasks.Shell>
   </builders>
