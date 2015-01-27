@@ -58,7 +58,7 @@ The problem with RHEL5 is that it does not contain `salt-*` packages by default.
 They are in a separate `EPEL` repository.
 
 Normally, you can configure this repository yourself, but there is an RPM package
-for this:
+for this (available online or in http://YUM_OFFLINE_REPO_IP/mirror/epel/5/x86_64/epel-release-5-4.noarch.rpm)
 ```
 rpm -ihv epel-release-5-4.noarch.rpm
 ```
