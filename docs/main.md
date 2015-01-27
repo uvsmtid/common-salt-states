@@ -122,11 +122,11 @@ salt '*' state.sls common.source_links test=True
 salt '*' state.sls common.source_links test=False
 ```
 
-* Render sls from minion perspective:
-'''
+* Render state from minion perspective:
+```
 salt '*' state.show_sls common.source_links #show specific state
 salt '*' state.show_top # show top
-'''
+```
 
 ## Next steps
 
