@@ -1,4 +1,3 @@
-
 ## Multi-project organization
 
 These sources (State, Pillars, etc.) provide automation for multiple projects.
@@ -108,8 +107,8 @@ Delete keys of those minions which are not supposed to be controlled.
 Accept keys of those minions which are     supposed to be controlled.
 
 ```sh
-salt -d <key> # delete
-salt -a <key> # accept
+salt-key -d <key> # delete
+salt-key -a <key> # accept
 ```
 
 ### Run state to setup symlinks
@@ -122,6 +121,12 @@ salt '*' state.sls common.source_links test=True
 ```
 salt '*' state.sls common.source_links test=False
 ```
+
+* Render sls from minion perspective:
+'''
+salt '*' state.show_sls common.source_links #show specific state
+salt '*' state.show_top # show top
+'''
 
 ## Next steps
 
