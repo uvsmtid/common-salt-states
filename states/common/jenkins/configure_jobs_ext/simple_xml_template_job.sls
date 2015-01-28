@@ -1,4 +1,4 @@
-# Configure job for releasing Java Maven components.
+# Configure Jenkins job based on XML configuration template.
 
 
 {% macro job_config_include_item(job_name, job_config) %}
