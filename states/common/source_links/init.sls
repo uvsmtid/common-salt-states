@@ -26,7 +26,9 @@
 {% set link_config = pillar['system_features']['ensure_source_links']['source_links'][link_config_name] %}
 {% set repo_name = link_config['repo_name'] %}
 {% set repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][repo_name] %}
-{% set salt_master_local_path = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name][repo_type]['salt_master_local_path'] %}
+{% set salt_master_local_path_base = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name][repo_type]['salt_master_local_path_base'] %}
+{% set salt_master_local_path_rest = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name][repo_type]['salt_master_local_path_rest'] %}
+{% set salt_master_local_path = salt_master_local_path_base + salt_master_local_path_rest %}
 
 '{{ salt_master_local_path }}_{{ link_config_name }}':
     file.directory:
