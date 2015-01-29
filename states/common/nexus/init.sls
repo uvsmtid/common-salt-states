@@ -103,6 +103,23 @@ activate_nexus_service:
 #   firefox //http://localhost:8081/nexus
 # Default admin username:password: admin:admin123
 # Default deployment username:password: deployment123:deployment123
+# In order to deploy releases to Nexus, deployment user should be configured
+# in the ~/.m2/settings.xml file, for example:
+#   <server>
+#     <id>nexus-snapshots</id>
+#     <username>deployment</username>
+#     <password>the_pass_for_the_deployment_user</password>
+#   </server>
+# The `id` should probably match `id` in `pom.xml` file used for
+# deploying a release:
+#   <distributionManagement>
+#     <repository>
+#       <id>nexus-snapshots</id>
+#       <name>whatever</name>
+#       <url>URL_TO_NEXUS</url>
+#     </repository>
+#   </distributionManagement>
+
 {% if False %}
 nexus_service_enable:
     cmd.run:
