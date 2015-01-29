@@ -20,7 +20,9 @@
 # <<<
 {% if grains['os'] in [ 'Windows' ] %}
 
-# TODO: Rewrite to use `7zip_64_bit_windows` content item.
+{% if pillar['registered_content_items']['7zip_64_bit_windows']['enable_installation'] %}
+
+{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
 
 # 7-zip installation.
 install_7zip_on_windows:
@@ -38,11 +40,13 @@ install_7zip_on_windows:
         - makedirs: True
 
 # Download file from depository_role.
-'{{ config_temp_dir }}\7z920-x64.msi':
+'{{ config_temp_dir }}/{{ pillar['registered_content_items']['7zip_64_bit_windows']['item_base_name'] }}':
     file.managed:
-        - source: http://depository_role/distrib/7zip/7z920-x64.msi
-        - source_hash: md5=cac92727c33bec0a79965c61bbb1c82f
+        - source: "{{ URI_prefix }}/{{ pillar['registered_content_items']['7zip_64_bit_windows']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['7zip_64_bit_windows']['item_base_name'] }}"
+        - source_hash: {{ pillar['registered_content_items']['7zip_64_bit_windows']['item_content_hash'] }}
         - makedirs: True
+
+{% endif %} # enable_installation
 
 {% endif %}
 # >>>
