@@ -21,6 +21,9 @@ then
     SEPARATOR="@"
 fi
 
+# NOTE: We ignore any error code because this script is not supposed
+#       to successfully log in and execute command. It is only required
+#       to accept host keys (which it does).
 set +e
 # -o "ConnectTimeout 5"
 ssh \
