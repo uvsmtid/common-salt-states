@@ -4,10 +4,10 @@
 
 {% if hostname_res['hostname_resolution_type'] == 'static_hosts_file' %}
 
-# TODO: Remove this `if`-guard agains Windows when the following issue
-#       is resolved for `file.blockreplace` (not just `file.replace`):
-#         https://github.com/saltstack/salt/issues/11471
-{% if grains['os'] not in [ 'Windows' ] %}
+# Set this `if`-guard agains Windows when the following issue
+# for `file.blockreplace` (not just `file.replace`) appears again
+# https://github.com/saltstack/salt/issues/11471
+# if grains['os'] not in [ 'Windows' ]
 
 managed_hosts_file:
     file.blockreplace:
@@ -28,10 +28,12 @@ managed_hosts_file:
         - content: |
             # Host `salt` is the host assigned for `controller_role` role.
             {% set selected_role = 'controller_role' %}
+            {% if pillar['system_host_roles'][selected_role]['assigned_hosts']|length != 0 %}
             {% set selected_minion_id = pillar['system_host_roles'][selected_role]['assigned_hosts'][0] %}
             {% set selected_host = pillar['system_hosts'][selected_minion_id] %}
             {% set selected_net = selected_host['defined_in'] %}
             {{ selected_host[selected_net]['ip'] }} salt salt.{{ hostname_res['domain_name'] }}
+            {% endif %}
 
             # Set `x_display_server` based on pillar configuration.
             {{ hostname_res['x_display_server'] }} x_display_server x_display_server.{{ hostname_res['domain_name'] }}
@@ -44,15 +46,15 @@ managed_hosts_file:
 
             # Hosts by their role (the first in the list of assigned hosts).
             {% for selected_role in pillar['system_host_roles'].keys() %}
+            {% if pillar['system_host_roles'][selected_role]['assigned_hosts']|length != 0 %}
             {% set selected_minion_id = pillar['system_host_roles'][selected_role]['assigned_hosts'][0] %}
             {% set selected_host = pillar['system_hosts'][selected_minion_id] %}
             {% set selected_net = selected_host['defined_in'] %}
             {{ selected_host[selected_net]['ip'] }} {{ selected_role }} {{ selected_role }}.{{ hostname_res['domain_name'] }}
+            {% endif %}
             {% endfor %}
         - marker_end:   "# >>> AUTOMATICALLY MANAGED by Salt"
 
-
-{% endif %} # Windows
 
 {% endif %} # `hostname_resolution_type`
 
