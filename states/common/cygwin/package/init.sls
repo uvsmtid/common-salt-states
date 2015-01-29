@@ -21,6 +21,8 @@
 
 {% if pillar['registered_content_items']['cygwin_package_64_bit_windows']['enable_installation'] %}
 
+{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
+
 {% set cygwin_root_dir = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] %}
 {% set cygwin_installation_completion_file_indicator = pillar['registered_content_items']['cygwin_package_64_bit_windows']['completion_file_indicator'] %}
 
@@ -39,7 +41,7 @@ install_cygwin_package:
 # Patch cygwin installer script:
 '{{ config_temp_dir }}\cygwin.distrib\repo\installer\install_cygwin.cmd':
     file.managed:
-        - source: salt://common/cygwin/package/install_cygwin.cmd
+        - source: 'salt://common/cygwin/package/install_cygwin.cmd'
         - template: jinja
         - makedirs: True
         - require:
@@ -66,14 +68,14 @@ set_CYGWIN_env_var_value:
 # Script to unzip the package:
 '{{ config_temp_dir }}\unzip_cygwin_package.bat':
     file.managed:
-        - source: salt://common/cygwin/package/unzip_cygwin_package.bat
+        - source: 'salt://common/cygwin/package/unzip_cygwin_package.bat'
         - makedirs: True
         - template: jinja
 
 # Archive:
 '{{ config_temp_dir }}\{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_base_name'] }}':
     file.managed:
-        - source: http://depository_role/{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_base_name'] }}
+        - source: "{{ URI_prefix }}/{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_base_name'] }}"
         - source_hash: {{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_content_hash'] }}
         - makedirs: True
 
