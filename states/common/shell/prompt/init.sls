@@ -18,6 +18,21 @@ include:
         - require:
             - sls: common.shell
 
+{% if 'bash_prompt_info_config' in pillar['system_features'] %}
+
+{% if pillar['system_features']['bash_prompt_info_config']['enable_git_aware_bash_prompt'] %}
+
+git_aware_bash_promt_functions_script:
+    file.managed:
+        - name: '/lib/git_aware_prompt/git_aware_prompt_func.sh'
+        - source: 'salt://common/shell/prompt/git_aware_prompt_func.sh'
+        - mode: 555
+        - makedirs: True
+
+{% endif %} # enable_git_aware_bash_prompt
+
+{% endif %} # bash_prompt_info_config
+
 {% endif %}
 # >>>
 ###############################################################################
@@ -91,6 +106,27 @@ convert_bashrc_file_to_unix_line_endings:
 
 
 {% endif %}
+
+{% if 'bash_prompt_info_config' in pillar['system_features'] %}
+
+{% if pillar['system_features']['bash_prompt_info_config']['enable_git_aware_bash_prompt'] %}
+
+git_aware_bash_promt_functions_script:
+    file.managed:
+        - name: '{{ cygwin_root_dir }}\lib\git_aware_prompt\git_aware_prompt_func.sh'
+        - source: 'salt://common/shell/prompt/git_aware_prompt_func.sh'
+        - mode: 555
+        - makedirs: True
+
+convert_git_aware_bash_promt_functions_script_line_endings:
+    cmd.run:
+        - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\lib\git_aware_prompt\git_aware_prompt_func.sh && {{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\lib\git_aware_prompt\git_aware_prompt_func.sh'
+        - require:
+            - file: git_aware_bash_promt_functions_script
+
+{% endif %} # enable_git_aware_bash_prompt
+
+{% endif %} # bash_prompt_info_config
 
 {% endif %}
 # >>>

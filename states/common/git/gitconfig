@@ -37,8 +37,8 @@
     # Merge using fast-forward only
     ffmerge = merge --ff-only
 
-    # Merge two branches into one (avoid fast-forward)
-    bbmerge = merge --no-ff
+    # Merge two branches into one (avoid fast-forward), allow review
+    bbmerge = merge --no-ff --no-commit
 
     # Shod diff of staged changes
     sdiff = diff --staged
