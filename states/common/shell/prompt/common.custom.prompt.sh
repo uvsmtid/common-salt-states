@@ -59,6 +59,32 @@ JOBS_COLOR="\[\e[35m\]\$(if [ \$(jobs -r | wc -l) != 0 ] ; then echo ' jobs:'\$(
 
 PS1="$PS1$JOBS_COLOR"
 
+{% endif %}
+
+{% if pillar['system_features']['bash_prompt_info_config']['enable_last_command_execution_time'] %}
+
+# Functions to track execution time of commands.
+# See origin: http://stackoverflow.com/a/1862762/441652
+function timer_start {
+    execution_start_time=${execution_start_time:-$SECONDS}
+}
+
+function timer_stop {
+    execution_duration_time=$(($SECONDS - $execution_start_time))
+    unset execution_start_time
+}
+
+# Start timer for each command.
+trap 'timer_start' DEBUG
+
+# Stop timer for each prompt evaluation.
+# NOTE: Command `timer_stop` must be the last. If not, othere commands
+#       used for the command prompt will leave timer on.
+PROMPT_COMMAND="$PROMPT_COMMAND timer_stop"
+
+EXECUTION_TIME_COLOR="\e[34m\]\$(if [ \$execution_duration_time -gt 2 ] ; then echo ' last:'\${execution_duration_time}s ; fi)\[\e[0m\]"
+
+PS1="$PS1$EXECUTION_TIME_COLOR"
 
 {% endif %}
 
