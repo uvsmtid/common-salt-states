@@ -63,7 +63,7 @@ PS1="$PS1$JOBS_COLOR"
 
 {% if pillar['system_features']['bash_prompt_info_config']['enable_prompt_creation_timestamp'] %}
 
-PS1="$PS1 \e[34m\]\$(date '+%Y-%m-%d %H:%M:%S')\[\e[0m\]"
+PS1="$PS1 \e[34m\]\$(date '+%Y-%m-%d')\[\e[0m\] \e[94m\]\$(date '+%H:%M:%S')\[\e[0m\]"
 
 {% endif %}
 
@@ -88,7 +88,7 @@ trap 'timer_start' DEBUG
 #       used for the command prompt will leave timer on.
 PROMPT_COMMAND="$PROMPT_COMMAND timer_stop"
 
-EXECUTION_TIME_COLOR="\e[34m\]\$(if [ \$execution_duration_time -gt 2 ] ; then echo ' last:'\${execution_duration_time}s ; fi)\[\e[0m\]"
+EXECUTION_TIME_COLOR="\e[96m\]\$(if [ \$execution_duration_time -gt 2 ] ; then echo ' last:'\${execution_duration_time}s ; fi)\[\e[0m\]"
 
 PS1="$PS1$EXECUTION_TIME_COLOR"
 
