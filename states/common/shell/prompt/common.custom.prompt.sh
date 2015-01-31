@@ -61,6 +61,12 @@ PS1="$PS1$JOBS_COLOR"
 
 {% endif %}
 
+{% if pillar['system_features']['bash_prompt_info_config']['enable_prompt_creation_timestamp'] %}
+
+PS1="$PS1 \e[34m\]\$(date '+%Y-%m-%d %H:%M:%S')\[\e[0m\]"
+
+{% endif %}
+
 {% if pillar['system_features']['bash_prompt_info_config']['enable_last_command_execution_time'] %}
 
 # Functions to track execution time of commands.
