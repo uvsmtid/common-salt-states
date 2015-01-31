@@ -1,10 +1,11 @@
 
 
-## Check connected minions
+## Check approved minions
 
 ```
 salt-key
 ```
+These minions may not exists, but they will be contacted every time `*` used as target.
 
 ## Basic connection check
 
@@ -26,10 +27,14 @@ There are various requirements to make Salt:
 * proxy configuration for YUM
 * initial source code links
 
-## Run `highstate` in test mode
+## Run `highstate` or any state in test mode
 
 ```
-salt -v '*' state.highstate test=True
+salt '*' state.highstate test=True
+```
+This can also be applied to any state run through `state.sls` function.
+```
+salt '*' state.sls common.dummy test=True
 ```
 
 ## Review output of executed jobs
@@ -71,20 +76,101 @@ in `Result:` fields of the output, for example:
 
 ## States
 
-
 ### Check how Salt minion sees its top file
 
+```
+salt '*' state.show_top
+```
 
 ### Check how Salt minion sees specific state
 
 ```
+salt '*' state.show_sls
 ```
-
-## Running states in test mode
 
 ## Pillars
 
+```
+salt '*' pillar.items
+```
+
 ## Grains
+
+```
+salt '*' grains.items
+```
+
+## Try executing job from Minion
+
+TODO:
+* `salt-call`
+
+## How to render any template and see the output?
+
+TODO
+
+## State execution failures due to template issues
+
+
+The following output is an example of problem when template cannot be instantiated:
+```
+local:
+    Data failed to compile:
+----------
+    Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/salt/state.py", line 2459, in call_highstate
+    top = self.get_top()
+  File "/usr/lib/python2.7/site-packages/salt/state.py", line 2027, in get_top
+    tops = self.get_tops()
+  File "/usr/lib/python2.7/site-packages/salt/state.py", line 1907, in get_tops
+    saltenv=saltenv
+  File "/usr/lib/python2.7/site-packages/salt/template.py", line 74, in compile_template
+    ret = render(input_data, saltenv, sls, **render_kwargs)
+  File "/usr/lib/python2.7/site-packages/salt/renderers/jinja.py", line 39, in render
+    **kws)
+  File "/usr/lib/python2.7/site-packages/salt/utils/templates.py", line 83, in render_tmpl
+    output = render_str(tmplstr, context, tmplpath)
+  File "/usr/lib/python2.7/site-packages/salt/utils/templates.py", line 279, in render_jinja_tmpl
+    tmplstr)
+SaltRenderError: Jinja variable 'dict object' has no attribute 'hostname_resolution_type'; line 15
+
+---
+[...]
+
+base:
+
+    '*':
+
+        {% if pillar['hostname_resolution_type'] == 'static_hosts_file' %}    <======================
+
+        # Generate hosts files on minions.
+        - {{ project }}.hosts
+
+        {% endif %}
+[...]
+---
+```
+
+Review corresponding data (see pillars or grains) and try to figure out why referencing it fails.
+
+## Minion refuses to work due to old master key
+
+Minion will refuse to start with new master (this may happen when VM with a minion is reused with another master) if it was already connected to a master before.
+The minion log (Windows: `C:\salt\var\log\salt\minion`, Linux: `/var/log/salt/minion`) in this case looks similar to this:
+```
+[DEBUG   ] Loaded minion key: c:\salt\conf\pki\minion\minion.pem
+[ERROR   ] The master key has changed, the salt master could have been subverted, verify salt master's public key
+[CRITICAL] The Salt Master server's public key did not authenticate!
+The master may need to be updated if it is a version of Salt lower than 2014.1.0-5-g32d3463, or
+If you are confident that you are connecting to a valid Salt Master, then remove the master public key and restart the Salt Minion.
+The master public key can be found at:
+c:\salt\conf\pki\minion\minion_master.pub
+```
+
+Simply remove the cached master key and restart minion again:
+```
+c:\>del c:\salt\conf\pki\minion\minion_master.pub
+```
 
 
 
