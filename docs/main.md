@@ -15,10 +15,6 @@
 
 * [approach_for_multiple_projects.md](approach_for_multiple_projects.md)
 
-## Can all these be used to configure single master-less host?
-
-* [single_host_start.md](single_host_start.md)
-
 ## How to troubleshoot?
 
 * [troubleshooting.md](troubleshooting.md)
