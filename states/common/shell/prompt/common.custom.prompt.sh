@@ -90,7 +90,13 @@ PROMPT_COMMAND="$PROMPT_COMMAND timer_stop"
 
 EXECUTION_TIME_COLOR="\[\e[96m\]\$(if [ \${execution_duration_time:-0} -gt 2 ] ; then echo ' last:'\${execution_duration_time}s ; fi)\[\e[0m\]"
 
-PS1="$PS1$EXECUTION_TIME_COLOR"
+# NOTE: Some scripts in `/etc/profile.d` directory may overwrite value of
+#       `PROMPT_COMMAND` after it was already set.
+#       The following variable will show a colorful `E` if `timer_stop`
+#       is not present in the variable's value.
+MISSING_COMMAND_IN_PROMPT_COLOR="\[\e[41m\]\$(if [[ \"\${PROMPT_COMMAND}\" =~ \"timer_stop\" ]] ; then echo ; else echo E ; fi)\[\e[0m\]"
+
+PS1="${PS1}${EXECUTION_TIME_COLOR}${MISSING_COMMAND_IN_PROMPT_COLOR}"
 
 {% endif %}
 
