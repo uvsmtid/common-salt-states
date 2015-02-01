@@ -15,11 +15,11 @@ salt '*' test.ping
 
 ## Make sure Salt master is configured
 
-Review steps for required configuration of `/etc/salt/master` on [this page](inital_salt_master_setup.md).
+Review steps for required configuration of `/etc/salt/master` on [this page](inital_salt_setup.md).
 
 ## Make sure initial system setup is done
 
-Review steps for required system configuration on [this page](getting_started.md).
+Review steps for required system configuration on [this page](inital_salt_setup.md).
 
 There are various requirements to make Salt:
 * IP addresses and routing
