@@ -134,13 +134,11 @@ control. There are multiple ways to provide resources. The most flexible
 approach is to use external file server (FTP or HTTP).
 However, the simples solution is to use Salt itself. Salt can be used as
 a file server (with `salt://` URL scheme to access files from states).
-For this case there is a directory called `resources`. Just like any other
-directory, there are project-specify sub-directory (i.e. `common`) which
-contains `.gitignore` which is supposed to document all resources under
-this specific directory, for example:
-```
-resources/common/.gitignore
-```
+
+TODO: Add general document about source code tree layout, connection between
+resources, Salt configuration, all required symlinks, etc. Explain convention,
+guidelines, and tools to maintain set of resources required to deploy
+system offline.
 
 ## Highlights for Salt master setup
 
