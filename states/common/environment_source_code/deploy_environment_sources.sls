@@ -74,6 +74,7 @@ passwordless_ssh_config_file:
     file.managed:
 {% if grains['kernel'] == 'Linux' %}
         - name: '{{ config_temp_dir }}/passwordless_ssh_config.sh'
+        - mode: 555
 {% elif grains['kernel'] == 'Windows' %}
         - name: '{{ config_temp_dir }}\passwordless_ssh_config.sh'
 {% endif %}
