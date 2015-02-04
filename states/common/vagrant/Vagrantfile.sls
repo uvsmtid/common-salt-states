@@ -12,6 +12,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "base"
 
+  config.vm.provision "shell", inline: "echo success"
+
+  config.vm.provider "{{ pillar['system_features']['vagrant_configuration']['vagrant_provider'] }}"
+
+{% for selected_host_name in pillar['system_hosts'].keys() %}
+{% set selected_host = pillar['system_hosts'][selected_host_name] %}
+{% if selected_host['instantiated_by'] == 'vagrant_instance_configuration' %}
+
+  config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
+    {{ selected_host_name }}.vm.box = "{{ selected_host['vagrant_instance_configuration']['vagrant_box'] }}"
+  end
+
+{% endif %}
+{% endfor %}
+
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.

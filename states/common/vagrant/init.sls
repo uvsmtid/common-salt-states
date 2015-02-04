@@ -4,6 +4,10 @@
 # <<<
 {% if grains['os'] in [ 'Fedora' ] %}
 
+# To avoid unnecessary installation,
+# require this host to be assigned to `hypervisor_role`.
+{% if grains['id'] in pillar['system_host_roles']['hypervisor_role']['assigned_hosts'] %}
+
 install_vagrant_packages:
     pkg.installed:
         - pkgs:
@@ -20,6 +24,8 @@ deploy_vagrant_file:
         - mode: 644
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+
+{% endif %} # hypervisor_role
 
 {% endif %}
 # >>>
