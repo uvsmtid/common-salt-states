@@ -14,8 +14,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "shell", inline: "echo success"
 
-  config.vm.provider "{{ pillar['system_features']['vagrant_configuration']['vagrant_provider'] }}"
-
 {% for selected_host_name in pillar['system_hosts'].keys() %}
 
 {% set selected_host = pillar['system_hosts'][selected_host_name] %}
@@ -26,10 +24,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set instance_configuration = selected_host[instantiated_by] %}
 
 # Docker requires special configuration.
-{% if pillar['system_features']['vagrant_configuration']['vagrant_provider'] == 'docker' %}
+{% if instance_configuration['vagrant_provider'] == 'docker' %}
 
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
-    {{ selected_host_name }}.vm.provider "docker" do |d|
+    {{ selected_host_name }}.vm.provider "{{ instance_configuration['vagrant_provider'] }}" do |d|
       d.build_dir = "{{ selected_host_name }}"
       d.cmd = [ "sleep", "60" ]
     end
@@ -40,6 +38,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
     {{ selected_host_name }}.vm.box = "{{ instance_configuration['vagrant_box'] }}"
+    # Based on Vagrant explanation, in the future they may support provider
+    # per each VM. At the moment, it should only be configured per all
+    # set of VMs (outside of individual configuration).
+    #{{ selected_host_name }}.vm.provider = "{{ instance_configuration['vagrant_provider'] }}"
   end
 
 {% endif %} # docker

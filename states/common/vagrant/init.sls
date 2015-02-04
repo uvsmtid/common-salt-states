@@ -1,11 +1,24 @@
 # Virtualization automation using Vagrant project.
 
-{% set selected_provider = pillar['system_features']['vagrant_configuration']['vagrant_provider'] %}
+include:
 
+{% for selected_host_name in pillar['system_hosts'].keys() %}
+
+{% set selected_host = pillar['system_hosts'][selected_host_name] %}
+
+{% if selected_host['instantiated_by'] %}
+
+{% set instantiated_by = selected_host['instantiated_by'] %}
+{% set instance_configuration = selected_host[instantiated_by] %}
+{% set selected_provider = instance_configuration['vagrant_provider'] %}
 {% set selected_provider_deployment_state = pillar['system_features']['vagrant_configuration']['vagrant_providers_configs'][selected_provider]['deployment_state'] %}
 
-include:
     - {{ selected_provider_deployment_state }}
+
+{% endif %} # instantiated_by
+{% endfor %}
+
+    - common.dummy
 
 ###############################################################################
 # <<<
@@ -19,8 +32,6 @@ install_vagrant_packages:
     pkg.installed:
         - pkgs:
             - vagrant
-        - require:
-            - sls: {{ selected_provider_deployment_state }}
 
 {% set vagrant_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] + '/' + pillar['system_features']['vagrant_configuration']['vagrant_file_dir'] %}
 
@@ -35,8 +46,6 @@ deploy_vagrant_file:
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
 
 # Docker requires special configuration.
-{% if pillar['system_features']['vagrant_configuration']['vagrant_provider'] == 'docker' %}
-
 {% for selected_host_name in pillar['system_hosts'].keys() %}
 
 {% set selected_host = pillar['system_hosts'][selected_host_name] %}
@@ -46,7 +55,7 @@ deploy_vagrant_file:
 {% set instantiated_by = selected_host['instantiated_by'] %}
 {% set instance_configuration = selected_host[instantiated_by] %}
 
-{% if pillar['system_features']['vagrant_configuration']['vagrant_provider'] == 'docker' %}
+{% if instance_configuration['vagrant_provider'] == 'docker' %}
 
 'deploy_docker_file_for_{{ selected_host_name }}':
     file.managed:
@@ -60,13 +69,11 @@ deploy_vagrant_file:
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
 
-{% endif %} # docker
+{% endif %} # vagrant_provider
 
 {% endif %} # instantiated_by
 
 {% endfor %} # selected_host_name
-
-{% endif %} # vagrant_provider
 
 {% endif %} # hypervisor_role
 
