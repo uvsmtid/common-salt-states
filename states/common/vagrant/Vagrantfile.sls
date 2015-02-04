@@ -10,22 +10,43 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "base"
+  #config.vm.box = "base"
 
   config.vm.provision "shell", inline: "echo success"
 
   config.vm.provider "{{ pillar['system_features']['vagrant_configuration']['vagrant_provider'] }}"
 
 {% for selected_host_name in pillar['system_hosts'].keys() %}
+
 {% set selected_host = pillar['system_hosts'][selected_host_name] %}
-{% if selected_host['instantiated_by'] == 'vagrant_instance_configuration' %}
+
+{% if selected_host['instantiated_by'] %}
+
+{% set instantiated_by = selected_host['instantiated_by'] %}
+{% set instance_configuration = selected_host[instantiated_by] %}
+
+# Docker requires special configuration.
+{% if pillar['system_features']['vagrant_configuration']['vagrant_provider'] == 'docker' %}
 
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
-    {{ selected_host_name }}.vm.box = "{{ selected_host['vagrant_instance_configuration']['vagrant_box'] }}"
+    {{ selected_host_name }}.vm.provider "docker" do |d|
+      d.build_dir = "{{ selected_host_name }}"
+      d.cmd = [ "sleep", "60" ]
+    end
   end
 
-{% endif %}
-{% endfor %}
+
+{% else %} # docker
+
+  config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
+    {{ selected_host_name }}.vm.box = "{{ instance_configuration['vagrant_box'] }}"
+  end
+
+{% endif %} # docker
+
+{% endif %} # instantiated_by
+
+{% endfor %} # selected_host_name
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs

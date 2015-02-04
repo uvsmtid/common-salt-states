@@ -34,6 +34,40 @@ deploy_vagrant_file:
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
 
+# Docker requires special configuration.
+{% if pillar['system_features']['vagrant_configuration']['vagrant_provider'] == 'docker' %}
+
+{% for selected_host_name in pillar['system_hosts'].keys() %}
+
+{% set selected_host = pillar['system_hosts'][selected_host_name] %}
+
+{% if selected_host['instantiated_by'] %}
+
+{% set instantiated_by = selected_host['instantiated_by'] %}
+{% set instance_configuration = selected_host[instantiated_by] %}
+
+{% if pillar['system_features']['vagrant_configuration']['vagrant_provider'] == 'docker' %}
+
+'deploy_docker_file_for_{{ selected_host_name }}':
+    file.managed:
+        - name: '{{ vagrant_dir }}/{{ selected_host_name }}/Dockerfile'
+        - source: 'salt://common/docker/Dockerfile.sls'
+        - makedirs: True
+        - template: jinja
+        - context:
+            selected_host_name: '{{ selected_host_name }}'
+        - mode: 644
+        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+
+{% endif %} # docker
+
+{% endif %} # instantiated_by
+
+{% endfor %} # selected_host_name
+
+{% endif %} # vagrant_provider
+
 {% endif %} # hypervisor_role
 
 {% endif %}
