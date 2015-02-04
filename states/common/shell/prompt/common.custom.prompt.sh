@@ -6,6 +6,18 @@ then
     return 0
 fi
 
+# Home/End keys showed inconsistent behaviour regardless of TERM var value.
+# For example, `root` user under the same `tmux` session with the same TERM
+# value had no problems with Home/End keys, while regular user shell
+# printed `~` instead of taking actions from these keys. In short, neither
+# settings in `tmux.conf`, nor TERM var value, nor `inputrc` could be
+# the problem. Difference in environment variable settings didn't show
+# obvious problem either. So, looking at this question, using `bind`
+# was the only known working solution to fix it:
+#   http://stackoverflow.com/q/18600188/441652
+bind '"\e[1~":"\eOH"'
+bind '"\e[4~":"\eOF"'
+
 # Just print user type.
 if [ $UID == "0" ]
 then
