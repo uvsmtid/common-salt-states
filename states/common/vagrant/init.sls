@@ -1,5 +1,12 @@
 # Virtualization automation using Vagrant project.
 
+{% set selected_provider = pillar['system_features']['vagrant_configuration']['vagrant_provider'] %}
+
+{% set selected_provider_deployment_state = pillar['system_features']['vagrant_configuration']['vagrant_providers_configs'][selected_provider]['deployment_state'] %}
+
+include:
+    - {{ selected_provider_deployment_state }}
+
 ###############################################################################
 # <<<
 {% if grains['os'] in [ 'Fedora' ] %}
@@ -12,6 +19,8 @@ install_vagrant_packages:
     pkg.installed:
         - pkgs:
             - vagrant
+        - require:
+            - sls: {{ selected_provider_deployment_state }}
 
 {% set vagrant_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] + '/' + pillar['system_features']['vagrant_configuration']['vagrant_file_dir'] %}
 
