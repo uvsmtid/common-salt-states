@@ -50,11 +50,19 @@ extract_nexus_archive:
     cmd.run:
         - name: 'tar -xvf "{{ config_temp_dir }}/nexus/nexus-bundle.tar.gz"'
         - cwd: '/usr/local'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
         - unless: 'ls -ld /usr/local/nexus-{{ pillar['registered_content_items']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
         - require:
             - file: ensure_nexus_parent_deployment_dir
+
+fix_nexus_dir_permissiona:
+    file.directory:
+        - name: '/usr/local/nexus-{{ pillar['registered_content_items']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
+        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        - makedirs: False
+        - recurse:
+            - user
+            - group
 
 nexus_data_dir_exists:
     file.exists:
@@ -63,6 +71,16 @@ nexus_data_dir_exists:
         - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
         - require:
             - cmd: extract_nexus_archive
+
+fix_nexus_data_dir_permissiona:
+    file.directory:
+        - name: '/usr/local/sonatype-work'
+        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        - makedirs: False
+        - recurse:
+            - user
+            - group
 
 nexus_deployment_dir_exists:
     file.exists:
