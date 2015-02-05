@@ -1,6 +1,13 @@
-# Nexus Maven Repository Manager
+# Nexus Maven Repository Manager for two possible roles:
+# - maven_repository_upstream_manager_role
+# - maven_repository_downstream_manager_role
 
-{% if grains['id'] in pillar['system_host_roles']['maven_repository_manager_role']['assigned_hosts'] %}
+# NOTE: None of the hosts is supposed to be assigned to both roles.
+#       If this is mistakenly done, this state will fail due to
+#       repeated (non unique) state steps IDs.
+{% for maven_repository_manager_role in [ 'maven_repository_upstream_manager_role', 'maven_repository_downstream_manager_role' ] %}
+
+{% if grains['id'] in pillar['system_host_roles'][maven_repository_manager_role]['assigned_hosts'] %}
 
 {% if grains['kernel'] == 'Linux' %}
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
@@ -151,3 +158,4 @@ nexus_service_start:
 
 {% endif %}
 
+{% endfor %} # maven_repository_manager_role
