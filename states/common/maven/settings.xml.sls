@@ -23,25 +23,22 @@
 
     <!--
         TODO: Put hardcoded username/password in profile configuration.
-        TODO: Should `nexus-releases` be renamed into `releaseDeployRepo`
-              and `nexus-snapshots` be renamed into `snapshotDeployRepo`
-              just like in `pom.xml` files?
     -->
     <servers>
 		<server>
-            <id>nexus-releases</id>
+            <id>releaseDeployRepo</id>
             <username>deployment</username>
             <password>deployment123</password>
       </server>
       <server>
-            <id>nexus-snapshots</id>
+            <id>snapshotDeployRepo</id>
             <username>deployment</username>
             <password>deployment123</password>
       </server>
     </servers>
 
     <!--
-        TODO: Replace hard-coded URL with tamplate variable.
+        TODO: Replace hard-coded URL with template variable.
         TODO: Why there are instances of strings like
               `nexus-releases` and `nexus-snapshots` referenced in `mirrorOf`
               but there is nothing about `nexus-plugin-snapshots` in this
@@ -50,7 +47,7 @@
     <mirrors>
         <mirror>
             <id>nexus-mirror</id>
-            <mirrorOf>*,!nexus-releases,!nexus-snapshots,!nexus-plugin-snapshots</mirrorOf>
+            <mirrorOf>*,!releaseDeployRepo,!snapshotDeployRepo,!nexus-plugin-snapshots</mirrorOf>
             <name>Nexus repository manager</name>
             <url>http://nexus:8081/nexus/content/groups/public/</url>
         </mirror>
@@ -66,7 +63,7 @@
             <id>nexus-profile</id>
             <repositories>
                 <repository>
-                    <id>nexus-releases</id>
+                    <id>releaseDeployRepo</id>
                     <name>Nexus Repository Manager</name>
 
                     <!-- Example
@@ -84,7 +81,7 @@
                     </snapshots>
                 </repository>
                 <repository>
-                    <id>nexus-snapshots</id>
+                    <id>snapshotDeployRepo</id>
                     <name>Nexus Repository Manager</name>
 
                     <!-- Example
