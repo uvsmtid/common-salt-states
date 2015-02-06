@@ -17,6 +17,9 @@
 
     <offline>false</offline>
 
+    <!--
+        TODO: What is this and why it is needed?
+    -->
     <pluginGroups>
         <pluginGroup>org.mortbay.jetty</pluginGroup>
     </pluginGroups>
@@ -38,7 +41,6 @@
     </servers>
 
     <!--
-        TODO: Replace hard-coded URL with template variable.
         TODO: Why there are instances of strings like
               `nexus-releases` and `nexus-snapshots` referenced in `mirrorOf`
               but there is nothing about `nexus-plugin-snapshots` in this
@@ -46,10 +48,10 @@
     -->
     <mirrors>
         <mirror>
+            <!-- This sends everything else to /public of upstream repository. -->
             <id>nexus-mirror</id>
             <mirrorOf>*,!releaseDeployRepo,!snapshotDeployRepo,!nexus-plugin-snapshots</mirrorOf>
-            <name>Nexus repository manager</name>
-            <url>http://nexus:8081/nexus/content/groups/public/</url>
+            <url>http://maven_repository_upstream_manager_role:8081/nexus/content/groups/public</url>
         </mirror>
 
     </mirrors>
