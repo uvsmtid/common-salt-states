@@ -40,21 +40,27 @@
       </server>
     </servers>
 
-    <!--
-        TODO: Why there are instances of strings like
-              `nexus-releases` and `nexus-snapshots` referenced in `mirrorOf`
-              but there is nothing about `nexus-plugin-snapshots` in this
-              file?
-    -->
+{% if pillar['system_features']['maven_repository_manager_configuration']['proxy_maven_repository_manager'] %}
+
+{% set proxy_maven_repository_manager_name = pillar['system_features']['maven_repository_manager_configuration']['proxy_maven_repository_manager'] %}
+{% set proxy_maven_repository_manager_config = pillar['system_features']['maven_repository_manager_configuration']['maven_repository_managers'][proxy_maven_repository_manager_name] %}
+
+{% set proxy_maven_repository_manager_url_scheme_part = proxy_maven_repository_manager_config['maven_repo_url_scheme_part'] %}
+{% set proxy_maven_repository_manager_url_port_part = proxy_maven_repository_manager_config['maven_repo_url_port_part'] %}
+{% set proxy_maven_repository_manager_url_public_path_part = proxy_maven_repository_manager_config['maven_repo_url_public_path_part'] %}
+
+{% set proxy_maven_repository_manager_url = proxy_maven_repository_manager_url_scheme_part + proxy_maven_repository_manager_name + proxy_maven_repository_manager_url_port_part + proxy_maven_repository_manager_url_public_path_part %}
+
     <mirrors>
         <mirror>
             <!-- This sends everything else to /public of upstream repository. -->
             <id>nexus-mirror</id>
-            <mirrorOf>*,!releaseDeployRepo,!snapshotDeployRepo,!nexus-plugin-snapshots</mirrorOf>
-            <url>http://maven_repository_upstream_manager_role:8081/nexus/content/groups/public</url>
+            <mirrorOf>*,!releaseDeployRepo,!snapshotDeployRepo</mirrorOf>
+            <url>{{ proxy_maven_repository_manager_url }}</url>
         </mirror>
 
     </mirrors>
+{% endif %}
 
     <profiles>
         <!--
