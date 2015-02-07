@@ -79,6 +79,18 @@ PS1="$PS1 \[\e[34m\]\$(date '+%Y-%m-%d')\[\e[0m\] \[\e[94m\]\$(date '+%H:%M:%S')
 
 {% endif %}
 
+{% if pillar['system_features']['bash_prompt_info_config']['enable_last_command_non_zero_exit_code'] %}
+
+source '/lib/last_command_exit_code_prompt/last_command_exit_code_prompt_func.sh'
+
+PROMPT_COMMAND="save_last_command_exit_code; $PROMPT_COMMAND"
+
+LAST_CMD_EXIT_CODE_COLOR="\[\e[41m\]\$(if [[ \"\${LAST_CMD_EXIT_CODE}\" == \"0\" ]] ; then echo ; else echo \"error:\${LAST_CMD_EXIT_CODE}\" ; fi)\[\e[0m\]"
+
+PS1="${PS1} ${LAST_CMD_EXIT_CODE_COLOR}"
+
+{% endif %}
+
 {% if pillar['system_features']['bash_prompt_info_config']['enable_last_command_execution_time'] %}
 
 # Functions to track execution time of commands.
