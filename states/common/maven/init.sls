@@ -18,6 +18,13 @@ maven_configuration_file:
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
         - mode: 644
 
+maven_environment_variables_script:
+    file.managed:
+        - name: '/etc/profile.d/common.maven.variables.sh'
+        - source: 'salt://common/maven/common.maven.variables.sh'
+        - mode: 555
+        - template: jinja
+
 {% endif %}
 # >>>
 ###############################################################################
