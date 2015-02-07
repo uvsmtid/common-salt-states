@@ -59,6 +59,9 @@ add_{{ job_name }}_job_configuration_to_jenkins:
 update_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
         - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ update-job {{ job_name }}"
+{% if not pillar['system_features']['configure_jenkins']['rewrite_jenkins_configuration_for_jobs'] %}
+        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ get-job {{ job_name }}"
+{% endif %}
         - require:
             - cmd: download_jenkins_cli_jar
             - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml'

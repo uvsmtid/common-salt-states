@@ -59,6 +59,19 @@ add_{{ host_config['hostname'] }}_node_configuration_to_jenkins:
             - cmd: download_jenkins_cli_jar
             - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ host_config['hostname'] }}.xml'
 
+# Update node configuration.
+# The update won't happen (it will be the same) if node has just been created.
+update_{{ host_config['hostname'] }}_node_configuration_to_jenkins:
+    cmd.run:
+        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ host_config['hostname'] }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ update-node {{ host_config['hostname'] }}"
+{% if not pillar['system_features']['configure_jenkins']['rewrite_jenkins_configuration_for_nodes'] %}
+        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ get-node {{ host_config['hostname'] }}"
+{% endif %}
+        - require:
+            - cmd: download_jenkins_cli_jar
+            - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ host_config['hostname'] }}.xml'
+            - cmd: add_{{ host_config['hostname'] }}_node_configuration_to_jenkins
+
 # Reconnect slave node:
 {% if pillar['system_features']['configure_jenkins']['make_sure_nodes_are_connected'] %}
 reconnect_{{ host_config['hostname'] }}_node_with_jenkins:
