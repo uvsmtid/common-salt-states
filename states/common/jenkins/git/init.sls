@@ -18,6 +18,7 @@ include:
 
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+{% set plugin_name = pillar['registered_content_items']['jenkins_git_client_plugin']['plugin_name'] %}
 
 '{{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_client_plugin']['item_base_name'] }}':
     file.managed:
@@ -28,7 +29,7 @@ include:
 install_jenkins_git_client_plugin:
     cmd.run:
         - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ install-plugin {{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_client_plugin']['item_base_name'] }} -restart'
-        - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ list-plugins cygpath | grep cygpath'
+        - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ list-plugins {{ plugin_name }} | grep {{ plugin_name }}'
         - require:
             - cmd: download_jenkins_cli_jar
             - file: '{{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_client_plugin']['item_base_name'] }}'
@@ -41,6 +42,7 @@ install_jenkins_git_client_plugin:
 
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+{% set plugin_name = pillar['registered_content_items']['jenkins_git_plugin']['plugin_name'] %}
 
 '{{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_plugin']['item_base_name'] }}':
     file.managed:
@@ -51,7 +53,7 @@ install_jenkins_git_client_plugin:
 install_jenkins_git_plugin:
     cmd.run:
         - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ install-plugin {{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_plugin']['item_base_name'] }} -restart'
-        - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ list-plugins cygpath | grep cygpath'
+        - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ list-plugins {{ plugin_name }} | grep {{ plugin_name }}'
         - require:
             - cmd: download_jenkins_cli_jar
             - file: '{{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_plugin']['item_base_name'] }}'
