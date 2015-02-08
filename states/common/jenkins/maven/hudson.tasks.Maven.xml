@@ -3,7 +3,7 @@
   <installations>
     <hudson.tasks.Maven_-MavenInstallation>
       <name>Default Linux</name>
-      <home>/usr/share/maven</home>
+      <home>{{ pillar['system_features']['maven_installation_configuration']['maven_home_dir'] }}</home>
       <properties/>
     </hudson.tasks.Maven_-MavenInstallation>
   </installations>

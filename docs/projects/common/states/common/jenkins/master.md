@@ -16,3 +16,7 @@ At the moment entire `credentials.xml` file is overwritten every time
 Jenkins master state is re-applied. So, do not add any other credentials to
 avoid loosing this configuration.
 
+## See also ##
+
+* [common.jenkins.maven](docs/projects/common/states/common/jenkins/maven/readme.md)
+
