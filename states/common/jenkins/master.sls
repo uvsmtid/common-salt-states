@@ -1,30 +1,30 @@
 # Jenkins master
 
-{% if grains['id'] in pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'] %} # jenkins_master_role
 
-{% if grains['kernel'] == 'Linux' %}
+{% if grains['kernel'] == 'Linux' %} # Linux
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
+{% endif %} # Linux
+{% if grains['kernel'] == 'Windows' %} # Windows
 {% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
+{% endif %} # Windows
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os'] in [ 'RedHat', 'CentOS' ] %} # OS
 
-{% endif %}
+{% endif %} # OS
 # >>>
 ###############################################################################
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os'] in [ 'Fedora' ] %} # OS
 
 include:
     - common.ssh
 
-{% if pillar['registered_content_items']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %}
+{% if pillar['registered_content_items']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %} # enable_installation
 
 {% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
 
@@ -49,19 +49,28 @@ import_jenkins_yum_repository_key:
         - require:
             - file: retrieve_jenkins_yum_repository_key
 
-{% endif %}
+{% endif %} # enable_installation
 
 jenkins_rpm_package:
     pkg.installed:
         - name: jenkins
 # Set dependencies on special Jenkins repository only when it is enabled.
-{% if pillar['registered_content_items']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %}
+{% if pillar['registered_content_items']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %} # enable_installation
         - require:
             - file: /etc/yum.repos.d/jenkins.repo
             - cmd: import_jenkins_yum_repository_key
-{% endif %}
+{% endif %} # enable_installation
 
-{% if False %}
+jenkins_credentials_configuration_file:
+    file.managed:
+        - name: '{{ pillar['system_features']['configure_jenkins']['jenkins_root_dir'] }}/credentials.xml'
+        - source: 'salt://common/jenkins/credentials.xml.sls'
+        - template: jinja
+        - makedirs: False
+        - require:
+            - pkg: jenkins_rpm_package
+
+{% if False %} # Disabled
 # The following state does not work at the moment due to a bug:
 #   https://github.com/saltstack/salt/issues/11900
 
@@ -72,7 +81,8 @@ activate_jenkins_service:
         - require:
             - pkg: jenkins_rpm_package
 
-{% else %}
+{% else %} # Disabled
+
 # This is a workaround described in the similar issue:
 #   https://github.com/saltstack/salt/issues/8444
 
@@ -81,27 +91,28 @@ jenkins_service_enable:
         - name: "systemctl enable jenkins"
         - require:
             - pkg: jenkins_rpm_package
+            - file: jenkins_credentials_configuration_file
 
-jenkins_service_start:
+jenkins_service_restart:
     cmd.run:
-        - name: "systemctl start jenkins"
+        - name: "systemctl restart jenkins"
         - require:
             - cmd: jenkins_service_enable
 
-{% endif %}
+{% endif %} # Disabled
 
 
-{% endif %}
+{% endif %} # OS
 # >>>
 ###############################################################################
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os'] in [ 'Windows' ] %} # OS
 
-{% endif %}
+{% endif %} # OS
 # >>>
 ###############################################################################
 
-{% endif %}
+{% endif %} # jenkins_master_role
 

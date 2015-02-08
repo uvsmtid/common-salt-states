@@ -29,7 +29,7 @@ include:
         - source: salt://common/jenkins/jenkins.node.config.template.xml
         - template: jinja
         - context:
-            node_name: '{{ host_config['hostname'] }}'
+            minion_id: '{{ slave }}'
             # NOTE: `jenkins_path` should depend on the platform (Windows or Linix)
             #       because Java running Jenkins creates directories according
             #       to the platform.

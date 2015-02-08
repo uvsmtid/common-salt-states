@@ -3,3 +3,16 @@ State `common.jenkins.master` installs Jenkins Master (server).
 
 Normally, Jenkins Master is only installed if a minion is assigned [jenkins_master_role](docs/projects/common/pillars/system_host_roles/jenkins_master_role/readme.md).
 
+## Credentials ##
+
+This state also configures Jenkins credentials to be used in Jenkins Slave
+authentication. Each credential uses id composed using
+[username](docs/projects/common/pillars/system_hosts/_id/primary_user/username/reame.md) and
+[hostname](docs/projects/common/pillars/system_hosts/_id/hostname.md). This is
+different from UUID which can be seen if `credentials.xml` file is modified
+by Jenkins itself when credentials are configured through web UI.
+
+At the moment entire `credentials.xml` file is overwritten every time
+Jenkins master state is re-applied. So, do not add any other credentials to
+avoid loosing this configuration.
+

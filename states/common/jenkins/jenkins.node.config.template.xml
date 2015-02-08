@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <slave>
-  <name>{{ node_name }}</name>
+{% set jenkins_slave_config = pillar['system_hosts'][minion_id] %}
+  <name>{{ jenkins_slave_config['hostname'] }}</name>
   <description></description>
   <remoteFS>{{ jenkins_path }}</remoteFS>
   <numExecutors>1</numExecutors>
   <mode>NORMAL</mode>
   <retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/>
   <launcher class="hudson.plugins.sshslaves.SSHLauncher" plugin="ssh-slaves@1.5">
-    <host>{{ node_name }}</host>
+    <host>{{ jenkins_slave_config['hostname'] }}</host>
     <port>22</port>
     <!--
-    DISABLED: No API to create credentials and no yet finilized ID
-              how to add them using different way.
-    {#
-    <credentialsId>{{ credential_UUID }}</credentialsId>
-    #}
+    NODE: Instead of UUID-based id (which can be seen in original Jenkins
+          GUI-managed configuration), these ids are based on username and
+          hostname.
     -->
+    <credentialsId>{{ jenkins_slave_config['primary_user']['username'] }}-{{ jenkins_slave_config['hostname'] }}-{{ jenkins_slave_config['os_type'] }}</credentialsId>
   </launcher>
   <label></label>
   <nodeProperties/>

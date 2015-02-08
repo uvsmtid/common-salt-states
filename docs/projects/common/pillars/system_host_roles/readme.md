@@ -4,7 +4,7 @@ defined in [system_hosts](docs/projects/common/pillars/system_hosts/readme.md) d
 
 The key in this dictionary is a role name.
 
-The value of this dictionary contains single key [assigned_hosts](docs/projects/common/pillars/system_hosts/assigned_hosts/readme.md)
+The value of this dictionary contains single key [assigned_hosts](docs/projects/common/pillars/system_hosts/_role/assigned_hosts/readme.md)
 which lists minion ids assigned to the corresponding role.
 
 Example:
