@@ -1,0 +1,73 @@
+# Maven configuration for Jenkins.
+
+###############################################################################
+# <<<
+{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %} # OS
+
+include:
+    - common.jenkins.master
+    - common.jenkins.download_jenkins_cli_tool
+
+# TODO: This is a copied-and-pasted code for two plugins.
+#       It's repeated for all Jenkins plugins which can be done in a single
+#       template with required parameters.
+
+{% if pillar['registered_content_items']['jenkins_git_client_plugin']['enable_installation'] %} # jenkins_git_client_plugin
+
+{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
+
+{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
+{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+
+'{{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_client_plugin']['item_base_name'] }}':
+    file.managed:
+        - source: "{{ URI_prefix }}/{{ pillar['registered_content_items']['jenkins_git_client_plugin']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['jenkins_git_client_plugin']['item_base_name'] }}"
+        - source_hash: {{ pillar['registered_content_items']['jenkins_git_client_plugin']['item_content_hash'] }}
+        - makedirs: True
+
+install_jenkins_git_client_plugin:
+    cmd.run:
+        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ install-plugin {{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_client_plugin']['item_base_name'] }} -restart'
+        - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ list-plugins cygpath | grep cygpath'
+        - require:
+            - cmd: download_jenkins_cli_jar
+            - file: '{{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_client_plugin']['item_base_name'] }}'
+
+{% endif %} # jenkins_git_client_plugin
+
+{% if pillar['registered_content_items']['jenkins_git_plugin']['enable_installation'] %} # jenkins_git_plugin
+
+{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
+
+{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
+{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+
+'{{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_plugin']['item_base_name'] }}':
+    file.managed:
+        - source: "{{ URI_prefix }}/{{ pillar['registered_content_items']['jenkins_git_plugin']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['jenkins_git_plugin']['item_base_name'] }}"
+        - source_hash: {{ pillar['registered_content_items']['jenkins_git_plugin']['item_content_hash'] }}
+        - makedirs: True
+
+install_jenkins_git_plugin:
+    cmd.run:
+        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ install-plugin {{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_plugin']['item_base_name'] }} -restart'
+        - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ list-plugins cygpath | grep cygpath'
+        - require:
+            - cmd: download_jenkins_cli_jar
+            - file: '{{ config_temp_dir }}/{{ pillar['registered_content_items']['jenkins_git_plugin']['item_base_name'] }}'
+
+{% endif %} # jenkins_git_plugin
+
+{% endif %} # OS
+# >>>
+###############################################################################
+
+###############################################################################
+# <<<
+{% if grains['os'] in [ 'Windows' ] %}
+
+{% endif %}
+# >>>
+###############################################################################
+
+
