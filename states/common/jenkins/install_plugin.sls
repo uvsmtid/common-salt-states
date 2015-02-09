@@ -21,7 +21,10 @@ install_jenkins_{{ registered_content_item_id }}:
         - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ install-plugin {{ config_temp_dir }}/{{ pillar['registered_content_items'][registered_content_item_id]['item_base_name'] }} -restart'
         - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ list-plugins {{ plugin_name }} | grep {{ plugin_name }}'
         - require:
+
+            # Prerequisite provided by the calling state:
             - cmd: '{{ registered_content_item_id }}_jenkins_plugin_installation_prerequisite'
+
             - file: '{{ config_temp_dir }}/{{ pillar['registered_content_items'][registered_content_item_id]['item_base_name'] }}'
 
 {% endif %}
