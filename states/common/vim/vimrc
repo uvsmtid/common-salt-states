@@ -74,6 +74,9 @@ set expandtab
 set tabstop=4
 set shiftwidth=4
 
+" Make 'paste' mode default
+set paste
+
 " The `colorcolumn` only works with modern vim (i.e. on Fedora).
 {% if not ( grains['os'] in [ 'RedHat', 'CentOS' ] and grains['osrelease'][0] == '5' ) %}
 set colorcolumn=80
