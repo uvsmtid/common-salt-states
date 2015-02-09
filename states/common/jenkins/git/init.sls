@@ -19,7 +19,9 @@ include:
     - common.jenkins.master
     - common.jenkins.download_jenkins_cli_tool
 
+# Git plugin and its dependencies.
 {% for registered_content_item_id in [
+        'jenkins_scm-api_plugin',
         'jenkins_git-client_plugin',
         'jenkins_git_plugin',
     ]
