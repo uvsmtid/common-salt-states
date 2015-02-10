@@ -7,7 +7,7 @@ to simplify state templates which install plugin for Jenkins.
 ## `jenkins_plugin_installation_macros` ##
 
 Macro `jenkins_plugin_installation_macros` takes one parameter `registered_content_item_id` which
-specifies a key to [registered_content_items](docs/projects/common/pillars/registered_content_items/readme.md)
+specifies a key to [registered_content_items](docs/pillars/registered_content_items/readme.md)
 dictionary defined in pillar. Using this key, macros can access all necessary
 information to download and install plugin.
 

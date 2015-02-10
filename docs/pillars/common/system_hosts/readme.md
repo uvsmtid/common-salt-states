@@ -35,6 +35,6 @@ salt '*' test.ping
 ## Values ##
 
 The value is provides various minion configuration:
-* [primary_user](docs/projects/common/pillars/system_hosts/_id/primary_user/readme.md)
-* [hostname](docs/projects/common/pillars/system_hosts/_id/hostname.md)
+* [primary_user](docs/pillars/common/system_hosts/_id/primary_user/readme.md)
+* [hostname](docs/pillars/common/system_hosts/_id/hostname.md)
 
