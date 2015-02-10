@@ -67,6 +67,19 @@
 {% endif %} <!-- SCM Git -->
 
 
+{% if selected_repo_type == 'svn' %} <!-- SCM Git -->
+    <!--
+        TODO: Implement SVN configuration.
+
+        At the moment form INVALID XML so that this configuration FAILS
+        if Subversion is used for any of the repositories with this job.
+    -->
+
+    WHATEVER makes it INVALID XML <<BLABLABLA>>
+
+{% endif %} <!-- SCM Git -->
+
+
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>

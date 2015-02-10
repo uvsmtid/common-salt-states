@@ -27,6 +27,15 @@ All configuration files for States, Pillars and Grains are typically written in 
 
 YAML is simply a visually convenient text format to define data in lists and dictionaries (key-value associated arrays).
 
+## External macros ##
 
+TODO: Examples of external "libraries" with macros:
+* `states/common/jenkins/install_plugin.sls`
+* `states/common/jenkins/configure_jobs_ext/simple_xml_template_job.sls`
+TODO: Add links to both their documentation and files with implementation.
+TODO: Add links to states (both docs and implementation) where they are used, for example:
+* `install_plugin.sls` is used in `states/common/jenkins/cygwin/init.sls`, `states/common/jenkins/git/init.sls`, `states/common/jenkins/maven/init.sls`
+* `simple_xml_template_job.sls` is used for pillar data like `pillar['system_hosts']['configure_jenkins'][_id]['job_configs'][_id]['job_config_function_source']`
+TODO: Mention `orchestration` in a similar way when finished.
 
 
