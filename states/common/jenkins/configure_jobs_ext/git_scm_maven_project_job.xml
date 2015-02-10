@@ -1,37 +1,93 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <maven2-moduleset plugin="maven-plugin@2.7.1">
   <actions/>
-  <description></description>
+
+
+  <description>{{ job_description }}</description>
+
+
   <keepDependencies>false</keepDependencies>
   <properties/>
+
+
+  <assignedNode>{{ job_assigned_host }}</assignedNode>
+
+
+  <!--
+      Git configuration.
+  -->
+{% set selected_repo_name = job_config['job_config_data']['repository_name'] %}
+{% set selected_repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][selected_repo_name] %}
+
+{% if selected_repo_type == 'git' %} <!-- SCM Git -->
+
+{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name][selected_repo_type] %}
+
+{# Compose remote_url #}
+{% set origin_url_ssh_path = repo_config['origin_url_ssh_path'] %}
+{% if repo_config['origin_url_ssh_username'] %}
+{% set ssh_address = repo_config['origin_url_ssh_username'] + '@' + repo_config['origin_url_ssh_hostname'] %}
+{% else %}
+{% set ssh_address = repo_config['origin_url_ssh_hostname'] %}
+{% endif %}
+{% set remote_url = ssh_address + ':' + origin_url_ssh_path %}
+
+{% set remote_branch_name = repo_config['branch_name'] %}
+
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.4">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>uvsmtid@projector:Works/incubator.git</url>
+        <!--
+        <url>username@hostname:path/to/repo.git</url>
+        -->
+        <url>{{ remote_url }}</url>
+        <!--
+            TODO: Figure out how to define credentials per repository
+                  when repository is identified by a string (no reliable
+                  easy to use hostname or minion id) and the ids for
+                  credentials which exists are all IDs generated (not
+                  configured.
+        -->
         <credentialsId>uvsmtid-projector-linux</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
+        <!--
         <name>*/master</name>
+        -->
+        <name>refs/remotes/origin/{{ remote_branch_name }}</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
     <submoduleCfg class="list"/>
     <extensions/>
   </scm>
-  <canRoam>true</canRoam>
+{% endif %} <!-- SCM Git -->
+
+
+  <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
+
+
+  <!--
+      Maven Project configuration.
+  -->
   <rootModule>
-    <groupId>com.spectsys.code_samples</groupId>
-    <artifactId>maven_dependencies</artifactId>
+    {% set component_group_id = job_config['job_config_data']['component_group_id'] %}
+    <groupId>{{ component_group_id }}</groupId>
+    {% set component_artifact_id = job_config['job_config_data']['component_artifact_id'] %}
+    <artifactId>{{ component_artifact_id }}</artifactId>
   </rootModule>
-  <rootPOM>code_samples/maven_dependencies/pom.xml</rootPOM>
+  {% set component_pom_path = job_config['job_config_data']['component_pom_path'] %}
+  <rootPOM>{{ component_pom_path }}</rootPOM>
+
+
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>false</ignoreUpstremChanges>
@@ -49,6 +105,11 @@
   <reporters/>
   <publishers/>
   <buildWrappers>
+
+
+    <!--
+         Maven Release configuration.
+    -->
     <org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper plugin="m2release@0.14.0">
       <scmUserEnvVar></scmUserEnvVar>
       <scmPasswordEnvVar></scmPasswordEnvVar>
@@ -60,6 +121,8 @@
       <selectScmCredentials>false</selectScmCredentials>
       <numberOfReleaseBuildsToKeep>1</numberOfReleaseBuildsToKeep>
     </org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper>
+
+
   </buildWrappers>
   <prebuilders/>
   <postbuilders/>
