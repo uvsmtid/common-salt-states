@@ -49,7 +49,8 @@
                   credentials which exists are all IDs generated (not
                   configured.
         -->
-        <credentialsId>uvsmtid-projector-linux</credentialsId>
+{% from 'common/jenkins/credentials.lib.sls' import get_jenkins_credentials_id_by_host_id with context %}
+        <credentialsId>{{ get_jenkins_credentials_id_by_host_id(repo_config['source_system_host']) }}</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>

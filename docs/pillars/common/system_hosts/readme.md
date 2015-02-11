@@ -2,18 +2,26 @@
 Dictionary `system_hosts` provides information about hosts participating in the
 system managed by this particular Salt master.
 
+## Minion id for non-minions ##
+
+The id for each host configuration object is a minion id (see [Keys](#keys)
+section below). But it does not mean the host is actually managed or such
+minion exists. It only means that if such minion _exists and connected_ to
+Salt master using `salt-key` command then it will be configured according
+to the pillar data. In other words, there could be any other hosts outside
+of Salt master control (i.e. example.com) which are still considered
+(external) part of the system even though there is no way to configure them.
+
 ## Centralized host configuration ##
 
 It is important to understand that the main purpose of this dictionary is to _centralize_ host configuration
-and make it convenient to manage it from single place.
+and make it convenient to manage from this single place (pillar file).
 
 An alternative to this centralized approach is to use custom [grains](http://docs.saltstack.com/en/latest/topics/targeting/grains.html)
 (either defined in `grains` key of `/etc/salt/minion` or in separate `/etc/salt/grains` configuration file).
 However, this leads to inconvenience of distributed configuration - one should
 change configuration of each minion separately and restart minion service one
-by one. This also makes it impossible to acheive zero config for minions.
-
-Each key in `system_hosts` is minion id.
+by one. Using grains makes it _impossible_ to acheive zero config for minions.
 
 ## Keys ##
 

@@ -15,8 +15,9 @@
 {% set jenkins_slave_config = pillar['system_hosts'][jenkins_slave_id] %}
         <com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey plugin="ssh-credentials@1.10">
           <scope>GLOBAL</scope>
-          <id>{{ jenkins_slave_config['primary_user']['username'] }}-{{ jenkins_slave_config['hostname'] }}-{{ jenkins_slave_config['os_type'] }}</id>
-          <description>{{ jenkins_slave_config['primary_user']['username'] }}-{{ jenkins_slave_config['hostname'] }}-{{ jenkins_slave_config['os_type'] }}</description>
+{% from 'common/jenkins/credentials.lib.sls' import get_jenkins_credentials_id_by_host_id with context %}
+          <id>{{ get_jenkins_credentials_id_by_host_id(jenkins_slave_id) }}</id>
+          <description>{{ get_jenkins_credentials_id_by_host_id(jenkins_slave_id) }}</description>
           <username>{{ jenkins_slave_config['primary_user']['username'] }}</username>
           <!-- Password is not required for SSH public key auth.
           <passphrase></passphrase>

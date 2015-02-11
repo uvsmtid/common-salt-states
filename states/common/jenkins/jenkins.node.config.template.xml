@@ -15,7 +15,8 @@
           GUI-managed configuration), these ids are based on username and
           hostname.
     -->
-    <credentialsId>{{ jenkins_slave_config['primary_user']['username'] }}-{{ jenkins_slave_config['hostname'] }}-{{ jenkins_slave_config['os_type'] }}</credentialsId>
+{% from 'common/jenkins/credentials.lib.sls' import get_jenkins_credentials_id_by_host_id with context %}
+    <credentialsId>{{ get_jenkins_credentials_id_by_host_id(minion_id) }}</credentialsId>
   </launcher>
   <label></label>
   <nodeProperties/>
