@@ -1,5 +1,5 @@
 
-Start from [documentation](docs/main.md) tailored for these sources.
+Start from [documentation](docs/readme.md) tailored for these sources.
 
 ## What are these sources?
 

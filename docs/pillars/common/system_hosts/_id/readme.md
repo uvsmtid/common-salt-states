@@ -5,5 +5,5 @@ TODO:
 
 See:
 * [primary_user](docs/pillars/common/system_hosts/_id/primary_user/readme.md)
-* [hostname](docs/pillars/common/system_hosts/_id/hostname.md)
+* [hostname](docs/pillars/common/system_hosts/_id/hostname/readme.md)
 

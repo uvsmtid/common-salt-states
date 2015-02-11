@@ -1,5 +1,15 @@
 
+This is a starting point for documentation about directory layout and
+naming conventions.
 
+Instead of consolidating all such information in single file, the approach
+is to refer to additional more specific document with all details.
+
+For example:
+* Conventions for documenting states: [docs/states/readme.md][docs/states/readme.md]
+* Conventions for documenting pillars: [docs/pillars/readme.md][docs/pillars/readme.md]
+
+## General layout map ##
 
 ```
 .

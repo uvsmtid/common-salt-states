@@ -8,7 +8,7 @@ possible to process such items automatically in various cases:
 * install item using standard state;
 * etc.
 
-For example, macros defined in `salt://common/jenkins/install_plugin.sls` [documented here](docs/states/common/jenkins/install_plugin.md)
+For example, macros defined in `salt://common/jenkins/install_plugin.sls` [documented here](docs/states/common/jenkins/install_plugin.sls.md)
 install Jenkins plugins automatically.
 
 TODO:
