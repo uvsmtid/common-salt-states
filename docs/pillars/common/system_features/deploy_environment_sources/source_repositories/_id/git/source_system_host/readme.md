@@ -6,7 +6,7 @@ There are multipe use cases for this parameter.
 
 ## SSH-like URIs to Git repositories ##
 
-Cupled with [origin_url_ssh_path][4], this provides enough information
+Cupled with [origin_uri_ssh_path][4], this provides enough information
 to form complete SSH-like URI for Git respository.
 
 ## Ids for Jenkins credentials ##
@@ -27,7 +27,7 @@ is actually the Salt master).
 [1]: docs/pillars/common/system_host_roles/readme.md
 [2]: docs/pillars/common/system_hosts/_id/hostname/readme.md
 [3]: docs/pillars/common/system_hosts/_id/primary_user/readme.md
-[4]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/origin_url_ssh_path/readme.md
+[4]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/origin_uri_ssh_path/readme.md
 [5]: docs/states/common/source_links/init.sls.md
 [6]: docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir/readme.md
 

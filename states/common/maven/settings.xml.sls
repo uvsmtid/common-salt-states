@@ -128,24 +128,25 @@
 {% for selected_repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
 
 {% set selected_repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][selected_repo_name] %}
-{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name][selected_repo_type] %}
 
-{# Compose repository_url #}
-{% set origin_url_ssh_path = repo_config['origin_url_ssh_path'] %}
-{% if repo_config['origin_url_ssh_username'] %}
-{% set ssh_address = repo_config['origin_url_ssh_username'] + '@' + repo_config['origin_url_ssh_hostname'] %}
-{% else %}
-{% set ssh_address = repo_config['origin_url_ssh_hostname'] %}
-{% endif %}
-{% set repository_url = ssh_address + ':' + origin_url_ssh_path %}
+{% if selected_repo_type == 'git' %}
 
-{# This is an attempt to reformat normal SSH-like URL to some weird format accoring to http://maven.apache.org/scm/git.html #}
-{% if origin_url_ssh_path|first == '/' %}
-{% set maven_repository_url = 'scm:git:ssh://' + ssh_address + ':22' + origin_url_ssh_path %}
+{# Call marco `define_git_repo_uri_maven` to define variable `git_repo_uri_maven`. #}
+{% from 'common/git/git_uri.lib.sls' import define_git_repo_uri_maven with context %}
+{% set git_repo_uri_maven = define_git_repo_uri_maven(selected_repo_name) %}
+
+                <{{ selected_repo_name }}-scm_connection_url>{{ git_repo_uri_maven }}</{{ selected_repo_name }}-scm_connection_url>
+
 {% else %}
-{% set maven_repository_url = 'scm:git:ssh://' + ssh_address + ':22' + '/~/' + origin_url_ssh_path %}
+
+            <!--
+                TODO: Add support for other repository types.
+                      At the moment, refer to non-existing `git_repo_uri_maven` to fail.
+            -->
+                <{{ selected_repo_name }}-scm_connection_url>{{ git_repo_uri_maven }}</{{ selected_repo_name }}-scm_connection_url>
+
 {% endif %}
-                <{{ selected_repo_name }}-scm_connection_url>{{ maven_repository_url }}</{{ selected_repo_name }}-scm_connection_url>
+
 
 {% endfor %}
 

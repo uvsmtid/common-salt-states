@@ -48,6 +48,6 @@ It important that:
 [3]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/source_system_host/readme.md
 [4]: docs/pillars/common/system_hosts/readme.md
 [5]: docs/pillars/common/system_hosts/_id/primary_user/readme.md
-[6]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/origin_url_ssh_path/readme.md
+[6]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/origin_uri_ssh_path/readme.md
 [7]: docs/pillars/common/system_hosts/_id/consider_online_for_remote_connections/readme.md
 

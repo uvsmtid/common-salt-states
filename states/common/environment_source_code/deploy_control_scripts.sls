@@ -40,12 +40,17 @@
 
 {% set control_scripts_dir_path = pillar['system_features']['deploy_environment_sources']['control_scripts_dir_path'] %}
 
+{% if control_scripts_repo_type == 'git' %} # git
+
 # Note that the `local_path` is used only as a source which means current minion.
 # And current minion is supposed to be Linux.
 # This is why only `posix_user_home_dir` is used.
+# TODO: Move this code to `git_uri.lib.sls`.
 {% set local_path_base = pillar['system_hosts'][source_system_host]['primary_user']['posix_user_home_dir'] %}
-{% set local_path_rest = control_scripts_repo_config['origin_url_ssh_path'] %}
+{% set local_path_rest = control_scripts_repo_config['origin_uri_ssh_path'] %}
 {% set local_path = local_path_base + '/' + local_path_rest %}
+
+{% endif %} # git
 
 {% set control_scripts_dir_basename = pillar['system_features']['deploy_environment_sources']['control_scripts_dir_basename'] %}
 

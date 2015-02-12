@@ -1,5 +1,5 @@
 
-Key `origin_url_ssh_path` specifies path to Git repository _relative_ to
+Key `origin_uri_ssh_path` specifies path to Git repository _relative_ to
 user's home directory.
 
 User home directory is identified through [source_system_host][1] which points
@@ -7,7 +7,7 @@ to host id in [system_hosts][2] with `hostname` and [primary_user][3]'s
 `username`. Combining all this information, it is possible to to form complete
 SSH-like URI for Git respository:
 ```
-{{ username }}@{{ hostname }}:{{ origin_url_ssh_path }}
+{{ username }}@{{ hostname }}:{{ origin_uri_ssh_path }}
 ```
 
 See some [limitations][4] associated with such approach to form SSH-like URI.

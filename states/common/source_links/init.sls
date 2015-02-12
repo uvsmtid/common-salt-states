@@ -35,10 +35,15 @@
 # these Salt minions are used without Salt master - standalone).
 {% if source_system_host == grains['id'] %} # source_system_host
 
+{% if repo_type == 'git' %} # git
+
 # Note that only `posix_user_home_dir` is used because Salt master where links are created can only be Linux host.
+# TODO: Move this code to `git_uri.lib.sls`.
 {% set local_path_base = pillar['system_hosts'][source_system_host]['primary_user']['posix_user_home_dir'] %}
-{% set local_path_rest = repo_config['origin_url_ssh_path'] %}
+{% set local_path_rest = repo_config['origin_uri_ssh_path'] %}
 {% set local_path = local_path_base + '/' + local_path_rest %}
+
+{% endif %} # git
 
 '{{ local_path }}_{{ link_config_name }}':
     file.directory:

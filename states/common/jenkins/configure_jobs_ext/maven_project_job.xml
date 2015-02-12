@@ -23,14 +23,9 @@
 
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name][selected_repo_type] %}
 
-{# Compose remote_url #}
-{% set origin_url_ssh_path = repo_config['origin_url_ssh_path'] %}
-{% if repo_config['origin_url_ssh_username'] %}
-{% set ssh_address = repo_config['origin_url_ssh_username'] + '@' + repo_config['origin_url_ssh_hostname'] %}
-{% else %}
-{% set ssh_address = repo_config['origin_url_ssh_hostname'] %}
-{% endif %}
-{% set remote_url = ssh_address + ':' + origin_url_ssh_path %}
+{# Call marco `define_git_repo_uri` to define variable `git_repo_uri`. #}
+{% from 'common/git/git_uri.lib.sls' import define_git_repo_uri with context %}
+{% set git_repo_uri = define_git_repo_uri(selected_repo_name) %}
 
 {% set remote_branch_name = repo_config['branch_name'] %}
 
@@ -41,7 +36,7 @@
         <!--
         <url>username@hostname:path/to/repo.git</url>
         -->
-        <url>{{ remote_url }}</url>
+        <url>{{ git_repo_uri }}</url>
         <!--
             TODO: Figure out how to define credentials per repository
                   when repository is identified by a string (no reliable
@@ -68,15 +63,12 @@
 {% endif %} <!-- SCM Git -->
 
 
-{% if selected_repo_type == 'svn' %} <!-- SCM Git -->
+{% if selected_repo_type != 'git' %} <!-- SCM Git -->
     <!--
         TODO: Implement SVN configuration.
-
-        At the moment form INVALID XML so that this configuration FAILS
-        if Subversion is used for any of the repositories with this job.
+              Refer to non-existing variable to fail template instantiation.
     -->
-
-    WHATEVER makes it INVALID XML <<BLABLABLA>>
+    {{ FAIL_this_template_instantiation_unsupported_SCM }}
 
 {% endif %} <!-- SCM Git -->
 
