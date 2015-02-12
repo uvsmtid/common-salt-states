@@ -23,9 +23,9 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora', ] %}
+{% if grains['os'] in [ 'Fedora', ] %} # OS
 
-{% if pillar['system_features']['deploy_environment_sources']['feature_enabled'] %}
+{% if pillar['system_features']['deploy_environment_sources']['feature_enabled'] %} # deploy_environment_sources
 
 # Assume SSH keys are already distributed.
 # It is long-running state which is executed by `orchestrate` runner.
@@ -34,21 +34,27 @@
 
 {% set control_scripts_repo_name = pillar['system_features']['deploy_environment_sources']['control_scripts_repo_name'] %}
 {% set control_scripts_repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][control_scripts_repo_name] %}
+
+{% set control_scripts_repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][control_scripts_repo_name][control_scripts_repo_type] %}
+{% set source_system_host = control_scripts_repo_config['source_system_host'] %}
+
 {% set control_scripts_dir_path = pillar['system_features']['deploy_environment_sources']['control_scripts_dir_path'] %}
 
-{% set salt_master_local_path_base = pillar['system_features']['deploy_environment_sources']['source_repositories'][control_scripts_repo_name][control_scripts_repo_type]['salt_master_local_path_base'] %}
-{% set salt_master_local_path_rest = pillar['system_features']['deploy_environment_sources']['source_repositories'][control_scripts_repo_name][control_scripts_repo_type]['salt_master_local_path_rest'] %}
-{% set salt_master_local_path = salt_master_local_path_base + salt_master_local_path_rest %}
+# Note that the `local_path` is used only as a source which means current minion.
+# And current minion is supposed to be Linux.
+# This is why only `posix_user_home_dir` is used.
+{% set local_path_base = pillar['system_hosts'][source_system_host]['primary_user']['posix_user_home_dir'] %}
+{% set local_path_rest = control_scripts_repo_config['origin_url_ssh_path'] %}
+{% set local_path = local_path_base + '/' + local_path_rest %}
 
 {% set control_scripts_dir_basename = pillar['system_features']['deploy_environment_sources']['control_scripts_dir_basename'] %}
 
 # Loop through all defined hosts and execute `scp` to them.
-# Password is provided.
-{% for host_config in pillar['system_hosts'].values() %}
+{% for host_config in pillar['system_hosts'].values() %} # host_config
 
-{% if host_config['consider_online_for_remote_connections'] %}
+{% if host_config['consider_online_for_remote_connections'] %} # consider_online_for_remote_connections
 
-{% if host_config['hostname'] not in pillar['system_features']['deploy_environment_sources']['exclude_hosts'] %}
+{% if host_config['hostname'] not in pillar['system_features']['deploy_environment_sources']['exclude_hosts'] %} # exclude_hosts
 
 {% set remote_host_type = host_config['os_type'] %}
 
@@ -69,7 +75,7 @@
 # `scp`-copy sources on remote host.
 'deploy_control_scripts_on_remote_host_{{ host_config['hostname'] }}_cmd':
     cmd.run:
-        - name: 'scp -r "{{ salt_master_local_path }}/{{ control_scripts_dir_path }}" "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}":"{{ remote_path_to_sources }}/{{ control_scripts_dir_basename }}"'
+        - name: 'scp -r "{{ local_path }}/{{ control_scripts_dir_path }}" "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}":"{{ remote_path_to_sources }}/{{ control_scripts_dir_basename }}"'
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         - require:
             - cmd: 'remove_destination_directory_on_remote_host_{{ host_config['hostname'] }}_cmd'
@@ -77,16 +83,16 @@
         #- require:
         #    - sls: common.ssh.distribute_public_keys
 
-{% endif %}
+{% endif %} # exclude_hosts
 
-{% endif %}
+{% endif %} # consider_online_for_remote_connections
 
-{% endfor %}
+{% endfor %} # host_config
 
 
-{% endif %}
+{% endif %} # deploy_environment_sources
 
-{% endif %}
+{% endif %} # OS
 # >>>
 ###############################################################################
 
