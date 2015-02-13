@@ -23,9 +23,9 @@
 {%- set git_repo_uri_address = git_repo_uri_ssh_username + '@' + git_repo_uri_ssh_hostname -%}
 
 {# This is an attempt to reformat normal SSH-like uri to some weird format accoring to http://maven.apache.org/scm/git.html #}
-{%- if git_repo_uri_ssh_path|first == '/' -%} # absolute path
+{%- if git_repo_uri_ssh_path|first == '/' -%} {# absolute path #}
 {%- set git_repo_uri_maven = 'scm:git:ssh://' + git_repo_uri_address + ':22' + git_repo_uri_ssh_path -%}
-{%- else -%} # relative path
+{%- else -%} {# relative path #}
 {%- set git_repo_uri_maven = 'scm:git:ssh://' + git_repo_uri_address + ':22' + '/~/' + git_repo_uri_ssh_path -%}
 {%- endif -%}
 
