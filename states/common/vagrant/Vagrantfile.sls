@@ -14,6 +14,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "shell", inline: "echo success"
 
+  # Based on Vagrant explanation, in the future they may support provider
+  # per each VM. At the moment, it should only be configured per all
+  # set of VMs (outside of individual configuration).
+  config.vm.provider "{{ pillar['system_features']['vagrant_configuration']['vagrant_provider'] }}"
+
+{% if False %}
+  # NOTE: This does not set IP address for physical host machine.
+  #       Instead, Vagrant treats this as some sort of "global" config
+  #       and assigns this IP as additional to the first virtual host.
+{% set hypervisor_host_id = pillar['system_host_roles']['hypervisor_role']['assigned_hosts'][0] %}
+  config.vm.network "public_network", ip: "{{ pillar['system_hosts'][hypervisor_host_id]['internal_net']['ip'] }}"
+{% endif %}
+
 {% for selected_host_name in pillar['system_hosts'].keys() %}
 
 {% set selected_host = pillar['system_hosts'][selected_host_name] %}
@@ -23,8 +36,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set instantiated_by = selected_host['instantiated_by'] %}
 {% set instance_configuration = selected_host[instantiated_by] %}
 
+{% if pillar['system_features']['vagrant_configuration']['vagrant_provider'] == instance_configuration['vagrant_provider'] %} # match provider
+{% else %} # match provider
+# Provider per machine instance should match globally selected one.
+{{ THIS_VARIABLE_DOES_NOT_EXISTS_vagrant_provider_does_not_match }}
+{% endif %} # match provider
+
 # Docker requires special configuration.
-{% if instance_configuration['vagrant_provider'] == 'docker' %}
+{% if instance_configuration['vagrant_provider'] == 'docker' %} # vagrant_provider
 
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
     {{ selected_host_name }}.vm.provider "{{ instance_configuration['vagrant_provider'] }}" do |d|
@@ -33,18 +52,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-
-{% else %} # docker
+{% else %} # vagrant_provider
 
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
-    {{ selected_host_name }}.vm.box = "{{ instance_configuration['vagrant_box'] }}"
+
+    {{ selected_host_name }}.vm.box = "{{ instance_configuration['base_image'] }}"
+
     # Based on Vagrant explanation, in the future they may support provider
     # per each VM. At the moment, it should only be configured per all
     # set of VMs (outside of individual configuration).
     #{{ selected_host_name }}.vm.provider = "{{ instance_configuration['vagrant_provider'] }}"
+
+    {{ selected_host_name }}.vm.network "public_network", ip: "{{ selected_host['internal_net']['ip'] }}", bridge: "{{ instance_configuration['host_bridge_interface'] }}"
+
   end
 
-{% endif %} # docker
+{% endif %} # vagrant_provider
 
 {% endif %} # instantiated_by
 

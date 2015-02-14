@@ -4,6 +4,6 @@
 {% set instantiated_by = selected_host['instantiated_by'] %}
 {% set instance_configuration = selected_host[instantiated_by] %}
 
-FROM {{ instance_configuration['docker_base_image'] }}
+FROM {{ instance_configuration['base_image'] }}
 
 
