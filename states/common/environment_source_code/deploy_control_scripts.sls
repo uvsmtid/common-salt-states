@@ -69,6 +69,12 @@
 {% set remote_path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][remote_host_type]['path'] %}
 {% endif %}
 
+# Make sure directory under `environment_sources_location` exists.
+make_environment_sources_location_dir_{{ host_config['hostname'] }}_cmd:
+    cmd.run:
+        - name: 'ssh "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}" "mkdir -p {{ remote_path_to_sources }}"'
+        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+
 # Remove destination directory before copying.
 # If `path/to/dest/dir` is not removed, copying by `cp -r dir path/to/dest/dir`
 # will create a directory `path/to/dest/dir/dir`.
