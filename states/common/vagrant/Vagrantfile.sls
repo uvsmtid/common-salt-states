@@ -12,8 +12,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   #config.vm.box = "base"
 
-  config.vm.provision "shell", inline: "echo success"
-
   # Based on Vagrant explanation, in the future they may support provider
   # per each VM. At the moment, it should only be configured per all
   # set of VMs (outside of individual configuration).
@@ -26,6 +24,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set hypervisor_host_id = pillar['system_host_roles']['hypervisor_role']['assigned_hosts'][0] %}
   config.vm.network "public_network", ip: "{{ pillar['system_hosts'][hypervisor_host_id]['internal_net']['ip'] }}"
 {% endif %}
+
+{% set salt_master_host_name = pillar['system_host_roles']['hypervisor_role']['assigned_hosts'][0] %}
+{% set salt_master_host_ip = pillar['system_hosts'][salt_master_host_name]['internal_net']['ip'] %}
 
 {% for selected_host_name in pillar['system_hosts'].keys() %}
 
@@ -57,6 +58,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
 
     {{ selected_host_name }}.vm.box = "{{ instance_configuration['base_image'] }}"
+
+    {{ selected_host_name }}.vm.provision "shell", inline: "cd /vagrant/bootstrap && ./bootstrap.sh {{ selected_host_name }} {{ salt_master_host_ip }}"
 
     # Based on Vagrant explanation, in the future they may support provider
     # per each VM. At the moment, it should only be configured per all

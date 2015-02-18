@@ -26,7 +26,7 @@ include:
 
 # To avoid unnecessary installation,
 # require this host to be assigned to `hypervisor_role`.
-{% if grains['id'] in pillar['system_host_roles']['hypervisor_role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['hypervisor_role']['assigned_hosts'] %} # hypervisor_role
 
 install_vagrant_packages:
     pkg.installed:
@@ -46,16 +46,16 @@ deploy_vagrant_file:
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
 
 # Docker requires special configuration.
-{% for selected_host_name in pillar['system_hosts'].keys() %}
+{% for selected_host_name in pillar['system_hosts'].keys() %} # selected_host_name
 
 {% set selected_host = pillar['system_hosts'][selected_host_name] %}
 
-{% if selected_host['instantiated_by'] %}
+{% if selected_host['instantiated_by'] %} # instantiated_by
 
 {% set instantiated_by = selected_host['instantiated_by'] %}
 {% set instance_configuration = selected_host[instantiated_by] %}
 
-{% if instance_configuration['vagrant_provider'] == 'docker' %}
+{% if instance_configuration['vagrant_provider'] == 'docker' %} # vagrant_provider
 
 'deploy_docker_file_for_{{ selected_host_name }}':
     file.managed:
