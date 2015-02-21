@@ -23,7 +23,7 @@ NOTE:
 [3]: docs/pillars/common/system_host_roles/jenkins_master_role/readme.md
 [4]: docs/pillars/common/system_hosts/_id/hostname/readme.md
 
-## Conventions to locate documentation for files under `pillar` directory ##
+## Conventions to locate documentation for files under `pillars` directory ##
 
 The pillar namespace is [flattened](http://docs.saltstack.com/en/latest/topics/pillar/#pillar-namespace-flattened).
 In other words, it does not matter which pillar file specific key comes from - all

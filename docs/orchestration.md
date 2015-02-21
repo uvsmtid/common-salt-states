@@ -1,5 +1,5 @@
 
-## What is orchestration?
+## What is orchestration? ##
 
 Orchestration allows executing coordinated chain of actions across multiple
 hosts with Salt minions controlled by Salt master.
@@ -14,7 +14,7 @@ up and running.
 In order to execute deployment in stages with cross-host inter-dependencies
 between resources, orchestration should be used.
 
-## Implementation
+## Implementation ##
 
 TODO
 

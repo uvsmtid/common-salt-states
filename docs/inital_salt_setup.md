@@ -1,6 +1,6 @@
-## Getting Started
+## Getting Started ##
 
-### Chicken and Egg problem
+### Chicken and Egg problem ###
 
 
 Salt is used to automate installation, but how do we install Salt itself in the first place?
@@ -13,7 +13,7 @@ Salt only, everything beyond this is potentially automate-able.
 This question is only relatively diffult for old Linuxes and Windows because
 no default YUM repository provides these packages.
 
-### Common network problems
+### Common network problems ###
 
 
 Simple step: configure youre proxy for YUM: `vi /etc/yum.conf`
@@ -51,7 +51,7 @@ Sometimes YUM does not work with `https` URLs (because of our proxy).
 Change them to simple `http`.
 
 
-### RHEL5
+### RHEL5 ###
 
 The problem with RHEL5 is that it does not contain `salt-*` packages by default.
 
@@ -64,14 +64,14 @@ rpm -ihv epel-release-5-4.noarch.rpm
 ```
 It is better to use RPM because it also installs RPM sign keys for all packages from EPEL.
 
-### Installation
+### Installation ###
 
 If you run both Salt master and Salt minion on the same host, install both:
 ```
 yum install salt-master salt-mininon
 ```
 
-### Simplest configuration
+### Simplest configuration ###
 
 In order to use all defaults and make Salt minion find Salt master automatically,
 `salt` hostname should be resolvable (by any means: DNS, hosts file, etc.).
@@ -80,7 +80,7 @@ In the simplest case of single host with both Salt master and minion just add `s
 salt 127.0.0.1
 ```
 
-### Run
+### Run ###
 
 ```
 service salt-master start
@@ -89,7 +89,7 @@ chkconfig salt-master on
 chkconfig salt-minion on
 ```
 
-### Security
+### Security ###
 
 Next thing is Salt security. It's almost as simple as SSH or even simpler - all you need
 is to accept Salt minion key on Salt master side. When Salt minion starts it sends
@@ -106,20 +106,20 @@ To accept key by its name run this:
 salt-key -a minion_key
 ```
 
-### Test
+### Test ###
 
 ```
 salt '*' test.ping
 ```
 
-### TODO
+### TODO ###
 
 run this command to setup selected system:
 ```
 salt '*' state.highstate
 ```
 
-## Multi-project organization
+## Multi-project organization ##
 
 These sources (State, Pillars, etc.) provide automation for multiple projects.
 
@@ -140,14 +140,14 @@ resources, Salt configuration, all required symlinks, etc. Explain convention,
 guidelines, and tools to maintain set of resources required to deploy
 system offline.
 
-## Highlights for Salt master setup
+## Highlights for Salt master setup ##
 
 The following section highlights some important configuration Salt master
 in its configuration file (`/etc/salt/master`) and beyond.
 
 This should be reviewed when Salt is changed to use one project or another.
 
-### Location of States and sources
+### Location of States and sources ###
 
 ```
 file_roots:
@@ -230,7 +230,7 @@ salt-key -d <key> # delete
 salt-key -a <key> # accept
 ```
 
-### Run state to setup symlinks
+### Run state to setup symlinks ###
 
 * Test (dry run):
 ```
@@ -250,7 +250,7 @@ salt '*' state.show_sls common.source_links
 salt '*' state.show_top
 ```
 
-## Next steps
+## Next steps ##
 
 See project-specific documentation which states to run to complete setup.
 
@@ -267,7 +267,7 @@ on services), orchestration can be used.
 * TODO: add link to generic orchestration documentation.
 
 
-## Setting up single agent-less host
+## Setting up single agent-less host ##
 
 
 This file demonstrates how to use master-less setup for single host

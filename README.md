@@ -1,7 +1,7 @@
 
 Start from [documentation](docs/readme.md) tailored for these sources.
 
-## What are these sources?
+## What are these sources? ##
 
 It's Infrastructure as Code implemented using [Salt framework](http://saltstack.com/).
 
@@ -25,7 +25,7 @@ repository some external resource may also be required:
 The [official Salt documentation](http://docs.saltstack.com/en/latest/) provides
 detailed information of all Salt aspects.
 
-## Contents of the top directory:
+## Contents of the top directory: ##
 
 * `docs`
 All documentation materials.

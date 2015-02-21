@@ -1,23 +1,23 @@
 
 
-## Check approved minions
+## Check approved minions ##
 
 ```
 salt-key
 ```
 These minions may not exists, but they will be contacted every time `*` used as target.
 
-## Basic connection check
+## Basic connection check ##
 
 ```
 salt '*' test.ping
 ```
 
-## Make sure Salt master is configured
+## Make sure Salt master is configured ##
 
 Review steps for required configuration of `/etc/salt/master` on [this page](inital_salt_setup.md).
 
-## Make sure initial system setup is done
+## Make sure initial system setup is done ##
 
 Review steps for required system configuration on [this page](inital_salt_setup.md).
 
@@ -27,7 +27,7 @@ There are various requirements to make Salt:
 * proxy configuration for YUM
 * initial source code links
 
-## Run `highstate` or any state in test mode
+## Run `highstate` or any state in test mode ##
 
 ```
 salt '*' state.highstate test=True
@@ -37,7 +37,7 @@ This can also be applied to any state run through `state.sls` function.
 salt '*' state.sls common.dummy test=True
 ```
 
-## Review output of executed jobs
+## Review output of executed jobs ##
 
 Find jid (job id) in question:
 ```
@@ -72,44 +72,44 @@ in `Result:` fields of the output, for example:
 ...
 ```
 
-## Three data components of Salt framework
+## Three data components of Salt framework ##
 
-## States
+### States ###
 
-### Check how Salt minion sees its top file
+#### Check how Salt minion sees its top file ####
 
 ```
 salt '*' state.show_top
 ```
 
-### Check how Salt minion sees specific state
+#### Check how Salt minion sees specific state ####
 
 ```
 salt '*' state.show_sls
 ```
 
-## Pillars
+### Pillars ###
 
 ```
 salt '*' pillar.items
 ```
 
-## Grains
+### Grains ###
 
 ```
 salt '*' grains.items
 ```
 
-## Try executing job from Minion
+## Try executing job from Minion ##
 
 TODO:
 * `salt-call`
 
-## How to render any template and see the output?
+## How to render any template and see the output? ##
 
 TODO
 
-## State execution failures due to template issues
+## State execution failures due to template issues ##
 
 
 The following output is an example of problem when template cannot be instantiated:
@@ -153,7 +153,7 @@ base:
 
 Review corresponding data (see pillars or grains) and try to figure out why referencing it fails.
 
-## Minion refuses to work due to old master key
+## Minion refuses to work due to old master key ##
 
 Minion will refuse to start with new master (this may happen when VM with a minion is reused with another master) if it was already connected to a master before.
 The minion log (Windows: `C:\salt\var\log\salt\minion`, Linux: `/var/log/salt/minion`) in this case looks similar to this:
