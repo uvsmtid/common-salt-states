@@ -61,12 +61,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     {{ selected_host_name }}.vm.provision "shell", inline: "cd /vagrant/bootstrap && ./bootstrap.sh {{ selected_host_name }} {{ salt_master_host_ip }}"
 
+    # Use `rsync` for synced folder.
+    {{ selected_host_name }}.vm.synced_folder '.', '/vagrant', type: 'rsync'
+
     # Based on Vagrant explanation, in the future they may support provider
     # per each VM. At the moment, it should only be configured per all
     # set of VMs (outside of individual configuration).
     #{{ selected_host_name }}.vm.provider = "{{ instance_configuration['vagrant_provider'] }}"
 
+{# There is some difference how the network configuration line looks for `virtualbox` and `libvirt`. #}
+{% if instance_configuration['vagrant_provider'] == 'libvirt' %} # libvirt
+    {#
+        # This works for `libvirt`.
+        # See example config at: https://github.com/pradels/vagrant-libvirt
+    #}
+    {{ selected_host_name }}.vm.network "public_network", ip: "{{ selected_host['internal_net']['ip'] }}", :dev => "{{ instance_configuration['host_bridge_interface'] }}", :mode => "bridge"
+{% else %} # libvirt
+    {#
+        # This works for `virtualbox`.
+    #}
     {{ selected_host_name }}.vm.network "public_network", ip: "{{ selected_host['internal_net']['ip'] }}", bridge: "{{ instance_configuration['host_bridge_interface'] }}"
+{% endif %} # libvirt
 
   end
 
