@@ -16,8 +16,9 @@
 bootstrap_script_for_host_{{ selected_host_name }}:
     file.managed:
         - name: '{{ vagrant_dir }}/bootstrap/bootstrap.sh'
-        - source: 'salt://common/vagrant/bootstrap/bootstrap.sh'
+        - source: 'salt://common/bootstrap/bootstrap.sh'
         - makedirs: True
+        # NOTE: This is not a template, the script can be used without Salt.
         #- template: jinja
         - mode: 755
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
