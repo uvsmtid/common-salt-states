@@ -17,6 +17,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # set of VMs (outside of individual configuration).
   config.vm.provider "{{ pillar['system_features']['vagrant_configuration']['vagrant_provider'] }}"
 
+  # Without this line it fails when proxy is used to access Internet:
+  config.vm.box_download_insecure = true
+
 {% if False %}
   # NOTE: This does not set IP address for physical host machine.
   #       Instead, Vagrant treats this as some sort of "global" config

@@ -75,6 +75,13 @@ deploy_vagrant_file:
 
 {% endfor %} # selected_host_name
 
+vagrant_environment_variables_script:
+    file.managed:
+        - name: '/etc/profile.d/common.vagrant.variables.sh'
+        - source: 'salt://common/vagrant/common.vagrant.variables.sh'
+        - mode: 555
+        - template: jinja
+
 {% endif %} # hypervisor_role
 
 {% endif %}
