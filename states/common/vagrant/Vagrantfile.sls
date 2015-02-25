@@ -17,7 +17,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # set of VMs (outside of individual configuration).
   config.vm.provider "{{ pillar['system_features']['vagrant_configuration']['vagrant_provider'] }}"
 
-  # Without this line it fails when proxy is used to access Internet:
+  # Without this line it fails when proxy is used to access Internet and
+  # SSL certificates break somehow:
   config.vm.box_download_insecure = true
 
 {% if False %}
@@ -39,6 +40,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 {% set instantiated_by = selected_host['instantiated_by'] %}
 {% set instance_configuration = selected_host[instantiated_by] %}
+{% set network_defined_in = selected_host['defined_in'] %}
+{% set network_config = pillar[network_defined_in] %}
 
 {% if pillar['system_features']['vagrant_configuration']['vagrant_provider'] == instance_configuration['vagrant_provider'] %} # match provider
 {% else %} # match provider
@@ -78,12 +81,40 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # This works for `libvirt`.
         # See example config at: https://github.com/pradels/vagrant-libvirt
     #}
-    {{ selected_host_name }}.vm.network "public_network", ip: "{{ selected_host['internal_net']['ip'] }}", :dev => "{{ instance_configuration['host_bridge_interface'] }}", :mode => "bridge"
+{% if instance_configuration['network_type'] == 'public_network' %} # public_network
+    {{ selected_host_name }}.vm.network 'public_network',
+        ip: '{{ selected_host[network_defined_in]['ip'] }}',
+        :dev => '{{ instance_configuration['host_bridge_interface'] }}',
+        :mode => 'bridge'
+{% endif %} # public_network
+{% if instance_configuration['network_type'] == 'private_network' %} # private_network
+    {{ selected_host_name }}.vm.network 'private_network',
+        ip: '{{ selected_host[network_defined_in]['ip'] }}',
+        :dev => '{{ instance_configuration['host_bridge_interface'] }}',
+        :libvirt__netmask => '{{ network_config['netmask'] }}',
+        :libvirt__network_name => '{{ network_defined_in }}',
+        :libvirt__forward_mode => 'nat',
+        # Use DHCP to offer addresses to avoid too long initialization
+        # of network interfaces during first boot (before static IP is
+        # configured by Vagrant).
+        # NOTE: At the time of coding IP range for DHCP server was not
+        #       configurable. So, we hope that there will be no conflicts
+        #       with IP addresses assigned statically.
+        :libvirt__dhcp_enabled => true
+{% endif %} # private_network
+
 {% else %} # libvirt
     {#
         # This works for `virtualbox`.
     #}
-    {{ selected_host_name }}.vm.network "public_network", ip: "{{ selected_host['internal_net']['ip'] }}", bridge: "{{ instance_configuration['host_bridge_interface'] }}"
+{% if instance_configuration['network_type'] == 'public_network' %} # public_network
+    {{ selected_host_name }}.vm.network 'public_network',
+        ip: '{{ selected_host[network_defined_in]['ip'] }}',
+        bridge: '{{ instance_configuration['host_bridge_interface'] }}'
+{% endif %} # public_network
+{% if instance_configuration['network_type'] == 'private_network' %} # private_network
+    {{ TODO }}
+{% endif %} # private_network
 {% endif %} # libvirt
 
   end
