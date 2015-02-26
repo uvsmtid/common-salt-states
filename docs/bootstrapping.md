@@ -169,7 +169,7 @@ required to complete setup.
   * Source environment specifies where the package is built.
   * Target environment specifies where the package is supposed
     to be installed.
-  There is no critical need to support multiple source environments -
+  There is no critical need to support multiple _source_ environments -
   the choice of such environment can be fixed. Nevertheless, to keep
   the framework portable maintaining different source environments can be
   easly done by the same implementation used in target environment selection.
@@ -195,9 +195,30 @@ required to complete setup.
 * [Factory method][2] pattern shall be used to match source and target
   environment to specific sub-classes implementing the case.
 
-## Scripts ##
+## Implementation ##
 
-TODO
+* The front-end script is `bootstrap.py`.
+* Script accepts the following parameters:
+  * `$1` - bootstrap action, for example: `deploy`
+  * `$2` - bootstrap use case, for example: `initial-master`
+  * `$3` - bootstrap target environment, for example:
+    ```
+    examples/uvsmtid/centos-5.5-minimal
+    ```
+* The action template methods are implemented in `actions.*` modules.
+* Use case is a parameter for action template method coordinate
+  setup steps differently depending on the use case.
+* Bootstrap environment points to one of the configuration files under `conf`
+  directory. These configuratoin files are Python modules containing
+  primarily value assignments to different data structures.
+* Among other things, configuration file specifies `target_platform` which
+  points to specific implementation of themplate method in `platforms.*`
+  modules.
+* Each implementation of template method requires multiple steps.
+  Instead of implementing them, `platforms.*` modules simply call
+  existing implementation (outside of the class) in `steps.[step name].*`
+  module.
+
 
 # [footer] #
 
