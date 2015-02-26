@@ -10,7 +10,7 @@ include:
 # <<< Any RedHat-originated OS
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-{% if 'disable_package_installation' in pillar['system_features'] and pillar['system_features']['disable_package_installation']['feature_enabled'] %}
+{% if 'allow_package_installation_through_yum' in pillar['system_features'] and pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
 
 vim_enhanced:
     pkg.installed:
@@ -26,7 +26,7 @@ vim_enhanced:
         - group: root
         - mode: 644
         - template: jinja
-{% if 'disable_package_installation' in pillar['system_features'] and pillar['system_features']['disable_package_installation']['feature_enabled'] %}
+{% if 'allow_package_installation_through_yum' in pillar['system_features'] and pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
         - require:
             - pkg: vim_enhanced
 {% endif %}
