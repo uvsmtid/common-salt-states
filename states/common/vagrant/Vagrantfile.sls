@@ -32,6 +32,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set salt_master_host_name = pillar['system_host_roles']['hypervisor_role']['assigned_hosts'][0] %}
 {% set salt_master_host_ip = pillar['system_hosts'][salt_master_host_name]['internal_net']['ip'] %}
 
+{% set project_name = salt['config.get']('this_system_keys:project') %}
+
 {% for selected_host_name in pillar['system_hosts'].keys() %}
 
 {% set selected_host = pillar['system_hosts'][selected_host_name] %}
@@ -65,10 +67,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     {{ selected_host_name }}.vm.box = "{{ instance_configuration['base_image'] }}"
 
-    {{ selected_host_name }}.vm.provision "shell", inline: "cd /vagrant/bootstrap && ./bootstrap.sh {{ selected_host_name }} {{ salt_master_host_ip }}"
+    # NOTE: Before target environment can be deployed (before using `deploy`),
+    #       bootstrap script should be run with `build` in order to create
+    #       package (configuration and resource files) for this target
+    #       environment.
+    {{ selected_host_name }}.vm.provision "shell", inline: "python /vagrant/bootstrap.dir/bootstrap.py deploy initial-master '{{ project_name }}/{{ selected_host_name }}'"
 
     # Use `rsync` for synced folder.
-    {{ selected_host_name }}.vm.synced_folder '.', '/vagrant', type: 'rsync'
+    # Parameter `--copy-unsafe-links` is required for bootstrap directory
+    # which might be a symlink.
+    {{ selected_host_name }}.vm.synced_folder '.', '/vagrant', type: 'rsync',
+        rsync__args: [
+            "--verbose",
+            "--archive",
+            "--delete",
+            "--copy-unsafe-links",
+        ]
 
     # Based on Vagrant explanation, in the future they may support provider
     # per each VM. At the moment, it should only be configured per all
@@ -93,7 +107,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :dev => '{{ instance_configuration['host_bridge_interface'] }}',
         :libvirt__netmask => '{{ network_config['netmask'] }}',
         :libvirt__network_name => '{{ network_defined_in }}',
-        :libvirt__forward_mode => 'nat',
+        :libvirt__forward_mode => 'route',
         # Use DHCP to offer addresses to avoid too long initialization
         # of network interfaces during first boot (before static IP is
         # configured by Vagrant).

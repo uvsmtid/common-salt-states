@@ -165,19 +165,27 @@ required to complete setup.
 * The bootstrap shall be a framework with single front-end Python script.
 * The bootstrap framework shall allow extending it to support variations
   of operating system and system software versions.
-* The framework shall differentiate source and target environment:
-  * Source environment specifies where the package is built.
-  * Target environment specifies where the package is supposed
-    to be installed.
-  There is no critical need to support multiple _source_ environments -
-  the choice of such environment can be fixed. Nevertheless, to keep
-  the framework portable maintaining different source environments can be
-  easly done by the same implementation used in target environment selection.
-* Packages created by any source environment must be the same as long as
+* There are two possible environments:
+  * The _source environment_ is where the packages are built.
+  * The _target environment_ is where the packages are deployed.
+  Packages created by any source environment must be the same as long as
   they are built for the same target environment.
-* The single script shall support both operations:
-  * Build package in source environment for target environment.
-  * Deploy package in target environment.
+* The framework shall recognize and _support_ multiple _target environments_
+  and be able to generate package for any of them.
+* It is recoginized that there is also _source environment_ where the package
+  was built, but there is no need to _support_ multiple _source environments_:
+  * When packages are built, Salt is used. Salt is fully aware of
+    all parameters of its own (source) enviromnent and bootstrap framework
+    shall not be complicated to provide this redundant functionality.
+  * When packages are deployed, bootstrap framework shall not depend
+    on information what was the source environment the packages were
+    built in.
+* The bootstrap framework shall support both operations:
+  * _Build_ package for target environment.
+  * _Deploy_ package in target environment.
+  NOTE: The `deploy` operation shall depend on much less external prerequisites
+  compared to `build` operation. In fact, `deploy` should use minimum
+  available on newly installed clean unconfigured OSes.
 * [Template Method][1] pattern shall be used to implement actions:
   * The base class calls all steps and provides coordination between them to
     achieve specific [Use Case][10].
@@ -192,7 +200,7 @@ required to complete setup.
   all steps for generic or specific variations of the supported environments.
   The sub-classes shall implement their steps by simply calling necessary
   implementation from the library.
-* [Factory method][2] pattern shall be used to match source and target
+* [Factory method][2] pattern shall be used to match target
   environment to specific sub-classes implementing the case.
 
 ## Implementation ##
