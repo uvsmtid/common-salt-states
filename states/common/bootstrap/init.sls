@@ -50,6 +50,26 @@ bootstrap_directory_symlink:
 
 {% endif %}
 
+{% set project_name = salt['config.get']('this_system_keys:project') %}
+
+# Provide generated target configuration files.
+{% for selected_host_name in pillar['system_hosts'].keys() %} # selected_host_name
+
+{% set selected_host = pillar['system_hosts'][selected_host_name] %}
+
+target_env_conf_file_{{ project_name }}_{{ selected_host_name }}:
+    file.managed:
+        - name: '{{ vagrant_dir }}/bootstrap.dir/conf/{{ project_name }}/{{ selected_host_name }}.py'
+        - source: 'salt://common/bootstrap/bootstrap.conf.sls'
+        - makedirs: True
+        - template: jinja
+        - mode: 644
+        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+
+
+{% endfor %} # selected_host_name
+
 {% endif %}
 # >>>
 ###############################################################################
