@@ -50,17 +50,38 @@ bootstrap_directory_symlink:
 
 {% endif %}
 
-{% set project_name = salt['config.get']('this_system_keys:project') %}
+# Note that `bootstrap_target_envs` is only available when Salt configuration
+# (for either master or minion) contains necessary configuration.
+# See: docs/configs/common/this_system_keys/bootstrap_target_envs/readme.md
+{% set bootstrap_target_envs = salt['config.get']('this_system_keys:bootstrap_target_envs') %}
+{% set current_project_name = salt['config.get']('this_system_keys:project') %}
+{% set current_profile_name = salt['config.get']('this_system_keys:profile') %}
+
+{% for project_name in bootstrap_target_envs.keys() %} # project_name
+
+{% for profile_name in bootstrap_target_envs[project_name].keys() %} # profile_name
+
+# Define root for pillar data.
+# Note that currently selected profile for currently selected project
+# is not loaded under `bootstrap_target_envs` key.
+# See: docs/configs/common/this_system_keys/bootstrap_target_envs/readme.md
+{% if project_name == current_project_name and profile_name == current_profile_name %}
+{% set target_env_pillar = pillar %}
+{% else %}
+{% set target_env_pillar = pillar['bootstrap_target_envs'][project_name + '.' + profile_name] %}
+{% endif %}
 
 # Provide generated target configuration files.
-{% for selected_host_name in pillar['system_hosts'].keys() %} # selected_host_name
+{% for selected_host_name in target_env_pillar['system_hosts'].keys() %} # selected_host_name
 
-{% set selected_host = pillar['system_hosts'][selected_host_name] %}
+{% set selected_host = target_env_pillar['system_hosts'][selected_host_name] %}
 
-target_env_conf_file_{{ project_name }}_{{ selected_host_name }}:
+target_env_conf_file_{{ project_name }}_{{ profile_name }}_{{ selected_host_name }}:
     file.managed:
-        - name: '{{ vagrant_dir }}/bootstrap.dir/conf/{{ project_name }}/{{ selected_host_name }}.py'
+        - name: '{{ vagrant_dir }}/bootstrap.dir/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}.py'
         - source: 'salt://common/bootstrap/bootstrap.conf.sls'
+        - context:
+            target_env_pillar: {{ target_env_pillar }}
         - makedirs: True
         - template: jinja
         - mode: 644
@@ -69,6 +90,10 @@ target_env_conf_file_{{ project_name }}_{{ selected_host_name }}:
 
 
 {% endfor %} # selected_host_name
+
+{% endfor %} # profile_name
+
+{% endfor %} # project_name
 
 {% endif %}
 # >>>

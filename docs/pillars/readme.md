@@ -4,7 +4,8 @@
 Documents under this directory provide documentation for corresponding
 elements in pillar data strucutre used by a given project.
 
-The pillar data structure corresponds one-to-one with the directory structure.
+The pillar data structure corresponds one-to-one with this
+directory structure.
 
 For example, documentation for all pillar elements used by `common` project
 are under `common` sub-directory and match the following way:

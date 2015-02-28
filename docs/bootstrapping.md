@@ -227,6 +227,22 @@ required to complete setup.
   existing implementation (outside of the class) in `steps.[step name].*`
   module.
 
+## Facts ##
+
+* Both Salt master and Salt minion configuration files can specify exactly
+  the same information:
+  * If it is a Salt minion connected to Salt master, most of required
+    configuration file.
+  * If it is a sandalone Salt minion, it requires all configuration,
+    which normally belongs to Salt master, to be specified in Salt minion
+    configuration file.
+* The important note is about is custum configuration keys - Salt minion
+  custom configuration keys _always overwrite_ Salt master's ones.
+  In other words, whether `salt`, or `salt-call`,
+  or `salt-call` with `--local` option command is used, if Salt minion
+  configuration file had the same custom configuraton key, the value
+  used will come from this Salt minion configuration file.
+
 
 # [footer] #
 
