@@ -14,6 +14,12 @@ class generic_linux_deploy(deploy_template_method):
         from steps.deploy.init_dns_server.generic_linux import do
         do(self)
 
+    def make_salt_resolvable(
+        self,
+    ):
+        from steps.deploy.make_salt_resolvable.generic_linux import do
+        do(self)
+
     def init_yum_repos(
         self,
     ):

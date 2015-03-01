@@ -21,6 +21,12 @@ init_dns_server = {
 
 }
 
+make_salt_resolvable = {
+
+    'required_entries_hosts_file': 'resources/examples/uvsmtid/centos-5.5-minimal/hosts_file',
+
+}
+
 init_yum_repos = {
 
     "yum_repo_configs": {

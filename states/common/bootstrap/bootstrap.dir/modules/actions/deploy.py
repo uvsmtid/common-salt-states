@@ -6,8 +6,13 @@ class deploy_template_method (action_context):
         self,
     ):
         self.init_ip_route()
+
         self.init_dns_server()
+
+        self.make_salt_resolvable()
+
         self.init_yum_repos()
+
         self.install_salt_master()
         self.install_salt_minion()
 
