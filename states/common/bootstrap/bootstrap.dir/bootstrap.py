@@ -10,16 +10,28 @@ run_action = sys.argv[1]
 run_case = sys.argv[2]
 target_env = sys.argv[3]
 
-# Script's base directory.
-base_dir = os.path.dirname(start_path)
+# Script directory specified on command line.
+script_dir = os.path.dirname(start_path)
 
-# Add base_dir to import path.
+# Add script dir's `modules` to import path.
 sys.path.append(
     os.path.join(
-        base_dir,
+        script_dir,
         'modules',
     )
 )
+
+# Remember run dir:
+run_dir = os.getcwd()
+
+# Determine base dir:
+if os.path.isabs(script_dir):
+    base_dir = script_dir
+else:
+    base_dir = os.path.join(
+        run_dir,
+        script_dir,
+    )
 
 # Compose path to configuration module.
 conf_module_path = os.path.join(
@@ -46,6 +58,9 @@ impl_m = imp.load_source('impl_m', impl_module_path)
 
 # Create instance.
 impl_i = impl_m.get_instance(
+    run_dir,
+    script_dir,
+    base_dir,
     conf_m,
     run_action,
     run_case,
