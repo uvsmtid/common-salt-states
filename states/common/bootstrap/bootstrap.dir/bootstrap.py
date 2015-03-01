@@ -21,6 +21,13 @@ sys.path.append(
     )
 )
 
+# Import modules related to `bootstrap` after extending
+# list of import directories.
+import utils.set_log
+
+# Set log level.
+utils.set_log.setLoggingLevel('debug')
+
 # Remember run dir:
 run_dir = os.getcwd()
 
