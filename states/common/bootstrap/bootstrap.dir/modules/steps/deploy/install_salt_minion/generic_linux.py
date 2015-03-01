@@ -12,7 +12,7 @@ def unzip_rpms(
     zip_file_path,
     dst_dir,
 ):
-    # Remember current dir and change to `rpms`.
+    # Remember current dir, then change to dir with RPMs.
     prev_cwd = os.getcwd()
     os.chdir(dst_dir)
     logging.debug('cwd: ' + os.getcwd())
@@ -33,6 +33,38 @@ def unzip_rpms(
             #'-v',
 
             zip_file_abs_path,
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+    # Change back to previous current dir.
+    os.chdir(prev_cwd)
+
+###############################################################################
+#
+
+def untar_rpms(
+    base_dir,
+    tar_file_path,
+    dst_dir,
+):
+    # Remember current dir, then change to dir with RPMs.
+    prev_cwd = os.getcwd()
+    os.chdir(dst_dir)
+    logging.debug('cwd: ' + os.getcwd())
+
+    # Get absolute path to tar file.
+    tar_file_abs_path = get_abs_path(
+        base_dir,
+        tar_file_path,
+    )
+    call_subprocess(
+        command_args = [
+            'tar',
+            '-xvf',
+            tar_file_abs_path,
         ],
         raise_on_error = True,
         capture_stdout = False,
@@ -95,6 +127,12 @@ def do(action_context):
     for rpm_source in action_context.conf_m.install_salt_minion['rpm_sources'].values():
         if rpm_source['source_type'] == 'zip':
             unzip_rpms(
+                action_context.base_dir,
+                rpm_source['file_path'],
+                all_rpms_dir,
+            )
+        elif rpm_source['source_type'] == 'tar':
+            untar_rpms(
                 action_context.base_dir,
                 rpm_source['file_path'],
                 all_rpms_dir,

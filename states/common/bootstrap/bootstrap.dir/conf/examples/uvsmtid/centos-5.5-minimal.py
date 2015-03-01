@@ -40,7 +40,7 @@ init_yum_repos = {
 
         "epel": {
             "installation_type": "rpm",
-            "rpm_key_file": "resources/examples/uvsmtid/centos-5.5-minimal/EPEL_KEY_5",
+            "rpm_key_file": "resources/examples/uvsmtid/centos-5.5-minimal/RPM-GPG-KEY-EPEL-5.217521F6.key.txt",
             # TODO
         },
 
