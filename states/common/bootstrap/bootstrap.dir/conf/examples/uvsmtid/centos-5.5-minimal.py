@@ -44,3 +44,37 @@ init_yum_repos = {
 
 }
 
+install_salt_master = {
+
+    "salt_master_config_file": "resources/master.conf",
+
+    "rpm_sources": {
+        "salt-master": {
+            "source_type": "zip",
+            "file_path": "resources/salt-master-2014.7.1-1.el5.x86_64.rpms.zip",
+        },
+        "python26-distribute": {
+            "source_type": "zip",
+            "file_path": "resources/python26-distribute-0.6.10-4.el5.x86_64.rpms.zip",
+        },
+    },
+
+}
+
+install_salt_minion = {
+
+    "salt_minion_config_file": "resources/minion.conf",
+
+    "rpm_sources": {
+        "salt-master": {
+            "source_type": "zip",
+            "file_path": "resources/salt-minion-2014.7.1-1.el5.x86_64.rpms.zip",
+        },
+        "python26-distribute": {
+            "source_type": "zip",
+            "file_path": "resources/python26-distribute-0.6.10-4.el5.x86_64.rpms.zip",
+        },
+    },
+
+}
+
