@@ -1,5 +1,5 @@
 
-class deploy_template_method:
+class build_template_method:
 
     conf_m = None
     run_action = None
@@ -18,14 +18,9 @@ class deploy_template_method:
         self.run_case = run_case
         self.target_env = target_env
 
-        print "conf_m = " + str(self.conf_m)
-        print "run_action = " + self.run_action
-        print "run_case = " + self.run_case
-        print "target_env = " + self.target_env
-
     def do_action(
         self,
     ):
-       self.init_ip_route()
-       self.init_dns_server()
+        print "NOT IMPLEMENTED"
+        return
 

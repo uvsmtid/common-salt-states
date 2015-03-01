@@ -13,4 +13,12 @@ init_ip_route = {
 
 }
 
+init_dns_server = {
+
+    'dns_server_ip': '8.8.8.8',
+
+    'remote_hostname': 'google.com',
+
+}
+
 

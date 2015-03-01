@@ -5,13 +5,14 @@ class generic_linux_deploy(deploy_template_method):
     def init_ip_route(
         self,
     ):
-        print "conf_m = " + str(self.conf_m)
-        print "run_action = " + self.run_action
-        print "run_case = " + self.run_case
-        print "target_env = " + self.target_env
-
-        from steps.init_ip_route.generic_linux import do
+        from steps.deploy.init_ip_route.generic_linux import do
         do(self.conf_m.init_ip_route)
+
+    def init_dns_server(
+        self,
+    ):
+        from steps.deploy.init_dns_server.generic_linux import do
+        do(self.conf_m.init_dns_server)
 
 def get_instance(
         conf_m,

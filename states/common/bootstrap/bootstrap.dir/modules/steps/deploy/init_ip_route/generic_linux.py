@@ -1,10 +1,7 @@
-import subprocess
 import os
 
 
 def do(conf):
-
-    print 'generic_linux'
 
     # TODO: This is tranisent configuration - it will reset on reboot.
     #       Implement copying configuration files for specific interface.
