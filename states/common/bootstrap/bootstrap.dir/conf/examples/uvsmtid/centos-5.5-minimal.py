@@ -15,6 +15,8 @@ init_ip_route = {
 
 init_dns_server = {
 
+    'resolv_conf_file': 'resources/examples/uvsmtid/centos-5.5-minimal/resolv.conf',
+
     'dns_server_ip': '8.8.8.8',
 
     'remote_hostname': 'google.com',
