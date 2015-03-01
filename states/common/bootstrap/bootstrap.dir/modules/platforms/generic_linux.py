@@ -41,14 +41,14 @@ class generic_linux_deploy(deploy_template_method):
     def activate_salt_master(
         self,
     ):
-        from steps.deploy.activate_salt_master.generic_linux import do
-        do(self)
+        # This method may depend on `initd` or `systemd` PID 1, for example.
+        raise NotImplementedError
 
     def activate_salt_minion(
         self,
     ):
-        from steps.deploy.activate_salt_minion.generic_linux import do
-        do(self)
+        # This method may depend on `initd` or `systemd` PID 1, for example.
+        raise NotImplementedError
 
 def get_instance(
         run_dir,
