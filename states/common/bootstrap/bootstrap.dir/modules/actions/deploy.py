@@ -16,3 +16,6 @@ class deploy_template_method (action_context):
         self.install_salt_master()
         self.install_salt_minion()
 
+        self.activate_salt_master()
+        self.activate_salt_minion()
+

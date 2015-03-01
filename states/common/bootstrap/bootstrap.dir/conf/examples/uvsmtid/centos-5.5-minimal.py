@@ -40,7 +40,7 @@ init_yum_repos = {
 
         "epel": {
             "installation_type": "rpm",
-            "rpm_key_file": "resources/EPEL_KEY_5",
+            "rpm_key_file": "resources/examples/uvsmtid/centos-5.5-minimal/EPEL_KEY_5",
             # TODO
         },
 
@@ -54,16 +54,16 @@ init_yum_repos = {
 
 install_salt_master = {
 
-    "salt_master_config_file": "resources/master.conf",
+    "salt_master_config_file": "resources/examples/uvsmtid/centos-5.5-minimal/master.conf",
 
     "rpm_sources": {
         "salt-master": {
             "source_type": "zip",
-            "file_path": "resources/salt-master-2014.7.1-1.el5.x86_64.rpms.zip",
+            "file_path": "resources/examples/uvsmtid/centos-5.5-minimal/salt-master-2014.7.1-1.el5.x86_64.rpms.zip",
         },
         "python26-distribute": {
             "source_type": "zip",
-            "file_path": "resources/python26-distribute-0.6.10-4.el5.x86_64.rpms.zip",
+            "file_path": "resources/examples/uvsmtid/centos-5.5-minimal/python26-distribute-0.6.10-4.el5.x86_64.rpms.zip",
         },
     },
 
@@ -71,18 +71,31 @@ install_salt_master = {
 
 install_salt_minion = {
 
-    "salt_minion_config_file": "resources/minion.conf",
+    "salt_minion_config_file": "resources/examples/uvsmtid/centos-5.5-minimal/minion.conf",
 
     "rpm_sources": {
         "salt-master": {
             "source_type": "zip",
-            "file_path": "resources/salt-minion-2014.7.1-1.el5.x86_64.rpms.zip",
+            "file_path": "resources/examples/uvsmtid/centos-5.5-minimal/salt-minion-2014.7.1-1.el5.x86_64.rpms.zip",
         },
         "python26-distribute": {
             "source_type": "zip",
-            "file_path": "resources/python26-distribute-0.6.10-4.el5.x86_64.rpms.zip",
+            "file_path": "resources/examples/uvsmtid/centos-5.5-minimal/python26-distribute-0.6.10-4.el5.x86_64.rpms.zip",
         },
     },
 
 }
+
+activate_salt_master = {
+
+    'service_name': 'salt-master',
+
+}
+
+activate_salt_minion = {
+
+    'service_name': 'salt-minion',
+
+}
+
 
