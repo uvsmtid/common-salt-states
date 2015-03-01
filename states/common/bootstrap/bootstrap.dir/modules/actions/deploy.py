@@ -28,4 +28,5 @@ class deploy_template_method:
     ):
        self.init_ip_route()
        self.init_dns_server()
+       self.init_yum_repos()
 

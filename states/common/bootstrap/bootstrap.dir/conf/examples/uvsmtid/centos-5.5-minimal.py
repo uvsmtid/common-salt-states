@@ -21,4 +21,25 @@ init_dns_server = {
 
 }
 
+init_yum_repos = {
+
+    "yum_repos_configs": {
+
+        "base": {
+            "installation_type": "file"
+            # TODO
+        },
+
+        "epel": {
+            "installation_type": "rpm"
+            # TODO
+        },
+
+        "pgdg": {
+            "installation_type": "rpm"
+            # TODO
+        },
+    },
+
+}
 

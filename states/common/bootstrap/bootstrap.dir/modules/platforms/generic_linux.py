@@ -14,6 +14,12 @@ class generic_linux_deploy(deploy_template_method):
         from steps.deploy.init_dns_server.generic_linux import do
         do(self.conf_m.init_dns_server)
 
+    def init_yum_repos(
+        self,
+    ):
+        from steps.deploy.init_yum_repos.generic_linux import do
+        do(self.conf_m.init_yum_repos)
+
 def get_instance(
         conf_m,
         run_action,
