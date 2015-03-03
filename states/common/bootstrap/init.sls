@@ -50,21 +50,29 @@ bootstrap_directory_symlink:
 
 {% endif %}
 
-# Note that `bootstrap_target_envs` is only available when Salt configuration
-# (for either master or minion) contains necessary configuration.
-# See: docs/configs/common/this_system_keys/bootstrap_target_envs/readme.md
-{% set bootstrap_target_envs = salt['config.get']('this_system_keys:bootstrap_target_envs') %}
+# Note that `load_bootstrap_target_envs` is only available when Salt
+# configuration (for either master or minion) contains necessary configuration.
+# In addition to that, the limit on which target environments are generated
+# is also placed by `enable_bootstrap_target_envs` key in pillar.
+# See:
+#   * docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
+{% set load_bootstrap_target_envs = salt['config.get']('this_system_keys:load_bootstrap_target_envs') %}
 {% set current_project_name = salt['config.get']('this_system_keys:project') %}
 {% set current_profile_name = salt['config.get']('this_system_keys:profile') %}
 
-{% for project_name in bootstrap_target_envs.keys() %} # project_name
+{% for project_name in load_bootstrap_target_envs.keys() %} # project_name
 
-{% for profile_name in bootstrap_target_envs[project_name].keys() %} # profile_name
+{% if project_name in pillar['system_features']['bootstrap_configuration']['enable_bootstrap_target_envs'].keys() %} # enabled project_name
+
+{% for profile_name in load_bootstrap_target_envs[project_name].keys() %} # profile_name
+
+{% if profile_name in pillar['system_features']['bootstrap_configuration']['enable_bootstrap_target_envs'][project_name].keys() %} # enabled profile_name
 
 # Define root for pillar data.
 # Note that currently selected profile for currently selected project
-# is not loaded under `bootstrap_target_envs` key.
-# See: docs/configs/common/this_system_keys/bootstrap_target_envs/readme.md
+# is not loaded under `bootstrap_target_envs` pillar key.
+# See:
+#   * docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
 {% if project_name == current_project_name and profile_name == current_profile_name %}
 {% set target_env_pillar = pillar %}
 {% else %}
@@ -91,7 +99,11 @@ target_env_conf_file_{{ project_name }}_{{ profile_name }}_{{ selected_host_name
 
 {% endfor %} # selected_host_name
 
+{% endif %} # enabled profile_name
+
 {% endfor %} # profile_name
+
+{% endif %} # enabled project_name
 
 {% endfor %} # project_name
 

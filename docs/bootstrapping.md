@@ -205,6 +205,8 @@ required to complete setup.
 
 ## Implementation ##
 
+### General ###
+
 * The front-end script is `bootstrap.py`.
 * Script accepts the following parameters:
   * `$1` - bootstrap action, for example: `deploy`
@@ -213,19 +215,39 @@ required to complete setup.
     ```
     examples/uvsmtid/centos-5.5-minimal
     ```
-* The action template methods are implemented in `actions.*` modules.
+    or
+    ```
+    ```
+* The action Template Methods are implemented in `actions.*` modules.
 * Use case is a parameter for action template method coordinate
   setup steps differently depending on the use case.
 * Bootstrap environment points to one of the configuration files under `conf`
-  directory. These configuratoin files are Python modules containing
-  primarily value assignments to different data structures.
+  directory. These configuration files are Python modules containing
+  primarily value assignments to data structures for each step.
 * Among other things, configuration file specifies `target_platform` which
-  points to specific implementation of themplate method in `platforms.*`
+  points to specific implementation of Themplate Method in `platforms.*`
   modules.
-* Each implementation of template method requires multiple steps.
-  Instead of implementing them, `platforms.*` modules simply call
-  existing implementation (outside of the class) in `steps.[step name].*`
+* All configuration files are generated through Salt.
+* Each implementation of Template Method requires multiple steps.
+  Instead of implementing them directly, `platforms.*` modules simply call
+  existing (outside of the class) implementation in `steps.[step name].*`
   module.
+
+### Build ###
+
+In addition to general approach, `build` action has some
+pecularities to note:
+* Pillar data has [URI_prefix][20] key which specifies where all resources
+  are placed. In order to make sure this prefix points to local filesystem
+  for bootstrap `deploy` action, the value of `URI_prefix` has to be
+  rewritten to `salt://` URI scheme.
+
+TODO: What else `build` actually does? Downloads resources? Checks out
+repositories? And, as above, rewrites pillar.
+
+### Deploy ###
+
+TODO: Is there something to mention for `deploy` action?
 
 ## Facts ##
 
@@ -248,9 +270,12 @@ required to complete setup.
 
 [1]: https://en.wikipedia.org/wiki/Template_method_pattern
 [2]: https://en.wikipedia.org/wiki/Factory_method_pattern
+
 [10]: #use-cases
 [11]: #initial-master
 [12]: #online-minion
 [13]: #standalone-minion
+
+[20]: docs/pillars/common/registered_content_config/URI_prefix/readme.md
 
 

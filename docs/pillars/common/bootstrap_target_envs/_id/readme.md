@@ -10,8 +10,9 @@ project.
 
 See details in:
 * [bootstrap_target_envs][1] in pillar
-* [bootstrap_target_envs][2] in configuration files
+* [load_bootstrap_target_envs][2] in configuration files
+* [enable_bootstrap_target_envs][3] in pillar
 
 [1]: docs/pillars/common/bootstrap_target_envs/readme.md
-[2]: docs/configs/common/this_system_keys/bootstrap_target_envs/readme.md
+[2]: docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
 

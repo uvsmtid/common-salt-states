@@ -1,5 +1,5 @@
 
-Key `bootstrap_target_envs` is the root key which lists available
+Key `load_bootstrap_target_envs` is the root key which lists available
 projects and their profiles enabled for generating
 [bootstrap][1] packages:
 * The 1st-level key has the same meaning for bootstrap as [project][2].
@@ -16,6 +16,12 @@ is available at:
 pillar['bootstrap_target_envs']['PROJECT_NAME.PROFILE_NAME']
 ```
 
+Note that there is [additional key][6] in pillar data
+called `enable_bootstrap_target_envs`.
+In order for environment to be enabled, it should appear in both:
+* configuration file under this `load_bootstrap_target_envs` key
+* [pillar data entry][6] under `enable_bootstrap_target_envs` key
+
 ## Example ##
 
 ```
@@ -23,7 +29,7 @@ this_system_keys:
     project: projectA
     profile: profileA1
     # ...
-    bootstrap_target_envs:
+    load_bootstrap_target_envs:
         projectA:
             profileA1:
             profileA2:
