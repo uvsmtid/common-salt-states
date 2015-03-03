@@ -39,6 +39,33 @@ include:
 {% set target_env_pillar = pillar['bootstrap_target_envs'][project_name + '.' + profile_name] %}
 {% endif %}
 
+# Download resources for the project/profile.
+# Resources are shared among all hosts in the same project/profile.
+# TODO: Find a way to limit resource download to only required items.
+#       Should content items be tagged if they are used (to be downloaded)?
+#       Should `bootstrap_configuration` specify what set of content itmes
+#       should be downloaded via list of items or list of tags?
+{% for registered_content_item_name in target_env_pillar['registered_content_items'].keys() %}
+
+{% set registered_content_item = target_env_pillar['registered_content_items'][registered_content_item_name] %}
+
+# We use `URI_prefix` from current project/profile pillar assuming that
+# it has access to all content items through the same prefix.
+{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
+
+target_env_resource_content_item_{{ project_name }}_{{ profile_name }}_{{ registered_content_item_name }}:
+    file.managed:
+        - name: '{{ vagrant_dir }}/bootstrap.dir/resources/{{ project_name }}/{{ registered_content_item['item_parent_dir_path'] }}/{{ registered_content_item['item_base_name'] }}'
+        - source: '{{ URI_prefix }}/{{ registered_content_item['item_parent_dir_path'] }}/{{ registered_content_item['item_base_name'] }}'
+        - makedirs: True
+        - mode: 644
+        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        - require:
+            - sls: common.bootstrap
+
+{% endfor %}
+
 # Provide generated target configuration files.
 {% for selected_host_name in target_env_pillar['system_hosts'].keys() %} # selected_host_name
 
