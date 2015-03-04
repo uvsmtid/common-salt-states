@@ -71,12 +71,15 @@ target_env_resource_content_item_{{ project_name }}_{{ profile_name }}_{{ regist
 
 {% set selected_host = target_env_pillar['system_hosts'][selected_host_name] %}
 
-target_env_conf_file_{{ project_name }}_{{ profile_name }}_{{ selected_host_name }}:
+{% set requisite_config_file_id = 'target_env_conf_file_' + project_name + '_' + profile_name + '_' + selected_host_name %}
+{% set requisite_config_file_path = vagrant_dir + '/bootstrap.dir/conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
+
+{{ requisite_config_file_id }}:
     file.managed:
-        - name: '{{ vagrant_dir }}/bootstrap.dir/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}.py'
+        - name: '{{ requisite_config_file_path }}'
         - source: 'salt://common/bootstrap/provide_content/bootstrap.conf.sls'
         - context:
-            target_env_pillar: {{ target_env_pillar }}
+            bootstrap_platform: {{ selected_host['bootstrap_platform'] }}
         - makedirs: True
         - template: jinja
         - mode: 644
@@ -84,6 +87,38 @@ target_env_conf_file_{{ project_name }}_{{ profile_name }}_{{ selected_host_name
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
         - require:
             - sls: common.bootstrap
+
+{% for deploy_step in [
+        'init_ip_route',
+        'init_dns_server',
+        'make_salt_resolvable',
+        'init_yum_repos',
+        'install_salt_master',
+        'install_salt_minion',
+        'activate_salt_master',
+        'activate_salt_minion',
+    ]
+%} # deploy_step
+
+# Load the function:
+{% set deploy_step_source = 'common/bootstrap/provide_content/deploy_steps/' + deploy_step + '/init.sls' %}
+{% from deploy_step_source import configure_deploy_step_function with context %}
+
+# Call the function:
+{{
+    configure_deploy_step_function(
+        source_env_pillar,
+        target_env_pillar,
+        selected_host_name,
+        deploy_step,
+        project_name,
+        profile_name,
+        requisite_config_file_id,
+        requisite_config_file_path,
+    )
+}}
+
+{% endfor %} # deploy_step
 
 {% endfor %} # selected_host_name
 
