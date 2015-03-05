@@ -27,7 +27,7 @@
         - append_if_not_found: True
         - backup: False
         - content: |
-            activate_salt_master = {
+            {{ deploy_step }} = {
                 'service_name': 'salt-master',
             }
         - show_changes: True

@@ -27,7 +27,7 @@
         - append_if_not_found: True
         - backup: False
         - content: |
-            install_salt_master = {
+            {{ deploy_step }} = {
                 "salt_master_config_file": "resources/examples/uvsmtid/centos-5.5-minimal/master.conf",
                 "rpm_sources": {
                     "salt-master": {

@@ -27,7 +27,7 @@
         - append_if_not_found: True
         - backup: False
         - content: |
-            init_dns_server = {
+            {{ deploy_step }} = {
                 'resolv_conf_file': 'resources/examples/uvsmtid/centos-5.5-minimal/resolv.conf',
                 'dns_server_ip': '8.8.8.8',
                 'remote_hostname': 'google.com',

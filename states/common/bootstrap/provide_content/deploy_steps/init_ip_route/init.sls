@@ -27,7 +27,7 @@
         - append_if_not_found: True
         - backup: False
         - content: |
-            init_ip_route = {
+            {{ deploy_step }} = {
                 # IP address to route IP traffic by default.
                 'default_route_ip': '{{ target_env_pillar['internal_net']['gateway'] }}',
                 # IP address behind network router to confirm successful routing configuration.

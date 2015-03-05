@@ -38,6 +38,18 @@ class generic_linux_deploy(deploy_template_method):
         from steps.deploy.install_salt_minion.generic_linux import do
         do(self)
 
+    def link_sources(
+        self,
+    ):
+        from steps.deploy.link_sources.generic_linux import do
+        do(self)
+
+    def link_resources(
+        self,
+    ):
+        from steps.deploy.link_resources.generic_linux import do
+        do(self)
+
     def activate_salt_master(
         self,
     ):
@@ -49,6 +61,18 @@ class generic_linux_deploy(deploy_template_method):
     ):
         # This method may depend on `initd` or `systemd` PID 1, for example.
         raise NotImplementedError
+
+    def run_init_states(
+        self,
+    ):
+        from steps.deploy.run_init_states.generic_linux import do
+        do(self)
+
+    def run_highstate(
+        self,
+    ):
+        from steps.deploy.run_highstate.generic_linux import do
+        do(self)
 
 def get_instance(
         run_dir,

@@ -28,17 +28,7 @@
         - backup: False
         - content: |
             {{ deploy_step }} = {
-                "salt_minion_config_file": "resources/examples/uvsmtid/centos-5.5-minimal/minion.conf",
-                "rpm_sources": {
-                    "salt-master": {
-                        "source_type": "zip",
-                        "file_path": "resources/examples/uvsmtid/centos-5.5-minimal/salt-minion-2014.7.1-1.el5.x86_64.rpms.zip",
-                    },
-                    "python26-distribute": {
-                        "source_type": "zip",
-                        "file_path": "resources/examples/uvsmtid/centos-5.5-minimal/python26-distribute-0.6.10-4.el5.x86_64.rpms.zip",
-                    },
-                },
+                # TODO
             }
         - show_changes: True
         - require:

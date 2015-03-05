@@ -27,7 +27,7 @@
         - append_if_not_found: True
         - backup: False
         - content: |
-            make_salt_resolvable = {
+            {{ deploy_step }} = {
                 'required_entries_hosts_file': 'resources/examples/uvsmtid/centos-5.5-minimal/hosts_file',
             }
         - show_changes: True

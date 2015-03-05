@@ -5,6 +5,7 @@ class deploy_template_method (action_context):
     def do_action(
         self,
     ):
+
         self.init_ip_route()
 
         self.init_dns_server()
@@ -16,6 +17,14 @@ class deploy_template_method (action_context):
         self.install_salt_master()
         self.install_salt_minion()
 
+        self.link_sources()
+
+        self.link_resources()
+
         self.activate_salt_master()
         self.activate_salt_minion()
+
+        self.run_init_states()
+
+        self.run_highstate()
 

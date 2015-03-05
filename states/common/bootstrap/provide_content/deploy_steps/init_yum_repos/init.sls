@@ -27,7 +27,7 @@
         - append_if_not_found: True
         - backup: False
         - content: |
-            init_yum_repos = {
+            {{ deploy_step }} = {
                 "yum_repo_configs": {
                     "base": {
                         "installation_type": "file",

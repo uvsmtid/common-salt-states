@@ -27,7 +27,7 @@
         - append_if_not_found: True
         - backup: False
         - content: |
-            activate_salt_minion = {
+            {{ deploy_step }} = {
                 'service_name': 'salt-minion',
             }
         - show_changes: True

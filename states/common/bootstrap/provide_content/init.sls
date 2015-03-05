@@ -95,8 +95,12 @@ target_env_resource_content_item_{{ project_name }}_{{ profile_name }}_{{ regist
         'init_yum_repos',
         'install_salt_master',
         'install_salt_minion',
+        'link_sources',
+        'link_resources',
         'activate_salt_master',
         'activate_salt_minion',
+        'run_init_states',
+        'run_highstate',
     ]
 %} # deploy_step
 
