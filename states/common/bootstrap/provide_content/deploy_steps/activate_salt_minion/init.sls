@@ -16,6 +16,8 @@
         requisite_config_file_id
         ,
         requisite_config_file_path
+        ,
+        bootstrap_dir
     )
 %}
 

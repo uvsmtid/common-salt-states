@@ -9,6 +9,7 @@ include:
 
 {% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
 {% set vagrant_dir = user_home_dir + '/' + pillar['system_features']['vagrant_configuration']['vagrant_file_dir'] %}
+{% set bootstrap_dir = vagrant_dir + '/bootstrap.dir' %}
 
 # Note that `load_bootstrap_target_envs` is only available when Salt
 # configuration (for either master or minion) contains necessary configuration.
@@ -55,7 +56,7 @@ include:
 
 target_env_resource_content_item_{{ project_name }}_{{ profile_name }}_{{ registered_content_item_name }}:
     file.managed:
-        - name: '{{ vagrant_dir }}/bootstrap.dir/resources/{{ project_name }}/{{ registered_content_item['item_parent_dir_path'] }}/{{ registered_content_item['item_base_name'] }}'
+        - name: '{{ bootstrap_dir }}/resources/{{ project_name }}/{{ registered_content_item['item_parent_dir_path'] }}/{{ registered_content_item['item_base_name'] }}'
         - source: '{{ URI_prefix }}/{{ registered_content_item['item_parent_dir_path'] }}/{{ registered_content_item['item_base_name'] }}'
         - makedirs: True
         - mode: 644
@@ -72,7 +73,7 @@ target_env_resource_content_item_{{ project_name }}_{{ profile_name }}_{{ regist
 {% set selected_host = target_env_pillar['system_hosts'][selected_host_name] %}
 
 {% set requisite_config_file_id = 'target_env_conf_file_' + project_name + '_' + profile_name + '_' + selected_host_name %}
-{% set requisite_config_file_path = vagrant_dir + '/bootstrap.dir/conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
+{% set requisite_config_file_path = bootstrap_dir + '/conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
 
 {{ requisite_config_file_id }}:
     file.managed:
@@ -111,7 +112,7 @@ target_env_resource_content_item_{{ project_name }}_{{ profile_name }}_{{ regist
 # Call the function:
 {{
     configure_deploy_step_function(
-        source_env_pillar,
+        pillar,
         target_env_pillar,
         selected_host_name,
         deploy_step,
@@ -119,6 +120,7 @@ target_env_resource_content_item_{{ project_name }}_{{ profile_name }}_{{ regist
         profile_name,
         requisite_config_file_id,
         requisite_config_file_path,
+        bootstrap_dir,
     )
 }}
 
