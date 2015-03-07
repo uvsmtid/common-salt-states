@@ -1,4 +1,4 @@
-root@192.168.50.101
+root@192.168.50.102
 deploy
 initial-master
-examples/uvsmtid/centos-5.5-minimal
+examples/uvsmtid/centos-7.0-minimal
