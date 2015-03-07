@@ -23,6 +23,9 @@
     )
 %}
 
+{% set bootstrap_platform = target_env_pillar['system_hosts'][selected_host_name]['bootstrap_platform'] %}
+
+# Config for the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
@@ -32,23 +35,55 @@
         - backup: False
         - content: |
             {{ deploy_step }} = {
-                'step_enabled': {{ deploy_step_config['step_enabled'] }},
-                "src_salt_config_file": "resources/examples/uvsmtid/centos-5.5-minimal/master.conf",
+                "step_enabled": {{ deploy_step_config['step_enabled'] }},
+                "src_salt_config_file": "resources/{{ project_name }}/{{ profile_name }}/conf/master.conf",
                 "dst_salt_config_file": "/etc/salt/master",
                 "rpm_sources": {
-                    "salt-master": {
-                        "source_type": "zip",
-                        "file_path": "resources/examples/uvsmtid/centos-5.5-minimal/salt-master-2014.7.1-1.el5.x86_64.rpms.zip",
+                    {% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][bootstrap_platform].keys() %}
+                    {% set rpm_source_config = deploy_step_config['salt_master_rpm_sources'][bootstrap_platform][rpm_source_name] %}
+                    {% set resource_item_config = target_env_pillar['registered_content_items'][rpm_source_config['resource_id']] %}
+                    {% set file_path = resource_item_config['item_parent_dir_path'] + '/' + resource_item_config['item_base_name'] %}
+                    "{{ rpm_source_name }}": {
+                        "source_type": "{{ rpm_source_config['source_type'] }}",
+                        # Note that all resources are shared per project (no profile sub-directory).
+                        "file_path": "resources/{{ project_name }}/depository/{{ file_path }}",
                     },
-                    "python26-distribute": {
-                        "source_type": "zip",
-                        "file_path": "resources/examples/uvsmtid/centos-5.5-minimal/python26-distribute-0.6.10-4.el5.x86_64.rpms.zip",
-                    },
+                    {% endfor %}
                 },
             }
         - show_changes: True
         - require:
             - file: {{ requisite_config_file_id }}
+
+# Pre-build config files used by the step.
+{{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_file:
+    file.managed:
+        - name: '{{ bootstrap_dir }}/resources/{{ project_name }}/{{ profile_name }}/conf/master.conf'
+        - source: '{{ deploy_step_config['salt_master_template'] }}'
+        - context:
+            project_name: '{{ project_name }}'
+            profile_name: '{{ profile_name }}'
+        - template: jinja
+        - makedirs: True
+        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+
+# Resources used by the step.
+{% set URI_prefix = target_env_pillar['registered_content_config']['URI_prefix'] %}
+{% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][bootstrap_platform].keys() %}
+{% set rpm_source_config = deploy_step_config['salt_master_rpm_sources'][bootstrap_platform][rpm_source_name] %}
+{% set resource_item_config = target_env_pillar['registered_content_items'][rpm_source_config['resource_id']] %}
+{% set file_path = resource_item_config['item_parent_dir_path'] + '/' + resource_item_config['item_base_name'] %}
+{{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:
+    file.managed:
+        # Note that all resources are shared per project (no profile sub-directory).
+        - name: '{{ bootstrap_dir }}/resources/{{ project_name }}/depository/{{ file_path }}'
+        - source: '{{ URI_prefix }}/{{ file_path }}'
+        - template: ~
+        - makedirs: True
+        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+{% endfor %}
 
 {% endmacro %}
 
