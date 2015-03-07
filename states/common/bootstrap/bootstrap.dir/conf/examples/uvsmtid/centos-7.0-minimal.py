@@ -54,7 +54,8 @@ init_yum_repos = {
 
 install_salt_master = {
 
-    "salt_master_config_file": "resources/examples/uvsmtid/centos-7.0-minimal/master.conf",
+    "src_salt_config_file": "resources/examples/uvsmtid/centos-7.0-minimal/master.conf",
+    "dst_salt_config_file": "/etc/salt/master",
 
     "rpm_sources": {
         "salt-master": {
@@ -67,7 +68,8 @@ install_salt_master = {
 
 install_salt_minion = {
 
-    "salt_minion_config_file": "resources/examples/uvsmtid/centos-7.0-minimal/minion.conf",
+    "src_salt_config_file": "resources/examples/uvsmtid/centos-7.0-minimal/minion.conf",
+    "dst_salt_config_file": "/etc/salt/minion",
 
     "rpm_sources": {
         "salt-master": {

@@ -30,7 +30,8 @@
         - backup: False
         - content: |
             {{ deploy_step }} = {
-                "salt_master_config_file": "resources/examples/uvsmtid/centos-5.5-minimal/master.conf",
+                "src_salt_config_file": "resources/examples/uvsmtid/centos-5.5-minimal/master.conf",
+                "dst_salt_config_file": "/etc/salt/master",
                 "rpm_sources": {
                     "salt-master": {
                         "source_type": "zip",

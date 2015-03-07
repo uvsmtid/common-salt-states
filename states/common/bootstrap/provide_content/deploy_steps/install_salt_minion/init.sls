@@ -30,7 +30,8 @@
         - backup: False
         - content: |
             {{ deploy_step }} = {
-                "salt_minion_config_file": "resources/examples/uvsmtid/centos-5.5-minimal/minion.conf",
+                "src_salt_config_file": "resources/examples/uvsmtid/centos-5.5-minimal/minion.conf",
+                "dst_salt_config_file": "/etc/salt/minion",
                 "rpm_sources": {
                     "salt-master": {
                         "source_type": "zip",
