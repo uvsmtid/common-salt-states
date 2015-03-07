@@ -1,5 +1,8 @@
 from platforms.generic_linux import generic_linux_deploy
 
+###############################################################################
+#
+
 class rhel7_linux_deploy(generic_linux_deploy):
 
     def activate_salt_master(
@@ -13,6 +16,9 @@ class rhel7_linux_deploy(generic_linux_deploy):
     ):
         from steps.deploy.activate_salt_minion.rhel7 import do
         do(self)
+
+###############################################################################
+#
 
 def get_instance(
         run_dir,
@@ -36,4 +42,8 @@ def get_instance(
             )
         else:
             raise NotImplementedError
+
+###############################################################################
+# EOF
+###############################################################################
 

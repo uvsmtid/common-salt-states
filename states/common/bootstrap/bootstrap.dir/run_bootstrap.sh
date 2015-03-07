@@ -6,6 +6,7 @@
 
 set -e
 set -u
+set -x
 
 # The arguments are:
 # $1 - SSH address, for example: vagrant@192.168.50.101
@@ -25,7 +26,12 @@ SSH_DST="${1}"
 shift
 
 # Sync current directory with destination.
-rsync -r ./ "${SSH_DST}:bootstrap/"
+rsync --progress -v -r ./ "${SSH_DST}:bootstrap/"
 
+# Use `python -m trace -t bootstrap/bootstrap.py` for extensive traces.
 ssh "${SSH_DST}" "sudo python bootstrap/bootstrap.py" "$@"
+
+###############################################################################
+# EOF
+###############################################################################
 

@@ -1,6 +1,9 @@
 import os
 from utils.exec_command import call_subprocess
 
+###############################################################################
+#
+
 def do(action_context):
 
     # Deploy `resolv.conf` configuration file.
@@ -30,4 +33,8 @@ def do(action_context):
         capture_stdout = False,
         capture_stderr = False,
     )
+
+###############################################################################
+# EOF
+###############################################################################
 

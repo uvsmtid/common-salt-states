@@ -1,3 +1,7 @@
+import logging
+
+###############################################################################
+#
 
 class action_context:
 
@@ -60,11 +64,15 @@ class action_context:
         self.run_case = run_case
         self.target_env = target_env
 
-        print "run_dir = " + str(self.run_dir)
-        print "script_dir = " + str(self.script_dir)
-        print "base_dir = " + str(self.base_dir)
-        print "conf_m = " + str(self.conf_m)
-        print "run_action = " + self.run_action
-        print "run_case = " + self.run_case
-        print "target_env = " + self.target_env
+        logging.info("run_dir = " + str(self.run_dir))
+        logging.info("script_dir = " + str(self.script_dir))
+        logging.info("base_dir = " + str(self.base_dir))
+        logging.info("conf_m = " + str(self.conf_m))
+        logging.info("run_action = " + self.run_action)
+        logging.info("run_case = " + self.run_case)
+        logging.info("target_env = " + self.target_env)
+
+################################################################################
+# EOF
+###############################################################################
 

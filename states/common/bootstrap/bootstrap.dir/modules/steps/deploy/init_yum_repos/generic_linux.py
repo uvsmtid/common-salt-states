@@ -1,4 +1,5 @@
-import os
+import logging
+
 from utils.exec_command import call_subprocess
 from utils.get_paths import get_abs_path
 
@@ -45,7 +46,9 @@ def do(action_context):
                 repo_config['rpm_key_file'],
             )
 
-    print 'NOT FULLY IMPLEMENTED'
+    logging.critical('NOT FULLY IMPLEMENTED')
 
+###############################################################################
+# EOF
 ###############################################################################
 

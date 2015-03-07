@@ -4,6 +4,7 @@ import os.path
 
 import sys
 import imp
+import logging
 
 start_path = sys.argv[0]
 run_action = sys.argv[1]
@@ -46,7 +47,7 @@ conf_module_path = os.path.join(
     'conf',
     target_env + '.py',
 )
-print 'conf_module_path = ' + conf_module_path
+logging.info('conf_module_path = ' + conf_module_path)
 
 # Load config module.
 conf_m = imp.load_source('conf_m', conf_module_path)
@@ -58,7 +59,7 @@ impl_module_path = os.path.join(
     'platforms',
     conf_m.target_platform + '.py',
 )
-print 'impl_module_path = ' + impl_module_path
+logging.info('impl_module_path = ' + impl_module_path)
 
 # Load implementation module.
 impl_m = imp.load_source('impl_m', impl_module_path)

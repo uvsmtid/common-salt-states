@@ -1,10 +1,19 @@
+import logging
+
 from context import action_context
 
+###############################################################################
+#
 class deploy_template_method (action_context):
 
+    ###########################################################################
+    #
     def do_action(
         self,
     ):
+
+        use_case = self.run_case
+        logging.debug("use_case = '" + use_case + "'")
 
         self.init_ip_route()
 

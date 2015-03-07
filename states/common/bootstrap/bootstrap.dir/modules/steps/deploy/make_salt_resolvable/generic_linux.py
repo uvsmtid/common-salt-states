@@ -3,6 +3,8 @@ from utils.hosts_file import do_patch
 from utils.hosts_file import do_diff
 from utils.exec_command import call_subprocess
 
+###############################################################################
+#
 def do(action_context):
 
     # File with source entries for `hosts` file.
@@ -49,4 +51,8 @@ def do(action_context):
         capture_stdout = False,
         capture_stderr = False,
     )
+
+###############################################################################
+# EOF
+###############################################################################
 

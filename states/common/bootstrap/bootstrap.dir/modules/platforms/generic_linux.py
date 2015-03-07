@@ -1,5 +1,8 @@
 from actions.deploy import deploy_template_method
 
+###############################################################################
+#
+
 class generic_linux_deploy(deploy_template_method):
 
     def init_ip_route(
@@ -74,6 +77,9 @@ class generic_linux_deploy(deploy_template_method):
         from steps.deploy.run_highstate.generic_linux import do
         do(self)
 
+###############################################################################
+#
+
 def get_instance(
         run_dir,
         script_dir,
@@ -96,4 +102,8 @@ def get_instance(
             )
         else:
             raise NotImplementedError
+
+###############################################################################
+# EOF
+###############################################################################
 
