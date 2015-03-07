@@ -4,6 +4,7 @@
 target_platform = 'rhel7'
 
 init_ip_route = {
+    'step_enabled': True,
 
     # IP address to route IP traffic by default.
     'default_route_ip': '192.168.50.1',
@@ -14,6 +15,7 @@ init_ip_route = {
 }
 
 init_dns_server = {
+    'step_enabled': True,
 
     'resolv_conf_file': 'resources/examples/uvsmtid/centos-7.0-minimal/resolv.conf',
 
@@ -24,12 +26,14 @@ init_dns_server = {
 }
 
 make_salt_resolvable = {
+    'step_enabled': True,
 
     'required_entries_hosts_file': 'resources/examples/uvsmtid/centos-7.0-minimal/hosts_file',
 
 }
 
 init_yum_repos = {
+    'step_enabled': True,
 
     "yum_repo_configs": {
 
@@ -53,6 +57,7 @@ init_yum_repos = {
 }
 
 install_salt_master = {
+    'step_enabled': True,
 
     "src_salt_config_file": "resources/examples/uvsmtid/centos-7.0-minimal/master.conf",
     "dst_salt_config_file": "/etc/salt/master",
@@ -67,6 +72,7 @@ install_salt_master = {
 }
 
 install_salt_minion = {
+    'step_enabled': True,
 
     "src_salt_config_file": "resources/examples/uvsmtid/centos-7.0-minimal/minion.conf",
     "dst_salt_config_file": "/etc/salt/minion",
@@ -80,16 +86,46 @@ install_salt_minion = {
 
 }
 
+link_sources = {
+    'step_enabled': True,
+
+    # Configure each extracted respository.
+    'repos': {
+        'common-salt-states': {
+            'repo_type': 'git',
+            'archive_type': 'tar',
+        },
+    },
+
+}
+
+link_resources = {
+    'step_enabled': True,
+    # TODO
+}
+
 activate_salt_master = {
+    'step_enabled': True,
 
     'service_name': 'salt-master',
 
 }
 
 activate_salt_minion = {
+    'step_enabled': True,
 
     'service_name': 'salt-minion',
 
+}
+
+run_init_states = {
+    'step_enabled': True,
+    # TODO
+}
+
+run_highstate = {
+    'step_enabled': True,
+    # TODO
 }
 
 

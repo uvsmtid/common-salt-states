@@ -9,6 +9,8 @@
         ,
         deploy_step
         ,
+        deploy_step_config
+        ,
         project_name
         ,
         profile_name
@@ -30,6 +32,7 @@
         - backup: False
         - content: |
             {{ deploy_step }} = {
+                'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 # Configure each extracted respository.
                 'repos': {
             {% for selected_repo_name in target_env_pillar['system_features']['bootstrap_configuration']['export_sources_repos'].keys() %} # selected_repo_name
@@ -45,7 +48,7 @@
                 {{ FAIL_this_template_instantiation_unsupported_SCM }}
             {% endif %} # ! Git SCM
             {% endfor %} # selected_repo_name
-                }
+                },
 
             }
         - show_changes: True

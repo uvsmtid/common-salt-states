@@ -9,6 +9,8 @@
         ,
         deploy_step
         ,
+        deploy_step_config
+        ,
         project_name
         ,
         profile_name
@@ -30,6 +32,7 @@
         - backup: False
         - content: |
             {{ deploy_step }} = {
+                'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 'service_name': 'salt-master',
             }
         - show_changes: True

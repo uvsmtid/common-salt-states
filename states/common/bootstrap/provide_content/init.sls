@@ -89,21 +89,7 @@ target_env_resource_content_item_{{ project_name }}_{{ profile_name }}_{{ regist
         - require:
             - sls: common.bootstrap
 
-{% for deploy_step in [
-        'init_ip_route',
-        'init_dns_server',
-        'make_salt_resolvable',
-        'init_yum_repos',
-        'install_salt_master',
-        'install_salt_minion',
-        'link_sources',
-        'link_resources',
-        'activate_salt_master',
-        'activate_salt_minion',
-        'run_init_states',
-        'run_highstate',
-    ]
-%} # deploy_step
+{% for deploy_step in target_env_pillar['system_features']['bootstrap_configuration']['deploy_steps_params'].keys() %} # deploy_step
 
 # Load the function:
 {% set deploy_step_source = 'common/bootstrap/provide_content/deploy_steps/' + deploy_step + '/init.sls' %}
@@ -116,6 +102,7 @@ target_env_resource_content_item_{{ project_name }}_{{ profile_name }}_{{ regist
         target_env_pillar,
         selected_host_name,
         deploy_step,
+        target_env_pillar['system_features']['bootstrap_configuration']['deploy_steps_params'][deploy_step],
         project_name,
         profile_name,
         requisite_config_file_id,

@@ -9,6 +9,8 @@
         ,
         deploy_step
         ,
+        deploy_step_config
+        ,
         project_name
         ,
         profile_name
@@ -30,6 +32,7 @@
         - backup: False
         - content: |
             {{ deploy_step }} = {
+                'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 'required_entries_hosts_file': 'resources/examples/uvsmtid/centos-5.5-minimal/hosts_file',
             }
         - show_changes: True

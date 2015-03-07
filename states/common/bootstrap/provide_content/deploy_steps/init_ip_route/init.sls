@@ -9,6 +9,8 @@
         ,
         deploy_step
         ,
+        deploy_step_config
+        ,
         project_name
         ,
         profile_name
@@ -30,6 +32,7 @@
         - backup: False
         - content: |
             {{ deploy_step }} = {
+                'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 # IP address to route IP traffic by default.
                 'default_route_ip': '{{ target_env_pillar['internal_net']['gateway'] }}',
                 # IP address behind network router to confirm successful routing configuration.
