@@ -72,6 +72,9 @@ def deploy_salt(
     # Deploy configuration file.
     deploy_salt_config_file(
         src_base_dir = action_context.base_dir,
+        # Note that minion has offline and online config.
+        # The version of the config is assigned in the calling function to
+        # `src_salt_config_file` key.
         src_salt_config_path_rel = salt_deploy_step_config['src_salt_config_file'],
         dst_salt_config_path_abs = salt_deploy_step_config['dst_salt_config_file'],
     )
