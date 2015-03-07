@@ -4,6 +4,12 @@ from platforms.generic_linux import generic_linux_deploy
 #
 class rhel5_linux_deploy(generic_linux_deploy):
 
+    def set_hostname(
+        self,
+    ):
+        from steps.deploy.set_hostname.rhel5 import do
+        do(self)
+
     def activate_salt_master(
         self,
     ):

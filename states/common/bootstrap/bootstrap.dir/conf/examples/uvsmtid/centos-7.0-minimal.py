@@ -17,6 +17,14 @@ make_salt_resolvable = {
     'step_enabled': False,
 }
 
+set_hostname = {
+    'step_enabled': False,
+}
+
+create_primary_user = {
+    'step_enabled': False,
+}
+
 init_yum_repos = {
     'step_enabled': False,
 }
@@ -52,5 +60,4 @@ run_init_states = {
 run_highstate = {
     'step_enabled': False,
 }
-
 

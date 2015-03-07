@@ -23,6 +23,18 @@ class generic_linux_deploy(deploy_template_method):
         from steps.deploy.make_salt_resolvable.generic_linux import do
         do(self)
 
+    def set_hostname(
+        self,
+    ):
+        # This method may depend on location of file with persistent hostname configuration.
+        raise NotImplementedError
+
+    def create_primary_user(
+        self,
+    ):
+        from steps.deploy.create_primary_user.generic_linux import do
+        do(self)
+
     def init_yum_repos(
         self,
     ):

@@ -11,6 +11,8 @@
         - group: root
         - mode: 644
         - template: jinja
+        - context:
+            - hostname: '{{ pillar['system_hosts'][grains['id']]['hostname'] }}'
 
 {% endif %}
 # >>>

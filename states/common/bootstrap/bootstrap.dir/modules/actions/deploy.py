@@ -25,6 +25,10 @@ class deploy_template_method (action_context):
 
         "make_salt_resolvable": "always",
 
+        "set_hostname": "always",
+
+        "create_primary_user": "always",
+
         "init_yum_repos": "always",
 
         "install_salt_master": [
@@ -72,6 +76,8 @@ class deploy_template_method (action_context):
         "init_ip_route",
         "init_dns_server",
         "make_salt_resolvable",
+        "set_hostname",
+        "create_primary_user",
         "init_yum_repos",
         "install_salt_master",
         "install_salt_minion",

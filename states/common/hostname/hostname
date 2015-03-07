@@ -1,9 +1,10 @@
 {#
 # Define hostname.
 #
-# NOTE: This file does not support any comments so nothing should be outside
-#       of the tamplate.
+# NOTE: This file does not support any comments.
+#       Nothing should be outside of the tamplate.
+#       All additional lines are also stripped off just in case.
 #}
 
-{{- pillar['system_hosts'][grains['id']]['hostname'] -}}
+{{- hostname -}}
 
