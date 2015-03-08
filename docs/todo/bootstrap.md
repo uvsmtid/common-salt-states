@@ -5,5 +5,10 @@
 * TODO: Write doc for command line parameters to bootstrap script itself (how
   to run installer).
 
+* Note that location of the pillar is _assumed_.
+  TODO: Make location of the pillar declared, otherwise if pillar is
+        located in different place, rewrite will be merge with
+        unpredictable results.
+
 [1]: docs/bootstrapping.md
 
