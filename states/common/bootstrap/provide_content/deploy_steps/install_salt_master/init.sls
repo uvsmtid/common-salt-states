@@ -36,7 +36,7 @@
         - content: |
             {{ deploy_step }} = {
                 "step_enabled": {{ deploy_step_config['step_enabled'] }},
-                "src_salt_config_file": "resources/{{ project_name }}/{{ profile_name }}/conf/master.conf",
+                "src_salt_config_file": "resources/conf/{{ project_name }}/{{ profile_name }}/master.conf",
                 "dst_salt_config_file": "/etc/salt/master",
                 "rpm_sources": {
                     {% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][bootstrap_platform].keys() %}
@@ -46,7 +46,7 @@
                     "{{ rpm_source_name }}": {
                         "source_type": "{{ rpm_source_config['source_type'] }}",
                         # Note that all resources are shared per project (no profile sub-directory).
-                        "file_path": "resources/{{ project_name }}/depository/{{ file_path }}",
+                        "file_path": "resources/bootstrap/{{ project_name }}/{{ file_path }}",
                     },
                     {% endfor %}
                 },
@@ -58,7 +58,7 @@
 # Pre-build config files used by the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_file:
     file.managed:
-        - name: '{{ bootstrap_dir }}/resources/{{ project_name }}/{{ profile_name }}/conf/master.conf'
+        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/master.conf'
         - source: '{{ deploy_step_config['salt_master_template'] }}'
         - context:
             project_name: '{{ project_name }}'
@@ -77,7 +77,7 @@
 {{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:
     file.managed:
         # Note that all resources are shared per project (no profile sub-directory).
-        - name: '{{ bootstrap_dir }}/resources/{{ project_name }}/depository/{{ file_path }}'
+        - name: '{{ bootstrap_dir }}/resources/bootstrap/{{ project_name }}/{{ file_path }}'
         - source: '{{ URI_prefix }}/{{ file_path }}'
         - template: ~
         - makedirs: True
