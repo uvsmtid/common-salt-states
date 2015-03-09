@@ -8,8 +8,8 @@ class generic_linux_deploy(deploy_template_method):
     def init_ip_route(
         self,
     ):
-        from steps.deploy.init_ip_route.generic_linux import do
-        do(self)
+        # This method may depend on location and format of configuration files.
+        raise NotImplementedError
 
     def init_dns_server(
         self,

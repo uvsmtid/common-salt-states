@@ -1,5 +1,6 @@
-import os
+import os.path
 from utils.exec_command import call_subprocess
+from utils.set_network import ping_host
 
 ###############################################################################
 #
@@ -22,16 +23,8 @@ def do(action_context):
     )
 
     # Make sure remote hosts are ping-able.
-    call_subprocess(
-        command_args = [
-            'ping',
-            '-c',
-            '3',
-            action_context.conf_m.init_dns_server['remote_hostname'],
-        ],
-        raise_on_error = True,
-        capture_stdout = False,
-        capture_stderr = False,
+    ping_host(
+        resolvable_string = action_context.conf_m.init_dns_server['remote_hostname'],
     )
 
 ###############################################################################

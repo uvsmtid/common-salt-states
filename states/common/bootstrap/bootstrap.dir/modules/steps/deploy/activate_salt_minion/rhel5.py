@@ -1,4 +1,3 @@
-import os
 from utils.exec_command import call_subprocess
 
 ###############################################################################

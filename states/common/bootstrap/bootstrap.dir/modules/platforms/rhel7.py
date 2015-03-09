@@ -5,6 +5,12 @@ from platforms.generic_linux import generic_linux_deploy
 
 class rhel7_linux_deploy(generic_linux_deploy):
 
+    def init_ip_route(
+        self,
+    ):
+        from steps.deploy.init_ip_route.rhel7 import do
+        do(self)
+
     def set_hostname(
         self,
     ):

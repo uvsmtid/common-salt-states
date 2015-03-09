@@ -1,7 +1,6 @@
 #
 
 # System modules
-import os
 import logging
 import subprocess
 

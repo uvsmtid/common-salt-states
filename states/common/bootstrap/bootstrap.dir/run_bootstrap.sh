@@ -25,6 +25,9 @@ fi
 SSH_DST="${1}"
 shift
 
+# Copy SSH public key right away .
+ssh-copy-id "${SSH_DST}"
+
 # Sync current directory with destination.
 rsync --progress -v -r ./ "${SSH_DST}:bootstrap/"
 

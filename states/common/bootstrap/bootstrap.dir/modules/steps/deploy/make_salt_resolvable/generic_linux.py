@@ -1,7 +1,8 @@
-import os
+import os.path
 from utils.hosts_file import do_patch
 from utils.hosts_file import do_diff
 from utils.exec_command import call_subprocess
+from utils.set_network import ping_host
 
 ###############################################################################
 #
@@ -28,6 +29,7 @@ def do(action_context):
         # something different than what we want.
         check_modified = True,
     )
+    # Result if False when there is not difference.
     if result:
         raise RuntimeError
 
@@ -40,16 +42,8 @@ def do(action_context):
     )
 
     # Make sure `salt` hosts are ping-able.
-    call_subprocess(
-        command_args = [
-            'ping',
-            '-c',
-            '3',
-            'salt',
-        ],
-        raise_on_error = True,
-        capture_stdout = False,
-        capture_stderr = False,
+    ping_host(
+        resolvable_string = 'salt',
     )
 
 ###############################################################################
