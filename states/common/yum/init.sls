@@ -8,6 +8,8 @@ yum_conf:
     file.managed:
         - name: /etc/yum.conf
         - source: salt://common/yum/yum.conf
+        - context:
+            selected_pillar: {{ pillar }}
         - user: root
         - group: root
         - mode: 644
@@ -28,13 +30,13 @@ yum_conf:
 yum_base:
     pkgrepo.managed:
         - name: base
-        - baseurl: http://{{offline_yum_repo_ip}}/mirror/centos/{{releasever}}/os/$basearch/
+        - baseurl: http://{{ offline_yum_repo_ip }}/mirror/centos/{{ releasever }}/os/$basearch/
         - enabled: 1
 
 yum_updates:
     pkgrepo.managed:
         - name: updates
-        - baseurl: http://{{offline_yum_repo_ip}}/mirror/centos/{{releasever}}/updates/$basearch/
+        - baseurl: http://{{ offline_yum_repo_ip }}/mirror/centos/{{ releasever }}/updates/$basearch/
         - enabled: 1
 
 yum_extras:

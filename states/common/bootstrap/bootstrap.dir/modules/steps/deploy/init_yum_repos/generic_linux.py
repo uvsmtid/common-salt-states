@@ -1,3 +1,4 @@
+import os.path
 import logging
 
 from utils.exec_command import call_subprocess
@@ -34,10 +35,9 @@ def do(action_context):
 
     # TODO:
     # * Loop through all required YUM repositories and either install
-    #   necessary RPM packages or copy pre-generated repo configs to
+    #   necessary RPM packages for repository configuration
+    #   or copy pre-generated repo configs to
     #   `/etc/yum.repos.d`.
-    # * Make sure to import RPM key for signed packages.
-    # * Copy pre-generated YUM config `/etc/yum.conf`.
 
     for repo_config in action_context.conf_m.init_yum_repos['yum_repo_configs'].values():
         if 'rpm_key_file' in repo_config:
@@ -45,6 +45,22 @@ def do(action_context):
                 action_context.base_dir,
                 repo_config['rpm_key_file'],
             )
+
+    # Deploy `yum.conf` configuration file.
+    call_subprocess(
+        command_args = [
+            'cp',
+            os.path.join(
+                action_context.base_dir,
+                action_context.conf_m.init_yum_repos['yum_main_config'],
+            ),
+            '/etc/yum.conf',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
 
     logging.critical('NOT FULLY IMPLEMENTED')
 
