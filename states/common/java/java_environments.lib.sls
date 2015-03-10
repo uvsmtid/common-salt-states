@@ -67,10 +67,11 @@ install_rpm_packages_{{ java_environment_id }}:
 
 ###############################################################################
 
-{% macro get_java_environment_JAVA_HOME(
+{%- macro get_java_environment_JAVA_HOME(
         java_environment_id
     )
-%}
-# TODO
-{% endmacro %}
+-%}
+{%- set hosts_os_platform = pillar['system_hosts'][grains['id']]['os_platform'] -%}
+{{- pillar['system_features']['java_environments_configuration']['java_environments'][java_environment_id]['os_platform_configs'][hosts_os_platform]['JAVA_HOME'] -}}
+{%- endmacro -%}
 
