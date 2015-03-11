@@ -70,6 +70,10 @@
 {% endif %}
 
 # Make sure directory under `environment_sources_location` exists.
+# TODO: This will not work bacause `remote_path_to_sources` points to
+#       non-existing directory in the root directory on this hosts.
+#       So, it will always fail in this case when this directory is not there
+#       because of user's permissions.
 make_environment_sources_location_dir_{{ host_config['hostname'] }}_cmd:
     cmd.run:
         - name: 'ssh "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}" "mkdir -p {{ remote_path_to_sources }}"'
