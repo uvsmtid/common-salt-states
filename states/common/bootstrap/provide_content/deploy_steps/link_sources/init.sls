@@ -23,7 +23,7 @@
     )
 %}
 
-{% set bootstrap_platform = target_env_pillar['system_hosts'][selected_host_name]['bootstrap_platform'] %}
+{% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
 
 # Configuration for the step.
 {% set archive_dir_path_in_config = 'resources/sources/' + project_name + '/' + profile_name %}

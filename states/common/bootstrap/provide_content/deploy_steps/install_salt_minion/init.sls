@@ -23,7 +23,7 @@
     )
 %}
 
-{% set bootstrap_platform = target_env_pillar['system_hosts'][selected_host_name]['bootstrap_platform'] %}
+{% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
 
 # Config for the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}:
@@ -40,8 +40,8 @@
                 "src_salt_offline_config_file": "resources/conf/{{ project_name }}/{{ profile_name }}/minion.offline.conf",
                 "dst_salt_config_file": "/etc/salt/minion",
                 "rpm_sources": {
-                    {% for rpm_source_name in deploy_step_config['salt_minion_rpm_sources'][bootstrap_platform].keys() %}
-                    {% set rpm_source_config = deploy_step_config['salt_minion_rpm_sources'][bootstrap_platform][rpm_source_name] %}
+                    {% for rpm_source_name in deploy_step_config['salt_minion_rpm_sources'][os_platform].keys() %}
+                    {% set rpm_source_config = deploy_step_config['salt_minion_rpm_sources'][os_platform][rpm_source_name] %}
                     {% set resource_item_config = target_env_pillar['registered_content_items'][rpm_source_config['resource_id']] %}
                     {% set file_path = resource_item_config['item_parent_dir_path'] + '/' + resource_item_config['item_base_name'] %}
                     "{{ rpm_source_name }}": {
@@ -75,8 +75,8 @@
 
 # Resources used by the step.
 {% set URI_prefix = target_env_pillar['registered_content_config']['URI_prefix'] %}
-{% for rpm_source_name in deploy_step_config['salt_minion_rpm_sources'][bootstrap_platform].keys() %}
-{% set rpm_source_config = deploy_step_config['salt_minion_rpm_sources'][bootstrap_platform][rpm_source_name] %}
+{% for rpm_source_name in deploy_step_config['salt_minion_rpm_sources'][os_platform].keys() %}
+{% set rpm_source_config = deploy_step_config['salt_minion_rpm_sources'][os_platform][rpm_source_name] %}
 {% set resource_item_config = target_env_pillar['registered_content_items'][rpm_source_config['resource_id']] %}
 {% set file_path = resource_item_config['item_parent_dir_path'] + '/' + resource_item_config['item_base_name'] %}
 {{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:

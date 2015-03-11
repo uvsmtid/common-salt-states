@@ -23,7 +23,7 @@
     )
 %}
 
-{% set bootstrap_platform = target_env_pillar['system_hosts'][selected_host_name]['bootstrap_platform'] %}
+{% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
 
 # Config for the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}:
