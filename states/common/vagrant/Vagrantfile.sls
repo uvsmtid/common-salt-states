@@ -108,7 +108,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :dev => '{{ instance_configuration['host_bridge_interface'] }}',
         :libvirt__netmask => '{{ network_config['netmask'] }}',
         :libvirt__network_name => '{{ network_defined_in }}',
-        :libvirt__forward_mode => 'route',
+        :libvirt__forward_mode => 'nat',
         # Use DHCP to offer addresses to avoid too long initialization
         # of network interfaces during first boot (before static IP is
         # configured by Vagrant).
