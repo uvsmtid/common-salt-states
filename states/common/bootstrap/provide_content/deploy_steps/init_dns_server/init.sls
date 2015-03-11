@@ -34,8 +34,8 @@
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 'resolv_conf_file': 'resources/examples/uvsmtid/centos-5.5-minimal/resolv.conf',
-                'dns_server_ip': '8.8.8.8',
-                'remote_hostname': 'google.com',
+                'dns_server_ip': '10.77.1.198',
+                'remote_hostname': 'example.com',
             }
         - show_changes: True
         - require:
