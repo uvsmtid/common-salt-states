@@ -38,6 +38,7 @@
                 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
                 {% for yum_repo_config_name in deploy_step_config['yum_repo_configs'][os_platform].keys() %}
                 {% set yum_repo_config = deploy_step_config['yum_repo_configs'][os_platform][yum_repo_config_name] %}
+                {% if yum_repo_config['installation_type'] %}
                     '{{ yum_repo_config_name }}': {
                         # TODO: Depending on installation type, there should be
                         #       either deployment of repo configuration files
@@ -52,6 +53,7 @@
                         'rpm_key_file': 'resources/depository/{{ project_name }}/{{ content_conf['item_parent_dir_path'] }}/{{ content_conf['item_base_name'] }}'
                         {% endif %}
                     },
+                {% endif %}
                 {% endfor %}
                 },
             }
