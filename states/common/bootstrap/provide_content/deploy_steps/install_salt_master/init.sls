@@ -36,7 +36,7 @@
         - content: |
             {{ deploy_step }} = {
                 "step_enabled": {{ deploy_step_config['step_enabled'] }},
-                "src_salt_config_file": "resources/conf/{{ project_name }}/{{ profile_name }}/master.conf",
+                "src_salt_config_file": "resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/master.conf",
                 "dst_salt_config_file": "/etc/salt/master",
                 "rpm_sources": {
                     {% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][os_platform].keys() %}
@@ -60,7 +60,7 @@
 # Pre-build config files used by the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_file:
     file.managed:
-        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/master.conf'
+        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/master.conf'
         - source: '{{ deploy_step_config['salt_master_template'] }}'
         - context:
             project_name: '{{ project_name }}'

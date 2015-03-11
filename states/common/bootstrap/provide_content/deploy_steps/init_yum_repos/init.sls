@@ -33,7 +33,7 @@
         - content: |
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
-                'yum_main_config': 'resources/conf/{{ project_name }}/{{ profile_name }}/yum.conf',
+                'yum_main_config': 'resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/yum.conf',
                 'yum_repo_configs': {
                 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
                 {% for yum_repo_config_name in deploy_step_config['yum_repo_configs'][os_platform].keys() %}
@@ -63,9 +63,10 @@
 
 {{ requisite_config_file_id }}_{{ deploy_step }}_yum.conf:
     file.managed:
-        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/yum.conf'
+        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/yum.conf'
         - source: '{{ deploy_step_config['yum_main_config_template'] }}'
         - template: jinja
+        - makedirs: True
         - context:
             selected_pillar: {{ target_env_pillar }}
         - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
