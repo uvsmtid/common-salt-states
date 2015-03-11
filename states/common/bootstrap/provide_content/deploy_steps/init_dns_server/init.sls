@@ -33,13 +33,24 @@
         - content: |
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
-                'resolv_conf_file': 'resources/examples/uvsmtid/centos-5.5-minimal/resolv.conf',
-                'dns_server_ip': '10.77.1.198',
-                'remote_hostname': 'example.com',
+                'resolv_conf_file': 'resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/resolv.conf',
+                'dns_server_ip': '{{ target_env_pillar['internal_net']['dns_server'] }}',
+                'remote_hostname': '{{ target_env_pillar['internal_net']['resolvable_hostname'] }}',
             }
         - show_changes: True
         - require:
             - file: {{ requisite_config_file_id }}
+
+{{ requisite_config_file_id }}_{{ deploy_step }}_resolv.conf:
+    file.managed:
+        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/resolv.conf'
+        - source: '{{ deploy_step_config['resolv_conf_template'] }}'
+        - template: jinja
+        - makedirs: True
+        - context:
+            selected_pillar: {{ target_env_pillar }}
+        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
 
 {% endmacro %}
 
