@@ -71,7 +71,7 @@ required to complete setup.
   host where Salt minion receives configuration data from its Salt master.
 * [online-minion][12] case obviously sets up Salt minion where Salt master
   is already assumed running somewhere on the network.
-* [standalone-minion][13] sets up Salt minion with additional master-side
+* [offline-minion-installer][13] sets up Salt minion with additional master-side
   configuration to make it autonomous (requiring no connection to Salt master
   to retrieve configuration data).
 
@@ -136,7 +136,7 @@ required to complete setup.
 
 **Complications:** none.
 
-### `standalone-minion` ###
+### `offline-minion-installer` ###
 
 **Case:**
 * This bootstrap is a "pre-built" installer which is run on individual
@@ -274,7 +274,7 @@ TODO: Is there something to mention for `deploy` action?
 [10]: #use-cases
 [11]: #initial-master
 [12]: #online-minion
-[13]: #standalone-minion
+[13]: #offline-minion-installer
 
 [20]: docs/pillars/common/registered_content_config/URI_prefix/readme.md
 

@@ -40,20 +40,20 @@ class deploy_template_method (action_context):
         # Sources are linked only on machines which have access to them.
         "link_sources": [
             'initial-master',
-            'standalone-minion',
+            'offline-minion-installer',
         ],
 
         # Sources are linked only on machines which have access to them.
         "link_resources": [
             'initial-master',
-            'standalone-minion',
+            'offline-minion-installer',
         ],
 
         "activate_salt_master": [
             'initial-master',
         ],
 
-        # Note that Salt minion is not activated for `standalone-minion`.
+        # Note that Salt minion is not activated for `offline-minion-installer`.
         "activate_salt_minion": [
             'initial-master',
             'online-minion',
@@ -62,7 +62,7 @@ class deploy_template_method (action_context):
         "run_init_states": "always",
 
         "run_highstate": [
-            'standalone-minion',
+            'offline-minion-installer',
         ],
     }
 
