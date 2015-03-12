@@ -52,7 +52,7 @@
 
 ensure_source_link_{{ link_config_name }}_cmd:
     cmd.run:
-        - name: '{{ config_temp_dir }}/ensure_source_link.sh "{{ local_path }}" "{{ link_config['link_path'] }}" "{{ link_config['target_path'] }}"'
+        - name: '{{ config_temp_dir }}/ensure_source_link.sh "{{ local_path }}" "{{ link_config['abs_link_base_path'] }}" "{{ link_config['rel_target_path'] }}"'
         - require:
             - file: '{{ config_temp_dir }}/ensure_source_link.sh'
             - file: '{{ local_path }}_{{ link_config_name }}'
