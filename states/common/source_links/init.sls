@@ -7,7 +7,7 @@
 {% if grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] %} # controller_role
 
 # Ensure links exist and point to the source repository on Salt master.
-{% if pillar['system_features']['ensure_source_links']['feature_enabled'] %} # ensure_source_links
+{% if pillar['system_features']['source_symlinks_configuration']['feature_enabled'] %} # source_symlinks_configuration
 
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
 
@@ -21,9 +21,9 @@
         - group: root
         - mode: 744
 
-{% for link_config_name in pillar['system_features']['ensure_source_links']['source_links'].keys() %} # link_config_name
+{% for link_config_name in pillar['system_features']['source_symlinks_configuration']['source_links'].keys() %} # link_config_name
 
-{% set link_config = pillar['system_features']['ensure_source_links']['source_links'][link_config_name] %}
+{% set link_config = pillar['system_features']['source_symlinks_configuration']['source_links'][link_config_name] %}
 {% set repo_name = link_config['repo_name'] %}
 {% set repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][repo_name] %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name][repo_type] %}
@@ -68,7 +68,7 @@ ensure_source_link_{{ link_config_name }}_cmd:
 
 {% endfor %} # link_config_name
 
-{% endif %} # ensure_source_links
+{% endif %} # source_symlinks_configuration
 
 {% endif %} # controller_role
 

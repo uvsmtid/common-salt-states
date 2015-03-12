@@ -5,7 +5,7 @@
 
 # TODO: Use Salt job on the target minion to pull control scripts from
 #       Salt itself which is already aviailable there (see pillar config
-#       `ensure_source_links`).
+#       `source_symlinks_configuration`).
 #       This state makes sense if there was a need to deploy scripts on
 #       non-Salt-controlled host. However, these `scp`-ing is done to
 #       controlled minions to (making sound it more pointless) later
