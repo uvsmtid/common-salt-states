@@ -13,7 +13,7 @@
 
 '{{ config_temp_dir }}/ensure_source_link.sh':
     file.managed:
-        - source: salt://common/source_links/ensure_source_link.sh
+        - source: salt://common/source_symlinks/ensure_source_link.sh
         #- template: jinja
         - makedirs: True
         - dir_mode: 755
@@ -21,9 +21,9 @@
         - group: root
         - mode: 744
 
-{% for link_config_name in pillar['system_features']['source_symlinks_configuration']['source_links'].keys() %} # link_config_name
+{% for link_config_name in pillar['system_features']['source_symlinks_configuration']['source_symlinks'].keys() %} # link_config_name
 
-{% set link_config = pillar['system_features']['source_symlinks_configuration']['source_links'][link_config_name] %}
+{% set link_config = pillar['system_features']['source_symlinks_configuration']['source_symlinks'][link_config_name] %}
 {% set repo_name = link_config['repo_name'] %}
 {% set repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][repo_name] %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name][repo_type] %}

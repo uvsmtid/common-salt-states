@@ -16,7 +16,7 @@ from host configuration to compose Jenkins credentials id.
 
 ## Access to all sources on Salt minions ##
 
-State [common.source_links][5] determines location of sources on Salt master
+State [common.source_symlinks][5] determines location of sources on Salt master
 to expose repositories to Salt minions in Salt states using `salt://` URI
 scheme.
 
@@ -28,6 +28,6 @@ is actually the Salt master).
 [2]: docs/pillars/common/system_hosts/_id/hostname/readme.md
 [3]: docs/pillars/common/system_hosts/_id/primary_user/readme.md
 [4]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/origin_uri_ssh_path/readme.md
-[5]: docs/states/common/source_links/init.sls.md
+[5]: docs/states/common/source_symlinks/init.sls.md
 [6]: docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir/readme.md
 

@@ -1,5 +1,5 @@
 
-State `common.source_links` automatically sets up links to sources in various
+State `common.source_symlinks` automatically sets up links to sources in various
 repositories. This makes it possible for Salt master to expose files in these
 repositories to Salt states using `salt://` URI scheme.
 

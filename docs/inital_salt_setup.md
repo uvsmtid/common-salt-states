@@ -159,7 +159,7 @@ file_roots:
         # The following directory is a common place for all additional
         # symlinks pointing to various source code repositories.
         # These symlinks are configured automatically by using
-        # `common.source_links` state - see below.
+        # `common.source_symlinks` state - see below.
         - /srv/sources
 ```
 Set `/srv/states` symlink to the Salt configuration sources:
@@ -234,17 +234,17 @@ salt-key -a <key> # accept
 
 * Test (dry run):
 ```
-salt '*' state.sls common.source_links test=True
+salt '*' state.sls common.source_symlinks test=True
 ```
 * Apply:
 ```
-salt '*' state.sls common.source_links test=False
+salt '*' state.sls common.source_symlinks test=False
 ```
 
 * Render state from minion perspective:
 ```
 # show specific state
-salt '*' state.show_sls common.source_links
+salt '*' state.show_sls common.source_symlinks
 
 # show top
 salt '*' state.show_top
