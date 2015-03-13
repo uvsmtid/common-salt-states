@@ -57,6 +57,9 @@
         - require:
             - file: {{ requisite_config_file_id }}
 
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_URI_scheme_abs_links_base_dir_path_from_pillar with context %}
+
 # Pre-build config files used by the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_file:
     file.managed:
@@ -65,6 +68,7 @@
         - context:
             project_name: '{{ project_name }}'
             profile_name: '{{ profile_name }}'
+            resources_links_dir: '{{ get_URI_scheme_abs_links_base_dir_path_from_pillar('salt://', target_env_pillar) }}'
         - template: jinja
         - makedirs: True
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'

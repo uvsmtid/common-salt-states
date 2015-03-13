@@ -58,6 +58,9 @@
         - require:
             - file: {{ requisite_config_file_id }}
 
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_URI_scheme_abs_links_base_dir_path_from_pillar with context %}
+
 # Pre-build config files used by the step.
 {% for minion_type in [ 'online', 'offline' ] %}
 {% set salt_minion_template = 'salt_minion_' + minion_type + '_template' %}
@@ -69,6 +72,7 @@
             project_name: '{{ project_name }}'
             profile_name: '{{ profile_name }}'
             selected_host_name: '{{ selected_host_name }}'
+            resources_links_dir: '{{ get_URI_scheme_abs_links_base_dir_path_from_pillar('salt://', target_env_pillar) }}'
         - template: jinja
         - makedirs: True
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'

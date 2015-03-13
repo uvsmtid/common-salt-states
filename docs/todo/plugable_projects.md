@@ -45,6 +45,7 @@ file_roots:
     base:
         - /srv/states
         - /srv/sources
+        - /srv/resources
 ```
 What if remove `/srv/sources` and rename `/srv/states` to `/srv/artifacts`?
 We can generalize management of "projects", "sources" and "resources".

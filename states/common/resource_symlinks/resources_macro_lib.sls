@@ -38,14 +38,27 @@
 
 ###############################################################################
 
+{%- macro get_URI_scheme_abs_links_base_dir_path_from_pillar(
+        URI_prefix_scheme
+        ,
+        pillar_data
+    )
+-%}
+
+{%- set URI_prefix_scheme_configuration = pillar_data['system_features']['resource_repositories_configuration']['URI_prefix_schemes_configurations'][URI_prefix_scheme] -%}
+
+{{- URI_prefix_scheme_configuration['abs_resource_links_base_dir_path'] -}}
+
+{%- endmacro -%}
+
+###############################################################################
+
 {%- macro get_URI_scheme_abs_links_base_dir_path(
         URI_prefix_scheme
     )
 -%}
 
-{%- set URI_prefix_scheme_configuration = pillar['system_features']['resource_repositories_configuration']['URI_prefix_schemes_configurations'][URI_prefix_scheme] -%}
-
-{{- URI_prefix_scheme_configuration['abs_resource_links_base_dir_path'] -}}
+{{- get_URI_scheme_abs_links_base_dir_path_from_pillar(URI_prefix_scheme, pillar) -}}
 
 {%- endmacro -%}
 
@@ -75,7 +88,7 @@
 {%- set URI_prefix_scheme_configuration = pillar['system_features']['resource_repositories_configuration']['URI_prefix_schemes_configurations'][resource_repository_config_URI_prefix_scheme] -%}
 
 {%- set URI_scheme_abs_links_base_dir_path = URI_prefix_scheme_configuration['abs_resource_links_base_dir_path'] -%}
-{%- set rel_resource_link_path = resource_repository_config['rel_resource_link_base_dir_path'] + resource_repository_config['resource_link_basename'] -%}
+{%- set rel_resource_link_path = resource_repository_config['rel_resource_link_base_dir_path'] + '/' + resource_repository_config['resource_link_basename'] -%}
 
 {{- URI_scheme_abs_links_base_dir_path -}}
 /

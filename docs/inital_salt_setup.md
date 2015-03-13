@@ -147,7 +147,7 @@ in its configuration file (`/etc/salt/master`) and beyond.
 
 This should be reviewed when Salt is changed to use one project or another.
 
-### Location of States and sources ###
+### Location of States, sources and resources ###
 
 ```
 file_roots:
@@ -161,6 +161,9 @@ file_roots:
         # These symlinks are configured automatically by using
         # `common.source_symlinks` state - see below.
         - /srv/sources
+
+        # A directory with symlinks to resources.
+        - /srv/resources
 ```
 Set `/srv/states` symlink to the Salt configuration sources:
 ```
