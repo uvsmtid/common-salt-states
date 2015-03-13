@@ -1,41 +1,154 @@
 # Set of macros to work with resources.
 
 ###############################################################################
+# item_base_name
+###############################################################################
+
+{%- macro get_registered_content_item_base_name_from_pillar(
+        registered_content_item_id
+        ,
+        pillar_data
+    )
+-%}
+
+{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+
+{{- registered_content_item_config['item_base_name'] -}}
+
+{%- endmacro -%}
+
+#------------------------------------------------------------------------------
+
+{%- macro get_registered_content_item_base_name(
+        registered_content_item_id
+    )
+-%}
+
+{{- get_registered_content_item_base_name(registered_content_item_id, pillar) -}}
+
+{%- endmacro -%}
+
+###############################################################################
+# item_parent_dir_path
+###############################################################################
+
+{%- macro get_registered_content_item_parent_dir_path_from_pillar(
+        registered_content_item_id
+        ,
+        pillar_data
+    )
+-%}
+
+{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+
+{{- registered_content_item_config['item_parent_dir_path'] -}}
+
+{%- endmacro -%}
+
+#------------------------------------------------------------------------------
+
+{%- macro get_registered_content_item_parent_dir_path(
+        registered_content_item_id
+    )
+-%}
+
+{{- get_registered_content_item_parent_dir_path(registered_content_item_id, pillar) -}}
+
+{%- endmacro -%}
+
+###############################################################################
+# item_rel_path
+###############################################################################
+
+{%- macro get_registered_content_item_rel_path_from_pillar(
+        registered_content_item_id
+        ,
+        pillar_data
+    )
+-%}
+
+{{- get_registered_content_item_parent_dir_path_from_pillar(registered_content_item_id, pillar_data) -}}
+/
+{{- get_registered_content_item_base_name_from_pillar(registered_content_item_id, pillar_data) -}}
+
+{%- endmacro -%}
+
+#------------------------------------------------------------------------------
+
+{%- macro get_registered_content_item_rel_path(
+        registered_content_item_id
+    )
+-%}
+
+{{- get_registered_content_item_rel_path(registered_content_item_id, pillar) -}}
+
+{%- endmacro -%}
+
+###############################################################################
+# item_URI
+###############################################################################
+
+{%- macro get_registered_content_item_URI_from_pillar(
+        registered_content_item_id
+        ,
+        pillar_data
+    )
+-%}
+
+{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+{%- set resource_repository_config = pillar_data['system_features']['resource_repositories_configuration']['resource_respositories'][registered_content_item_config['resource_repository']] -%}
+
+{{- resource_repository_config['URI_prefix_scheme'] -}}
+{{- resource_repository_config['rel_resource_link_base_dir_path'] -}}
+/
+{{- resource_repository_config['resource_link_basename'] -}}
+/
+{{- get_registered_content_item_rel_path_from_pillar(registered_content_item_id, pillar_data) -}}
+
+{%- endmacro -%}
+
+#------------------------------------------------------------------------------
 
 {%- macro get_registered_content_item_URI(
         registered_content_item_id
     )
 -%}
 
-{%- set registered_content_item_config = pillar['registered_content_items'][registered_content_item_id] -%}
-{%- set resource_repository_config = pillar['system_features']['resource_repositories_configuration']['resource_respositories'][registered_content_item_config['resource_repository']] -%}
-{%- set URI_scheme_config = pillar['system_features']['resource_repositories_configuration']['URI_prefix_schemes_configurations'][resource_repository_config['URI_prefix_scheme']] -%}
-
-{{- resource_repository_config['URI_prefix_scheme'] -}}
-/
-{{- resource_repository_config['rel_resource_link_base_dir_path'] -}}
-/
-{{- resource_repository_config['resource_link_basename'] -}}
-/
-{{- registered_content_item_config['item_parent_dir_path'] -}}
-/
-{{- registered_content_item_config['item_base_name'] -}}
+{{- get_registered_content_item_URI_from_pillar(registered_content_item_id, pillar) -}}
 
 {%- endmacro -%}
 
+
 ###############################################################################
+# item_hash
+###############################################################################
+
+{%- macro get_registered_content_item_hash_from_pillar(
+        registered_content_item_id
+        ,
+        pillar_data
+    )
+-%}
+
+{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+
+{{- registered_content_item_config['item_content_hash'] -}}
+
+{%- endmacro -%}
+
+#------------------------------------------------------------------------------
 
 {%- macro get_registered_content_item_hash(
         registered_content_item_id
     )
 -%}
 
-{%- set registered_content_item_config = pillar['registered_content_items'][registered_content_item_id] -%}
-
-{{- registered_content_item_config['item_content_hash'] -}}
+{{- get_registered_content_item_hash_from_pillar(registered_content_item_id, pillar) -}}
 
 {%- endmacro -%}
 
+###############################################################################
+# URI_scheme_abs_links_base_dir_path
 ###############################################################################
 
 {%- macro get_URI_scheme_abs_links_base_dir_path_from_pillar(
@@ -51,7 +164,7 @@
 
 {%- endmacro -%}
 
-###############################################################################
+#------------------------------------------------------------------------------
 
 {%- macro get_URI_scheme_abs_links_base_dir_path(
         URI_prefix_scheme
@@ -62,6 +175,8 @@
 
 {%- endmacro -%}
 
+###############################################################################
+# resource_repository_target_path
 ###############################################################################
 
 {%- macro get_resource_repository_target_path(
@@ -77,6 +192,9 @@
 {%- endmacro -%}
 
 ###############################################################################
+# resource_repository_link_path
+###############################################################################
+
 
 {%- macro get_resource_repository_link_path(
         resource_repository_id

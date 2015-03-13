@@ -242,6 +242,8 @@ pecularities to note:
   for bootstrap `deploy` action, the value of `URI_prefix` has to be
   rewritten to `salt://` URI scheme.
 
+TODO: `pillar['registered_content_config']['URI_prefix']` is not used anymore.
+
 TODO: What else `build` actually does? Downloads resources? Checks out
 repositories? And, as above, rewrites pillar.
 

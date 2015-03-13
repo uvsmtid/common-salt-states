@@ -1,4 +1,6 @@
 
+TODO: `pillar['registered_content_config']['URI_prefix']` is not used anymore.
+
 Key `URI_prefix` defines root (or base) for location of all content items
 listed under [registered_content_items][].
 

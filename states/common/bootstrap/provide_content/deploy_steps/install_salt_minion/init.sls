@@ -25,6 +25,11 @@
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
 
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_URI_scheme_abs_links_base_dir_path_from_pillar with context %}
+{% from resources_macro_lib import get_registered_content_item_rel_path_from_pillar with context %}
+{% from resources_macro_lib import get_registered_content_item_URI_from_pillar with context %}
+
 # Config for the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
@@ -43,8 +48,7 @@
                     {% for rpm_source_name in deploy_step_config['salt_minion_rpm_sources'][os_platform].keys() %}
                     {% set rpm_source_config = deploy_step_config['salt_minion_rpm_sources'][os_platform][rpm_source_name] %}
                     {% if rpm_source_config['source_type'] %}
-                    {% set resource_item_config = target_env_pillar['registered_content_items'][rpm_source_config['resource_id']] %}
-                    {% set file_path = resource_item_config['item_parent_dir_path'] + '/' + resource_item_config['item_base_name'] %}
+                    {% set file_path = get_registered_content_item_rel_path_from_pillar(rpm_source_config['resource_id'], target_env_pillar) %}
                     "{{ rpm_source_name }}": {
                         "source_type": "{{ rpm_source_config['source_type'] }}",
                         # Note that all resources are shared per project (no profile sub-directory).
@@ -57,9 +61,6 @@
         - show_changes: True
         - require:
             - file: {{ requisite_config_file_id }}
-
-{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
-{% from resources_macro_lib import get_URI_scheme_abs_links_base_dir_path_from_pillar with context %}
 
 # Pre-build config files used by the step.
 {% for minion_type in [ 'online', 'offline' ] %}
@@ -80,17 +81,15 @@
 {% endfor %}
 
 # Resources used by the step.
-{% set URI_prefix = target_env_pillar['registered_content_config']['URI_prefix'] %}
 {% for rpm_source_name in deploy_step_config['salt_minion_rpm_sources'][os_platform].keys() %}
 {% set rpm_source_config = deploy_step_config['salt_minion_rpm_sources'][os_platform][rpm_source_name] %}
 {% if rpm_source_config['source_type'] %}
-{% set resource_item_config = target_env_pillar['registered_content_items'][rpm_source_config['resource_id']] %}
-{% set file_path = resource_item_config['item_parent_dir_path'] + '/' + resource_item_config['item_base_name'] %}
+{% set file_path = get_registered_content_item_rel_path_from_pillar(rpm_source_config['resource_id'], target_env_pillar) %}
 {{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:
     file.managed:
         # Note that all resources are shared per project (no profile sub-directory).
         - name: '{{ bootstrap_dir }}/resources/bootstrap/{{ project_name }}/{{ file_path }}'
-        - source: '{{ URI_prefix }}/{{ file_path }}'
+        - source: '{{ get_registered_content_item_URI_from_pillar(rpm_source_config['resource_id'], target_env_pillar) }}'
         - template: ~
         - makedirs: True
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'

@@ -22,8 +22,6 @@
 
 {% if pillar['registered_content_items']['7zip_64_bit_windows']['enable_installation'] %}
 
-{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
-
 # 7-zip installation.
 install_7zip_on_windows:
     cmd.run:
@@ -39,11 +37,15 @@ install_7zip_on_windows:
         - template: jinja
         - makedirs: True
 
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
+
 # Download file from depository_role.
 '{{ config_temp_dir }}/{{ pillar['registered_content_items']['7zip_64_bit_windows']['item_base_name'] }}':
     file.managed:
-        - source: "{{ URI_prefix }}/{{ pillar['registered_content_items']['7zip_64_bit_windows']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['7zip_64_bit_windows']['item_base_name'] }}"
-        - source_hash: {{ pillar['registered_content_items']['7zip_64_bit_windows']['item_content_hash'] }}
+        - source: '{{ get_registered_content_item_URI('7zip_64_bit_windows') }}'
+        - source_hash: '{{ get_registered_content_item_hash('7zip_64_bit_windows') }}'
         - makedirs: True
 
 {% endif %} # enable_installation

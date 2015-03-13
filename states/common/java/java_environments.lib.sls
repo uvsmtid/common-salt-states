@@ -16,6 +16,10 @@
 
 {% set je_config = pillar['system_features']['java_environments_configuration']['java_environments'][java_environment_id] %}
 
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
+
 {% if not je_config['installation_type'] %}
 # Nothing to do.
 {% elif je_config['installation_type'] == 'rpm_sources' %} # installation_type
@@ -26,7 +30,6 @@
 {% set hosts_os_platform = pillar['system_hosts'][grains['id']]['os_platform'] %}
 {% set rpm_options = rpm_source_conf['rpm_options'] %}
 {% set rpm_version = je_config['os_platform_configs'][hosts_os_platform]['rpm_version'] %}
-{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
 
 {% if not rpm_source_conf['source_type'] %} # source_type
 # Nothing to do.
@@ -37,8 +40,8 @@
 download_rpm_package_{{ java_environment_id }}_{{ rpm_source_name }}:
     file.managed:
         - name: '{{ config_temp_dir }}/{{ content_item_conf['item_base_name'] }}'
-        - source: '{{ URI_prefix }}/{{ content_item_conf['item_parent_dir_path'] }}/{{ content_item_conf['item_base_name'] }}'
-        - source_hash: {{ content_item_conf['item_content_hash'] }}
+        - source: '{{ get_registered_content_item_URI(rpm_source_conf['resource_id']) }}'
+        - source_hash: '{{ get_registered_content_item_hash(rpm_source_conf['resource_id']) }}'
         - makedirs: True
 
 run_rpm_command_{{ java_environment_id }}_{{ rpm_source_name }}:

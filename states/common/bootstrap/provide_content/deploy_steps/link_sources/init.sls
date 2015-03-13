@@ -25,6 +25,8 @@
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
 
+{% set base_dir = bootstrap_dir + '/resources/rewritten_pillars/' + project_name + '/' + profile_name %}
+
 # Configuration for the step.
 {% set archive_dir_path_in_config = 'resources/sources/' + project_name + '/' + profile_name %}
 {% set archive_dir_path = bootstrap_dir + '/' + archive_dir_path_in_config %}
@@ -96,34 +98,6 @@
             - file: {{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
 {% endif %} # Git SCM
 
-# Rewrite `target_env_pillar`.
-# See:
-#   http://stackoverflow.com/q/11047886/441652
-#   http://stackoverflow.com/a/3479970/441652
-{% set URI_prefix_saved = target_env_pillar['registered_content_config']['URI_prefix'] %}
-# TODO: Resource location should be adjusted trough symlinks just like symlinks to sources.
-#       At the moment all resources during `deploy` appear in
-#       `resources/{{ project_name }} ` directory.
-{% do target_env_pillar['registered_content_config'].update({ 'URI_prefix': 'salt://source_roots/{{ selected_repo_name }}/resources/{{ project_name }}' }) %}
-{% set base_dir = bootstrap_dir + '/resources/rewritten_pillars/' + project_name + '/' + profile_name %}
-{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}_rewirte_pillar:
-    file.managed:
-        # Note that location of the pillar is _assumed_.
-        # TODO: Make location of the pillar declared, otherwise if pillar is
-        #       located in different place, rewrite will be merge with
-        #       unpredictable results.
-        - name: '{{ base_dir }}/pillars/{{ project_name }}/{{ profile_name }}.sls'
-        - source: ~
-        - makedirs: True
-        # Render `target_env_pillar` as JSON.
-        - contents: |
-            {{ target_env_pillar }}
-        - require:
-            - cmd: {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}
-
-# Change target pillar back.
-{% do target_env_pillar['registered_content_config'].update({ 'URI_prefix': URI_prefix_saved }) %}
-
 # Add the rewritten `target_env_pillar` to the initial archive.
 {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}_add_rewritten_pillar:
     cmd.run:
@@ -131,7 +105,6 @@
         # Tar always work in current directory.
         - cwd: '{{ base_dir }}'
         - require:
-            - file: {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}_rewirte_pillar
             - cmd: {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}
 
 {% if selected_repo_type != 'git' %} # ! Git SCM

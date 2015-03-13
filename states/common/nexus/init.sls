@@ -30,13 +30,15 @@
 
 {% if pillar['registered_content_items']['nexus_maven_repository_manager']['enable_installation'] %}
 
-{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
 
 download_nexus_archive:
     file.managed:
         - name: '{{ config_temp_dir }}/nexus/nexus-bundle.tar.gz'
-        - source: '{{ URI_prefix }}/{{ pillar['registered_content_items']['nexus_maven_repository_manager']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['nexus_maven_repository_manager']['item_base_name'] }}'
-        - source_hash: {{ pillar['registered_content_items']['nexus_maven_repository_manager']['item_content_hash'] }}
+        - source: '{{ get_registered_content_item_URI('nexus_maven_repository_manager') }}'
+        - source_hash: '{{ get_registered_content_item_hash('nexus_maven_repository_manager') }}'
         - makedirs: True
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}

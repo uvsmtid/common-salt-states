@@ -11,6 +11,7 @@ For example, documentation for all pillar elements used by `common` project
 are under `common` sub-directory and match the following way:
 * [File][1] `system_hosts/readme.md` documents pillar data accessed as: `pillar['system_hosts']`.
 * [File][2] `registered_content_config/URI_prefix/readme.md` documents pillar data accessed as: `pillar['registered_content_config']['URI_prefix']`.
+  TODO: Use another example `pillar['registered_content_config']['URI_prefix']` is not used anymore.
 * [File][3] `system_host_roles/jenkins_master_role/readme.md` documents pillar data accessed as: `pillar['system_host_roles']['jenkins_master_role']`.
 * [File][4] `system_hosts/_id/hostname/readme.md` documents pillar data accessed using any `_id` as: `pillar['system_hosts'][_id]['hostname'].`
 

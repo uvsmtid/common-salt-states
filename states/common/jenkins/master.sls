@@ -26,7 +26,9 @@ include:
 
 {% if pillar['registered_content_items']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %} # enable_installation
 
-{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
 
 /etc/yum.repos.d/jenkins.repo:
     file.managed:
@@ -39,8 +41,8 @@ include:
 retrieve_jenkins_yum_repository_key:
     file.managed:
         - name: '{{ config_temp_dir }}/jenkins/jenkins-ci.org.key'
-        - source: '{{ URI_prefix }}/distrib/jenkins/jenkins-ci.org.key'
-        - source_hash: {{ pillar['registered_content_items']['jenkins_yum_repository_rpm_verification_key']['item_content_hash'] }}
+        - source: '{{ get_registered_content_item_URI('jenkins_yum_repository_rpm_verification_key') }}'
+        - source_hash: '{{ get_registered_content_item_hash('jenkins_yum_repository_rpm_verification_key') }}'
         - makedirs: True
 
 import_jenkins_yum_repository_key:

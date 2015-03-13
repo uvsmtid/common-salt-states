@@ -4,7 +4,9 @@
 
 {% if pillar['registered_content_items'][registered_content_item_id]['enable_installation'] %}
 
-{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
 
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
@@ -12,8 +14,8 @@
 
 '{{ config_temp_dir }}/{{ pillar['registered_content_items'][registered_content_item_id]['item_base_name'] }}':
     file.managed:
-        - source: '{{ URI_prefix }}/{{ pillar['registered_content_items'][registered_content_item_id]['item_parent_dir_path'] }}/{{ pillar['registered_content_items'][registered_content_item_id]['item_base_name'] }}'
-        - source_hash: {{ pillar['registered_content_items'][registered_content_item_id]['item_content_hash'] }}
+        - source: '{{ get_registered_content_item_URI(registered_content_item_id) }}'
+        - source_hash: '{{ get_registered_content_item_hash(registered_content_item_id) }}'
         - makedirs: True
 
 install_jenkins_{{ registered_content_item_id }}:

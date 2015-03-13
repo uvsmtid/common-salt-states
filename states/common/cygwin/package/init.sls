@@ -21,8 +21,6 @@
 
 {% if pillar['registered_content_items']['cygwin_package_64_bit_windows']['enable_installation'] %}
 
-{% set URI_prefix = pillar['registered_content_config']['URI_prefix'] %}
-
 {% set cygwin_root_dir = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] %}
 {% set cygwin_installation_completion_file_indicator = pillar['registered_content_items']['cygwin_package_64_bit_windows']['completion_file_indicator'] %}
 
@@ -72,11 +70,15 @@ set_CYGWIN_env_var_value:
         - makedirs: True
         - template: jinja
 
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
+
 # Archive:
 '{{ config_temp_dir }}\{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_base_name'] }}':
     file.managed:
-        - source: "{{ URI_prefix }}/{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_parent_dir_path'] }}/{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_base_name'] }}"
-        - source_hash: {{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_content_hash'] }}
+        - source: '{{ get_registered_content_item_URI('cygwin_package_64_bit_windows') }}'
+        - source_hash: '{{ get_registered_content_item_hash('cygwin_package_64_bit_windows') }}'
         - makedirs: True
 
 # Create installation indicator:
