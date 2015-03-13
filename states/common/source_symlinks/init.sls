@@ -35,7 +35,7 @@
 # these Salt minions are used without Salt master - standalone).
 {% if source_system_host == grains['id'] %} # source_system_host
 
-{% if repo_type == 'git' %} # git
+{% if repo_type == 'git' %} # repo_type
 
 # Note that only `posix_user_home_dir` is used because Salt master where links are created can only be Linux host.
 # TODO: Move this code to `git_uri.lib.sls`.
@@ -43,12 +43,18 @@
 {% set local_path_rest = repo_config['origin_uri_ssh_path'] %}
 {% set local_path = local_path_base + '/' + local_path_rest %}
 
-{% endif %} # git
+{% else %} # repo_type
 
+# Fail by referencing undefined variable.
+# The feature is not implemented for non-Git repos.
+{{ NOT_IMPLEMENTED_FOR_NON_GIT_REPOS }}
+
+{% endif %} # repo_type
+
+# Make sure target exists.
 '{{ local_path }}_{{ link_config_name }}':
-    file.directory:
+    file.exists:
         - name: '{{ local_path }}'
-        - makedirs: False
 
 ensure_source_link_{{ link_config_name }}_cmd:
     cmd.run:
