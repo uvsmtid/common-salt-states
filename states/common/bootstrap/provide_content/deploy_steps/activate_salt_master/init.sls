@@ -23,6 +23,8 @@
     )
 %}
 
+{% from 'common/libs/host_config_queries.sls' import get_host_id_by_role_from_pillar with context %}
+
 {{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
@@ -34,6 +36,12 @@
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 'service_name': 'salt-master',
+                {% set salt_master_host = get_host_id_by_role_from_pillar('controller_role', target_env_pillar) %}
+                {% if salt_master_host == selected_host_name %}
+                'is_salt_master': True,
+                {% else %}
+                'is_salt_master': False,
+                {% endif %}
             }
         - show_changes: True
         - require:

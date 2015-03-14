@@ -8,6 +8,8 @@ from utils.process_zero import start_service_systemd as start_service
 
 def do(action_context):
 
+    assert(action_context.conf_m.activate_salt_master['is_salt_master'])
+
     enable_service(action_context.conf_m.activate_salt_master['service_name'])
     start_service(action_context.conf_m.activate_salt_master['service_name'])
 

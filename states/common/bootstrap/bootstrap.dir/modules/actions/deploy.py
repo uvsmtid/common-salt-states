@@ -108,6 +108,7 @@ class deploy_template_method (action_context):
         ):
             if self.run_use_case not in self.action_step_to_use_case_map:
                 logging.debug("skip not applicable step: " + step_name)
+                return
         else:
             # At this point the only allowed value is "always".
             if "always" != self.action_step_to_use_case_map[step_name]:
