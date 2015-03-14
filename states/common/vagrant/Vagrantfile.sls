@@ -35,6 +35,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set project_name = salt['config.get']('this_system_keys:project') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile') %}
 
+{% set bootstrap_dir_basename = pillar['system_features']['bootstrap_configuration']['bootstrap_files_dir'] %}
+
 {% for selected_host_name in pillar['system_hosts'].keys() %}
 
 {% set selected_host = pillar['system_hosts'][selected_host_name] %}
@@ -72,7 +74,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #       bootstrap script should be run with `build` in order to create
     #       package (configuration and resource files) for this target
     #       environment.
-    {{ selected_host_name }}.vm.provision "shell", inline: "python /vagrant/bootstrap.dir/bootstrap.py deploy initial-master '{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}'"
+    {{ selected_host_name }}.vm.provision "shell", inline: "python /vagrant/{{ bootstrap_dir_basename }}/bootstrap.py deploy initial-master 'conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}.py'"
 
     # Use `rsync` for synced folder.
     # Parameter `--copy-unsafe-links` is required for bootstrap directory

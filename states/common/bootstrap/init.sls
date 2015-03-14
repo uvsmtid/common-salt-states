@@ -5,16 +5,12 @@
 {% if grains['os'] in [ 'Fedora' ] %}
 
 {% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
-{% set vagrant_dir = user_home_dir + '/' + pillar['system_features']['vagrant_configuration']['vagrant_file_dir'] %}
+{% set bootstrap_dir = user_home_dir + '/' + pillar['system_features']['bootstrap_configuration']['bootstrap_files_dir'] %}
 
-{% set use_symlink_for_bootstrap_dir = pillar['system_features']['use_symlink_for_bootstrap_dir'] %}
-
-{% if not use_symlink_for_bootstrap_dir %}
-
-# Copy of bootstrap directory.
+# Create initial bootstrap directory with sources.
 bootstrap_directory_copy:
     file.recurse:
-        - name: '{{ vagrant_dir }}/bootstrap.dir'
+        - name: '{{ bootstrap_dir }}'
         - source: 'salt://common/bootstrap/bootstrap.dir'
         - makedirs: True
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
@@ -27,28 +23,21 @@ bootstrap_directory_copy:
             - group
             - mode
 
-{% else %}
+# Because permissions are not replicated in the copy from master, we have
+# to set executable permission on the main script.
+# See:
+#   https://github.com/saltstack/salt/issues/4423
 
-{% set repo_name = 'common-salt-states' %}
-{% set repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][repo_name] %}
-
-{% if grains['id'] not in [pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name][repo_type]['source_system_host']] %}
-# Minion id should match the host where sources are being changed.
-{{ THIS_LINE_MAKES_STATE_FAIL }}
-{% endif %}
-
-{% set repo_dir = user_home_dir + '/' + pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name][repo_type]['origin_uri_ssh_path'] %}
-
-# Symlink to bootstrap directory.
-bootstrap_directory_symlink:
-    file.symlink:
-        - name: '{{ vagrant_dir }}/bootstrap.dir'
-        - target: '{{ repo_dir }}/states/common/bootstrap/bootstrap.dir'
+bootstrap_file_exec_perms:
+    file.managed:
+        - name: '{{ bootstrap_dir }}/bootstrap.py'
+        - source: 'salt://common/bootstrap/bootstrap.dir/bootstrap.py'
         - makedirs: True
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
-
-{% endif %}
+        - mode: 755
+        - require:
+            - file: bootstrap_directory_copy
 
 {% endif %}
 # >>>

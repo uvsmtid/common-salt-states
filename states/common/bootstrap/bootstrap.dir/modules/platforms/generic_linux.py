@@ -98,8 +98,8 @@ def get_instance(
         base_dir,
         conf_m,
         run_action,
-        run_case,
-        target_env,
+        run_use_case,
+        target_env_conf,
     ):
 
         if run_action == 'deploy':
@@ -109,8 +109,8 @@ def get_instance(
                 base_dir,
                 conf_m,
                 run_action,
-                run_case,
-                target_env,
+                run_use_case,
+                target_env_conf,
             )
         else:
             raise NotImplementedError

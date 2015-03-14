@@ -101,7 +101,7 @@ class deploy_template_method (action_context):
             self.action_step_to_use_case_map[step_name],
             list,
         ):
-            if self.run_case not in self.action_step_to_use_case_map:
+            if self.run_use_case not in self.action_step_to_use_case_map:
                 logging.debug("skip not applicable step: " + step_name)
         else:
             # At this point the only allowed value is "always".
@@ -126,9 +126,9 @@ class deploy_template_method (action_context):
         self,
     ):
 
-        use_case = self.run_case
-        assert(self.run_case is not None)
-        logging.debug("use_case = '" + self.run_case + "'")
+        use_case = self.run_use_case
+        assert(self.run_use_case is not None)
+        logging.debug("use_case = '" + self.run_use_case + "'")
 
         for step_name in self.action_step_ordered_execution_list:
             self.do_action_wrapper(step_name)

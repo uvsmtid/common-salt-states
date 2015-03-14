@@ -39,12 +39,12 @@ class action_context:
     """
     Name for use case to execute.
     """
-    run_case = None
+    run_use_case = None
 
     """
-    Name of target enviroment for selected action.
+    Path to target enviroment configuration file for selected action.
     """
-    target_env = None
+    target_env_conf = None
 
     def __init__(
         self,
@@ -53,24 +53,24 @@ class action_context:
         base_dir,
         conf_m,
         run_action,
-        run_case,
-        target_env,
+        run_use_case,
+        target_env_conf,
     ):
         self.run_dir = run_dir
         self.script_dir = script_dir
         self.base_dir = base_dir
         self.conf_m = conf_m
         self.run_action = run_action
-        self.run_case = run_case
-        self.target_env = target_env
+        self.run_use_case = run_use_case
+        self.target_env_conf = target_env_conf
 
         logging.info("run_dir = " + str(self.run_dir))
         logging.info("script_dir = " + str(self.script_dir))
         logging.info("base_dir = " + str(self.base_dir))
         logging.info("conf_m = " + str(self.conf_m))
         logging.info("run_action = " + self.run_action)
-        logging.info("run_case = " + self.run_case)
-        logging.info("target_env = " + self.target_env)
+        logging.info("run_use_case = " + self.run_use_case)
+        logging.info("target_env_conf = " + self.target_env_conf)
 
 ################################################################################
 # EOF

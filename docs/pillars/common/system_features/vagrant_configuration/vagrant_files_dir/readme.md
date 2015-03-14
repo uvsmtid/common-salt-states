@@ -1,5 +1,5 @@
 
-Key `vagrant_file_dir` specifies path to directory with [Vagrant file][1] which is
+Key `vagrant_files_dir` specifies path to directory with [Vagrant file][1] which is
 relative to home directory of the [primary_user][2].
 
 Such directory is normally created only on the host which is assigned to [hypervisor_role][3].

@@ -2,7 +2,7 @@
 State `common.vagrant` deploys `Vagrant` file in 
 
 As soon as file is deployed, instantiating virtual machines is done by
-the following command inside [vagrant_file_dir][1]:
+the following command inside [vagrant_files_dir][1]:
 ```
 sudo vagrant up --provider virtualbox
 ```
@@ -19,5 +19,5 @@ sudo ip addr add dev em1 192.168.50.5/24
 TODO:
 * Add `libvirt` provider support. Currently, only `virtualbox` provider worked predictably without blocking issues.
 
-[1]: docs/pillars/common/system_features/vagrant_configuration/vagrant_file_dir/readme.md
+[1]: docs/pillars/common/system_features/vagrant_configuration/vagrant_files_dir/readme.md
 

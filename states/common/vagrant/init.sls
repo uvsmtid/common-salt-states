@@ -33,8 +33,12 @@ install_vagrant_packages:
         - pkgs:
             - vagrant
 
-{% set vagrant_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] + '/' + pillar['system_features']['vagrant_configuration']['vagrant_file_dir'] %}
+{% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
+{% set bootstrap_dir_basename = pillar['system_features']['bootstrap_configuration']['bootstrap_files_dir'] %}
+{% set vagrant_dir = user_home_dir + '/' + pillar['system_features']['vagrant_configuration']['vagrant_files_dir'] %}
+{% set bootstrap_dir = user_home_dir + '/' + bootstrap_dir_basename %}
 
+# Generate Vagrant file.
 deploy_vagrant_file:
     file.managed:
         - name: '{{ vagrant_dir }}/Vagrantfile'
@@ -44,6 +48,14 @@ deploy_vagrant_file:
         - mode: 644
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+
+# Set symlink to bootstrap directory.
+bootstrap_symlink_from_vagrant_dir:
+    file.symlink:
+        - name: '{{ vagrant_dir }}/{{ bootstrap_dir_basename }}'
+        - target: '{{ bootstrap_dir }}'
+        - require:
+            - file: deploy_vagrant_file
 
 # Docker requires special configuration.
 {% for selected_host_name in pillar['system_hosts'].keys() %} # selected_host_name
