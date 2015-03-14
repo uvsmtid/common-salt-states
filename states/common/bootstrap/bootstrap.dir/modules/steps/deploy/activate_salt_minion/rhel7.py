@@ -1,40 +1,7 @@
-from utils.exec_command import call_subprocess
-
-###############################################################################
 #
 
-def enable_service(
-    service_name,
-):
-
-    call_subprocess(
-        command_args = [
-            '/usr/bin/systemctl',
-            'enable',
-            service_name,
-        ],
-        raise_on_error = True,
-        capture_stdout = False,
-        capture_stderr = False,
-    )
-
-###############################################################################
-#
-
-def start_service(
-    service_name,
-):
-
-    call_subprocess(
-        command_args = [
-            '/usr/bin/systemctl',
-            'start',
-            service_name,
-        ],
-        raise_on_error = True,
-        capture_stdout = False,
-        capture_stderr = False,
-    )
+from utils.process_zero import enable_service_systemd as enable_service
+from utils.process_zero import start_service_systemd as start_service
 
 ###############################################################################
 #

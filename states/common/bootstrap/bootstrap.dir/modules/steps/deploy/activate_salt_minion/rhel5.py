@@ -1,40 +1,7 @@
-from utils.exec_command import call_subprocess
-
-###############################################################################
 #
 
-def enable_service(
-    service_name,
-):
-
-    call_subprocess(
-        command_args = [
-            '/sbin/chkconfig',
-            service_name,
-            'on',
-        ],
-        raise_on_error = True,
-        capture_stdout = False,
-        capture_stderr = False,
-    )
-
-###############################################################################
-#
-
-def start_service(
-    service_name,
-):
-
-    call_subprocess(
-        command_args = [
-            '/sbin/service',
-            service_name,
-            'start',
-        ],
-        raise_on_error = True,
-        capture_stdout = False,
-        capture_stderr = False,
-    )
+from utils.process_zero import enable_service_initd as enable_service
+from utils.process_zero import start_service_initd as start_service
 
 ###############################################################################
 #
@@ -47,5 +14,4 @@ def do(action_context):
 ###############################################################################
 # EOF
 ###############################################################################
-
 
