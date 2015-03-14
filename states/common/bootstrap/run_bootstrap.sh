@@ -41,8 +41,9 @@ set -x
 # If no arguments, then they are supplied in the file.
 if [ ${#} -eq 0 ]
 then
-    # Call itself.
-    ./run_bootstrap.sh $(cat ./run_bootstrap.args)
+    # Call itself with arguments from the file.
+    # Remove blank lines and comments.
+    ./run_bootstrap.sh $(sed '/^[[:space:]]*#/d; /^[[:space:]]*$/d' ./run_bootstrap.args)
     exit $?
 fi
 

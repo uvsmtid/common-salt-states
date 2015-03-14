@@ -1,5 +1,23 @@
+# This is just a list of arguments with comments
+# for `./run_bootstrap.sh` script.
+
+# SSH-like address of machine for bootstrap:
 root@192.168.50.102
+
+# Bootstrap script action:
 deploy
-initial-master
+
+# Use case for boostrap action:
+offline-minion-installer
+
+# Path to Python file with configuration for bootstrap script:
 conf/examples/uvsmtid/centos-7.0-minimal.py
+
+# Path to the directory with additional content generated for bootstrap.
+# The script itself will be run from `./bootstrap.dir` (relative to this
+# file's directory), but only code will be taken from there.
+# All content will be looked up in this directory:
 /home/user/bootstrap.dir
+
+# EOF
+
