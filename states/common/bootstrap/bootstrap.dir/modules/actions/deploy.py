@@ -23,7 +23,12 @@ class deploy_template_method (action_context):
 
         "init_dns_server": "always",
 
-        "make_salt_resolvable": "always",
+        # Salt will never contact master in `offline-minion-installer`
+        # user case.
+        "make_salt_resolvable": [
+            'initial-master',
+            'online-minion',
+        ],
 
         "set_hostname": "always",
 
