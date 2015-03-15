@@ -27,6 +27,8 @@
 
 {% set base_dir = bootstrap_dir + '/resources/rewritten_pillars/' + project_name + '/' + profile_name %}
 
+{% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home_from_pillar with context %}
+
 # Configuration for the step.
 {% set archive_dir_path_in_config = 'resources/sources/' + project_name + '/' + profile_name %}
 {% set archive_dir_path = bootstrap_dir + '/' + archive_dir_path_in_config %}
@@ -40,6 +42,10 @@
         - content: |
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
+                # TODO: This is hardcoded, figure out how to make it generic.
+                # TODO: There can be multiple sources of states (i.e. in
+                #       multi-project case. Figure out how to make it generic.
+                'state_sources': 'common-salt-states',
                 # Configure each extracted respository.
                 'repos': {
             {% for selected_repo_name in target_env_pillar['system_features']['bootstrap_configuration']['export_sources_repos'].keys() %} # selected_repo_name
@@ -49,6 +55,7 @@
                     '{{ selected_repo_name }}': {
                         'repo_type': '{{ selected_repo_type }}',
                         'archive_type': 'tar',
+                        'destination_dir': '{{ get_system_host_primary_user_posix_home_from_pillar(repo_config['source_system_host'], target_env_pillar) }}/{{ repo_config['origin_uri_ssh_path'] }}',
                         'exported_source_archive': '{{ archive_dir_path_in_config }}/{{ selected_repo_name }}.tar',
                     },
             {% endif %} # Git SCM

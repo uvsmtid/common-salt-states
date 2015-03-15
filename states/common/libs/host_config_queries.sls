@@ -60,6 +60,33 @@
 {%- endmacro -%}
 
 ###############################################################################
+# get_system_host_primary_user_posix_home
+
+{%- macro get_system_host_primary_user_posix_home_from_pillar(
+        system_host_id
+        ,
+        pillar_data
+    )
+-%}
+
+{%- set selected_host_config = pillar_data['system_hosts'][system_host_id] -%}
+
+{{- selected_host_config['primary_user']['posix_user_home_dir'] -}}
+
+{%- endmacro -%}
+
+#------------------------------------------------------------------------------
+
+{%- macro get_system_host_primary_user_posix_home(
+        system_host_id
+    )
+-%}
+
+{{- get_system_host_primary_user_posix_home_from_pillar(system_host_id, pillar) -}}
+
+{%- endmacro -%}
+
+###############################################################################
 # EOF
 ###############################################################################
 

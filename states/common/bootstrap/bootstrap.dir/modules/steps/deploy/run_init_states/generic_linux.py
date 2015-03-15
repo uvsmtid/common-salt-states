@@ -20,8 +20,8 @@ def do(action_context):
         ]
 
     for state_name in [
-        'common.sources_symlinks',
-        'common.resources_symlinks',
+        'common.source_symlinks',
+        'common.resource_symlinks',
     ]:
 
         # The commands are run per minion - that's why `salt-call` is
