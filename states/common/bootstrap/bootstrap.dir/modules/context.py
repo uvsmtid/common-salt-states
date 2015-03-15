@@ -100,7 +100,7 @@ class action_context:
             self.action_step_to_use_case_map[step_name],
             list,
         ):
-            if self.run_use_case not in self.action_step_to_use_case_map:
+            if self.run_use_case not in self.action_step_to_use_case_map[step_name]:
                 logging.debug("skip not applicable step: " + step_name)
                 return
         else:
