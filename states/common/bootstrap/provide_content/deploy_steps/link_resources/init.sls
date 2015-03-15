@@ -48,6 +48,7 @@
 {% from resources_macro_lib import get_registered_content_item_URI_from_pillar with context %}
 {% from resources_macro_lib import get_registered_content_item_hash_from_pillar with context %}
 {% from resources_macro_lib import get_registered_content_item_parent_dir_path_from_pillar with context %}
+{% from resources_macro_lib import get_registered_content_item_base_name_from_pillar with context %}
 
 # Rewrite `target_env_pillar`.
 # See:
@@ -78,6 +79,8 @@
         - name: '{{ base_dir }}/pillars/{{ project_name }}/{{ profile_name }}.sls'
         - source: ~
         - makedirs: True
+        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
         # Render `target_env_pillar` as JSON.
         - contents: |
             {{ target_env_pillar }}
@@ -108,10 +111,10 @@
         # TODO: Resource location should be adjusted through symlinks just like symlinks to sources.
         #       At the moment all resources during `deploy` appear in
         #       `resources/{{ project_name }} ` directory.
-        # NOTE: Resources are downloaded into `resources/depository/{{ project_name }}`, not
-        #       under simply `resources/{{ project_name }}` to differentiate
+        # NOTE: Resources are downloaded into `resources/depository/{{ project_name }}/..`, not
+        #       under simply `resources/{{ project_name }}/..` to differentiate
         #       with other resources (not only those declared in `registered_content_items`.
-        - name: '{{ bootstrap_dir }}/resources/depository/{{ project_name }}/{{ get_registered_content_item_parent_dir_path_from_pillar(content_item_id, target_env_pillar) }}'
+        - name: '{{ bootstrap_dir }}/resources/depository/{{ project_name }}/{{ profile_name }}/{{ get_registered_content_item_parent_dir_path_from_pillar(content_item_id, target_env_pillar) }}/{{ get_registered_content_item_base_name_from_pillar(content_item_id, target_env_pillar) }}'
         - source: '{{ get_registered_content_item_URI_from_pillar(content_item_id, target_env_pillar) }}'
         - source_hash: '{{ get_registered_content_item_hash_from_pillar(content_item_id, target_env_pillar) }}'
         - makedirs: True

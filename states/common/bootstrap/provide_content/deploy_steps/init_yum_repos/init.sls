@@ -50,7 +50,7 @@
                         # The RPM key file is not downloaded - it is part of
                         # resources which are supposed to be downloaded
                         # in separate step.
-                        'rpm_key_file': 'resources/depository/{{ project_name }}/{{ content_conf['item_parent_dir_path'] }}/{{ content_conf['item_base_name'] }}'
+                        'rpm_key_file': 'resources/depository/{{ project_name }}/{{ profile_name }}/{{ content_conf['item_parent_dir_path'] }}/{{ content_conf['item_base_name'] }}'
                         {% endif %}
                     },
                 {% endif %}

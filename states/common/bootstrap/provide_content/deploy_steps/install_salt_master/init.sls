@@ -50,8 +50,7 @@
                     {% set file_path = get_registered_content_item_rel_path_from_pillar(rpm_source_config['resource_id'], target_env_pillar) %}
                     "{{ rpm_source_name }}": {
                         "source_type": "{{ rpm_source_config['source_type'] }}",
-                        # Note that all resources are shared per project (no profile sub-directory).
-                        "file_path": "resources/bootstrap/{{ project_name }}/{{ file_path }}",
+                        "file_path": "resources/bootstrap/{{ project_name }}/{{ profile_name }}/{{ file_path }}",
                     },
                     {% endif %}
                     {% endfor %}
@@ -83,8 +82,7 @@
 {% set file_path = get_registered_content_item_rel_path_from_pillar(rpm_source_config['resource_id'], target_env_pillar) %}
 {{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:
     file.managed:
-        # Note that all resources are shared per project (no profile sub-directory).
-        - name: '{{ bootstrap_dir }}/resources/bootstrap/{{ project_name }}/{{ file_path }}'
+        - name: '{{ bootstrap_dir }}/resources/bootstrap/{{ project_name }}/{{ profile_name }}/{{ file_path }}'
         - source: '{{ get_registered_content_item_URI_from_pillar(rpm_source_config['resource_id'], target_env_pillar) }}'
         - template: ~
         - makedirs: True
