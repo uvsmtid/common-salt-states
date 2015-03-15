@@ -10,7 +10,7 @@ from utils.archive import untar_files
 #
 
 def deploy_salt_config_file(
-    src_base_dir,
+    src_content_dir,
     src_salt_config_path_rel,
     dst_salt_config_path_abs,
 ):
@@ -19,7 +19,7 @@ def deploy_salt_config_file(
         command_args = [
             'cp',
             os.path.join(
-                src_base_dir,
+                src_content_dir,
                 src_salt_config_path_rel,
             ),
             dst_salt_config_path_abs,
@@ -45,13 +45,13 @@ def deploy_salt(
     for rpm_source in salt_deploy_step_config['rpm_sources'].values():
         if rpm_source['source_type'] == 'zip':
             unzip_files(
-                base_dir = action_context.base_dir,
+                content_dir = action_context.content_dir,
                 zip_file_path_rel = rpm_source['file_path'],
                 dst_dir = temp_rpm_dir_path_rel,
             )
         elif rpm_source['source_type'] == 'tar':
             untar_files(
-                base_dir = action_context.base_dir,
+                content_dir = action_context.content_dir,
                 tar_file_path_rel = rpm_source['file_path'],
                 dst_dir = temp_rpm_dir_path_rel,
             )
@@ -65,13 +65,13 @@ def deploy_salt(
 
     # Install all RPMs.
     install_rpms(
-        action_context.base_dir,
+        action_context.content_dir,
         rpm_list,
     )
 
     # Deploy configuration file.
     deploy_salt_config_file(
-        src_base_dir = action_context.base_dir,
+        src_content_dir = action_context.content_dir,
         # Note that minion has offline and online config.
         # The version of the config is assigned in the calling function to
         # `src_salt_config_file` key.

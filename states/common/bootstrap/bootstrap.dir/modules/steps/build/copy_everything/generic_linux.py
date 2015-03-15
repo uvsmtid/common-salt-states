@@ -15,7 +15,7 @@ def get_list_of_src_dst_path_pairs(
     profile_name = action_context.conf_m.profile_name
 
     content_dir = os.path.join(
-        action_context.base_dir,
+        action_context.content_dir,
         'packages',
         project_name,
         profile_name,
@@ -32,7 +32,7 @@ def get_list_of_src_dst_path_pairs(
     ]:
         src_dst_path_pairs[resource_type] = {
             'src': os.path.join(
-                    action_context.base_dir,
+                    action_context.content_dir,
                     'resources',
                     resource_type,
                     project_name,
@@ -50,7 +50,7 @@ def get_list_of_src_dst_path_pairs(
     # Source code for modules.
     src_dst_path_pairs['sources'] = {
         'src': os.path.join(
-                action_context.base_dir,
+                action_context.content_dir,
                 'modules',
             ),
         'dst': os.path.join(
@@ -62,7 +62,7 @@ def get_list_of_src_dst_path_pairs(
     # Main script file.
     src_dst_path_pairs['script'] = {
         'src': os.path.join(
-                action_context.base_dir,
+                action_context.content_dir,
                 'bootstrap.py',
             ),
         'dst': os.path.join(

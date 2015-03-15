@@ -40,7 +40,7 @@ class rhel5_linux_build(generic_linux_build):
 def get_instance(
         run_dir,
         script_dir,
-        base_dir,
+        content_dir,
         modules_dir,
         conf_m,
         run_action,
@@ -54,7 +54,7 @@ def get_instance(
             return rhel5_linux_deploy(
                 run_dir,
                 script_dir,
-                base_dir,
+                content_dir,
                 modules_dir,
                 conf_m,
                 run_action,
@@ -65,7 +65,7 @@ def get_instance(
             return rhel5_linux_build(
                 run_dir,
                 script_dir,
-                base_dir,
+                content_dir,
                 modules_dir,
                 conf_m,
                 run_action,

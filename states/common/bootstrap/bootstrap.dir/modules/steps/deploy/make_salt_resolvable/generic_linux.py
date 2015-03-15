@@ -10,7 +10,7 @@ def do(action_context):
 
     # File with source entries for `hosts` file.
     src_path = os.path.join(
-        action_context.base_dir,
+        action_context.content_dir,
         action_context.conf_m.make_salt_resolvable['required_entries_hosts_file'],
     )
 

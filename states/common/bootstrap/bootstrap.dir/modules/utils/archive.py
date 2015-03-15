@@ -8,7 +8,7 @@ from utils.get_paths import get_abs_path
 #
 
 def unzip_files(
-    base_dir,
+    content_dir,
     zip_file_path_rel,
     dst_dir,
 ):
@@ -19,7 +19,7 @@ def unzip_files(
 
     # Get absolute path to zip file.
     zip_file_abs_path = get_abs_path(
-        base_dir,
+        content_dir,
         zip_file_path_rel,
     )
     call_subprocess(
@@ -46,7 +46,7 @@ def unzip_files(
 #
 
 def untar_files(
-    base_dir,
+    content_dir,
     tar_file_path_rel,
     dst_dir,
 ):
@@ -57,7 +57,7 @@ def untar_files(
 
     # Get absolute path to tar file.
     tar_file_abs_path = get_abs_path(
-        base_dir,
+        content_dir,
         tar_file_path_rel,
     )
     call_subprocess(

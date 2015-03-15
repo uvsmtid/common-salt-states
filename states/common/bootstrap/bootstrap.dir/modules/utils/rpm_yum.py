@@ -30,7 +30,7 @@ def get_rpm_list(
 #
 
 def install_rpms(
-    base_dir,
+    content_dir,
     rpm_list,
 ):
     # Try to update already installed RPMs first.

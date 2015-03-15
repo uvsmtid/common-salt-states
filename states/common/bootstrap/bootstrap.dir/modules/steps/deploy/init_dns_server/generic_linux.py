@@ -12,7 +12,7 @@ def do(action_context):
         command_args = [
             'cp',
             os.path.join(
-                action_context.base_dir,
+                action_context.content_dir,
                 action_context.conf_m.init_dns_server['resolv_conf_file'],
             ),
             '/etc/resolv.conf',

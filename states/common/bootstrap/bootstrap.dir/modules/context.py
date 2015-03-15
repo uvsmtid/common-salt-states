@@ -22,14 +22,14 @@ class action_context:
     script_dir = None
 
     """
-    Path to base bootstrap directory with configuration and resources.
+    Path to bootstrap content directory with configuration and resources.
 
     This path is always absolute.
     """
-    base_dir = None
+    content_dir = None
 
     """
-    Path to the directory with all source code for modules.
+    Path to the directory with all source code for bootstrap modules.
 
     This path is always absolute.
     """
@@ -126,7 +126,7 @@ class action_context:
         self,
         run_dir,
         script_dir,
-        base_dir,
+        content_dir,
         modules_dir,
         conf_m,
         run_action,
@@ -135,7 +135,7 @@ class action_context:
     ):
         self.run_dir = run_dir
         self.script_dir = script_dir
-        self.base_dir = base_dir
+        self.content_dir = content_dir
         self.modules_dir = modules_dir
         self.conf_m = conf_m
         self.run_action = run_action
@@ -144,7 +144,7 @@ class action_context:
 
         logging.info("run_dir = " + str(self.run_dir))
         logging.info("script_dir = " + str(self.script_dir))
-        logging.info("base_dir = " + str(self.base_dir))
+        logging.info("content_dir = " + str(self.content_dir))
         logging.info("modules_dir = " + str(self.modules_dir))
         logging.info("conf_m = " + str(self.conf_m))
         logging.info("run_action = " + self.run_action)
