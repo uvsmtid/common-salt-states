@@ -56,7 +56,10 @@ include:
         - name: '{{ requisite_config_file_path }}'
         - source: 'salt://common/bootstrap/provide_content/bootstrap.conf.sls'
         - context:
-            os_platform: {{ selected_host['os_platform'] }}
+            os_platform: '{{ selected_host['os_platform'] }}'
+            project_name: '{{ project_name }}'
+            profile_name: '{{ profile_name }}'
+            system_host_id: '{{ selected_host_name }}'
         - makedirs: True
         - template: jinja
         - mode: 644

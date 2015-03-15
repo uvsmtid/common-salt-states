@@ -1,4 +1,5 @@
 from actions.deploy import deploy_template_method
+from actions.build import build_template_method
 
 ###############################################################################
 #
@@ -92,21 +93,54 @@ class generic_linux_deploy(deploy_template_method):
 ###############################################################################
 #
 
+class generic_linux_build(build_template_method):
+
+    def copy_everything(
+        self,
+    ):
+        from steps.build.copy_everything.generic_linux import do
+        do(self)
+
+    def pack_everything(
+        self,
+    ):
+        # Pack everything. Yeah!
+        from steps.build.pack_everything.generic_linux import do
+        do(self)
+
+###############################################################################
+#
+
 def get_instance(
         run_dir,
         script_dir,
         base_dir,
+        modules_dir,
         conf_m,
         run_action,
         run_use_case,
         target_env_conf,
     ):
 
-        if run_action == 'deploy':
+        if run_action is None:
+            raise RuntimeError
+        elif run_action == 'deploy':
             return generic_linux_deploy(
                 run_dir,
                 script_dir,
                 base_dir,
+                modules_dir,
+                conf_m,
+                run_action,
+                run_use_case,
+                target_env_conf,
+            )
+        elif run_action == 'build':
+            return generic_linux_build(
+                run_dir,
+                script_dir,
+                base_dir,
+                modules_dir,
                 conf_m,
                 run_action,
                 run_use_case,

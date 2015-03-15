@@ -5,6 +5,24 @@
 
 target_platform = 'rhel7'
 
+project_name = 'examples'
+
+profile_name = 'uvsmtid'
+
+system_host_id = 'centos-7.0-minimal'
+
+# Example configuration for `build` action
+
+copy_everything = {
+    'step_enabled': False,
+}
+
+pack_everything = {
+    'step_enabled': False,
+}
+
+# Example configuration for `deploy` action
+
 init_ip_route = {
     'step_enabled': False,
 }

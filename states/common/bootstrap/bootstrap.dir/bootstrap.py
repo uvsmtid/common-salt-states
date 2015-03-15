@@ -65,15 +65,15 @@ print("debug: initial base_dir = " + str(base_dir), file=sys.stderr)
 
 # If `content_dir` is specified, `base_dir` is overwritten but only _after_
 # paths to modules has already been set through `base_dir`.
-path_to_modules = os.path.join(
+modules_dir = os.path.join(
     base_dir,
     'modules',
 )
-print("debug: path_to_modules = " + str(path_to_modules), file=sys.stderr)
+print("debug: modules_dir = " + str(modules_dir), file=sys.stderr)
 
 # Add `modules` to import path.
 sys.path.append(
-    path_to_modules,
+    modules_dir,
 )
 
 # Redefine `base_dir` if `content_dir` is specifed.
@@ -100,8 +100,7 @@ conf_m = imp.load_source('conf_m', conf_module_path)
 
 # Compose path to platform implementation module.
 impl_module_path = os.path.join(
-    base_dir,
-    'modules',
+    modules_dir,
     'platforms',
     conf_m.target_platform + '.py',
 )
@@ -109,12 +108,14 @@ logging.info('impl_module_path = ' + impl_module_path)
 
 # Load implementation module.
 impl_m = imp.load_source('impl_m', impl_module_path)
+logging.debug('impl_m = ' + str(impl_m))
 
 # Create instance.
 impl_i = impl_m.get_instance(
     run_dir,
     script_dir,
     base_dir,
+    modules_dir,
     conf_m,
     run_action,
     run_use_case,

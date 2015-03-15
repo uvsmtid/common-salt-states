@@ -1,3 +1,5 @@
+#
+
 import logging
 
 from context import action_context
@@ -15,7 +17,7 @@ class build_template_method (action_context):
 
         "pack_everything": "always",
 
-    },
+    }
 
     ###########################################################################
     # See base class for pythondoc.
@@ -23,7 +25,7 @@ class build_template_method (action_context):
     action_step_ordered_execution_list = [
         "copy_everything",
         "pack_everything",
-    ],
+    ]
 
 
 ###############################################################################

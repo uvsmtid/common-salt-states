@@ -9,9 +9,9 @@
 #
 # # Problem #
 # Writing all generated content under directories managed by SCM (i.e. Git,
-# Subversion) polutes search results across sources and makes clean up
-# attention-required process (to avoid mistakenly cleaning up important
-# changes).
+# Subversion) polutes status and search results across sources. It makes
+# clean up an attention-required process (to avoid mistakenly cleaning up
+# important changes).
 #
 # # Solution #
 # In order to separate sources from generated content while still
@@ -50,26 +50,37 @@ fi
 SSH_DST="${1}"
 shift
 
+ACTION_NAME="${1}"
+
 # Determine override `bootstrap.dir` (or use default - no override).
 CONTENT_DIR="${4:-'bootstrap.dir'}"
 
-# Copy SSH public key right away (to avoid typing passwords ever).
-ssh-copy-id "${SSH_DST}"
+if [ "${ACTION_NAME}" == "deploy" ]
+then
+    # Only `deploy` action requires SSH.
 
-# Note the use of trailing slashes in path for rsync.
-# 1. Sync content directory with destination.
-rsync --progress -v -r "${CONTENT_DIR}/" "${SSH_DST}:bootstrap.dir/"
-# 2. Sync sources directory with destination.
-rsync --progress -v -r "./bootstrap.dir/" "${SSH_DST}:bootstrap.dir/"
+    # Copy SSH public key right away (to avoid typing passwords ever).
+    ssh-copy-id "${SSH_DST}"
 
-# Run without argument which overrides `bootstrap.dir`.
-# Script should run "production way" on remote host.
-# Both latest sources and contnet have just been merged in two syncs above.
-# Becides this, local overrides do not exist remotely.
-# See:
-#   http://stackoverflow.com/a/20401782/441652
-# Use `python -m trace -t bootstrap/bootstrap.py` for extensive traces.
-ssh "${SSH_DST}" "sudo python bootstrap.dir/bootstrap.py" "${@:1:${#}-1}"
+    # Note the use of trailing slashes in path for rsync.
+    # 1. Sync content directory with destination.
+    rsync --progress -v -r "${CONTENT_DIR}/" "${SSH_DST}:bootstrap.dir/"
+    # 2. Sync sources directory with destination.
+    rsync --progress -v -r "./bootstrap.dir/" "${SSH_DST}:bootstrap.dir/"
+
+    # Run without argument which overrides `bootstrap.dir`.
+    # Script should run "production way" on remote host.
+    # Both latest sources and contnet have just been merged in two syncs above.
+    # Becides this, local overrides do not exist remotely.
+    # See:
+    #   http://stackoverflow.com/a/20401782/441652
+    # Use `python -m trace -t bootstrap/bootstrap.py` for extensive traces.
+    ssh "${SSH_DST}" "sudo python bootstrap.dir/bootstrap.py" "${@:1:${#}-1}"
+else
+    # Everything else is run on the local machine.
+
+    python "bootstrap.dir/bootstrap.py" "${@}"
+fi
 
 ###############################################################################
 # EOF

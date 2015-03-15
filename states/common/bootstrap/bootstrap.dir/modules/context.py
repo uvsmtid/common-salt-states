@@ -1,3 +1,5 @@
+#
+
 import logging
 
 ###############################################################################
@@ -20,11 +22,18 @@ class action_context:
     script_dir = None
 
     """
-    Path to base directory with bootstrap script, configuration, resources.
+    Path to base bootstrap directory with configuration and resources.
 
     This path is always absolute.
     """
     base_dir = None
+
+    """
+    Path to the directory with all source code for modules.
+
+    This path is always absolute.
+    """
+    modules_dir = None
 
     """
     Configuration module loaded for bootstrap script.
@@ -84,6 +93,8 @@ class action_context:
         step_name,
     ):
 
+        logging.debug('step_name = ' + str(step_name))
+
         # Check that this action is applicable for this use case.
         if isinstance(
             self.action_step_to_use_case_map[step_name],
@@ -116,6 +127,7 @@ class action_context:
         run_dir,
         script_dir,
         base_dir,
+        modules_dir,
         conf_m,
         run_action,
         run_use_case,
@@ -124,6 +136,7 @@ class action_context:
         self.run_dir = run_dir
         self.script_dir = script_dir
         self.base_dir = base_dir
+        self.modules_dir = modules_dir
         self.conf_m = conf_m
         self.run_action = run_action
         self.run_use_case = run_use_case
@@ -132,6 +145,7 @@ class action_context:
         logging.info("run_dir = " + str(self.run_dir))
         logging.info("script_dir = " + str(self.script_dir))
         logging.info("base_dir = " + str(self.base_dir))
+        logging.info("modules_dir = " + str(self.modules_dir))
         logging.info("conf_m = " + str(self.conf_m))
         logging.info("run_action = " + self.run_action)
         logging.info("run_use_case = " + self.run_use_case)
