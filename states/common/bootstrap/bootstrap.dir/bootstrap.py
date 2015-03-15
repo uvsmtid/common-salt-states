@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-# See: http://stackoverflow.com/a/14981125/441652
-from __future__ import print_function
-
 import os
 import os.path
 
@@ -31,16 +28,16 @@ target_env_conf = sys.argv[3]
 content_dir = None
 if len(sys.argv) > 4:
     content_dir = sys.argv[4]
-print("debug: initial content_dir = " + str(content_dir), file=sys.stderr)
+sys.stderr.write("debug: initial content_dir = " + str(content_dir) + "\n") # before log level is set
 
 # Path to script is _always_ derived from command line.
 # NOTE: In other words, script is not accessible from PATH env var.
 script_dir = os.path.dirname(start_path)
-print("debug: script_dir = " + str(script_dir), file=sys.stderr)
+sys.stderr.write("debug: script_dir = " + str(script_dir) + "\n") # before log level is set
 
 # Remember `run_dir`:
 run_dir = os.getcwd()
-print("debug: run_dir = " + str(run_dir), file=sys.stderr)
+sys.stderr.write("debug: run_dir = " + str(run_dir) + "\n") # before log level is set
 
 # Redefine `content_dir` as absolute path.
 if content_dir:
@@ -59,7 +56,7 @@ else:
             run_dir,
             script_dir,
         )
-print("debug: finalized content_dir = " + str(content_dir), file=sys.stderr)
+sys.stderr.write("debug: finalized content_dir = " + str(content_dir) + "\n") # before log level is set
 
 # Determine `modules_dir`.
 # Variable `modules_dir`is _always_ derived from command line.
@@ -74,7 +71,7 @@ else:
         script_dir,
         'modules',
     )
-print("debug: modules_dir = " + str(modules_dir), file=sys.stderr)
+sys.stderr.write("debug: modules_dir = " + str(modules_dir) + "\n") # before log level is set
 
 # Add `modules` to import path.
 sys.path.append(
