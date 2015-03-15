@@ -55,6 +55,21 @@ def deploy_salt(
                 tar_file_path_rel = rpm_source['file_path'],
                 dst_dir = temp_rpm_dir_path_rel,
             )
+        elif rpm_source['source_type'] == 'rpm':
+            # Simply copy that file.
+            call_subprocess(
+                command_args = [
+                    'cp',
+                    os.path.join(
+                        action_context.content_dir,
+                        rpm_source['file_path'],
+                    ),
+                    temp_rpm_dir_path_rel,
+                ],
+                raise_on_error = True,
+                capture_stdout = False,
+                capture_stderr = False,
+            )
         else:
             raise NotImplementedError
 
