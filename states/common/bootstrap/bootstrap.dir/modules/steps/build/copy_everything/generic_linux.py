@@ -49,6 +49,19 @@ def get_list_of_src_dst_path_pairs(
                 ),
         }
 
+    # Configuration files.
+    src_dst_path_pairs['config'] = {
+        'src': os.path.join(
+                action_context.content_dir,
+                'conf',
+            ),
+        'dst': os.path.join(
+                content_dir,
+                'conf',
+            ),
+    }
+
+
     # Source code for modules.
     src_dst_path_pairs['sources'] = {
         'src': os.path.join(
