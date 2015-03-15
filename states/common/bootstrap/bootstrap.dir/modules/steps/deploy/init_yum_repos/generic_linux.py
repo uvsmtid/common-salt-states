@@ -1,3 +1,5 @@
+#
+
 import os.path
 import logging
 
@@ -33,19 +35,6 @@ def import_rpm_key(
 
 def do(action_context):
 
-    # TODO:
-    # * Loop through all required YUM repositories and either install
-    #   necessary RPM packages for repository configuration
-    #   or copy pre-generated repo configs to
-    #   `/etc/yum.repos.d`.
-
-    for repo_config in action_context.conf_m.init_yum_repos['yum_repo_configs'].values():
-        if 'rpm_key_file' in repo_config:
-            import_rpm_key(
-                action_context.content_dir,
-                repo_config['rpm_key_file'],
-            )
-
     # Deploy `yum.conf` configuration file.
     call_subprocess(
         command_args = [
@@ -61,6 +50,23 @@ def do(action_context):
         capture_stderr = False,
     )
 
+    # TODO: Is it required? Can it be done through Salt?
+    # * Loop through all required YUM repositories and either install
+    #   necessary RPM packages for repository configuration
+    #   or copy pre-generated repo configs to
+    #   `/etc/yum.repos.d`.
+    # * Test connection to YUM repository.
+    #   For example, install `git` package.
+
+    for repo_config in action_context.conf_m.init_yum_repos['yum_repo_configs'].values():
+        if 'rpm_key_file' in repo_config:
+            import_rpm_key(
+                action_context.content_dir,
+                repo_config['rpm_key_file'],
+            )
+        if 'installation_type' in repo_config:
+            if repo_config['installation_type']:
+                pass
 
     logging.critical('NOT FULLY IMPLEMENTED')
 

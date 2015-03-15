@@ -1,10 +1,48 @@
-import logging
+#
+
+from utils.exec_command import call_subprocess
 
 ###############################################################################
 #
 def do(action_context):
 
-    logging.critical("NOT IMPLEMENTED")
+    # Explanation per use case:
+    # * `initial-master` - obviously `salt-call` should be working.
+    # * `online-minion` - it is assumed that Salt master is already accessible.
+    # * `offline-minion-installer` - run with `--local` because it is
+    #   standalone minon.
+    extra_args = []
+    if action_context.run_use_case in [
+        'offline-minion-installer'
+    ]:
+        extra_args = [
+            '--local',
+        ]
+
+    for state_name in [
+        'common.sources_symlinks',
+        'common.resources_symlinks',
+    ]:
+
+        # The commands are run per minion - that's why `salt-call` is
+        # used instead of `salt`.
+        # The states should be designed so that they can determine themselves
+        # whether they are applicable on this particular minion.
+        call_subprocess(
+            command_args = [
+                'salt-call',
+                '--log-level',
+                'debug',
+            ] + extra_args + [
+                'state.sls',
+                state_name,
+            ],
+            raise_on_error = True,
+            capture_stdout = False,
+            capture_stderr = False,
+        )
+        # TODO: `salt-call` does not return non-zero error code when
+        #        it fails. Something must be done to detect errors.
 
 ###############################################################################
 # EOF
