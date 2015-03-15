@@ -8,8 +8,13 @@ include:
     - common.bootstrap
 
 {% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
-{% set vagrant_dir = user_home_dir + '/' + pillar['system_features']['vagrant_configuration']['vagrant_files_dir'] %}
-{% set bootstrap_dir = vagrant_dir + '/bootstrap.dir' %}
+{% set bootstrap_files_dir = pillar['system_features']['bootstrap_configuration']['bootstrap_files_dir'] %}
+{% set vagrant_files_dir = pillar['system_features']['vagrant_configuration']['vagrant_files_dir'] %}
+{% set vagrant_dir = user_home_dir + '/' + vagrant_files_dir %}
+# NOTE: `bootstrap_dir` is under `vagrant_dir` due to some issues of rsync-ing
+#        content via symlinks.
+#        Normally, `bootstrap_dir` and `vagrant_dir` are in user's home.
+{% set bootstrap_dir = user_home_dir + '/' + vagrant_files_dir + '/' + bootstrap_files_dir %}
 
 # Note that `load_bootstrap_target_envs` is only available when Salt
 # configuration (for either master or minion) contains necessary configuration.
