@@ -21,6 +21,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # SSL certificates break somehow:
   config.vm.box_download_insecure = true
 
+{% from 'common/libs/host_config_queries.sls' import get_host_id_by_role with context %}
+
 {% if False %}
   # NOTE: This does not set IP address for physical host machine.
   #       Instead, Vagrant treats this as some sort of "global" config
@@ -74,7 +76,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #       bootstrap script should be run with `build` in order to create
     #       package (configuration and resource files) for this target
     #       environment.
-    {{ selected_host_name }}.vm.provision "shell", inline: "python /vagrant/{{ bootstrap_dir_basename }}/bootstrap.py deploy initial-master 'conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}.py'"
+    {% if selected_host_name in pillar['system_host_roles']['controller_role'] %}
+    {% set bootstrap_use_case = 'initial-master' %}
+    {% else %}
+    {% set bootstrap_use_case = 'online-minion' %}
+    {% endif %}
+    {{ selected_host_name }}.vm.provision "shell", inline: "python /vagrant/{{ bootstrap_dir_basename }}/bootstrap.py deploy {{ bootstrap_use_case }} 'conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}.py'"
 
     # Use `rsync` for synced folder.
     # Parameter `--copy-unsafe-links` is required for bootstrap directory

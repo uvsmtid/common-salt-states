@@ -98,6 +98,8 @@ bootstrap_symlink_from_vagrant_dir:
 
 {% endfor %} # selected_host_name
 
+# NOTE: You will still have to use `--insecure` option to download box:
+#         vagrant box add uvsmtid/centos-7.0-minimal --insecure
 vagrant_environment_variables_script:
     file.managed:
         - name: '/etc/profile.d/common.vagrant.variables.sh'
