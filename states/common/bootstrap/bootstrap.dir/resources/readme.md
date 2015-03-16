@@ -5,5 +5,5 @@ deployed on hosts to complete [the bootstrap process][1], for example:
 * Pre-generated configuration files.
 * Any other pre-requisites or dependencies.
 
-[1]: docs/bootstrapping.md
+[1]: docs/bootstrap.md
 

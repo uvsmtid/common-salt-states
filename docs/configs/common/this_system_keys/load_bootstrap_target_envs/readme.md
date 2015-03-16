@@ -61,7 +61,7 @@ profile of currently selected project is required as a bootstrap target
 environment.
 
 
-[1]: docs/bootstrapping.md
+[1]: docs/bootstrap.md
 [2]: docs/configs/common/this_system_keys/project/readme.md
 [3]: docs/configs/common/this_system_keys/profile/readme.md
 [4]: #example

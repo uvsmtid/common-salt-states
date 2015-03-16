@@ -10,5 +10,5 @@
         located in different place, rewrite will be merge with
         unpredictable results.
 
-[1]: docs/bootstrapping.md
+[1]: docs/bootstrap.md
 

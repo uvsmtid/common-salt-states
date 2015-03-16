@@ -17,7 +17,7 @@
 
 ## What is bootstrapping? ##
 
-* [bootstrapping.md](bootstrapping.md)
+* [bootstrap.md](bootstrap.md)
 
 ## What is orchestration? ##
 
