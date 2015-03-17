@@ -145,5 +145,75 @@ Let's review how we met requirements:
   plugable repository under single directory of `common` repository.
   * Already discussed above.
 
+# Q&A #
+
+## How to add a project? ##
+
+Entire framework works with "namespaces".
+
+Configuration of `*_roots` in Salt only includes:
+```
+file_roots:
+  /srv/states
+pillar_roots:
+  /srv/pillars
+```
+Each additional project is connected as a "namespace" symlink named after
+the project:
+```
+/srv/states/project_A -> /path/to/project_A/states/project_A
+/srv/pillars/project_A -> /path/to/project_B/pillars/project_A
+```
+
+## How both syscore and project states are integrated? ##
+
+The main top states file must be accessible as:
+```
+/srv/states/top.sls
+```
+However, separate projects have their own "top" states accessible as:
+```
+/srv/states/project_A/top.sls
+```
+
+That's why there will be one symlink for the main top file and one symlink
+for each connected namespace:
+```
+/srv/states/top.sls -> /path/to/syscore.git/states/top.sls
+/srv/states/syscore -> /path/to/syscore.git/states/syscore
+/srv/states/project_A -> /path/to/project_A.git/states/project_A
+```
+
+## How both syscore and project pillars are integrated? ##
+
+The main top pillar file must be accessible as:
+```
+/srv/pillars/top.sls
+```
+However, separate projects have their own "top" pillars accessible as:
+```
+/srv/pillars/project_A/top.sls
+```
+
+That's why there will be one symlink for the main top file and one symlink
+for each connected namespace:
+```
+/srv/pillars/top.sls -> /path/to/syscore.git/pillars/top.sls
+/srv/pillars/syscore -> /path/to/syscore.git/pillars/syscore
+/srv/pillars/project_A -> /path/to/project_A.git/pillars/project_A
+```
+
+Main top file load top pillar file of the project (among other files required
+for bootstrap and multi-project framework).
+
+## How will bootstrap work? ##
+
+Bootstrap is only required to setup Salt and the framework (with multiple
+projects). There is no impact of multiple projects on bootstrap.
+
+## How will orchestrate work? ##
+
+Orchestrate will work because states will be available.
+
 # [footer] #
 
