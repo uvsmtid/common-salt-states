@@ -160,6 +160,12 @@ required to complete setup.
   were deliberately removed (reduced) for orchestration to "pull" less
   dependent states on each orchestration step which are run reduntantly.
 
+### `initial-online-node` ###
+
+TODO: This should combine both `initial-master` and `online-minion`.
+Whether it is Salt minion or Salt master depends on profile configuration
+of specific host.
+
 ## Design ##
 
 * The bootstrap shall be a framework with single front-end Python script.

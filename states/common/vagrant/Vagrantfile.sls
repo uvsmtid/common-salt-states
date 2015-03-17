@@ -76,11 +76,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #       bootstrap script should be run with `build` in order to create
     #       package (configuration and resource files) for this target
     #       environment.
-    {% if selected_host_name in pillar['system_host_roles']['controller_role'] %}
+    # TODO: At the moment bootstrap hasn't been modified to understand
+    #       `initial-online-node`, so we convert it here to known
+    #       values 'initial-master' or 'online-minion' depending on role
+    #       assignment to the host.
+    {% if pillar['system_features']['vagrant_configuration']['bootstrap_use_case'] == 'initial-online-node' %} # bootstrap_use_case
+    {% if selected_host_name in pillar['system_host_roles']['controller_role'] %} # selected_host_name
     {% set bootstrap_use_case = 'initial-master' %}
-    {% else %}
+    {% else %} # selected_host_name
     {% set bootstrap_use_case = 'online-minion' %}
-    {% endif %}
+    {% endif %} # selected_host_name
+    {% elif 'offline-minion-installer' %} # bootstrap_use_case
+    {% set bootstrap_use_case = 'offline-minion-installer' %}
+    {% else %} # bootstrap_use_case
+    {{ UNEXPECTED_VALUE }}
+    {% endif %} # bootstrap_use_case
+
     {{ selected_host_name }}.vm.provision "shell", inline: "python /vagrant/{{ bootstrap_dir_basename }}/bootstrap.py deploy {{ bootstrap_use_case }} 'conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}.py'"
 
     # Use `rsync` for synced folder.
