@@ -15,7 +15,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Based on Vagrant explanation, in the future they may support provider
   # per each VM. At the moment, it should only be configured per all
   # set of VMs (outside of individual configuration).
-  config.vm.provider "{{ pillar['system_features']['vagrant_configuration']['vagrant_provider'] }}"
+{% set vagrant_provider = pillar['system_features']['vagrant_configuration']['vagrant_provider'] %}
+  config.vm.provider "{{ vagrant_provider }}"
 
   # Without this line it fails when proxy is used to access Internet and
   # SSL certificates break somehow:
@@ -50,7 +51,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set network_defined_in = selected_host['defined_in'] %}
 {% set network_config = pillar[network_defined_in] %}
 
-{% if pillar['system_features']['vagrant_configuration']['vagrant_provider'] == instance_configuration['vagrant_provider'] %} # match provider
+{% if vagrant_provider == instance_configuration['vagrant_provider'] %} # match provider
 {% else %} # match provider
 # Provider per machine instance should match globally selected one.
 {{ THIS_VARIABLE_DOES_NOT_EXISTS_vagrant_provider_does_not_match }}
@@ -71,6 +72,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
 
     {{ selected_host_name }}.vm.box = "{{ instance_configuration['base_image'] }}"
+
+    # See libvirt configuration:
+    #   https://github.com/pradels/vagrant-libvirt
+    {{ selected_host_name }}.vm.provider :{{ instance_configuration['vagrant_provider'] }} do |{{ selected_host_name }}_domain|
+        {{ selected_host_name }}_domain.memory = {{ instance_configuration['memory_size'] }}
+        {{ selected_host_name }}_domain.cpus = {{ instance_configuration['cpus_number'] }}
+    end
 
     # NOTE: Before target environment can be deployed (before using `deploy`),
     #       bootstrap script should be run with `build` in order to create
