@@ -3,6 +3,7 @@ from platforms.generic_linux import generic_linux_build
 
 ###############################################################################
 #
+
 class rhel5_linux_deploy(generic_linux_deploy):
 
     def init_ip_route(
