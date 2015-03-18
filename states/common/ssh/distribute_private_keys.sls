@@ -34,6 +34,11 @@ include:
 # Now select all possible users where keys should be deployed and apply the
 # same method to deploy them.
 
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
+{% set public_key_res_id = pillar['system_features']['initialize_ssh_connections']['ssh_public_key_res_id'] %}
+{% set private_key_res_id = pillar['system_features']['initialize_ssh_connections']['ssh_private_key_res_id'] %}
 
 # 1. Primary user for this minion.
 #
@@ -52,7 +57,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa'
-        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_private_key_URI'] }}'
+        - source: '{{ get_registered_content_item_URI(private_key_res_id) }}'
+        - source_hash: '{{ get_registered_content_item_hash(private_key_res_id) }}'
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 600
@@ -64,7 +70,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
-        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_public_key_URI'] }}'
+        - source: '{{ get_registered_content_item_URI(public_key_res_id) }}'
+        - source_hash: '{{ get_registered_content_item_hash(public_key_res_id) }}'
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 644
@@ -93,7 +100,8 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
-        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_private_key_URI'] }}'
+        - source: '{{ get_registered_content_item_URI(private_key_res_id) }}'
+        - source_hash: '{{ get_registered_content_item_hash(private_key_res_id) }}'
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -101,7 +109,8 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
-        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_public_key_URI'] }}'
+        - source: '{{ get_registered_content_item_URI(public_key_res_id) }}'
+        - source_hash: '{{ get_registered_content_item_hash(public_key_res_id) }}'
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -138,7 +147,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa'
-        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_private_key_URI'] }}'
+        - source: '{{ get_registered_content_item_URI(private_key_res_id) }}'
+        - source_hash: '{{ get_registered_content_item_hash(private_key_res_id) }}'
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 600
@@ -150,7 +160,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
-        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_public_key_URI'] }}'
+        - source: '{{ get_registered_content_item_URI(public_key_res_id) }}'
+        - source_hash: '{{ get_registered_content_item_hash(public_key_res_id) }}'
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 644
@@ -179,7 +190,8 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
-        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_private_key_URI'] }}'
+        - source: '{{ get_registered_content_item_URI(private_key_res_id) }}'
+        - source_hash: '{{ get_registered_content_item_hash(private_key_res_id) }}'
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -187,7 +199,8 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
-        - source: '{{ pillar['system_features']['initialize_ssh_connections']['ssh_public_key_URI'] }}'
+        - source: '{{ get_registered_content_item_URI(public_key_res_id) }}'
+        - source_hash: '{{ get_registered_content_item_hash(public_key_res_id) }}'
         - makedirs: True
         - require:
             - sls: common.cygwin.package
