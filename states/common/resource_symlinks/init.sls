@@ -4,7 +4,14 @@
 # <<<
 {% if grains['os'] in [ 'Fedora', 'RedHat', 'CentOS' ] %} # OS
 
-{% if grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] %} # controller_role
+# This state can either be run on Salt master or Salt minion in
+# case of `offline-minion-installer` `bootstrap_mode`.
+{% set bootstrap_mode = salt['config.get']('this_system_keys:bootstrap_mode') %}
+{% if
+       ( grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] )
+       or
+       ( bootstrap_mode == 'offline-minion-installer' )
+%} # controller_role
 
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
 
