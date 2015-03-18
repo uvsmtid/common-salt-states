@@ -63,7 +63,7 @@ def get_list_of_src_dst_path_pairs(
 
 
     # Source code for modules.
-    src_dst_path_pairs['sources'] = {
+    src_dst_path_pairs['repos'] = {
         'src': os.path.join(
                 action_context.content_dir,
                 'modules',
