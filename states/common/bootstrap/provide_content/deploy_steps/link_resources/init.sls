@@ -24,6 +24,8 @@
 %}
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
+{% set resource_symlink = target_env_pillar['posix_config_temp_dir'] + '/all_repositories/' + project_name + '/' + profile_name %}
+{% set resource_base_dir_rel_path = 'resources/depository/' + project_name + '/' + profile_name %}
 
 # Config for the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}:
@@ -36,9 +38,8 @@
         - content: |
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
-                # TODO: Nothing to do at the momement.
-                #       All resources are simply downloaded in their
-                #       expected location.
+                'resource_symlink': '{{ resource_symlink }}',
+                'resource_base_dir_rel_path': '{{ resource_base_dir_rel_path }}',
             }
         - show_changes: True
         - require:
@@ -54,21 +55,31 @@
 # See:
 #   http://stackoverflow.com/q/11047886/441652
 #   http://stackoverflow.com/a/3479970/441652
-# For each of the `resource_respositories`, `URI_prefix_scheme` should
-# be changed to `salt://`.
+# We simply point all repositories into single known location.
+# This location is a symlink which is supposed to be created during `deploy`
+# action to point to location of actual files.
+# NOTE: Again, all resources are downloaded into the same directory regardless
+#       of their URI prefix or original repository.
+#       WARNING: This may result in potential conflicts of file paths in
+#                different repositories. For now we assume that all
+#                combinations of `item_parent_dir_path` + `item_base_name`
+#                for all resource items are different.
+# TODO: Make it more flexible. Some resources shouldn't be downloaded, others
+#       should be separated per repository type, etc.
 
 {% set base_dir = bootstrap_dir + '/resources/rewritten_pillars/' + project_name + '/' + profile_name %}
-{% set URI_prefix_schemes_configurations = target_env_pillar['system_features']['resource_repositories_configuration']['URI_prefix_schemes_configurations'] %}
+{% set resource_respositories = target_env_pillar['system_features']['resource_repositories_configuration']['resource_respositories'] %}
 
 # Change target pillar.
-{% for URI_prefix_schemes_configuration_id in URI_prefix_schemes_configurations.keys() %} # URI_prefix_schemes_configuration_id
-{% set URI_prefix_schemes_configuration = URI_prefix_schemes_configurations[URI_prefix_schemes_configuration_id] %}
+{% for resource_respository_id in resource_respositories.keys() %} # resource_respository_id
+{% set resource_respository_config = resource_respositories[resource_respository_id] %}
 
 # Save current value into swap location.
-{% do URI_prefix_schemes_configuration.update( { 'bootstrap_swap_value': URI_prefix_schemes_configuration['abs_resource_links_base_dir_path'] } ) %}
-{% do URI_prefix_schemes_configuration.update( { 'abs_resource_links_base_dir_path': base_dir } ) %}
+{% do resource_respository_config.update( { 'bootstrap_swap_value': resource_respository_config['abs_resource_target_path'] } ) %}
+# Write new value.
+{% do resource_respository_config.update( { 'abs_resource_target_path': resource_symlink } ) %}
 
-{% endfor %} # URI_prefix_schemes_configuration_id
+{% endfor %} # resource_respository_id
 
 {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ project_name }}_{{ profile_name }}_rewirte_pillar:
     file.managed:
@@ -76,7 +87,7 @@
         # TODO: Make location of the pillar declared, otherwise if pillar is
         #       located in different place, rewrite will be merge with
         #       unpredictable results.
-        - name: '{{ base_dir }}/pillars/{{ project_name }}/{{ profile_name }}.sls'
+        - name: '{{ base_dir }}/pillars/{{ project_name }}/profile/{{ profile_name }}.sls'
         - source: ~
         - makedirs: True
         - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
@@ -86,14 +97,14 @@
             {{ target_env_pillar }}
 
 # Change target pillar back.
-{% for URI_prefix_schemes_configuration_id in URI_prefix_schemes_configurations.keys() %} # URI_prefix_schemes_configuration_id
-{% set URI_prefix_schemes_configuration = URI_prefix_schemes_configurations[URI_prefix_schemes_configuration_id] %}
+{% for resource_respository_id in resource_respositories.keys() %} # resource_respository_id
+{% set resource_respository_config = resource_respositories[resource_respository_id] %}
 
 # Save current value into swap location.
-{% do URI_prefix_schemes_configuration.update( { 'abs_resource_links_base_dir_path': URI_prefix_schemes_configuration['bootstrap_swap_value'] } ) %}
-{% do URI_prefix_schemes_configuration.update( { 'bootstrap_swap_value': None } ) %}
+{% do resource_respository_config.update( { 'abs_resource_target_path': resource_respository_config['bootstrap_swap_value'] } ) %}
+{% do resource_respository_config.update( { 'bootstrap_swap_value': None } ) %}
 
-{% endfor %} # URI_prefix_schemes_configuration_id
+{% endfor %} # resource_respository_id
 
 
 # Download resources for the project/profile.
@@ -114,7 +125,7 @@
         # NOTE: Resources are downloaded into `resources/depository/{{ project_name }}/..`, not
         #       under simply `resources/{{ project_name }}/..` to differentiate
         #       with other resources (not only those declared in `registered_content_items`.
-        - name: '{{ bootstrap_dir }}/resources/depository/{{ project_name }}/{{ profile_name }}/{{ get_registered_content_item_parent_dir_path_from_pillar(content_item_id, target_env_pillar) }}/{{ get_registered_content_item_base_name_from_pillar(content_item_id, target_env_pillar) }}'
+        - name: '{{ bootstrap_dir }}/{{ resource_base_dir_rel_path }}/{{ get_registered_content_item_parent_dir_path_from_pillar(content_item_id, target_env_pillar) }}/{{ get_registered_content_item_base_name_from_pillar(content_item_id, target_env_pillar) }}'
         - source: '{{ get_registered_content_item_URI_from_pillar(content_item_id, target_env_pillar) }}'
         - source_hash: '{{ get_registered_content_item_hash_from_pillar(content_item_id, target_env_pillar) }}'
         - makedirs: True

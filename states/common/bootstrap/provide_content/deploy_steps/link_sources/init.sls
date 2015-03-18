@@ -113,7 +113,7 @@
 # Add the rewritten `target_env_pillar` to the initial archive.
 {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}_add_rewritten_pillar:
     cmd.run:
-        - name: 'tar -rvf {{ archive_dir_path }}/{{ selected_repo_name }}.tar pillars/{{ project_name }}/{{ profile_name }}.sls'
+        - name: 'tar -rvf {{ archive_dir_path }}/{{ selected_repo_name }}.tar pillars/{{ project_name }}/profile/{{ profile_name }}.sls'
         # Tar always work in current directory.
         - cwd: '{{ base_dir }}'
         - require:
