@@ -75,11 +75,10 @@ then
     # See:
     #   http://stackoverflow.com/a/20401782/441652
     # Use `python -m trace -t bootstrap/bootstrap.py` for extensive traces.
-    ssh "${SSH_DST}" "sudo python bootstrap.dir/bootstrap.py" "${@:1:${#}-1}"
+    ssh "${SSH_DST}" "sudo python bootstrap.dir/bootstrap.py" "${@:1:${#}-1}" 2>&1 | tee run_bootstrap.output
 else
-    # Everything else is run on the local machine.
-
-    python "bootstrap.dir/bootstrap.py" "${@}"
+    echo "error: this script supports only \`deploy\` action" 1>&2
+    exit 1
 fi
 
 ###############################################################################
