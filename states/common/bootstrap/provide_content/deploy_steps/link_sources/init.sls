@@ -55,7 +55,11 @@
                     '{{ selected_repo_name }}': {
                         'repo_type': '{{ selected_repo_type }}',
                         'archive_type': 'tar',
-                        'destination_dir': '{{ get_system_host_primary_user_posix_home_from_pillar(repo_config['source_system_host'], target_env_pillar) }}/{{ repo_config['origin_uri_ssh_path'] }}',
+                        # In online system, sources are on specific remote
+                        # host (likely Salt master).
+                        'online_destination_dir': '{{ get_system_host_primary_user_posix_home_from_pillar(repo_config['source_system_host'], target_env_pillar) }}/{{ repo_config['origin_uri_ssh_path'] }}',
+                        # In offline system, each minion has its own sources.
+                        'offline_destination_dir': '{{ get_system_host_primary_user_posix_home_from_pillar(selected_host_name, target_env_pillar) }}/{{ repo_config['origin_uri_ssh_path'] }}',
                         'exported_source_archive': '{{ archive_dir_path_in_config }}/{{ selected_repo_name }}.tar',
                     },
             {% endif %} # Git SCM

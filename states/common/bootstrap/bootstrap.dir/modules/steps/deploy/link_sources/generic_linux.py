@@ -18,7 +18,10 @@ def deploy_repos(
     for repo_conf in link_sources_step_config['repos'].values():
 
         logging.debug('repo_conf = ' + str(repo_conf))
-        destination_dir = repo_conf['destination_dir']
+        if action_context.run_use_case == 'offline-minion-installer':
+            destination_dir = repo_conf['offline_destination_dir']
+        else:
+            destination_dir = repo_conf['online_destination_dir']
 
         # Make sure destination directory exists.
         if not os.path.exists(destination_dir):
@@ -56,7 +59,11 @@ def do(action_context):
     # TODO: There can be multiple sources of states (i.e. in
     #       multi-project case. Figure out how to make it generic.
     state_sources = action_context.conf_m.link_sources['state_sources']
-    state_sources_destination_dir = action_context.conf_m.link_sources['repos'][state_sources]['destination_dir']
+    if action_context.run_use_case == 'offline-minion-installer':
+        state_sources_destination_dir = action_context.conf_m.link_sources['repos'][state_sources]['offline_destination_dir']
+    else:
+        state_sources_destination_dir = action_context.conf_m.link_sources['repos'][state_sources]['online_destination_dir']
+
     for link_name in ['states', 'pillars']:
         call_subprocess(
             command_args = [
