@@ -34,7 +34,14 @@
 {% set repo_name = link_config['repo_name'] %}
 {% set repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][repo_name] %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name][repo_type] %}
+
+# NOTE: For `offline-minion-installer` case `source_system_host` is actually
+#       this minion itself.
+{% if bootstrap_mode == 'offline-minion-installer' %}
+{% set source_system_host = grains['id'] %}
+{% else %}
 {% set source_system_host = repo_config['source_system_host'] %}
+{% endif %}
 
 # In order to set (local) symlink, the source host should match current minion id.
 # More over, this state is normally supposed to be executed on Salt master only
