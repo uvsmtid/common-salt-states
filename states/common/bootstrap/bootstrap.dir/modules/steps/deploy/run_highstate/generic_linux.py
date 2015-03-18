@@ -31,6 +31,7 @@ def do(action_context):
                 'debug',
             ] + extra_args + [
                 'state.highstate',
+                'test=False',
             ],
             raise_on_error = True,
             capture_stdout = False,

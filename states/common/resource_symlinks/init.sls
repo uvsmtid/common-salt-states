@@ -18,7 +18,7 @@
 'resources_{{ config_temp_dir }}/ensure_resource_link.sh':
     file.managed:
         - name: '{{ config_temp_dir }}/ensure_resource_link.sh'
-        # NOTE: We reuse the same script.
+        # NOTE: We reuse the same script but renaming it on download.
         - source: salt://common/source_symlinks/ensure_source_link.sh
         #- template: jinja
         - makedirs: True
@@ -48,7 +48,7 @@
 
 ensure_resource_repository_link_{{ resource_respository_id }}_cmd:
     cmd.run:
-        - name: '{{ config_temp_dir }}/ensure_source_link.sh "{{ get_resource_repository_target_path(resource_respository_id) }}" "{{ get_resource_repository_link_path(resource_respository_id) }}" ""'
+        - name: '{{ config_temp_dir }}/ensure_resource_link.sh "{{ get_resource_repository_target_path(resource_respository_id) }}" "{{ get_resource_repository_link_path(resource_respository_id) }}" ""'
         - require:
             - file: 'resources_{{ config_temp_dir }}/ensure_resource_link.sh'
             - file: '{{ resource_respository_id }}_base_dir_salt_config'

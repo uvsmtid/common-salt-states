@@ -36,6 +36,7 @@ def do(action_context):
             ] + extra_args + [
                 'state.sls',
                 state_name,
+                'test=False',
             ],
             raise_on_error = True,
             capture_stdout = False,
