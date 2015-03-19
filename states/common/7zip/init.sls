@@ -44,8 +44,8 @@ install_7zip_on_windows:
 # Download file from depository_role.
 '{{ config_temp_dir }}/{{ pillar['registered_content_items']['7zip_64_bit_windows']['item_base_name'] }}':
     file.managed:
-        - source: '{{ get_registered_content_item_URI('7zip_64_bit_windows') }}'
-        - source_hash: '{{ get_registered_content_item_hash('7zip_64_bit_windows') }}'
+        - source: {{ get_registered_content_item_URI('7zip_64_bit_windows') }}
+        - source_hash: {{ get_registered_content_item_hash('7zip_64_bit_windows') }}
         - makedirs: True
 
 {% endif %} # enable_installation

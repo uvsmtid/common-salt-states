@@ -37,8 +37,8 @@
 download_nexus_archive:
     file.managed:
         - name: '{{ config_temp_dir }}/nexus/nexus-bundle.tar.gz'
-        - source: '{{ get_registered_content_item_URI('nexus_maven_repository_manager') }}'
-        - source_hash: '{{ get_registered_content_item_hash('nexus_maven_repository_manager') }}'
+        - source: {{ get_registered_content_item_URI('nexus_maven_repository_manager') }}
+        - source_hash: {{ get_registered_content_item_hash('nexus_maven_repository_manager') }}
         - makedirs: True
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}

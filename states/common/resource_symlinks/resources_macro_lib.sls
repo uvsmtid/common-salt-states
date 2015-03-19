@@ -130,7 +130,12 @@
 
 {%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
 
+{#- If there is no `item_content_hash`, return None `~`. -#}
+{%- if 'item_content_hash' in registered_content_item_config -%}
 {{- registered_content_item_config['item_content_hash'] -}}
+{%- else -%}
+~
+{%- endif -%}
 
 {%- endmacro -%}
 

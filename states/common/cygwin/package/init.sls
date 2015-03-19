@@ -77,8 +77,8 @@ set_CYGWIN_env_var_value:
 # Archive:
 '{{ config_temp_dir }}\{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_base_name'] }}':
     file.managed:
-        - source: '{{ get_registered_content_item_URI('cygwin_package_64_bit_windows') }}'
-        - source_hash: '{{ get_registered_content_item_hash('cygwin_package_64_bit_windows') }}'
+        - source: {{ get_registered_content_item_URI('cygwin_package_64_bit_windows') }}
+        - source_hash: {{ get_registered_content_item_hash('cygwin_package_64_bit_windows') }}
         - makedirs: True
 
 # Create installation indicator:

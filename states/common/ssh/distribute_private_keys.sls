@@ -57,8 +57,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa'
-        - source: '{{ get_registered_content_item_URI(private_key_res_id) }}'
-        - source_hash: '{{ get_registered_content_item_hash(private_key_res_id) }}'
+        - source: {{ get_registered_content_item_URI(private_key_res_id) }}
+        - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 600
@@ -70,8 +70,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
-        - source: '{{ get_registered_content_item_URI(public_key_res_id) }}'
-        - source_hash: '{{ get_registered_content_item_hash(public_key_res_id) }}'
+        - source: {{ get_registered_content_item_URI(public_key_res_id) }}
+        - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 644
@@ -100,8 +100,8 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
-        - source: '{{ get_registered_content_item_URI(private_key_res_id) }}'
-        - source_hash: '{{ get_registered_content_item_hash(private_key_res_id) }}'
+        - source: {{ get_registered_content_item_URI(private_key_res_id) }}
+        - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -109,8 +109,8 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
-        - source: '{{ get_registered_content_item_URI(public_key_res_id) }}'
-        - source_hash: '{{ get_registered_content_item_hash(public_key_res_id) }}'
+        - source: {{ get_registered_content_item_URI(public_key_res_id) }}
+        - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -147,8 +147,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa'
-        - source: '{{ get_registered_content_item_URI(private_key_res_id) }}'
-        - source_hash: '{{ get_registered_content_item_hash(private_key_res_id) }}'
+        - source: {{ get_registered_content_item_URI(private_key_res_id) }}
+        - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 600
@@ -160,8 +160,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
-        - source: '{{ get_registered_content_item_URI(public_key_res_id) }}'
-        - source_hash: '{{ get_registered_content_item_hash(public_key_res_id) }}'
+        - source: {{ get_registered_content_item_URI(public_key_res_id) }}
+        - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
         - user: {{ selected_user['username'] }}
         - group: {{ selected_user['primary_group'] }}
         - mode: 644
@@ -190,8 +190,8 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
-        - source: '{{ get_registered_content_item_URI(private_key_res_id) }}'
-        - source_hash: '{{ get_registered_content_item_hash(private_key_res_id) }}'
+        - source: {{ get_registered_content_item_URI(private_key_res_id) }}
+        - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -199,8 +199,8 @@ include:
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
         - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
-        - source: '{{ get_registered_content_item_URI(public_key_res_id) }}'
-        - source_hash: '{{ get_registered_content_item_hash(public_key_res_id) }}'
+        - source: {{ get_registered_content_item_URI(public_key_res_id) }}
+        - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package

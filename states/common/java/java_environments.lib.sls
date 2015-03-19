@@ -40,8 +40,8 @@
 download_rpm_package_{{ java_environment_id }}_{{ rpm_source_name }}:
     file.managed:
         - name: '{{ config_temp_dir }}/{{ content_item_conf['item_base_name'] }}'
-        - source: '{{ get_registered_content_item_URI(rpm_source_conf['resource_id']) }}'
-        - source_hash: '{{ get_registered_content_item_hash(rpm_source_conf['resource_id']) }}'
+        - source: {{ get_registered_content_item_URI(rpm_source_conf['resource_id']) }}
+        - source_hash: {{ get_registered_content_item_hash(rpm_source_conf['resource_id']) }}
         - makedirs: True
 
 run_rpm_command_{{ java_environment_id }}_{{ rpm_source_name }}:

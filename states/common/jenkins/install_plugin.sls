@@ -14,8 +14,8 @@
 
 '{{ config_temp_dir }}/{{ pillar['registered_content_items'][registered_content_item_id]['item_base_name'] }}':
     file.managed:
-        - source: '{{ get_registered_content_item_URI(registered_content_item_id) }}'
-        - source_hash: '{{ get_registered_content_item_hash(registered_content_item_id) }}'
+        - source: {{ get_registered_content_item_URI(registered_content_item_id) }}
+        - source_hash: {{ get_registered_content_item_hash(registered_content_item_id) }}
         - makedirs: True
 
 install_jenkins_{{ registered_content_item_id }}:

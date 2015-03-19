@@ -41,8 +41,8 @@ include:
 retrieve_jenkins_yum_repository_key:
     file.managed:
         - name: '{{ config_temp_dir }}/jenkins/jenkins-ci.org.key'
-        - source: '{{ get_registered_content_item_URI('jenkins_yum_repository_rpm_verification_key') }}'
-        - source_hash: '{{ get_registered_content_item_hash('jenkins_yum_repository_rpm_verification_key') }}'
+        - source: {{ get_registered_content_item_URI('jenkins_yum_repository_rpm_verification_key') }}
+        - source_hash: {{ get_registered_content_item_hash('jenkins_yum_repository_rpm_verification_key') }}
         - makedirs: True
 
 import_jenkins_yum_repository_key:

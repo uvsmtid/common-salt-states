@@ -126,8 +126,8 @@
         #       under simply `resources/{{ project_name }}/..` to differentiate
         #       with other resources (not only those declared in `registered_content_items`.
         - name: '{{ bootstrap_dir }}/{{ resource_base_dir_rel_path }}/{{ get_registered_content_item_parent_dir_path_from_pillar(content_item_id, target_env_pillar) }}/{{ get_registered_content_item_base_name_from_pillar(content_item_id, target_env_pillar) }}'
-        - source: '{{ get_registered_content_item_URI_from_pillar(content_item_id, target_env_pillar) }}'
-        - source_hash: '{{ get_registered_content_item_hash_from_pillar(content_item_id, target_env_pillar) }}'
+        - source: {{ get_registered_content_item_URI_from_pillar(content_item_id, target_env_pillar) }}
+        - source_hash: {{ get_registered_content_item_hash_from_pillar(content_item_id, target_env_pillar) }}
         - makedirs: True
         - mode: 644
         - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
