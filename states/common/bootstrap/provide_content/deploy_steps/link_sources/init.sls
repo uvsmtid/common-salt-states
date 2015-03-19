@@ -49,7 +49,12 @@
                 'state_sources': 'common-salt-states',
                 # Configure each extracted respository.
                 'repos': {
-            {% for selected_repo_name in target_env_pillar['system_features']['bootstrap_configuration']['export_sources_repos'].keys() %} # selected_repo_name
+            # TODO: We put all repos in configuration but generate empty
+            #       archives for those which are not part of
+            #         target_env_pillar['system_features']['bootstrap_configuration']['export_sources_repos']
+            #       This is one way to make sure `common.source_symlinks` will
+            #       be able to create symlinks to the repositories.
+            {% for selected_repo_name in target_env_pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %} # selected_repo_name
             {% set selected_repo_type = target_env_pillar['system_features']['deploy_environment_sources']['source_repo_types'][selected_repo_name] %}
             {% if selected_repo_type == 'git' %} # Git SCM
             {% set repo_config = target_env_pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name][selected_repo_type] %}
@@ -89,7 +94,8 @@
 {% from 'common/git/git_uri.lib.sls' import define_git_repo_uri with context %}
 
 # Generate archives with sources.
-{% for selected_repo_name in target_env_pillar['system_features']['bootstrap_configuration']['export_sources_repos'].keys() %} # selected_repo_name
+
+{% for selected_repo_name in target_env_pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %} # selected_repo_name
 
 {% set selected_repo_type = target_env_pillar['system_features']['deploy_environment_sources']['source_repo_types'][selected_repo_name] %}
 
@@ -99,6 +105,7 @@
 
 {% set repo_config = target_env_pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name][selected_repo_type] %}
 
+{% if selected_repo_name in target_env_pillar['system_features']['bootstrap_configuration']['export_sources_repos'].keys() %}
 # Create archive.
 {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
     cmd.run:
@@ -108,8 +115,26 @@
         - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - require:
             - file: {{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
+{% else %}
+# Create an empty archive.
+{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
+    cmd.run:
+        - name: 'tar -c -T /dev/null -f "{{ archive_dir_path }}/{{ selected_repo_name }}.tar"'
+        # User and Group are from source env pillar - where the package is build.
+        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - require:
+            - file: {{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
+{% endif %}
+
 {% endif %} # Git SCM
 
+# NOTE: We add pillar file in all repositories regardless whether it
+#       belongs to this repo or not.
+# TODO: Think how to put pillars to only specific repository.
+#       Note that the complication is that in multip-project Salt setup
+#       pillar files may be split into and distributed across multiple
+#       repos.
 # Add the rewritten `target_env_pillar` to the initial archive.
 {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}_add_rewritten_pillar:
     cmd.run:
