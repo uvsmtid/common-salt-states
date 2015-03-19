@@ -23,6 +23,7 @@
 {% set config_temp_dir = pillar['windows_config_temp_dir'] %}
 {% endif %}
 
+{% from 'common/libs/host_config_queries.sls' import is_network_checks_allowed with context %}
 
 ###############################################################################
 # <<<
@@ -66,11 +67,13 @@ package_sshpass:
 
 {% set selected_role_name = 'none' %}
 
-{% set all_defined_hosts = pillar['system_hosts'].values() %}
+{% set all_defined_host_ids = pillar['system_hosts'].keys() %}
 
-{% for host_config in all_defined_hosts %}
+{% for host_id in all_defined_host_ids %}
 
-{% if host_config['consider_online_for_remote_connections'] %}
+{% set host_config = pillar['system_hosts'][host_id] %}
+
+{% if is_network_checks_allowed(host_id) == 'True' %}
 
 # Compose expected data object:
 {% set selected_account = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}
@@ -107,7 +110,7 @@ package_sshpass:
 
 {% set host_config = pillar['system_hosts'][minion_id] %}
 
-{% if host_config['consider_online_for_remote_connections'] %}
+{% if is_network_checks_allowed(minion_id) == 'True' %}
 
 {% for user_config in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_host_role'][selected_role_name].values() %}
 

@@ -87,6 +87,30 @@
 {%- endmacro -%}
 
 ###############################################################################
+# is_network_checks_allowed
+
+{%- macro is_network_checks_allowed(
+        system_host_id
+    )
+-%}
+
+{%- set selected_host_config = pillar['system_hosts'][system_host_id] -%}
+{%- set bootstrap_mode = salt['config.get']('this_system_keys:bootstrap_mode') -%}
+
+{%- if
+       ( selected_host_config['consider_online_for_remote_connections'] )
+       and
+       ( bootstrap_mode != 'offline-minion-installer' )
+-%}
+True
+{%- else -%}
+False
+{%- endif -%}
+
+
+{%- endmacro -%}
+
+###############################################################################
 # EOF
 ###############################################################################
 

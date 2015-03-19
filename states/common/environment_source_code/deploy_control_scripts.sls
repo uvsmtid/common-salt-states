@@ -2,6 +2,7 @@
 # The state uses `scp` to copy locally available copy of control scripts to
 # all minions.
 
+{% from 'common/libs/host_config_queries.sls' import is_network_checks_allowed with context %}
 
 # TODO: Use Salt job on the target minion to pull control scripts from
 #       Salt itself which is already aviailable there (see pillar config
@@ -55,9 +56,11 @@
 {% set control_scripts_dir_basename = pillar['system_features']['deploy_environment_sources']['control_scripts_dir_basename'] %}
 
 # Loop through all defined hosts and execute `scp` to them.
-{% for host_config in pillar['system_hosts'].values() %} # host_config
+{% for host_id in pillar['system_hosts'].keys() %} # host_id
 
-{% if host_config['consider_online_for_remote_connections'] %} # consider_online_for_remote_connections
+{% set host_config = pillar['system_hosts'][host_id] %}
+
+{% if is_network_checks_allowed(host_id) == 'True' %} # consider_online_for_remote_connections
 
 {% if host_config['hostname'] not in pillar['system_features']['deploy_environment_sources']['exclude_hosts'] %} # exclude_hosts
 
@@ -102,7 +105,7 @@ make_environment_sources_location_dir_{{ host_config['hostname'] }}_cmd:
 
 {% endif %} # consider_online_for_remote_connections
 
-{% endfor %} # host_config
+{% endfor %} # host_id
 
 
 {% endif %} # deploy_environment_sources

@@ -7,6 +7,8 @@
 {% set config_temp_dir = pillar['windows_config_temp_dir'] %}
 {% endif %}
 
+{% from 'common/libs/host_config_queries.sls' import is_network_checks_allowed with context %}
+
 ###############################################################################
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
@@ -24,11 +26,13 @@
 
 {% set selected_role_name = 'none' %}
 
-{% set all_defined_hosts = pillar['system_hosts'].values() %}
+{% set all_defined_host_ids = pillar['system_hosts'].keys() %}
 
-{% for host_config in all_defined_hosts %}
+{% for host_id in all_defined_host_ids %}
 
-{% if host_config['consider_online_for_remote_connections'] %}
+{% set host_config = pillar['system_hosts'][host_id] %}
+
+{% if is_network_checks_allowed(host_id) == 'True' %}
 
 # Compose expected data object:
 {% set selected_account = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}

@@ -24,6 +24,8 @@
 {% set config_temp_dir = pillar['windows_config_temp_dir'] %}
 {% endif %}
 
+{% from 'common/libs/host_config_queries.sls' import is_network_checks_allowed with context %}
+
 {% if pillar['system_features']['initialize_ssh_connections']['feature_enabled'] %}
 
 ###############################################################################
@@ -87,9 +89,11 @@ include:
 
 {% set selected_role_name = 'none' %}
 
-{% for host_config in pillar['system_hosts'].values() %}
+{% for host_id in pillar['system_hosts'].keys() %}
 
-{% if host_config['consider_online_for_remote_connections'] %}
+{% set host_config = pillar['system_hosts'][host_id] %}
+
+{% if is_network_checks_allowed(host_id) == 'True' %}
 
 # Compose expected data object:
 {% set selected_host = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}
@@ -150,7 +154,7 @@ include:
 
 {% set host_config = pillar['system_hosts'][minion_id] %}
 
-{% if host_config['consider_online_for_remote_connections'] %}
+{% if is_network_checks_allowed(minion_id) == 'True' %}
 
 {% for user_config in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_host_role'][selected_role_name].values() %}
 
