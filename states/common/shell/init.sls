@@ -14,6 +14,7 @@
 shell:
     pkg.installed:
         - name: bash
+        - aggregate: True
 
 {% endif %}
 

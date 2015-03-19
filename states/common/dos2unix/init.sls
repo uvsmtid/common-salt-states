@@ -7,6 +7,7 @@
 dos2unix_package:
     pkg.installed:
         - name: dos2unix
+        - aggregate: True
 
 {% endif %}
 # >>>

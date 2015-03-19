@@ -12,6 +12,7 @@ install_docker_packages:
     pkg.installed:
         - pkgs:
             - docker-io
+        - aggregate: True
 
 {% endif %} # hypervisor_role
 

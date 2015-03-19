@@ -8,6 +8,7 @@
 ssh_server:
     pkg.installed:
         - name: openssh-server
+        - aggregate: True
     service.running:
         - name: sshd
         - enable: True

@@ -7,6 +7,7 @@
 install_maven_package:
     pkg.installed:
         - name: maven
+        - aggregate: True
 
 maven_configuration_file:
     file.managed:

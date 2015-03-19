@@ -7,6 +7,7 @@
 json_package_for_python:
     pkg.installed:
         - name: python-simplejson
+        - aggregate: True
 
 {% endif %}
 # >>>

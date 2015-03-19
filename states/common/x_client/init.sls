@@ -16,6 +16,7 @@ x_client_packages:
 
             # X apps for quick testing:
             - xorg-x11-apps
+        - aggregate: True
 
 {% endif %}
 # >>>

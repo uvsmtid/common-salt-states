@@ -47,6 +47,7 @@
 package_sshpass:
     pkg.installed:
         - name: sshpass
+        - aggregate: True
 
 '{{ config_temp_dir }}/ssh/distribute_public_keys.sh':
     file.managed:

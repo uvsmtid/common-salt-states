@@ -16,6 +16,7 @@
 python:
     pkg.installed:
         - name: python
+        - aggregate: True
 
 {% endif %}
 # >>>

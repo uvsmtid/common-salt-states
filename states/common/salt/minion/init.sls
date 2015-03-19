@@ -13,6 +13,7 @@
 install_salt_minion:
     pkg.installed:
         - name: salt-minion
+        - aggregate: True
     service.running:
         - name: salt-minion
         - enable: True

@@ -14,6 +14,7 @@ install_virtualbox_packages:
     pkg.installed:
         - pkgs:
             - VirtualBox
+        - aggregate: True
 
 {% endif %} # hypervisor_role
 

@@ -14,6 +14,7 @@
 dhcp_server:
     pkg.installed:
         - name: dhcp
+        - aggregate: True
     service.running:
         - name: dhcpd
         - enable: True

@@ -14,6 +14,7 @@ include:
 wget_package:
     pkg.installed:
         - name: wget
+        - aggregate: True
 
 {% endif %}
 # >>>

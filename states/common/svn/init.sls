@@ -7,6 +7,7 @@
 svn:
     pkg.installed:
         - name: subversion
+        - aggregate: True
 
 {% endif %}
 # >>>

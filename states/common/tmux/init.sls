@@ -8,6 +8,7 @@
 tmux:
     pkg.installed:
         - name: tmux
+        - aggregate: True
 
 /etc/tmux.conf:
   file.managed:

@@ -9,6 +9,7 @@
 install_meld_package:
     pkg.installed:
         - name: meld
+        - aggregate: True
 
 {% endif %}
 # >>>

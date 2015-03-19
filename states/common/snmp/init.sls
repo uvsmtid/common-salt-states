@@ -10,6 +10,7 @@ install_snmp_packages:
         - pkgs:
             - net-snmp
             - net-snmp-utils
+        - aggregate: True
 {% endif %}
 
 enable_snmp_service:

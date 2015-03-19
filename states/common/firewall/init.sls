@@ -25,6 +25,7 @@
 firewall:
     pkg.installed:
         - name: firewalld
+        - aggregate: True
     service.running:
         - name: firewalld
         - enable: True

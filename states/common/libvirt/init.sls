@@ -14,8 +14,8 @@ libvirt_packages_installation:
     pkg.installed:
         - pkgs:
             - libvirt-daemon
-
             - vagrant-libvirt
+        - aggregate: True
 
 libvirtd_service:
     service.running:

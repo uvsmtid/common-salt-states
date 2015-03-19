@@ -7,6 +7,7 @@
 install_ftp_server:
     pkg.installed:
         - name: vsftpd
+        - aggregate: True
     service.running:
         - name: vsftpd
         - enable: True

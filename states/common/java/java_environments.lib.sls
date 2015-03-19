@@ -63,6 +63,7 @@ run_rpm_command_{{ java_environment_id }}_{{ rpm_source_name }}:
 install_rpm_packages_{{ java_environment_id }}:
     pkg.installed:
         - pkgs: {{ je_config['rpm_packages'] }}
+        - aggregate: True
 
 {% endif %} # installation_type
 

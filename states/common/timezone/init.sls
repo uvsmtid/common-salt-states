@@ -7,6 +7,7 @@
 tzdata_package:
     pkg.installed:
         - name: tzdata
+        - aggregate: True
 
 /etc/localtime:
     file.symlink:

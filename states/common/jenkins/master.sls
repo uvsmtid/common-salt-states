@@ -56,6 +56,7 @@ import_jenkins_yum_repository_key:
 jenkins_rpm_package:
     pkg.installed:
         - name: jenkins
+        - aggregate: True
 # Set dependencies on special Jenkins repository only when it is enabled.
 {% if pillar['registered_content_items']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %} # enable_installation
         - require:

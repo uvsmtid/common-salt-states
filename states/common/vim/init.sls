@@ -15,6 +15,7 @@ include:
 vim_enhanced:
     pkg.installed:
         - name: vim-enhanced
+        - aggregate: True
 
 {% endif %}
 

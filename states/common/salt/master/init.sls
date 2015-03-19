@@ -10,6 +10,7 @@
 salt_master:
     pkg.installed:
         - name: salt-master
+        - aggregate: True
     service.running:
         - name: salt-master
         - enable: True

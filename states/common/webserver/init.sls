@@ -8,6 +8,7 @@
 webserver:
     pkg.installed:
         - name: httpd
+        - aggregate: True
     service.running:
         - name: httpd
         - enable: True

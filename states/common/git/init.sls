@@ -9,6 +9,7 @@
 git:
     pkg.installed:
         - name: git
+        - aggregate: True
 
 {% endif %}
 

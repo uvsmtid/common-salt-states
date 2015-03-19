@@ -15,6 +15,7 @@ include:
 sudo_package:
     pkg.installed:
         - name: sudo
+        - aggregate: True
 
 {% endif %}
 

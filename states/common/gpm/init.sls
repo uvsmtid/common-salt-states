@@ -7,6 +7,7 @@
 gpm_package:
     pkg.installed:
         - name: gpm
+        - aggregate: True
 
 gpm_service:
     service.running:
