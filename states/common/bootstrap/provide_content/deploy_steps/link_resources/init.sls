@@ -81,13 +81,14 @@
 
 {% endfor %} # resource_respository_id
 
+# Generate "ugly" version of rewritten profile pillar data.
 {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ project_name }}_{{ profile_name }}_rewirte_pillar:
     file.managed:
         # Note that location of the pillar is _assumed_.
         # TODO: Make location of the pillar declared, otherwise if pillar is
         #       located in different place, rewrite will be merge with
         #       unpredictable results.
-        - name: '{{ base_dir }}/pillars/{{ project_name }}/profile/{{ profile_name }}.sls'
+        - name: '{{ base_dir }}/pillars/{{ project_name }}/profile/{{ profile_name }}.sls.ugly'
         - source: ~
         - makedirs: True
         - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
@@ -95,6 +96,15 @@
         # Render `target_env_pillar` as JSON.
         - contents: |
             {{ target_env_pillar }}
+
+# Convert generated YAML file in pretty format.
+{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ project_name }}_{{ profile_name }}_convert_rewritten_pillar_pretty:
+    cmd.run:
+        - name: '{{ bootstrap_dir }}/pretty_yaml2json.py {{ base_dir }}/pillars/{{ project_name }}/profile/{{ profile_name }}.sls.ugly > {{ base_dir }}/pillars/{{ project_name }}/profile/{{ profile_name }}.sls'
+        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        - require:
+            - file: {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ project_name }}_{{ profile_name }}_rewirte_pillar
 
 # Change target pillar back.
 {% for resource_respository_id in resource_respositories.keys() %} # resource_respository_id
@@ -105,7 +115,6 @@
 {% do resource_respository_config.update( { 'bootstrap_swap_value': None } ) %}
 
 {% endfor %} # resource_respository_id
-
 
 # Download resources for the project/profile.
 # Resources are shared among all hosts in the same project/profile.

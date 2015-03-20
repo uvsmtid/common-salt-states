@@ -26,6 +26,16 @@ include:
 {% set current_project_name = salt['config.get']('this_system_keys:project') %}
 {% set current_profile_name = salt['config.get']('this_system_keys:profile') %}
 
+# Download file for pretty conversion.
+pretty_yaml2json_script:
+    file.managed:
+        - name: '{{ bootstrap_dir }}/pretty_yaml2json.py'
+        - source: 'salt://common/bootstrap/provide_content/pretty_yaml2json.py'
+        - makedirs: True
+        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        - mode: 755
+
 {% for project_name in load_bootstrap_target_envs.keys() %} # project_name
 
 {% if project_name in pillar['system_features']['bootstrap_configuration']['enable_bootstrap_target_envs'].keys() %} # enabled project_name
