@@ -211,6 +211,15 @@ for bootstrap and multi-project framework).
 Bootstrap is only required to setup Salt and the framework (with multiple
 projects). There is no impact of multiple projects on bootstrap.
 
+TODO: For bootstrap, there are some pillars which are templates, some
+are not. And there are many of them, not one anymore. So, there should
+be a definition which pillar data whould be written into which file.
+Otherwise how these pillars will get loaded if they are all merged in
+one file and other files do not exist (not found)?
+
+TODO: Maybe pillar rewrite shouldn't be the case during bootstrap?
+Maybe it can all be managed through boostrap mode Salt config?
+
 ## How will orchestrate work? ##
 
 Orchestrate will work because states will be available.
