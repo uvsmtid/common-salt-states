@@ -100,12 +100,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     {{ UNEXPECTED_VALUE }}
     {% endif %} # bootstrap_use_case
 
-    {{ selected_host_name }}.vm.provision "shell", inline: "python /vagrant/{{ bootstrap_dir_basename }}/bootstrap.py deploy {{ bootstrap_use_case }} 'conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}.py'"
+    {% set package_type = pillar['system_features']['bootstrap_configuration']['os_platform_package_types'][pillar['system_hosts'][selected_host_name]['os_platform']] %}
+    {% if not pillar['system_features']['bootstrap_configuration']['generate_packages'] %} # generate_packages
+    {% set src_sync_dir = bootstrap_dir_basename + '/targets/' + project_name + '/' + profile_name %}
+    {% set boostrap_cmd = 'python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
+    {% else %} # generate_packages
+    {% set src_sync_dir = bootstrap_dir_basename + '/packages/' + project_name + '/' + profile_name %}
+    {% if not package_type %} # package_type
+    {% set boostrap_cmd = 'false' %}
+    {% elif package_type == 'tar.gz' %} # package_type
+    {% set boostrap_cmd = 'tar -xzvf /vagrant/' + bootstrap_dir_basename + '/salt-auto-install.' + package_type + ' --directory=/vagrant/' + bootstrap_dir_basename + '/ ; python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
+    {% else %} # package_type
+    {% set boostrap_cmd = 'false' %}
+    {% endif %} # package_type
+    {% endif %} # generate_packages
+
+    {{ selected_host_name }}.vm.provision "shell", inline: "{{ boostrap_cmd }}"
 
     # Use `rsync` for synced folder.
     # Parameter `--copy-unsafe-links` is required for bootstrap directory
     # which might be a symlink.
-    {{ selected_host_name }}.vm.synced_folder '{{ bootstrap_dir_basename }}/targets/{{ project_name }}/{{ profile_name }}/', '/vagrant/{{ bootstrap_dir_basename }}/', type: 'rsync',
+    {{ selected_host_name }}.vm.synced_folder '{{ src_sync_dir }}/', '/vagrant/{{ bootstrap_dir_basename }}/', type: 'rsync',
         rsync__args: [
             "--verbose",
             "--archive",
