@@ -38,10 +38,7 @@ install_vagrant_packages:
 {% set bootstrap_files_dir = pillar['system_features']['bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set vagrant_files_dir = pillar['system_features']['vagrant_configuration']['vagrant_files_dir'] %}
 {% set vagrant_dir = user_home_dir + '/' + vagrant_files_dir %}
-# NOTE: `bootstrap_dir` is under `vagrant_dir` due to some issues of rsync-ing
-#        content via symlinks.
-#        Normally, `bootstrap_dir` and `vagrant_dir` are in user's home.
-{% set bootstrap_dir = user_home_dir + '/' + vagrant_files_dir + '/' + bootstrap_files_dir %}
+{% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
 # Generate Vagrant file.
 deploy_vagrant_file:
@@ -54,20 +51,12 @@ deploy_vagrant_file:
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
 
-# Set symlink to bootstrap directory.
-# TODO: Normally, `bootstrap_dir` and `vagrant_dir` are in user's home
-#       and `vagrant_dir` has a symlink to access `bootstrap_dir`.
-#       But for now `bootstrap_dir` was placed inside `vagrant_dir`
-#       because somehow Vagrant was unable to rsync `bootstrap_dir`
-#       via symlink properly regardless of what rsync options were provided.
-{% if False %}
 bootstrap_symlink_from_vagrant_dir:
     file.symlink:
         - name: '{{ vagrant_dir }}/{{ bootstrap_files_dir }}'
         - target: '{{ bootstrap_dir }}'
         - require:
             - file: deploy_vagrant_file
-{% endif %}
 
 # Docker requires special configuration.
 {% for selected_host_name in pillar['system_hosts'].keys() %} # selected_host_name
