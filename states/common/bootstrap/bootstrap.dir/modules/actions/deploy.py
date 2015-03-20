@@ -18,8 +18,7 @@ class deploy_template_method (action_context):
         # Salt will never contact master in `offline-minion-installer`
         # user case.
         "make_salt_resolvable": [
-            'initial-master',
-            'online-minion',
+            'initial-online-node',
         ],
 
         "set_hostname": "always",
@@ -29,31 +28,30 @@ class deploy_template_method (action_context):
         "init_yum_repos": "always",
 
         "install_salt_master": [
-            'initial-master',
+            'initial-online-node',
         ],
 
         "install_salt_minion": "always",
 
         # Sources are linked only on machines which have access to them.
         "link_sources": [
-            'initial-master',
+            'initial-online-node',
             'offline-minion-installer',
         ],
 
         # Sources are linked only on machines which have access to them.
         "link_resources": [
-            'initial-master',
+            'initial-online-node',
             'offline-minion-installer',
         ],
 
         "activate_salt_master": [
-            'initial-master',
+            'initial-online-node',
         ],
 
         # Note that Salt minion is not activated for `offline-minion-installer`.
         "activate_salt_minion": [
-            'initial-master',
-            'online-minion',
+            'initial-online-node',
         ],
 
         "run_init_states": "always",

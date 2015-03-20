@@ -80,25 +80,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         {{ selected_host_name }}_domain.cpus = {{ instance_configuration['cpus_number'] }}
     end
 
-    # NOTE: Before target environment can be deployed (before using `deploy`),
-    #       bootstrap script should be run with `build` in order to create
-    #       package (configuration and resource files) for this target
-    #       environment.
-    # TODO: At the moment bootstrap hasn't been modified to understand
-    #       `initial-online-node`, so we convert it here to known
-    #       values 'initial-master' or 'online-minion' depending on role
-    #       assignment to the host.
-    {% if pillar['system_features']['vagrant_configuration']['bootstrap_use_case'] == 'initial-online-node' %} # bootstrap_use_case
-    {% if selected_host_name in pillar['system_host_roles']['controller_role'] %} # selected_host_name
-    {% set bootstrap_use_case = 'initial-master' %}
-    {% else %} # selected_host_name
-    {% set bootstrap_use_case = 'online-minion' %}
-    {% endif %} # selected_host_name
-    {% elif 'offline-minion-installer' %} # bootstrap_use_case
-    {% set bootstrap_use_case = 'offline-minion-installer' %}
-    {% else %} # bootstrap_use_case
-    {{ UNEXPECTED_VALUE }}
-    {% endif %} # bootstrap_use_case
+    {% set bootstrap_use_case = pillar['system_features']['vagrant_configuration']['bootstrap_use_case'] %}
 
     {% set package_type = pillar['system_features']['bootstrap_configuration']['os_platform_package_types'][pillar['system_hosts'][selected_host_name]['os_platform']] %}
     {% if not pillar['system_features']['bootstrap_configuration']['generate_packages'] %} # generate_packages

@@ -7,8 +7,8 @@ from utils.exec_command import call_subprocess
 def do(action_context):
 
     # Explanation per use case:
-    # * `initial-master` - obviously `salt-call` should be working.
-    # * `online-minion` - it is assumed that Salt master is already accessible.
+    # * `initial-online-node` - it is assumed that Salt master is already
+    #    accessible and `--local` is not required.
     # * `offline-minion-installer` - run with `--local` because it is
     #   standalone minon.
     extra_args = []

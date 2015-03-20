@@ -31,7 +31,7 @@ set -x
 # The arguments are:
 # $1 - SSH address, for example: vagrant@192.168.50.101
 # $2 - bootstrap action, for example: deploy
-# $3 - bootstrap use case, for example: initial-master
+# $3 - bootstrap use case, for example: offline-minion-installer
 # $4 - bootstrap target environment config file, relative to `bootstrap.dir`,
 #      for example:
 #        conf/examples/uvsmtid/centos-5.5-minimal.py
