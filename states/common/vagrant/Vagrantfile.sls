@@ -113,6 +113,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             "--copy-unsafe-links",
         ]
 
+    # Disable default sync folder.
+    {{ selected_host_name }}.vm.synced_folder '.', '/vagrant', disabled: true
+
     # Based on Vagrant explanation, in the future they may support provider
     # per each VM. At the moment, it should only be configured per all
     # set of VMs (outside of individual configuration).
