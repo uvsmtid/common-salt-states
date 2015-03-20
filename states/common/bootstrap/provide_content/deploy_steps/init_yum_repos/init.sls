@@ -19,6 +19,8 @@
         ,
         requisite_config_file_path
         ,
+        target_contents_dir
+        ,
         bootstrap_dir
     )
 %}
@@ -63,7 +65,7 @@
 
 {{ requisite_config_file_id }}_{{ deploy_step }}_yum.conf:
     file.managed:
-        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/yum.conf'
+        - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/yum.conf'
         - source: '{{ deploy_step_config['yum_main_config_template'] }}'
         - template: jinja
         - makedirs: True

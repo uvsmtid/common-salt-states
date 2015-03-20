@@ -19,6 +19,8 @@
         ,
         requisite_config_file_path
         ,
+        target_contents_dir
+        ,
         bootstrap_dir
     )
 %}
@@ -43,7 +45,7 @@
 
 {{ requisite_config_file_id }}_{{ deploy_step }}_hosts_file:
     file.managed:
-        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/hosts_file'
+        - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/hosts_file'
         - makedirs: True
         - contents: |
             {{ get_role_ip_address_from_pillar('controller_role', target_env_pillar) }} salt

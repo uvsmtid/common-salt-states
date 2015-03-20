@@ -105,7 +105,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Use `rsync` for synced folder.
     # Parameter `--copy-unsafe-links` is required for bootstrap directory
     # which might be a symlink.
-    {{ selected_host_name }}.vm.synced_folder '{{ bootstrap_dir_basename }}/packages/{{ project_name }}/{{ profile_name }}/content/', '/vagrant/{{ bootstrap_dir_basename }}/', type: 'rsync',
+    {{ selected_host_name }}.vm.synced_folder '{{ bootstrap_dir_basename }}/targets/{{ project_name }}/{{ profile_name }}/', '/vagrant/{{ bootstrap_dir_basename }}/', type: 'rsync',
         rsync__args: [
             "--verbose",
             "--archive",

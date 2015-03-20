@@ -19,6 +19,8 @@
         ,
         requisite_config_file_path
         ,
+        target_contents_dir
+        ,
         bootstrap_dir
     )
 %}
@@ -63,7 +65,7 @@
 # Pre-build config files used by the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_file:
     file.managed:
-        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/master.conf'
+        - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/master.conf'
         - source: '{{ deploy_step_config['salt_master_template'] }}'
         - context:
             project_name: '{{ project_name }}'
@@ -82,7 +84,7 @@
 {% set file_path = get_registered_content_item_rel_path_from_pillar(rpm_source_config['resource_id'], target_env_pillar) %}
 {{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:
     file.managed:
-        - name: '{{ bootstrap_dir }}/resources/bootstrap/{{ project_name }}/{{ profile_name }}/{{ file_path }}'
+        - name: '{{ target_contents_dir }}/resources/bootstrap/{{ project_name }}/{{ profile_name }}/{{ file_path }}'
         - source: '{{ get_registered_content_item_URI_from_pillar(rpm_source_config['resource_id'], target_env_pillar) }}'
         - template: ~
         - makedirs: True

@@ -19,6 +19,8 @@
         ,
         requisite_config_file_path
         ,
+        target_contents_dir
+        ,
         bootstrap_dir
     )
 %}
@@ -43,7 +45,7 @@
 
 {{ requisite_config_file_id }}_{{ deploy_step }}_resolv.conf:
     file.managed:
-        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/resolv.conf'
+        - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/resolv.conf'
         - source: '{{ deploy_step_config['resolv_conf_template'] }}'
         - template: jinja
         - makedirs: True

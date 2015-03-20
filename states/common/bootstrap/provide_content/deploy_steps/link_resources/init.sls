@@ -19,6 +19,8 @@
         ,
         requisite_config_file_path
         ,
+        target_contents_dir
+        ,
         bootstrap_dir
     )
 %}
@@ -67,7 +69,7 @@
 # TODO: Make it more flexible. Some resources shouldn't be downloaded, others
 #       should be separated per repository type, etc.
 
-{% set base_dir = bootstrap_dir + '/resources/rewritten_pillars/' + project_name + '/' + profile_name %}
+{% set base_dir = target_contents_dir + '/resources/rewritten_pillars/' + project_name + '/' + profile_name %}
 {% set resource_respositories = target_env_pillar['system_features']['resource_repositories_configuration']['resource_respositories'] %}
 
 # Change target pillar.
@@ -134,7 +136,7 @@
         # NOTE: Resources are downloaded into `resources/depository/{{ project_name }}/..`, not
         #       under simply `resources/{{ project_name }}/..` to differentiate
         #       with other resources (not only those declared in `registered_content_items`.
-        - name: '{{ bootstrap_dir }}/{{ resource_base_dir_rel_path }}/{{ get_registered_content_item_parent_dir_path_from_pillar(content_item_id, target_env_pillar) }}/{{ get_registered_content_item_base_name_from_pillar(content_item_id, target_env_pillar) }}'
+        - name: '{{ target_contents_dir }}/{{ resource_base_dir_rel_path }}/{{ get_registered_content_item_parent_dir_path_from_pillar(content_item_id, target_env_pillar) }}/{{ get_registered_content_item_base_name_from_pillar(content_item_id, target_env_pillar) }}'
         - source: {{ get_registered_content_item_URI_from_pillar(content_item_id, target_env_pillar) }}
         - source_hash: {{ get_registered_content_item_hash_from_pillar(content_item_id, target_env_pillar) }}
         - makedirs: True

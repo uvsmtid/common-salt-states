@@ -19,6 +19,8 @@
         ,
         requisite_config_file_path
         ,
+        target_contents_dir
+        ,
         bootstrap_dir
     )
 %}
@@ -67,7 +69,7 @@
 {% set salt_minion_template = 'salt_minion_' + minion_type + '_template' %}
 {{ requisite_config_file_id }}_{{ deploy_step }}_salt_minion_{{ minion_type }}_config_file:
     file.managed:
-        - name: '{{ bootstrap_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/minion.{{ minion_type }}.conf'
+        - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/minion.{{ minion_type }}.conf'
         - source: '{{ deploy_step_config[salt_minion_template] }}'
         - context:
             project_name: '{{ project_name }}'
@@ -88,7 +90,7 @@
 {{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:
     file.managed:
         # Note that all resources are shared per project (no profile sub-directory).
-        - name: '{{ bootstrap_dir }}/resources/bootstrap/{{ project_name }}/{{ profile_name }}/{{ file_path }}'
+        - name: '{{ target_contents_dir }}/resources/bootstrap/{{ project_name }}/{{ profile_name }}/{{ file_path }}'
         - source: '{{ get_registered_content_item_URI_from_pillar(rpm_source_config['resource_id'], target_env_pillar) }}'
         - template: ~
         - makedirs: True

@@ -55,6 +55,8 @@ pretty_yaml2json_script:
 {% set target_env_pillar = pillar['bootstrap_target_envs'][project_name + '.' + profile_name] %}
 {% endif %}
 
+{% set target_contents_dir = bootstrap_dir + '/targets/' + project_name + '/' + profile_name %}
+
 # Provide generated target configuration files.
 # NOTE: The configuration is repeated for
 #       each project, each profile, each host id even though differences
@@ -64,7 +66,7 @@ pretty_yaml2json_script:
 {% set selected_host = target_env_pillar['system_hosts'][selected_host_name] %}
 
 {% set requisite_config_file_id = 'target_env_conf_file_' + project_name + '_' + profile_name + '_' + selected_host_name %}
-{% set requisite_config_file_path = bootstrap_dir + '/conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
+{% set requisite_config_file_path = target_contents_dir + '/conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
 
 {{ requisite_config_file_id }}:
     file.managed:
@@ -101,39 +103,22 @@ pretty_yaml2json_script:
         profile_name,
         requisite_config_file_id,
         requisite_config_file_path,
+        target_contents_dir,
         bootstrap_dir,
     )
 }}
 
 {% endfor %} # deploy_step
 
-{% endfor %} # selected_host_name
-
-# Load function to get host id from role name.
-{% from 'common/libs/host_config_queries.sls' import get_host_id_by_role_from_pillar with context %}
-# Get _any_ known host id:
-{% set system_host_id = get_host_id_by_role_from_pillar('controller_role', target_env_pillar) %}
-
-# Generate package for each profile.
-# TODO: At the moment it is not clear why `build` command is even needed
-#       to be implemented within bootstrap script. All content is already
-#       genarated through Salt and `build` step seems redundant if Salt
-#       can provide everything.
-#       The only thing which `build` command in bootstrap does is some
-#       speed optimization (by avoiding pushing more states instantiated
-#       in this template to be executed by Salt).
-# TODO: At the moment use case does not affect `build` command of bootstrap
-#       script anyhow. Think to
-# TODO: At the moment config file specified for `build` command is specific
-#       to host. There is nothing host-specific taken from this configuration.
-#       It's just a way to specify project and profile (part of the config
-#       file).
-{{ project_name }}_{{ profile_name }}_generate_bootstrap_package:
+# Copy scripts content per each project and profile.
+{{ requisite_config_file_id }}_modules_copy_script_to_packages:
     cmd.run:
-        - name: 'python bootstrap.py build offline-minion-installer conf/{{ project_name }}/{{ profile_name }}/{{ system_host_id }}.py'
-        - cwd: '{{ bootstrap_dir }}'
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        - name: 'rsync -avp {{ bootstrap_dir }}/modules/ {{ target_contents_dir }}/modules/'
+{{ requisite_config_file_id }}_bootstrap.py_copy_script_to_packages:
+    cmd.run:
+        - name: 'rsync -avp {{ bootstrap_dir }}/bootstrap.py {{ target_contents_dir }}/boostrap.py'
+
+{% endfor %} # selected_host_name
 
 {% endif %} # enabled profile_name
 
