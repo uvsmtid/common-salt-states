@@ -28,15 +28,14 @@ detailed information of all Salt aspects.
 ## Contents of the top directory: ##
 
 * `docs`
-All documentation materials.
+   All documentation materials.
 * `pillars`
-Salt static configuration data (consumed by `states`).
+   Salt static configuration data (consumed by `states`).
 * `states`
-Salt states executable data to define require system configuration.
-* `resources`
-Additional files which are NOT supposed to be under source control.
-* `TODO`
-Chaotic information about things to be done (miserable replacement for issue tracking system).
-* `*`
-Other undescribed files add no particular value at the moment.
+   Salt states executable data to define require system configuration.
+* `scripts`
+   Support scripts for various purposes.
+   These scripts are normally not supposed to be used by Salt states
+   (in `states` directory) because files under `scripts` directory are not
+   easily accessible through `salt://` URI scheme.
 
