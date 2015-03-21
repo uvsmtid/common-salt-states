@@ -4,6 +4,8 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
                       http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
+{% if pillar['system_features']['maven_repository_manager_configuration']['primary_maven_repository_manager'] %} <!-- primary_maven_repository_manager -->
+
 {% set primary_maven_repository_manager_name = pillar['system_features']['maven_repository_manager_configuration']['primary_maven_repository_manager'] %}
 {% set primary_maven_repository_manager_config = pillar['system_features']['maven_repository_manager_configuration']['maven_repository_managers'][primary_maven_repository_manager_name] %}
 
@@ -12,8 +14,15 @@
 {% set nexus_url_releases_path_part = primary_maven_repository_manager_config['maven_repo_url_releases_path_part'] %}
 {% set nexus_url_snapshots_path_part = primary_maven_repository_manager_config['maven_repo_url_snapshots_path_part'] %}
 
+{% set define_deployment_url = True %}
 {% set nexus_releases_deployment_url = nexus_url_scheme_part + primary_maven_repository_manager_name + nexus_url_port_part + nexus_url_releases_path_part %}
 {% set nexus_snapshots_deployment_url = nexus_url_scheme_part + primary_maven_repository_manager_name + nexus_url_port_part + nexus_url_snapshots_path_part %}
+
+{% else %} <!-- primary_maven_repository_manager -->
+
+{% set define_deployment_url = False %}
+
+{% endif %} <!-- primary_maven_repository_manager -->
 
     <offline>false</offline>
 
@@ -69,6 +78,7 @@
         -->
         <profile>
             <id>nexus-profile</id>
+{% if define_deployment_url %}
             <repositories>
                 <repository>
                     <id>releaseDeployRepo</id>
@@ -107,6 +117,7 @@
                     </snapshots>
                 </repository>
             </repositories>
+{% endif %}
         </profile>
 
         <!--
@@ -122,8 +133,10 @@
                 <url-deploy-release-repo>http://nexus:8081/nexus/content/repositories/releases/</url-deploy-release-repo>
                 <url-deploy-snapshot-repo>http://nexus:8081/nexus/content/repositories/releases/</url-deploy-snapshot-repo>
                 -->
+{% if define_deployment_url %}
                 <url-deploy-release-repo>{{ nexus_releases_deployment_url }}</url-deploy-release-repo>
                 <url-deploy-snapshot-repo>{{ nexus_snapshots_deployment_url }}</url-deploy-snapshot-repo>
+{% endif %}
 
 {% for selected_repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
 
