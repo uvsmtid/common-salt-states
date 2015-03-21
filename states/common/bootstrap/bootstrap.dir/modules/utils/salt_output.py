@@ -49,9 +49,13 @@ def check_result(salt_output):
     overall_result = True
     for state_key in local_result.keys():
 
-        name_value = local_result[state_key]['name']
+        if 'name' not in local_result[state_key]:
+            display_value = local_result[state_key]['comment']
+        else:
+            display_value = local_result[state_key]['name']
+
         result_value = local_result[state_key]['result']
-        logging.info("check result for `name`: " + str(name_value))
+        logging.info("check result for `name`: " + str(display_value))
 
         if result_value is None:
             logging.critical("unexpected `result` value: " + str(result_value))
