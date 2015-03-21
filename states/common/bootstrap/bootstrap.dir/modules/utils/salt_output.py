@@ -14,8 +14,13 @@ def load_yaml_file_data(file_path):
     Load YAML formated data from file_path.
     """
 
-    with open(file_path, 'r') as yaml_file:
+    # Instead of using `with` keyword, perform standard `try`/`finally`
+    # to support Python 2.5 on RHEL5.
+    yaml_file = open(file_path, 'r')
+    try:
         loaded_data = yaml.load(yaml_file)
+    finally:
+        yaml_file.close()
 
     return loaded_data
 
