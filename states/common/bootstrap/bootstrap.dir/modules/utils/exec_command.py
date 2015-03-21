@@ -1,7 +1,9 @@
 #
 
 # System modules
+import os
 import logging
+import tempfile
 import subprocess
 
 ################################################################################
@@ -9,14 +11,10 @@ import subprocess
 # Function to call scripts
 #
 
-def call_subprocess(
+def call_subprocess_with_pipes(
     command_args,
     raise_on_error = True,
-    # In this script stdout is reserved for Collector->Slave->Master
-    # communication: capture stdout by default.
-    capture_stdout = True,
-    # In this script stderr is used primarily for
-    # feedback to user Collector->Slave->Master->User: do not capture stderr.
+    capture_stdout = False,
     capture_stderr = False,
 ):
 
@@ -59,6 +57,79 @@ def call_subprocess(
 
     return result
 
+###############################################################################
+
+def call_subprocess_with_files(
+    command_args,
+    raise_on_error = True,
+    capture_stdout = False,
+    capture_stderr = False,
+    cwd = None,
+):
+
+    logging.debug("command line: " + "\"" + "\" \"".join(command_args) + "\"")
+
+    stdout_sink = None
+    stderr_sink = None
+
+    stdout_file_path = None
+    stdout_file = None
+    if capture_stdout:
+        (handle, stdout_file_path) = tempfile.mkstemp()
+        logging.debug("stdout_file_path: " + str(stdout_file_path))
+        stdout_file = os.fdopen(handle, "w")
+        stdout_sink = stdout_file
+
+    stderr_file_path = None
+    stderr_file = None
+    if capture_stderr:
+        (handle, stderr_file_path) = tempfile.mkstemp()
+        logging.debug("stderr_file_path: " + str(stderr_file_path))
+        stderr_file = os.fdopen(handle, "w")
+        stderr_sink = stderr_file
+
+    p = subprocess.Popen(
+        command_args,
+        stdout = stdout_sink,
+        stderr = stderr_sink,
+        cwd = cwd,
+    )
+
+    # Wait until command stops
+    p.wait()
+
+    # Return dictionary
+    result = {}
+
+    result["code"] = p.returncode
+
+    if raise_on_error:
+        check_generic_errors(
+            command_args = command_args,
+            process_output = result,
+            raise_on_error = raise_on_error,
+            check_code = True,
+            check_stderr = False,
+            check_stdout = False,
+        )
+
+    stds = p.communicate()
+
+    if stdout_file:
+        stdout_file.close()
+    if stderr_file:
+        stderr_file.close()
+
+    if capture_stdout:
+        stdout_file = open(stdout_file_path, "r")
+        result["stdout"] = stdout_file.read()
+        stdout_file.close()
+    if capture_stderr:
+        stderr_file = open(stderr_file_path, "r")
+        result["stderr"] = stderr_file.read()
+        stderr_file.close()
+
+    return result
 
 ################################################################################
 #
@@ -134,6 +205,39 @@ def print_process_output(
         logging.info(process_output["stderr"])
     if "code" in process_output.keys():
         logging.info("exit code = " + str(process_output["code"]))
+
+###############################################################################
+
+def call_subprocess(
+    command_args,
+    raise_on_error = True,
+    # In this script stdout is reserved for Collector->Slave->Master
+    # communication: capture stdout by default.
+    capture_stdout = False,
+    # In this script stderr is used primarily for
+    # feedback to user Collector->Slave->Master->User: do not capture stderr.
+    capture_stderr = False,
+    cwd = None,
+):
+
+    # Alternative versions of the same function which captures output into
+    # temporary files or through pipes.
+    if True:
+        return call_subprocess_with_files(
+            command_args = command_args,
+            raise_on_error = raise_on_error,
+            capture_stdout = capture_stdout,
+            capture_stderr = capture_stderr,
+            cwd = cwd,
+        )
+    else:
+        return call_subprocess_with_pipes(
+            command_args = command_args,
+            raise_on_error = raise_on_error,
+            capture_stdout = capture_stdout,
+            capture_stderr = capture_stderr,
+            cwd = cwd,
+        )
 
 ###############################################################################
 # EOF
