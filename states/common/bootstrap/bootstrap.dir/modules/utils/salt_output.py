@@ -8,7 +8,7 @@ import logging
 
 ###############################################################################
 
-def load_yaml_data(file_path):
+def load_yaml_file_data(file_path):
 
     """
     Load YAML formated data from file_path.
@@ -16,6 +16,18 @@ def load_yaml_data(file_path):
 
     with open(file_path, 'r') as yaml_file:
         loaded_data = yaml.load(yaml_file)
+
+    return loaded_data
+
+###############################################################################
+
+def load_yaml_string_data(text_content):
+
+    """
+    Load YAML formated data from string.
+    """
+
+    loaded_data = yaml.load(text_content)
 
     return loaded_data
 
@@ -66,7 +78,7 @@ if __name__ == '__main__':
 
     file_path = sys.argv[1]
 
-    salt_output = load_yaml_data(file_path)
+    salt_output = load_yaml_file_data(file_path)
 
     overall_result = check_result(salt_output)
 
