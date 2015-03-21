@@ -32,7 +32,7 @@ def do(action_context):
             command_args = [
                 'salt-call',
                 '--out',
-                'yaml',
+                'json',
                 '--log-level',
                 'debug',
             ] + extra_args + [
