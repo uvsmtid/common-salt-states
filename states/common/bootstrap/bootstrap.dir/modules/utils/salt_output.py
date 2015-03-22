@@ -47,7 +47,11 @@ def check_result(salt_output):
     local_result = salt_output['local']
 
     overall_result = True
+    success_counter = 0
+    total_counter = 0
     for state_key in local_result.keys():
+
+        total_counter = total_counter + 1
 
         if 'name' not in local_result[state_key]:
             display_value = local_result[state_key]['comment']
@@ -68,11 +72,17 @@ def check_result(salt_output):
             # Instead, keep on generating log output
 
         elif result_value == True:
+            success_counter = success_counter + 1
             logging.info("result: " + str(result_value))
 
         else:
             logging.info("unexpected `result` value: " + str(result_value))
             overall_result = False
+
+    if overall_result:
+        logging.info("SUCCESS: " + str(success_counter) + " of " + str(total_counter))
+    else:
+        logging.critical("FAILURE: " + str(success_counter) + " of " + str(total_counter))
 
     return overall_result
 
