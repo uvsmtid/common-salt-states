@@ -53,13 +53,11 @@ def check_result(salt_output):
 
         total_counter = total_counter + 1
 
-        if 'name' not in local_result[state_key]:
-            display_value = local_result[state_key]['comment']
-        else:
-            display_value = local_result[state_key]['name']
+        logging.info("`comment`: " + str(local_result[state_key]['comment']))
+        if 'name' in local_result[state_key]:
+            logging.info("`name`: " + str(local_result[state_key]['name']))
 
         result_value = local_result[state_key]['result']
-        logging.info("check result for `name`: " + str(display_value))
 
         if result_value is None:
             logging.critical("unexpected `result` value: " + str(result_value))
