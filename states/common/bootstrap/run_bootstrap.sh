@@ -64,9 +64,9 @@ then
 
     # Note the use of trailing slashes in path for rsync.
     # 1. Sync content directory with destination.
-    rsync --progress -v -r "${CONTENT_DIR}/" "${SSH_DST}:bootstrap.dir/"
+    rsync --progress -v -r "${CONTENT_DIR}/" "${SSH_DST}:/vagrant/bootstrap.dir/"
     # 2. Sync sources directory with destination.
-    rsync --progress -v -r "./bootstrap.dir/" "${SSH_DST}:bootstrap.dir/"
+    rsync --progress -v -r "./bootstrap.dir/" "${SSH_DST}:/vagrant/bootstrap.dir/"
 
     # Run without argument which overrides `bootstrap.dir`.
     # Script should run "production way" on remote host.
@@ -75,7 +75,7 @@ then
     # See:
     #   http://stackoverflow.com/a/20401782/441652
     # Use `python -m trace -t bootstrap/bootstrap.py` for extensive traces.
-    ssh "${SSH_DST}" "sudo python bootstrap.dir/bootstrap.py" "${@:1:${#}-1}" 2>&1 | tee run_bootstrap.output
+    ssh "${SSH_DST}" "sudo python /vagrant/bootstrap.dir/bootstrap.py" "${@:1:${#}-1}" 2>&1 | tee run_bootstrap.output
 else
     echo "error: this script supports only \`deploy\` action" 1>&2
     exit 1
