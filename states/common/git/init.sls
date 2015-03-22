@@ -6,10 +6,21 @@
 
 {% if 'allow_package_installation_through_yum' in pillar['system_features'] and pillar['system_features']['allow_package_installation_through_yum']['feature_enabled'] %}
 
+{% if grains['os_platform_type'].startswith('rhel5') %}
+# Git packages are in EPEL on RHEL5.
+include:
+    - common.yum.epel
+{% endif %}
+
 git:
     pkg.installed:
         - name: git
         - aggregate: True
+{% if grains['os_platform_type'].startswith('rhel5') %}
+        # Git packages are in EPEL on RHEL5.
+        - require:
+            - sls: common.yum.epel
+{% endif %}
 
 {% endif %}
 
