@@ -15,11 +15,14 @@ include:
 git:
     pkg.installed:
         - name: git
-        - aggregate: True
 {% if grains['os_platform_type'].startswith('rhel5') %}
+        # Do not aggregate for packages from external repo.
+        - aggregate: False
         # Git packages are in EPEL on RHEL5.
         - require:
             - sls: common.yum.epel
+{% else %}
+        - aggregate: True
 {% endif %}
 
 {% endif %}
