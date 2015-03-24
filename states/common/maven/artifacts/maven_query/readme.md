@@ -23,7 +23,7 @@ Maven to execute the jar.
 See also: http://stackoverflow.com/a/1729094/441652
 
 * Build package with all dependencies:
-
+  
   ```
   mvn assembly:assembly
   ```

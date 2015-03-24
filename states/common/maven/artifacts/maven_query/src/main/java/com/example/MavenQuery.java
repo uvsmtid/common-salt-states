@@ -6,6 +6,7 @@ import java.util.Collections;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 
@@ -22,7 +23,9 @@ class MavenQuery {
         request.setGoals(Collections.singletonList("dependency:list"));
 
         Invoker invoker = new DefaultInvoker();
-        invoker.execute(request);
+        InvocationResult res = invoker.execute(request);
+        
+        System.out.println("DONE");
     }
 
 }
