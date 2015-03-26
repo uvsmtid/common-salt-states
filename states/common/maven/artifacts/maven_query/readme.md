@@ -1,4 +1,16 @@
 
+# Intro #
+
+The original idea of this tool was to get access to results of Maven
+command like this programatically:
+```
+mvn dependency:resolve
+```
+However, its looks impossible - see [details here][1]. And code in
+`MavenQuery` class is pretty useless (it's a failed attempt) now.
+
+Instead of Java code, a Python script was created to parse the Maven output.
+
 # Executing with Maven #
 
 The following steps rely on Maven to set up classpath to execute the jar.
@@ -33,4 +45,8 @@ See also: http://stackoverflow.com/a/1729094/441652
   ```
   java -jar ./target/maven_query-0.0.1-SNAPSHOT-jar-with-dependencies.jar
   ```
+
+# [footer] #
+
+[1]: http://stackoverflow.com/q/29224974/441652
 
