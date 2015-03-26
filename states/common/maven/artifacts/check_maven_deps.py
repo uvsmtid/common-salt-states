@@ -3,6 +3,7 @@
 # System modules
 import os
 import re
+import sys
 import yaml
 import logging
 import tempfile
@@ -242,11 +243,29 @@ def call_subprocess(
         )
 
 ###############################################################################
-# MAIN
+#
 
-if __name__ == '__main__':
+def essentialize_dependency_items(
+    dependency_items,
+):
 
-    distrib_pom_path = '/home/uvsmtid/Works/maritime-singapore.git/clearsea-distribution/pom.xml'
+    """
+    Extract only relevan information in the depencency items.
+
+    * Strip off version and scope.
+    * Make unique list of items.
+    """
+
+    logging.critical("NOT IMPLEMENTED")
+
+    return [ 'javax.activation:activation:jar' ]
+
+###############################################################################
+#
+
+def parse_maven_dependency_list_ouput(
+    pom_file,
+):
 
     # Resolve (download) all dependencies locally so that next command
     # can work offline.
@@ -254,7 +273,7 @@ if __name__ == '__main__':
         command_args = [
             'mvn',
             '-f',
-            distrib_pom_path,
+            pom_file,
             'dependency:resolve',
         ],
     )
@@ -264,14 +283,119 @@ if __name__ == '__main__':
         command_args = [
             'mvn',
             '-f',
-            distrib_pom_path,
+            pom_file,
             'dependency:list',
         ],
     )
 
-    # Select lines with dependency items.
-    artifact_regex = re.compile('')
-    #for line in p.stdout:
+    logging.critical("NOT IMPLEMENTED")
+
+    return [ 'javax.activation:activation:jar:1.1.1:provided' ]
+
+###############################################################################
+#
+
+def find_project_pom_files_in_a_repo(
+    repo_conf,
+):
+
+    logging.critical("NOT IMPLEMENTED")
+
+    return [ '/home/uvsmtid/Works/maritime-singapore.git/clearsea-distribution/pom.xml' ]
+
+###############################################################################
+#
+
+def verify_dep_items_info(
+    essential_dep_items,
+):
+
+    return True
+
+###############################################################################
+#
+
+def check_all_projects_in_all_repos(
+    repo_confs,
+    dep_confs,
+):
+
+    # Collect all dependencies.
+    dependency_items = []
+    for repo_conf in repo_confs:
+        project_pom_files = find_project_pom_files_in_a_repo(
+            repo_conf,
+        )
+
+        for pom_file in project_pom_files:
+            dependency_items += parse_maven_dependency_list_ouput(
+                pom_file,
+            )
+
+    # Essentialize dependencies.
+    essential_dep_items = essentialize_dependency_items(
+        dependency_items,
+    )
+
+    # Check currently known information for each dependency with the newly
+    # obtained one.
+    result = verify_dep_items_info(
+        essential_dep_items,
+    )
+
+    return result
+
+###############################################################################
+#
+
+def load_repo_confs(
+    repo_confs_file_path,
+):
+
+    logging.critical("NOT IMPLEMENTED")
+
+    return [
+        {
+            'whatever': True,
+        },
+    ]
+
+###############################################################################
+#
+
+def load_dep_confs(
+    dep_confs_file_path,
+):
+
+    logging.critical("NOT IMPLEMENTED")
+
+    return [
+        {
+            'whatever': True,
+        },
+    ]
+
+###############################################################################
+# MAIN
+
+if __name__ == '__main__':
+
+    # Load repository confs.
+    repo_confs = load_repo_confs('TODO')
+
+    # Load dependency confs.
+    dep_confs = load_dep_confs('TODO')
+
+    # Check for any discrepancies.
+    result = check_all_projects_in_all_repos(
+        repo_confs,
+        dep_confs,
+    )
+
+    if result:
+        sys.exit(0)
+    else:
+        sys.exit(1)
 
 ###############################################################################
 # EOF
