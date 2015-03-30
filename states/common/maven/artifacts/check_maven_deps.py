@@ -5,9 +5,23 @@ import os
 import re
 import sys
 import yaml
+import sets
 import logging
 import tempfile
 import subprocess
+
+################################################################################
+#
+
+def setLoggingLevel(
+    level_name = None,
+):
+
+    # Set log level ahead of the processing
+    num_level = getattr(logging, level_name.upper(), None)
+    if not isinstance(num_level, int):
+        raise ValueError('error: invalid log level \"%s\"' % level_name)
+    logging.getLogger().setLevel(num_level)
 
 ################################################################################
 #
@@ -256,9 +270,12 @@ def essentialize_dependency_items(
     * Make unique list of items.
     """
 
-    logging.critical("NOT IMPLEMENTED")
+    unique_deps = sets.Set()
+    for dependency_item in dependency_items:
+        stripped_dep_item = dependency_item['artifact_group'] + ':' + dependency_item['artifact_name']
+        unique_deps.add(stripped_dep_item)
 
-    return [ 'javax.activation:activation:jar' ]
+    return sorted(unique_deps)
 
 ###############################################################################
 #
@@ -279,18 +296,49 @@ def parse_maven_dependency_list_ouput(
     )
 
     # Get list of all dependencies.
-    call_subprocess(
+    process_output = call_subprocess(
         command_args = [
             'mvn',
             '-f',
             pom_file,
             'dependency:list',
         ],
+        capture_stdout = True,
     )
 
-    logging.critical("NOT IMPLEMENTED")
+    # Regex to capture artifact reported by Maven.
+    # Example line:
+    # [INFO]    org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+    artifact_regex = re.compile('^\[INFO\]\s*([^:\s]*):([^:\s]*):([^:\s]*):([^:\s]*):([^:\s]*)$')
 
-    return [ 'javax.activation:activation:jar:1.1.1:provided' ]
+    dependency_items = []
+    for str_line in process_output['stdout'].split('\n'):
+        artifact_match = artifact_regex.match(str_line)
+
+        if artifact_match:
+            logging.info('line matched: ' + str(str_line))
+
+            artifact_group = artifact_match.group(1)
+            artifact_name = artifact_match.group(2)
+            artifact_package = artifact_match.group(3)
+            artifact_version = artifact_match.group(4)
+            artifact_scope = artifact_match.group(5)
+
+            dependency_item = {
+                'artifact_group': artifact_group,
+                'artifact_name': artifact_name,
+                'artifact_package': artifact_package,
+                'artifact_version': artifact_version,
+                'artifact_scope': artifact_scope,
+            }
+
+            logging.info('artifact_group: ' + str(dependency_item))
+
+            dependency_items += [ dependency_item ]
+        else:
+            logging.debug('line didn\'t match: ' + str(str_line))
+
+    return dependency_items
 
 ###############################################################################
 #
@@ -299,9 +347,27 @@ def find_project_pom_files_in_a_repo(
     repo_conf,
 ):
 
-    logging.critical("NOT IMPLEMENTED")
+    # Find all `pom.xml` files.
+    process_output = call_subprocess(
+        command_args = [
+            'find',
+            repo_conf['repo_root_path'],
+            '-iname',
+            'pom.xml',
+        ],
+        capture_stdout = True,
+    )
 
-    return [ '/home/uvsmtid/Works/maritime-singapore.git/clearsea-distribution/pom.xml' ]
+    logging.debug('find output: ' + str(process_output['stdout']))
+
+    project_pom_files = []
+    for pom_file in process_output['stdout'].split('\n'):
+        if os.path.isfile(pom_file):
+            project_pom_files += [ pom_file ]
+        else:
+            logging.warning('this path is not a file: ' + str(pom_file))
+
+    return project_pom_files
 
 ###############################################################################
 #
@@ -309,6 +375,9 @@ def find_project_pom_files_in_a_repo(
 def verify_dep_items_info(
     essential_dep_items,
 ):
+
+    for dep_item in essential_dep_items:
+        logging.debug('TODO: ' + str(dep_item))
 
     return True
 
@@ -322,20 +391,33 @@ def check_all_projects_in_all_repos(
 
     # Collect all dependencies.
     dependency_items = []
-    for repo_conf in repo_confs:
+    for repo_conf in repo_confs.values():
+
         project_pom_files = find_project_pom_files_in_a_repo(
             repo_conf,
         )
 
         for pom_file in project_pom_files:
-            dependency_items += parse_maven_dependency_list_ouput(
+
+            logging.info('run maven for file: ' + str(pom_file))
+
+            next_dependency_items = parse_maven_dependency_list_ouput(
                 pom_file,
             )
+            logging.info('len(next_dependency_items): ' + str(len(next_dependency_items)))
+
+            dependency_items += next_dependency_items
+
+    logging.debug('dependency_items: ' + str(dependency_items))
+    logging.info('len(dependency_items): ' + str(len(dependency_items)))
 
     # Essentialize dependencies.
     essential_dep_items = essentialize_dependency_items(
         dependency_items,
     )
+
+    logging.debug('essential_dep_items: ' + str(essential_dep_items))
+    logging.info('len(essential_dep_items): ' + str(len(essential_dep_items)))
 
     # Check currently known information for each dependency with the newly
     # obtained one.
@@ -347,18 +429,24 @@ def check_all_projects_in_all_repos(
 
 ###############################################################################
 #
+def load_yaml_file(
+    file_path,
+):
+
+    try:
+        yaml_stream = open(file_path, 'r')
+        return yaml.load(yaml_stream)
+    finally:
+        yaml_stream.close()
+
+###############################################################################
+#
 
 def load_repo_confs(
     repo_confs_file_path,
 ):
 
-    logging.critical("NOT IMPLEMENTED")
-
-    return [
-        {
-            'whatever': True,
-        },
-    ]
+    return load_yaml_file(repo_confs_file_path)
 
 ###############################################################################
 #
@@ -367,24 +455,24 @@ def load_dep_confs(
     dep_confs_file_path,
 ):
 
-    logging.critical("NOT IMPLEMENTED")
-
-    return [
-        {
-            'whatever': True,
-        },
-    ]
+    return load_yaml_file(dep_confs_file_path)
 
 ###############################################################################
 # MAIN
 
 if __name__ == '__main__':
 
+
+    setLoggingLevel('debug')
+
+    repo_conf_file = sys.argv[1]
+    dep_conf_file = sys.argv[2]
+
     # Load repository confs.
-    repo_confs = load_repo_confs('TODO')
+    repo_confs = load_repo_confs(repo_conf_file)
 
     # Load dependency confs.
-    dep_confs = load_dep_confs('TODO')
+    dep_confs = load_dep_confs(dep_conf_file)
 
     # Check for any discrepancies.
     result = check_all_projects_in_all_repos(
