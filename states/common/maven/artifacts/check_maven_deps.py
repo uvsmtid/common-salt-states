@@ -374,10 +374,128 @@ def find_project_pom_files_in_a_repo(
 
 def verify_dep_items_info(
     essential_dep_items,
+    dep_confs,
 ):
 
-    for dep_item in essential_dep_items:
-        logging.debug('TODO: ' + str(dep_item))
+    # Check every item in collected dependencies against
+    # known status from configuration item.
+    for dep_item_name in essential_dep_items:
+
+        logging.debug('verify 1st-way: ' + str(dep_item_name))
+
+        if dep_item_name in dep_confs:
+
+
+            if dep_confs[dep_item_name]['used']:
+
+                # We deal with exiting known dependency.
+                logging.info('EXISTING: %(dep_name)s' % {
+                        'dep_name': str(dep_item_name),
+                    }
+                )
+
+                source_type_value = None
+
+                if 'source_type' in dep_confs[dep_item_name]:
+                    source_type_value = dep_confs[dep_item_name]['source_type']
+
+                if source_type_value == None:
+                    logging.critical('no value specified for `source_type`')
+
+                elif source_type_value == 'thales':
+
+                    # We could try to build the item here based on known
+                    # location of its sources, but it's a lengthy process
+                    # to do this for each dependency. Besides that,
+                    # the dependency may require build some other
+                    # dependencies it depends on (transient dependencies),
+                    # for example, new version of them.
+                    # In order to make this reliable, one should start going
+                    # from the roots of dependency trees not to fail. This
+                    # all complicates it and not implemented at the moment.
+
+                    source_repo_name_value = None
+                    source_repo_pom_path_value = None
+
+                    if 'source_repo_name' in dep_confs[dep_item_name]:
+                        source_repo_name_value = dep_confs[dep_item_name]['source_repo_name']
+
+                    if 'source_repo_pom_path' in dep_confs[dep_item_name]:
+                        source_repo_pom_path_value = dep_confs[dep_item_name]['source_repo_pom_path']
+
+                    if source_repo_name_value == None:
+                        logging.critical('no value specified for `source_repo_name`')
+
+                    if source_repo_pom_path_value == None:
+                        logging.critical('no value specified for `source_repo_pom_path`')
+
+                    # TODO: Check if specified `pom.xml` file exists.
+
+                    logging.info('%(dep_name)s is thales' % {
+                            'dep_name': str(dep_item_name),
+                        }
+                    )
+
+                elif dep_confs[dep_item_name]['source_type'] == 'open':
+                    logging.info('%(dep_name)s is open sourced' % {
+                            'dep_name': str(dep_item_name),
+                        }
+                    )
+
+                else:
+                    logging.critical('unknown value for `source_type`: ' + str(source_type_value))
+
+            else:
+                # The dependency is in current desription, but it
+                # is marked as not used while we just spotted its use.
+                # Therefore, it's `ADDED` (again).
+                logging.info('ADDED: %(dep_name)s' % {
+                        'dep_name': str(dep_item_name),
+                    }
+                )
+
+        else:
+
+            # We found new dependency which is not described in our
+            # current file describing each dependency.
+
+            logging.info('ADDED: %(dep_name)s' % {
+                    'dep_name': str(dep_item_name),
+                }
+            )
+
+    # Check if there is any dependency we knew about and it is
+    # not referenced anymore.
+    for dep_item_name in dep_confs.keys():
+
+        logging.debug('verify 2nd-way: ' + str(dep_item_name))
+
+        if dep_item_name in essential_dep_items:
+
+            # These cases are already processed above.
+            pass
+
+        else:
+            if dep_confs[dep_item_name]['used']:
+
+                # This case tells us that there are some items in configuration
+                # which are still makred as used, but they are not part of
+                # actual (newly collected) dependencies.
+
+                logging.info('UNUSED: %(dep_name)s' % {
+                        'dep_name': str(dep_item_name),
+                    }
+                )
+
+            else:
+
+                # Item is not in the newly collected dependencies
+                # and it is actually not used.
+
+                logging.info('SKIPPED: %(dep_name)s' % {
+                        'dep_name': str(dep_item_name),
+                    }
+                )
 
     return True
 
@@ -423,6 +541,7 @@ def check_all_projects_in_all_repos(
     # obtained one.
     result = verify_dep_items_info(
         essential_dep_items,
+        dep_confs,
     )
 
     return result
@@ -470,9 +589,11 @@ if __name__ == '__main__':
 
     # Load repository confs.
     repo_confs = load_repo_confs(repo_conf_file)
+    logging.debug('repo_confs: ' + str(repo_confs))
 
     # Load dependency confs.
     dep_confs = load_dep_confs(dep_conf_file)
+    logging.debug('dep_confs: ' + str(dep_confs))
 
     # Check for any discrepancies.
     result = check_all_projects_in_all_repos(
