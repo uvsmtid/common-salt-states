@@ -42,7 +42,6 @@ For example, look at the current snippet from Salt master config file `/etc/salt
 ```
 this_system_keys:
     profile: blackbox
-    customizer: some_personal_id
 ```
 
 

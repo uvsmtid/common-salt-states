@@ -38,7 +38,6 @@ See [here](inital_salt_setup.md) what is supposed to changed.
 
 There are several special sub-directories in `states`:
 * `_grains` - custom grains (see [writing grains](http://docs.saltstack.com/en/latest/topics/targeting/grains.html#writing-grains))
-* `customizer` - TODO
 * `common` - common states shared between projects
 * `*` - everything else are sub-directories for project-specific states
 
@@ -57,7 +56,7 @@ TODO
 │       └── {{ project_name }}
 ├── pillars
 │   ├── common
-│   ├── customizer
+│   ├── {{ project_name }}
 │   │   ├── orchestrate
 │   │   ├── profile
 │   │   └── testing
@@ -75,9 +74,6 @@ TODO
     │       └── wraps
     │           ├── *
     │           └── {{ role_name }}
-    ├── customizer
-    │   ├── *
-    │   └── {{ customizer_id }}
     ├── _grains
     └── {{ project_name }}
         ├── *

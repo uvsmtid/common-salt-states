@@ -207,16 +207,6 @@ this_system_keys:
     # ...
 ```
 
-### Selected customizer
-
-Customizer can be used for personal configuration.
-```
-this_system_keys:
-    # ...
-    customizer: some_personal_id # <-- selected customizer
-    # ...
-```
-
 ### Selected Salt minions
 
 Use `salt-key` to list registered minions ("Accepted Keys"):
@@ -323,12 +313,6 @@ this_system_keys:
 
     # Profile is normally named after hostname.
     profile: this_minion_id
-
-    # Customizer is supposed to be a personal id (account name,
-    # nick name, etc.) which uniquely identifies person so
-    # that individual customized states are kept separately
-    # (under different sub-directories and files).
-    customizer: some_personal_id
 ```
 
 * Run highstate to test configuration:
