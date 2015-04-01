@@ -125,7 +125,7 @@ new `blackbox` profile.
     * Setup common packages (make life more comfortable):
 
     * Configure hypervisor_role:
-      This sets /etc/resolv.conf to non-existing network address on
+      Set /etc/resolv.conf to non-existing network address on
       Linux hypervisor (because network is not automatically configured).
       So, the following manual step is required to recover and continue:
 

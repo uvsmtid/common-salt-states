@@ -29,7 +29,7 @@
 {% if pillar['system_features']['deploy_environment_sources']['feature_enabled'] %} # deploy_environment_sources
 
 # Assume SSH keys are already distributed.
-# It is long-running state which is executed by `orchestrate` runner.
+# It is long-running state which is executed by orchestrate runner.
 #include:
 #    - common.ssh.distribute_public_keys
 
