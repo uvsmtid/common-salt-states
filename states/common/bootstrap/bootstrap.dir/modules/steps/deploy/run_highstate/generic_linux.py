@@ -39,6 +39,8 @@ def do(action_context):
             ] + extra_args + [
                 'state.highstate',
                 'test=False',
+                # Specify dinamically `bootstrap_mode` pillar key.
+                'pillar={ \'bootstrap_mode\': \'' + action_context.run_use_case + '\' }',
             ],
             raise_on_error = True,
             capture_stdout = True,

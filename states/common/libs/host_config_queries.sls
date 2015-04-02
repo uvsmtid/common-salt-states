@@ -95,7 +95,7 @@
 -%}
 
 {%- set selected_host_config = pillar['system_hosts'][system_host_id] -%}
-{%- set bootstrap_mode = salt['config.get']('this_system_keys:bootstrap_mode') -%}
+{%- set bootstrap_mode = pillar['bootstrap_mode'] -%}
 
 {%- if
        ( selected_host_config['consider_online_for_remote_connections'] )

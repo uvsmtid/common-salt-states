@@ -1,6 +1,7 @@
 
-Key `bootstrap_mode` indicates how Salt master or standalone minion
-were set up.
+Key `bootstrap_mode` indicates how Salt master or standalone minion is
+being run (specified dynamically in command line for `state.highstate`,
+`state.sls`, and similar functions).
 
 This information is required for some of the states. Majority of states
 were originally designed to be run in Salt setup with central master server.
