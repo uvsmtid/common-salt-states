@@ -106,12 +106,13 @@
 {% set git_repo_uri = define_git_repo_uri(selected_repo_name) %}
 
 {% set repo_config = target_env_pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name][selected_repo_type] %}
+{% set branch_name = target_env_pillar['system_features']['bootstrap_configuration']['enable_bootstrap_target_envs'][project_name][profile_name]['git_branch_name'] %}
 
 {% if selected_repo_name in target_env_pillar['system_features']['bootstrap_configuration']['export_sources_repos'].keys() %}
 # Create archive.
 {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
     cmd.run:
-        - name: 'git archive --format tar --output="{{ archive_dir_path }}/{{ selected_repo_name }}.tar" --remote="{{ git_repo_uri }}" "{{ repo_config['branch_name'] }}"'
+        - name: 'git archive --format tar --output="{{ archive_dir_path }}/{{ selected_repo_name }}.tar" --remote="{{ git_repo_uri }}" "{{ branch_name }}"'
         # User and Group are from source env pillar - where the package is build.
         - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
