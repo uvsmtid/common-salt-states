@@ -25,6 +25,8 @@
     )
 %}
 
+{% set net_host_defined_in = target_env_pillar['system_hosts'][selected_host_name]['defined_in'] %}
+
 {{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
@@ -36,8 +38,8 @@
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 'resolv_conf_file': 'resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/resolv.conf',
-                'dns_server_ip': '{{ target_env_pillar['internal_net']['dns_server'] }}',
-                'remote_hostname': '{{ target_env_pillar['internal_net']['resolvable_hostname'] }}',
+                'dns_server_ip': '{{ target_env_pillar[net_host_defined_in]['dns_server'] }}',
+                'remote_hostname': '{{ target_env_pillar[net_host_defined_in]['resolvable_hostname'] }}',
             }
         - show_changes: True
         - require:
