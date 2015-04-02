@@ -1,3 +1,4 @@
+TODO
 
 # Problem #
 
@@ -59,14 +60,25 @@ Not so good:
 
     So, how to solve the problem of generating bootstrap configuration
     and download resources based on the pillars from another Git branch?
-    The only option to load this pillar. How to load pillar from another
-    under different pillar key?
+
+    The only option is to load this pillar.
+    Then, how to load pillar from another Git branch under
+    different pillar key?
+
     The solution could be loading some pillars under different key
     from filesystem location which is pointed through symlinks to
     Git clones checked out at specific branches.
     We cannot load pillar data through pillar top files (of different
     branches), but we can require certain structure to load other
     data from other branches _similarily_.
+
+    Or maybe the best approach is to be able to check out any branch
+    and build bootstrap package on any master which was used
+    for another profile? This requires that build procedure depend
+    on nothing different in two profiles (which makes it counter-intuitive
+    as profiles are ment to be different). For example, it is impossible
+    to build bootstrap package when resources are in different location
+    between two profiles (resource download will fail).
 
 # [footer] #
 

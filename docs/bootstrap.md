@@ -3,7 +3,7 @@
 
 Bootstrapping is a process of deploying system on a clean unconfigured OS.
 
-Deployable resources can iether be provided offline locally, or still be
+Deployable resources can either be provided offline locally, or still be
 downloadable from Internet, or accessible within isolated network -
 this can be made a configuration option. The main point is to provide
 support of installation on virtual guests or bare metal hosts with clean OSes.
@@ -39,34 +39,15 @@ In case of virtualization bootstrapping can be used to deploy only Salt minion
 and continue [orchestrated](orchestration.md) system installation with
 all resources available on the network.
 
-## General approach for bootstrapping ##
-
-The common idea to all bootstrapping cases is to install Salt minion first.
-On Linux it can be online or offline yum repositories with necessary packages.
-On Windows installer supports [unnattended installation](https://github.com/saltstack/salt-windows-msi/blob/master/README.md).
-
-Then, generage temporary configuration file using a set of minimal parameters:
-* Node type: minion or master
-* Project name
-* Profile name
-
-Additional parameters are used later to apply required state in offline mode
-with temporary generated configuration file using command `salt-call --local`:
-* Salt function (i.e. `state.sls`)
-* Arguments to Salt function
-
-Note that all salt functions are executed executed non-stop by Salt minion
-without providing any chance to suspend execution. If external resources
-(i.e. network file servers) are not available during some state execution,
-it will simply fail. Therefore, bootstrapping should use Salt function
-which is provided with everything it need to complete on target minion.
-Otherwise, [orchestrated](orchestration.md) has to be used.
-
 ## Use Cases ##
 
 Ultimately, all Use Cases set up Salt minion. This is inevitable because
-only Salt minion is able to execute all configuration steps eventually
-required to complete setup.
+only Salt minion is able to execute all configuration steps
+which will eventually be required to complete setup.
+
+On Linux it can be online or offline yum repositories with necessary packages.
+On Windows installer supports [unnattended installation](https://github.com/saltstack/salt-windows-msi/blob/master/README.md).
+
 * [offline-minion-installer][13] sets up Salt minion with additional master-side
   configuration to make it autonomous (requiring no connection to Salt master
   to retrieve configuration data).
@@ -77,7 +58,7 @@ required to complete setup.
 
 **Case:**
 * Run bootstrap script to configure new Salt master or Salt minion for
-  specific  project/profile.
+  specific project/profile.
 * Cloud deployment where master itself is virtualized and
   should be prepared automatically.
 * Starts both services: Salt master and Salt minion (depending on host
@@ -225,6 +206,15 @@ pecularities to note:
   are placed. In order to make sure this prefix points to local filesystem
   for bootstrap `deploy` action, the value of `URI_prefix` has to be
   rewritten to `salt://` URI scheme.
+    TODO: This does not need to be the case. No rewrite should be required.
+    Instead, macros used to compose URI should rely on availability of
+    special pillar flag (i.e. `bootstrap_mode`) to triger necessary
+    substitution. During bootstrap, this pillar flag is passed using
+    `pillar` parameter on command line:
+
+    ```
+    salt '*' state.sls sls_file pillar="{foo: 'Foo!', bar: 'Bar!'}"
+    ```
 
 TODO: `pillar['registered_content_config']['URI_prefix']` is not used anymore.
 
@@ -240,17 +230,16 @@ TODO: Is there something to mention for `deploy` action?
 * Both Salt master and Salt minion configuration files can specify exactly
   the same information:
   * If it is a Salt minion connected to Salt master, most of required
-    configuration file.
+    configuration is obtained online from Salt master configuration file.
   * If it is a sandalone Salt minion, it requires all configuration,
     which normally belongs to Salt master, to be specified in Salt minion
     configuration file.
-* The important note is about is custum configuration keys - Salt minion
+* The important note is about custom configuration keys - Salt minion
   custom configuration keys _always overwrite_ Salt master's ones.
   In other words, whether `salt`, or `salt-call`,
   or `salt-call` with `--local` option command is used, if Salt minion
   configuration file had the same custom configuraton key, the value
   used will come from this Salt minion configuration file.
-
 
 # [footer] #
 
