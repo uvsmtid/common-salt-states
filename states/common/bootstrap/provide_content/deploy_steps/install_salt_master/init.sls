@@ -62,6 +62,7 @@
         - require:
             - file: {{ requisite_config_file_id }}
 
+{% set profile_relative_pillars = salt['config.get']('this_system_keys:profile_relative_pillars') %}
 # Pre-build config files used by the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_file:
     file.managed:
@@ -70,6 +71,13 @@
         - context:
             project_name: '{{ project_name }}'
             profile_name: '{{ profile_name }}'
+            # NOTE: The `profile_relative_pillars` is taken from current
+            #       configuration in config file. It may not be correct in
+            #       some rare case.
+            # TODO: Add some check to avoid lengthy debugging if there is mismatch
+            #       between source profile and target provile or figure out
+            #       solution.
+            profile_relative_pillars: '{{ profile_relative_pillars|json }}'
             resources_links_dir: '{{ get_URI_scheme_abs_links_base_dir_path_from_pillar('salt://', target_env_pillar) }}'
         - template: jinja
         - makedirs: True
