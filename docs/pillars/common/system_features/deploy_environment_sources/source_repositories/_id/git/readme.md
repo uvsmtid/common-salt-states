@@ -37,7 +37,7 @@ system_features:
             'common-salt-states':
                 git:
                     source_system_host: 'git.example.com'
-                    origin_url_ssh_path: 'devops/common-salt-states.git'
+                    origin_uri_ssh_path: 'devops/common-salt-states.git'
 ```
 It important that:
 * There should not be Salt minion named as `git.example.com` and listed as accepted in the output of `salt-key` command.

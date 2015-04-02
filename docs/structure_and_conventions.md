@@ -20,6 +20,7 @@ This directory contains pillars or "configuration data" consumed by Salt.
 On Linux `/srv/states` should be a symlink to this directory, for example:
 ```
 ls -l /srv/pillars
+lrwxrwxrwx. 1 root root 50 Jan 27 21:53 /srv/pillars -> /home/username/Works/[project_name]-salt-states.git/pillars
 ```
 NOTE: This is not default Salt setup.
 See [here](inital_salt_setup.md) what is supposed to changed.
@@ -31,6 +32,7 @@ This directory contains states or "configuration logic" executed by Salt.
 On Linux `/srv/pillars` should be a symlink to this directory, for example:
 ```
 ls -l /srv/states
+lrwxrwxrwx. 1 root root 49 Jan 27 21:53 /srv/states -> /home/username/Works/common-salt-states.git/states
 ```
 
 NOTE: This is not default Salt setup.

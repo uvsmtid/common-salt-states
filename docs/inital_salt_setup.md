@@ -114,6 +114,7 @@ salt '*' test.ping
 
 ### TODO ###
 
+Additional steps is to connect this `common-salt-states` sources to Salt and
 run this command to setup selected system:
 ```
 salt '*' state.highstate
@@ -184,7 +185,7 @@ pillar_roots:
 ```
 Set `/srv/pillars` symlink to the Salt configuration sources:
 ```
-ln -sfn /home/[username]/Works/project-salt-states.git/pillars /srv/pillars
+ln -sfn /home/[username]/Works/[project_name]-salt-pillars.git/pillars /srv/pillars
 ```
 
 ### Selected project
@@ -270,6 +271,7 @@ which would normally go to `/etc/salt/master`.
 
 * Checkout sources:
 ```
+git clone git@host:user/common-salt-states.git ~/Works/common-salt-states.git
 ```
 
 * Install Salt minion:
@@ -290,6 +292,8 @@ pillar_roots:
 
 * Make symlinks to the sources:
 ```
+ln -sfn ~username/Works/common-salt-states.git/states  /srv/states
+ln -sfn ~username/Works/[project_name]-salt-states.git/pillars /srv/pillars
 ```
 
 * Set minion id:
