@@ -24,7 +24,7 @@
     )
 -%}
 
-{{- get_registered_content_item_base_name(registered_content_item_id, pillar) -}}
+{{- get_registered_content_item_base_name_from_pillar(registered_content_item_id, pillar) -}}
 
 {%- endmacro -%}
 
