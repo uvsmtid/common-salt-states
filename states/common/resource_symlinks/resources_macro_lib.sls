@@ -1,6 +1,19 @@
 # Set of macros to work with resources.
 
 ###############################################################################
+#
+{%- macro get_resource_symlink_for_bootstrap_target_env(
+        target_env_pillar
+    )
+-%}
+
+{%- set resource_symlink = target_env_pillar['posix_config_temp_dir'] + '/repositories/' + 'all' %}
+
+{{- resource_symlink -}}
+
+{%- endmacro -%}
+
+###############################################################################
 # item_base_name
 ###############################################################################
 
@@ -188,7 +201,15 @@
 -%}
 
 {%- set resource_repository_config = pillar['system_features']['resource_repositories_configuration']['resource_respositories'][resource_repository_id] -%}
+
+{#-
+At the moment, any `bootstrap_mode` requires rewrite of resource locations.
+-#}
+{%- if 'bootstrap_mode' in pillar -%}
+{%- set resource_repository_target_path = get_resource_symlink_for_bootstrap_target_env(pillar) -%}
+{%- else -%}
 {%- set resource_repository_target_path = resource_repository_config['abs_resource_target_path'] -%}
+{%- endif -%}
 
 {{- resource_repository_target_path -}}
 

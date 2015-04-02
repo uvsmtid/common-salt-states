@@ -131,21 +131,6 @@
 
 {% endif %} # Git SCM
 
-# NOTE: We add pillar file in all repositories regardless whether it
-#       belongs to this repo or not.
-# TODO: Think how to put pillars to only specific repository.
-#       Note that the complication is that in multip-project Salt setup
-#       pillar files may be split into and distributed across multiple
-#       repos.
-# Add the rewritten `target_env_pillar` to the initial archive.
-{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}_add_rewritten_pillar:
-    cmd.run:
-        - name: 'tar -rvf {{ archive_dir_path }}/{{ selected_repo_name }}.tar pillars/{{ project_name }}/profile/{{ profile_name }}.sls'
-        # Tar always work in current directory.
-        - cwd: '{{ base_dir }}'
-        - require:
-            - cmd: {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}
-
 {% if selected_repo_type != 'git' %} # ! Git SCM
     {{ FAIL_this_template_instantiation_unsupported_SCM }}
 {% endif %} # ! Git SCM
