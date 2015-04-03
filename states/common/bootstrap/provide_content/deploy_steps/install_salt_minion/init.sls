@@ -64,7 +64,6 @@
         - require:
             - file: {{ requisite_config_file_id }}
 
-{% set profile_relative_pillars = salt['config.get']('this_system_keys:profile_relative_pillars') %}
 # Pre-build config files used by the step.
 {% for minion_type in [ 'online', 'offline' ] %}
 {% set salt_minion_template = 'salt_minion_' + minion_type + '_template' %}
@@ -75,13 +74,6 @@
         - context:
             project_name: '{{ project_name }}'
             profile_name: '{{ profile_name }}'
-            # NOTE: The `profile_relative_pillars` is taken from current
-            #       configuration in config file. It may not be correct in
-            #       some rare case.
-            # TODO: Add some check to avoid lengthy debugging if there is mismatch
-            #       between source profile and target provile or figure out
-            #       solution.
-            profile_relative_pillars: '{{ profile_relative_pillars|json }}'
             selected_host_name: '{{ selected_host_name }}'
             resources_links_dir: '{{ get_URI_scheme_abs_links_base_dir_path_from_pillar('salt://', target_env_pillar) }}'
         - template: jinja
