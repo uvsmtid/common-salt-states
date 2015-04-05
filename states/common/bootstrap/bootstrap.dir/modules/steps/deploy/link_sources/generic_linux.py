@@ -53,24 +53,32 @@ def do(action_context):
         action_context,
     )
 
-    # Set `/srv/states` symlink to Salt sources's `states` directory.
-    # Set `/srv/pillars` symlink to Salt sources's `pillars` directory.
+    # Set `/srv/states` symlink to Salt `states` directory.
+    # Set `/srv/pillars` symlink to Salt `pillars` directory.
     #
     # TODO: There can be multiple sources of states (i.e. in
     #       multi-project case. Figure out how to make it generic.
-    state_sources = action_context.conf_m.link_sources['state_sources']
+    states_src = action_context.conf_m.link_sources['salt_states_sources']
+    pillars_src = action_context.conf_m.link_sources['salt_pillars_sources']
     if action_context.run_use_case == 'offline-minion-installer':
-        state_sources_destination_dir = action_context.conf_m.link_sources['repos'][state_sources]['offline_destination_dir']
+        states_destination_dir = action_context.conf_m.link_sources['repos'][states_src]['offline_destination_dir']
+        pillars_destination_dir = action_context.conf_m.link_sources['repos'][pillars_src]['offline_destination_dir']
     else:
-        state_sources_destination_dir = action_context.conf_m.link_sources['repos'][state_sources]['online_destination_dir']
+        states_destination_dir = action_context.conf_m.link_sources['repos'][states_src]['online_destination_dir']
+        pillars_destination_dir = action_context.conf_m.link_sources['repos'][pillars_src]['online_destination_dir']
 
-    for link_name in ['states', 'pillars']:
+    symlink_to_dst_dir_map = {
+        'states': states_destination_dir,
+        'pillars': pillars_destination_dir,
+    }
+
+    for link_name in symlink_to_dst_dir_map.keys():
         call_subprocess(
             command_args = [
                 'ln',
                 '-snf',
                 os.path.join(
-                    state_sources_destination_dir,
+                    symlink_to_dst_dir_map[link_name],
                     link_name,
                 ),
                 '/srv/' + link_name,

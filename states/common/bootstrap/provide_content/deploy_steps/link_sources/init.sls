@@ -45,10 +45,10 @@
         - content: |
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
-                # TODO: This is hardcoded, figure out how to make it generic.
                 # TODO: There can be multiple sources of states (i.e. in
                 #       multi-project case. Figure out how to make it generic.
-                'state_sources': 'common-salt-states',
+                'salt_states_sources': '{{ target_env_pillar['system_features']['bootstrap_configuration']['bootstrap_sources']['states'] }}',
+                'salt_pillars_sources': '{{ target_env_pillar['system_features']['bootstrap_configuration']['bootstrap_sources']['pillars'] }}',
                 # Configure each extracted respository.
                 'repos': {
             # NOTE: We put all repos in configuration but generate empty
