@@ -65,5 +65,6 @@ environment.
 [2]: docs/configs/common/this_system_keys/project/readme.md
 [3]: docs/configs/common/this_system_keys/profile/readme.md
 [4]: #example
-[5]: docs/pillars/common/bootstrap_target_envs/readme.md
+[5]: docs/pillars/bootstrap/bootstrap_target_envs/readme.md
+[6]: docs/pillars/bootstrap/system_features/bootstrap_configuration/enable_bootstrap_target_envs/readme.md
 

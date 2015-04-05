@@ -1,7 +1,7 @@
 # This example configuration file is only for testing of bootstrap scripts.
 # It has every step disabled to avoid maintaining detailed configuraiton.
 # If sample configuration is needed, generate it using Salt's
-# `common.bootstrap.provide_content` state.
+# `bootstrap.bootstrap.provide_content` state.
 
 target_platform = 'rhel7'
 

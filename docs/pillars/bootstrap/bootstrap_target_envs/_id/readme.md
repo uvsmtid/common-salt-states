@@ -15,4 +15,5 @@ See details in:
 
 [1]: docs/pillars/common/bootstrap_target_envs/readme.md
 [2]: docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
+[3]: docs/pillars/bootstrap/system_features/bootstrap_configuration/enable_bootstrap_target_envs/readme.md
 

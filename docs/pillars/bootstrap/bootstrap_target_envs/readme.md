@@ -15,6 +15,6 @@ pillar['bootstrap_target_envs']['PROJECT_NAME.PROFILE_NAME']
 [1]: docs/configs/common/this_system_keys/project/readme.md
 [2]: docs/configs/common/this_system_keys/profile/readme.md
 [3]: docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
-[4]: docs/pillars/common/bootstrap_target_envs/_id/readme.md
+[4]: docs/pillars/bootstrap/bootstrap_target_envs/_id/readme.md
 [5]: docs/bootstrap.md
 

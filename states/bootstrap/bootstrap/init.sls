@@ -12,7 +12,7 @@
 bootstrap_directory_copy:
     file.recurse:
         - name: '{{ bootstrap_dir }}'
-        - source: 'salt://common/bootstrap/bootstrap.dir'
+        - source: 'salt://bootstrap/bootstrap/bootstrap.dir'
         - makedirs: True
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
@@ -32,7 +32,7 @@ bootstrap_directory_copy:
 bootstrap_file_exec_perms:
     file.managed:
         - name: '{{ bootstrap_dir }}/bootstrap.py'
-        - source: 'salt://common/bootstrap/bootstrap.dir/bootstrap.py'
+        - source: 'salt://bootstrap/bootstrap/bootstrap.dir/bootstrap.py'
         - makedirs: True
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
