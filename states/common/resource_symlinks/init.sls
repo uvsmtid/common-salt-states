@@ -6,7 +6,7 @@
 
 # This state can either be run on Salt master or Salt minion in
 # case of `offline-minion-installer` `bootstrap_mode`.
-{% set bootstrap_mode = pillar['bootstrap_mode'] %}
+{% set bootstrap_mode = salt['pillar.get']('bootstrap_mode', '') %}
 {% if
        ( grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] )
        or

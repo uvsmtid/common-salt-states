@@ -95,7 +95,11 @@
 -%}
 
 {%- set selected_host_config = pillar['system_hosts'][system_host_id] -%}
+{%- if 'bootstrap_mode' in pillar -%}
 {%- set bootstrap_mode = pillar['bootstrap_mode'] -%}
+{%- else -%}
+{%- set bootstrap_mode = None -%}
+{%- endif -%}
 
 {%- if
        ( selected_host_config['consider_online_for_remote_connections'] )
