@@ -107,9 +107,14 @@
 
 {% set git_repo_uri = define_git_repo_uri(selected_repo_name) %}
 
-{% if selected_repo_name in target_env_pillar['system_features']['bootstrap_configuration']['export_sources'].keys() %}
+# NOTE: We use `bootstrap_configuration` of `source_env_pillar`.
+#       This uses sources names and branches as they exists
+#       in current environment.
+{% if selected_repo_name in source_env_pillar['system_features']['bootstrap_configuration']['export_sources'].keys() %} # selected_repo_name
 
-{% set branch_name = target_env_pillar['system_features']['bootstrap_configuration']['export_sources'][selected_repo_name]['branch_name'] %}
+{% set branch_name = source_env_pillar['system_features']['bootstrap_configuration']['export_sources'][selected_repo_name]['branch_name'] %}
+
+{% if branch_name %} # branch_name
 
 # Create archive.
 {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
@@ -120,7 +125,9 @@
         - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - require:
             - file: {{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
-{% else %}
+
+{% else %} # branch_name
+
 # Create an empty archive.
 {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
     cmd.run:
@@ -130,7 +137,14 @@
         - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - require:
             - file: {{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
-{% endif %}
+
+{% endif %} # branch_name
+
+{% else %} # selected_repo_name
+
+    {{ FAIL_undefined_export_source }}
+
+{% endif %} # selected_repo_name
 
 {% endif %} # Git SCM
 
