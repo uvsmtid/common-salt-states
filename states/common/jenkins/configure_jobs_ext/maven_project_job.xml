@@ -84,12 +84,21 @@
   <!--
       Maven Project configuration.
   -->
+  <!--
+        Disable specification of `groupId` and `artifactId`.
+        At the moment it seems like unnecessary details because `pom.xml`
+        file contains them. And Jenkins works anyway.
+        {#
+  -->
   <rootModule>
     {% set component_group_id = job_config['job_config_data']['component_group_id'] %}
     <groupId>{{ component_group_id }}</groupId>
     {% set component_artifact_id = job_config['job_config_data']['component_artifact_id'] %}
     <artifactId>{{ component_artifact_id }}</artifactId>
   </rootModule>
+  <!--
+        #}
+  -->
   {% set component_pom_path = job_config['job_config_data']['component_pom_path'] %}
   <rootPOM>{{ component_pom_path }}</rootPOM>
 
