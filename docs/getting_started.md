@@ -1,10 +1,14 @@
 # Getting Started #
 
+This document is about getting started in framework set by
+these common Salt states. For Salt introduction itself refer to
+[the official documentation][4].
+
 All steps are applicable to any OS, however, examples are given for
 RedHat Linux 5 (RHEL5).
 
-The content is also about example where Salt is installed for
-the first time for both Salt master and Salt minion on the same single host.
+The steps below assume that both Salt master and Salt minion are installed
+on the same single host for the first time.
 
 ## Initial Salt setup ##
 
@@ -403,4 +407,5 @@ This section demonstrates how to use master-less Salt minion.
 [1]: docs/bootstrap.md
 [2]: docs/approach_for_multiple_projects.md
 [3]: docs/orchestration.md
+[4]: http://docs.saltstack.com/
 
