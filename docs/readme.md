@@ -1,8 +1,4 @@
 
-## Basic intro to Salt with links to official documentation. ##
-
-* [salt_introduction.md](salt_introduction.md)
-
 ## How to install and configure Salt master and minions? ##
 
 * [getting_started.md](getting_started.md)
