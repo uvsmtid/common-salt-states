@@ -29,8 +29,6 @@ detailed information of all Salt aspects.
 
 * `docs`
    All documentation materials.
-* `pillars`
-   Salt static configuration data (consumed by `states`).
 * `states`
    Salt states executable data to define require system configuration.
 * `scripts`

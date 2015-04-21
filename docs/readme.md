@@ -5,7 +5,7 @@
 
 ## How to install and configure Salt master and minions? ##
 
-* [inital_salt_setup.md](inital_salt_setup.md)
+* [getting_started.md](getting_started.md)
 
 ## How do these sources support multiple projects and systems? ##
 

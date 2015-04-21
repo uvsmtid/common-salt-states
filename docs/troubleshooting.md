@@ -15,11 +15,11 @@ salt '*' test.ping
 
 ## Make sure Salt master is configured ##
 
-Review steps for required configuration of `/etc/salt/master` on [this page](inital_salt_setup.md).
+Review steps for required configuration of `/etc/salt/master` on [this page](getting_started.md).
 
 ## Make sure initial system setup is done ##
 
-Review steps for required system configuration on [this page](inital_salt_setup.md).
+Review steps for required system configuration on [this page](getting_started.md).
 
 There are various requirements to make Salt:
 * IP addresses and routing
@@ -85,7 +85,12 @@ salt '*' state.show_top
 #### Check how Salt minion sees specific state ####
 
 ```
-salt '*' state.show_sls
+salt '*' state.show_sls [state]
+```
+
+For example:
+```
+salt '*' state.show_sls common.source_symlinks
 ```
 
 ### Pillars ###

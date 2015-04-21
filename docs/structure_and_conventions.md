@@ -23,7 +23,7 @@ ls -l /srv/pillars
 lrwxrwxrwx. 1 root root 50 Jan 27 21:53 /srv/pillars -> /home/username/Works/[project_name]-salt-states.git/pillars
 ```
 NOTE: This is not default Salt setup.
-See [here](inital_salt_setup.md) what is supposed to changed.
+See [here](getting_started.md) what is supposed to changed.
 
 ## `states` ##
 
@@ -36,7 +36,7 @@ lrwxrwxrwx. 1 root root 49 Jan 27 21:53 /srv/states -> /home/username/Works/comm
 ```
 
 NOTE: This is not default Salt setup.
-See [here](inital_salt_setup.md) what is supposed to changed.
+See [here](getting_started.md) what is supposed to changed.
 
 There are several special sub-directories in `states`:
 * `_grains` - custom grains (see [writing grains](http://docs.saltstack.com/en/latest/topics/targeting/grains.html#writing-grains))
