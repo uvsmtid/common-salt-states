@@ -68,7 +68,7 @@ in `Result:` fields of the output, for example:
      Comment: Specified path /deleteme.txt does not exist
      Started: 16:54:38.851035
     Duration: 0.443 ms
-     Changes:   
+     Changes:
 ...
 ```
 
@@ -97,6 +97,27 @@ salt '*' state.show_sls common.source_symlinks
 
 ```
 salt '*' pillar.items
+```
+
+Some rendering problems with pillars are not obvious - they may not be seen,
+but pillars won't have all data.
+
+In order to make sure there is no issues, collect output of the command
+and make sure there is no `_errors` key in the output.
+```
+salt '*' pillar.items | tee pillar.items.output
+```
+
+For example, this is the top of `pillar.items.output` in case of error:
+```
+minion_sls:
+    ----------
+    _errors:
+        - Include Declaration in SLS 'project.main' is not formed as a list
+    include:
+        None
+    master:
+...
 ```
 
 ### Grains ###
