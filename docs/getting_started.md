@@ -208,7 +208,7 @@ for specific project, provide access to sources, resources, etc.
 These steps should be reviewed when Salt is reconfigured to
 use another project.
 
-### Configure Salt states, sources and resources in Salt configuration ###
+### Specify files and states location in Salt configuration ###
 
 Specify location where Salt looks up file references (including state files)
 under `file_roots` key in Salt configuration file:
@@ -238,7 +238,13 @@ as `/srv/states/whatever` first
 before it has a chance to be looked up as `/srv/sources/whatever`,
 before it has a chance to be looked up as `/srv/resources/whatever`,
 
-#### Common and Project-specific Salt states ####
+Result of the next 2 steps should look like this:
+```
+/srv/states                -> /home/[username]/Works/common-salt-states.git/states
+/srv/states/[project_name] -> /home/[username]/Works/[project_name]-salt-states.git/states/[project_name]
+```
+
+### Link common Salt states ###
 
 Checkout (these) common Salt states sources (if not done yet):
 ```
@@ -256,27 +262,15 @@ Set `/srv/states` symlink to the Salt common states sources, for example:
 ln -sfn /home/[username]/Works/common-salt-states.git/states /srv/states
 ```
 
+### Link project-specific Salt states ###
+
 Add symlink _within_ (under) Salt common states pointing to
 repository with project-specific Salt states, for example:
 ```
 ln -sfn /home/[username]/Works/[project_name]-salt-states.git/states/[project_name] /srv/states/[project_name]
 ```
 
-Result of this step should look like this:
-```
-/srv/states                -> /home/[username]/Works/common-salt-states.git/states
-/srv/states/[project_name] -> /home/[username]/Works/[project_name]-salt-states.git/states/[project_name]
-```
-
-### Location of Pillars ###
-
-Pillars are always project-specific (they provide configuration data
-for both common Salt states and project-specific Salt states).
-
-Checkout project-specific Salt pillars sources (if not done yet):
-```
-git clone git@host:user/[project_name]-salt-pillars.git ~/Works/[project_name]-salt-pillars.git
-```
+### Specify pillars location in Salt configuration ###
 
 Specify location where Salt loads pillars under `pillar_roots` key in
 Salt configuration file:
@@ -284,6 +278,16 @@ Salt configuration file:
 pillar_roots:
     base:
         - /srv/pillars
+```
+
+### Link Salt pillars ###
+
+Pillars are always project-specific (they provide configuration data
+for both common Salt states and project-specific Salt states).
+
+Checkout project-specific Salt pillars sources (if not done yet):
+```
+git clone git@host:user/[project_name]-salt-pillars.git ~/Works/[project_name]-salt-pillars.git
 ```
 
 Set `/srv/pillars` symlink to the Salt pillars sources:
@@ -296,7 +300,7 @@ Result of this step should look like this:
 /srv/pillars               -> /home/[username]/Works/[project_name]-salt-pillars.git/pillars
 ```
 
-### Selected project ###
+### Select project ###
 
 This sources as a framework require specification of project id in Salt
 master configuration file:
@@ -310,7 +314,7 @@ this_system_keys:
 
 This is used in some template files to access necessary states and pillars.
 
-### Selected profile ###
+### Select profile ###
 
 This sources as a framework require specification of profile id in Salt
 master configuration file:
