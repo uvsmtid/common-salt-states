@@ -239,6 +239,38 @@ At the moment, any `bootstrap_mode` requires rewrite of resource locations.
 {%- endmacro -%}
 
 ###############################################################################
+# bootstrap_use_cases
+###############################################################################
+
+{%- macro get_registered_content_item_bootstrap_use_cases_from_pillar(
+        registered_content_item_id
+        ,
+        pillar_data
+    )
+-%}
+
+{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+
+{%- if 'bootstrap_use_cases' in registered_content_item_config %}
+{{- registered_content_item_config['bootstrap_use_cases'] -}}
+{%- else -%}
+True
+{%- endif -%}
+
+{%- endmacro -%}
+
+#------------------------------------------------------------------------------
+
+{%- macro get_registered_content_item_bootstrap_use_cases(
+        registered_content_item_id
+    )
+-%}
+
+{{- get_registered_content_item_bootstrap_use_cases(registered_content_item_id, pillar) -}}
+
+{%- endmacro -%}
+
+###############################################################################
 # EOF
 ###############################################################################
 

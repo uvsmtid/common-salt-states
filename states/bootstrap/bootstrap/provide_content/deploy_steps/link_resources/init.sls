@@ -55,6 +55,7 @@
 {% from resources_macro_lib import get_registered_content_item_hash_from_pillar with context %}
 {% from resources_macro_lib import get_registered_content_item_parent_dir_path_from_pillar with context %}
 {% from resources_macro_lib import get_registered_content_item_base_name_from_pillar with context %}
+{% from resources_macro_lib import get_registered_content_item_bootstrap_use_cases_from_pillar with context %}
 
 # We simply point all repositories into single known location.
 # This location is a symlink which is supposed to be created during `deploy`
@@ -65,21 +66,23 @@
 #                different repositories. For now we assume that all
 #                combinations of `item_parent_dir_path` + `item_base_name`
 #                for all resource items are different.
-# TODO: Make it more flexible. Some resources shouldn't be downloaded, others
-#       should be separated per repository type, etc.
 
 {% set base_dir = target_contents_dir + '/resources/rewritten_pillars/' + project_name + '/' + profile_name %}
 {% set resource_respositories = target_env_pillar['system_features']['resource_repositories_configuration']['resource_respositories'] %}
 
 # Download resources for the project/profile.
 # Resources are shared among all hosts in the same project/profile.
-# TODO: Find a way to limit resource download to only required items.
-#       Should content items be tagged if they are used (to be downloaded)?
-#       Should `bootstrap_configuration` specify what set of content itmes
-#       to be downloaded via list of items or list of tags?
+# TODO: Find a way to auto-limit resource download to only required items.
+#       Currently, each content item simply has `bootstrap_use_cases` boolean
+#       field to indicate whether it should be included or not.
 # We use `URI_prefix` from current project/profile pillar assuming that
 # it has access to all content items through the same prefix.
 {% for content_item_id in target_env_pillar['registered_content_items'].keys() %} # content_item_id
+
+# TODO: At the moment we only check boolean result of `bootstrap_use_cases` value.
+#       Consider matching tailoring bootstrap package for specific use case
+#       using `bootstrap_package_use_cases` list in bootstrap configuration.
+{% if get_registered_content_item_bootstrap_use_cases_from_pillar(content_item_id, target_env_pillar) %}
 
 {{ content_item_id }}_{{ project_name }}_{{ profile_name }}_{{ selected_host_name }}:
     file.managed:
@@ -96,6 +99,8 @@
         - mode: 644
         - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+
+{% endif %}
 
 {% endfor %}
 
