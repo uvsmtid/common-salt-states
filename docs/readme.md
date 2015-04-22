@@ -3,9 +3,9 @@
 
 *   [getting_started.md](getting_started.md)
 
-## How do these sources support multiple projects and systems? ##
+## How do this framework in custom external projects? ##
 
-*   [approach_for_multiple_projects.md](approach_for_multiple_projects.md)
+*   [external_projects.md](external_projects.md)
 
 ## How to troubleshoot? ##
 

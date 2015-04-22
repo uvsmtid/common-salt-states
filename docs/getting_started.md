@@ -409,7 +409,7 @@ This section demonstrates how to use master-less Salt minion.
 # [footer] #
 
 [1]: docs/bootstrap.md
-[2]: docs/approach_for_multiple_projects.md
+[2]: docs/external_projects.md
 [3]: docs/orchestration.md
 [4]: http://docs.saltstack.com/
 
