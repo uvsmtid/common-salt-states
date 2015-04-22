@@ -49,7 +49,7 @@ pretty_yaml2json_script:
 # is not loaded under `bootstrap_target_envs` pillar key.
 # See:
 #   * docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
-{% if project_name == current_project_name and profile_name == current_profile_name %}
+{% if project_name == current_project_name and ( profile_name == current_profile_name or profile_name == 'this_system' ) %}
 {% set target_env_pillar = pillar %}
 {% else %}
 {% set target_env_pillar = pillar['bootstrap_target_envs'][project_name + '.' + profile_name] %}
