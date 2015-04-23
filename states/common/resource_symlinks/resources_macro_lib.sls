@@ -266,7 +266,7 @@ True
     )
 -%}
 
-{{- get_registered_content_item_bootstrap_use_cases(registered_content_item_id, pillar) -}}
+{{- get_registered_content_item_bootstrap_use_cases_from_pillar(registered_content_item_id, pillar) -}}
 
 {%- endmacro -%}
 
