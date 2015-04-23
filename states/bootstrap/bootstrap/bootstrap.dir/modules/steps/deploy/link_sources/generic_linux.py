@@ -4,8 +4,10 @@ import os
 import logging
 
 from utils.exec_command import call_subprocess
+
 from utils.archive import unzip_files
 from utils.archive import untar_files
+from utils.archive import clone_files
 
 ###############################################################################
 #
@@ -27,17 +29,25 @@ def deploy_repos(
         if not os.path.exists(destination_dir):
             os.makedirs(destination_dir)
 
-        # Unpack sources depending on `archive_type`.
-        if repo_conf['archive_type'] == 'zip':
+        # Unpack sources depending on `export_format`.
+        if not repo_conf['export_format']:
+            raise NotImplementedError
+        elif repo_conf['export_format'] == 'zip':
             unzip_files(
                 content_dir = action_context.content_dir,
                 zip_file_path_rel = repo_conf['exported_source_archive'],
                 dst_dir = destination_dir,
             )
-        elif repo_conf['archive_type'] == 'tar':
+        elif repo_conf['export_format'] == 'tar':
             untar_files(
                 content_dir = action_context.content_dir,
                 tar_file_path_rel = repo_conf['exported_source_archive'],
+                dst_dir = destination_dir,
+            )
+        elif repo_conf['export_format'] == 'dir':
+            clone_files(
+                content_dir = action_context.content_dir,
+                dir_path_rel = repo_conf['exported_source_archive'],
                 dst_dir = destination_dir,
             )
         else:
