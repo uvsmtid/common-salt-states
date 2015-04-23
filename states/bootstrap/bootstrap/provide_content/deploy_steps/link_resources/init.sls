@@ -82,7 +82,7 @@
 # TODO: At the moment we only check boolean result of `bootstrap_use_cases` value.
 #       Consider matching tailoring bootstrap package for specific use case
 #       using `bootstrap_package_use_cases` list in bootstrap configuration.
-{% if get_registered_content_item_bootstrap_use_cases_from_pillar(content_item_id, target_env_pillar) %}
+{% if get_registered_content_item_bootstrap_use_cases_from_pillar(content_item_id, target_env_pillar) != 'False' %}
 
 {{ content_item_id }}_{{ project_name }}_{{ profile_name }}_{{ selected_host_name }}:
     file.managed:
