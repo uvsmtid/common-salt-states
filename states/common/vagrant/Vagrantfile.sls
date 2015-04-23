@@ -80,18 +80,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         {{ selected_host_name }}_domain.cpus = {{ instance_configuration['cpus_number'] }}
     end
 
-    {% set bootstrap_use_case = pillar['system_features']['vagrant_configuration']['bootstrap_use_case'] %}
+    {% set vagrant_bootstrap_use_case = pillar['system_features']['vagrant_configuration']['vagrant_bootstrap_use_case'] %}
 
     {% set package_type = pillar['system_features']['bootstrap_configuration']['os_platform_package_types'][pillar['system_hosts'][selected_host_name]['os_platform']] %}
     {% if not pillar['system_features']['bootstrap_configuration']['generate_packages'] %} # generate_packages
     {% set src_sync_dir = bootstrap_dir_basename + '/targets/' + project_name + '/' + profile_name %}
-    {% set boostrap_cmd = 'python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
+    {% set boostrap_cmd = 'python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # generate_packages
     {% set src_sync_dir = bootstrap_dir_basename + '/packages/' + project_name + '/' + profile_name %}
     {% if not package_type %} # package_type
     {% set boostrap_cmd = 'false' %}
     {% elif package_type == 'tar.gz' %} # package_type
-    {% set boostrap_cmd = 'tar -xzvf /vagrant/' + bootstrap_dir_basename + '/salt-auto-install.' + package_type + ' --directory=/vagrant/' + bootstrap_dir_basename + '/ ; python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
+    {% set boostrap_cmd = 'tar -xzvf /vagrant/' + bootstrap_dir_basename + '/salt-auto-install.' + package_type + ' --directory=/vagrant/' + bootstrap_dir_basename + '/ ; python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # package_type
     {% set boostrap_cmd = 'false' %}
     {% endif %} # package_type
