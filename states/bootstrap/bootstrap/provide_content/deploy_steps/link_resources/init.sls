@@ -67,7 +67,6 @@
 #                combinations of `item_parent_dir_path` + `item_base_name`
 #                for all resource items are different.
 
-{% set base_dir = target_contents_dir + '/resources/rewritten_pillars/' + project_name + '/' + profile_name %}
 {% set resource_respositories = target_env_pillar['system_features']['resource_repositories_configuration']['resource_respositories'] %}
 
 # Download resources for the project/profile.

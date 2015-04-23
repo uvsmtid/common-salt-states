@@ -29,7 +29,6 @@ def get_list_of_src_dst_path_pairs(
         'conf',
         'depository',
         'bootstrap',
-        'rewritten_pillars',
         'sources',
     ]:
         src_dst_path_pairs[resource_type] = {

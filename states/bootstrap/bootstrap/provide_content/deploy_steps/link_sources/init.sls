@@ -27,9 +27,6 @@
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
 
-# The base_dir is in "rewritten_pillars" only for running `tar` command.
-{% set base_dir = target_contents_dir + '/resources/rewritten_pillars/' + project_name + '/' + profile_name %}
-
 {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home_from_pillar with context %}
 
 # Configuration for the step.
