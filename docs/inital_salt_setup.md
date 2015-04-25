@@ -15,12 +15,14 @@ no default YUM repository provides these packages.
 
 ### Common network problems ###
 
+Now it's even more diffuclt if you are behind a proxy.
 
 Simple step: configure youre proxy for YUM: `vi /etc/yum.conf`
 ```
 ...
 
 # Proxy settings
+proxy=http://YOUR_PROXY_HOSTNAME:YOUR_PROXY_PORT/
 proxy_username=YOUR_USERNAME
 proxy_password=YOUR_PASSWORD
 
@@ -125,7 +127,9 @@ salt '*' state.highstate
 These sources (State, Pillars, etc.) provide automation for multiple projects.
 
 These are links to project-specific documentation:
-* [common](projects/common/main.md)
+* [common](projects/common/readme.md)
+* TODO: [bootstrap](projects/bootstrap/readme.md)
+* TODO: [project_name](projects/project_name/readme.md)
 
 The exhaustive details how multiple porjects are used can be found
 [here](approach_for_multiple_projects.md).
@@ -194,6 +198,7 @@ ln -sfn /home/[username]/Works/[project_name]-salt-pillars.git/pillars /srv/pill
 this_system_keys:
     # ...
     # Salt master orchestrates only one project:
+    project: project_name
     # ...
 ```
 
@@ -204,7 +209,7 @@ This will rendeer templates using correct pillars and states.
 ```
 this_system_keys:
     # ...
-    profile: blackbox # <-- selected profile
+    profile: profile_name # <-- selected profile
     # ...
 ```
 

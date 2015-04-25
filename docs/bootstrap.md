@@ -182,6 +182,7 @@ On Windows installer supports [unnattended installation](https://github.com/salt
     ```
     or
     ```
+    project_name/profile_name/observer_server
     ```
 * The action Template Methods are implemented in `actions.*` modules.
 * Use case is a parameter for action template method coordinate

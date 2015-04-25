@@ -58,13 +58,9 @@ TODO
 │       └── {{ project_name }}
 ├── pillars
 │   ├── common
-│   ├── {{ project_name }}
-│   │   ├── orchestrate
-│   │   ├── profile
-│   │   └── testing
-│   │   └── profile
-│   └── workmachine
-│       └── profile
+│   └── {{ project_name }}*
+│       ├── *
+│       └── profile
 └── states
     ├── common
     │   ├── *
@@ -81,4 +77,5 @@ TODO
         ├── *
         └── {{ state_name }}
 ```
+
 
