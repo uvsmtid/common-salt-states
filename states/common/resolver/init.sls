@@ -19,7 +19,7 @@
         - mode: 644
         - template: jinja
         - context:
-            - selected_pillar: {{ pillar }}
+            selected_pillar: {{ pillar }}
 
 {% endif %}
 # >>>
