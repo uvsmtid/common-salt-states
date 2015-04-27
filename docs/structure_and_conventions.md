@@ -92,23 +92,8 @@ There are several special sub-directories in `states`:
 
 ### `states` layout ###
 
-
 ```
 .
-├── docs
-│   ├── *
-│   └── projects
-│       ├── *
-│       └── {{ project_name }}
-├── pillars
-│   ├── common
-│   ├── {{ project_name }}
-│   │   ├── orchestrate
-│   │   ├── profile
-│   │   └── testing
-│   │   └── profile
-│   └── workmachine
-│       └── profile
 └── states
     ├── common
     │   ├── *
@@ -125,7 +110,6 @@ There are several special sub-directories in `states`:
         ├── *
         └── {{ state_name }}*
 ```
-
 
 ## `scripts` ##
 

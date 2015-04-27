@@ -22,7 +22,7 @@ like `git.example.com` under [GitLab][http://gitlab.com/] and accessed
 with SSH public key authentication via SSH-like URI
 `git@git.example.com:devops/common-salt-states.git`, it is possible to define
 such `git.example.com` host under `system_hosts` with [primary_user][5] equal
-to `git` and set [origin_url_ssh_path][6] to `devops/common-salt-states.git`:
+to `git` and set [origin_uri_ssh_path][6] to `devops/common-salt-states.git`:
 ```
 system_hosts:
     git.example.com:

@@ -188,6 +188,7 @@ NOTE: In order for `initial-online-node` use case to work, Salt master
     ```
     or
     ```
+    {{ project_name }}/{{ profile_name }}/{{ host_id }}
     ```
 * The action Template Methods are implemented in `actions.*` modules.
 * Use case is a parameter for action template method coordinate

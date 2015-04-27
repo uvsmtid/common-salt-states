@@ -73,7 +73,8 @@ NOTE: There are many ways to use Salt grains from minion side to split the state
 For example, look at the current snippet from Salt master config file `/etc/salt/master`:
 ```
 this_system_keys:
-    profile: blackbox
+    project: {{ project_name }}
+    profile: {{ profile_name }}
 ```
 
 

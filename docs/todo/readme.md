@@ -123,12 +123,16 @@ new `blackbox` profile.
       extended grains Python modules under `/srv/states/_grains/`):
         salt '*' saltutil.sync_all
 
+    * salt '{{ master_minion_id }}' state.sls {{ primary_state }}
     * Setup common packages (make life more comfortable):
+          salt-run -l all state.orchestrate {{ project_name }}.orchestrate.setup.common
 
     * Configure hypervisor_role:
+          salt-run -l all state.orchestrate {{ project_name }}.orchestrate.setup.hypervisor_role
       Set /etc/resolv.conf to non-existing network address on
       Linux hypervisor (because network is not automatically configured).
       So, the following manual step is required to recover and continue:
+        salt-call -l all state.sls {{ project_name }}.libvirt.network
 
       TODO: This state is obsolete and deprecated.
             It was created before Vagrant integration was done.
@@ -291,6 +295,7 @@ to every host.
 All shell environment and script installation for Linux should also
 be duplicated for Cygwin:
   * Shell settings: variables, aliases, etc.
+  * Scripts: i.e. content of package with project-specific automation, etc.
 
 ## NOTE: Problem for Windows/Cygwin paths ##
 
