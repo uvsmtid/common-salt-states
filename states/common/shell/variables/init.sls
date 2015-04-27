@@ -32,8 +32,6 @@ include:
 
 {% set cygwin_root_dir = cygwin_content_config['installation_directory'] %}
 
-include:
-
 '{{ cygwin_root_dir }}\etc\profile.d\common.custom.variables.sh':
     file.managed:
         - source: salt://common/shell/variables/common.custom.variables.sh

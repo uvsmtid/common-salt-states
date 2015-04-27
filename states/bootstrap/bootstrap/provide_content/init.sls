@@ -22,6 +22,7 @@ include:
 # is also placed by `enable_bootstrap_target_envs` key in pillar.
 # See:
 #   * docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
+#   * docs/pillars/{# project_name #}/system_features/bootstrap_configuration/enable_bootstrap_target_envs/readme.md
 {% set load_bootstrap_target_envs = salt['config.get']('this_system_keys:load_bootstrap_target_envs') %}
 {% set current_project_name = salt['config.get']('this_system_keys:project') %}
 {% set current_profile_name = salt['config.get']('this_system_keys:profile') %}

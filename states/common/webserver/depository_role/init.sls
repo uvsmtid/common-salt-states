@@ -13,6 +13,11 @@
 
 include:
     - common.webserver
+#{#
+    - {{ project_name }}.setup.passwd
+    - {{ project_name }}.webserver.disable_root_test_page
+    - {{ project_name }}.webserver.enable_root_list
+#}#
 
 extend:
     webserver:
