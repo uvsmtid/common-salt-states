@@ -129,7 +129,7 @@ new `blackbox` profile.
 
     * Configure hypervisor_role:
           salt-run -l all state.orchestrate {{ project_name }}.orchestrate.setup.hypervisor_role
-      Set /etc/resolv.conf to non-existing network address on
+      This sets /etc/resolv.conf to non-existing network address on
       Linux hypervisor (because network is not automatically configured).
       So, the following manual step is required to recover and continue:
         salt-call -l all state.sls {{ project_name }}.libvirt.network

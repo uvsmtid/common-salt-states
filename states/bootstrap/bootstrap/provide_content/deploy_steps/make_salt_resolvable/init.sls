@@ -25,6 +25,7 @@
     )
 %}
 
+# Configuration which provides location of generated hosts file.
 {{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
@@ -43,6 +44,10 @@
 
 {% from 'common/libs/host_config_queries.sls' import get_role_ip_address_from_pillar with context %}
 
+# Generated hosts file.
+# NOTE: The host file contains only `salt` hostname.
+#       If required, all other hostname are supposed to be configured after
+#       boostrap process by proper Salt state.
 {{ requisite_config_file_id }}_{{ deploy_step }}_hosts_file:
     file.managed:
         - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/hosts_file'

@@ -83,7 +83,7 @@ DISABLED: This is part of stand-alone Cygwin installation package which is
 {% if False %}
 
 REM Install project-specific software:
-"%CYGWINROOTDIR%\bin\bash.exe" -c "\"$^(/usr/bin/cygpath -u \"$CYGWINDISTRIBDIR\"^)\"/repo/installer/install_cygwin_NEL_software.sh"
+"%CYGWINROOTDIR%\bin\bash.exe" -c "\"$^(/usr/bin/cygpath -u \"$CYGWINDISTRIBDIR\"^)\"/repo/installer/install_cygwin_project_software.sh"
 IF NOT %errorlevel%==0 (
     echo "Command returned: " %errorlevel%
     EXIT /B 1
