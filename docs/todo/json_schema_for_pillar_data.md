@@ -1,4 +1,6 @@
 
+See initial work in [common.pillars][2] state/dir.
+
 At the moment pillar data is not validatable.
 
 TODO:
@@ -12,4 +14,5 @@ Once schema is known, verification for availability of documentation for
 each pillar item can be done automatically.
 
 [1]: http://json-schema.org/
+[2]: common/pillars
 
