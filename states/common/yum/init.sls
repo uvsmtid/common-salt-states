@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if not grains['os_platform_type'].startswith('win') %}
 
 yum_conf:
     file.managed:
@@ -17,56 +17,36 @@ yum_conf:
 
 
 
-{% if 'offline_yum_repo' in pillar['system_features'] and pillar['system_features']['offline_yum_repo']['feature_enabled'] %}
-{% set offline_yum_repo_ip = pillar['system_features']['offline_yum_repo']['ip'] %}
+{% if pillar['system_features']['yum_repos_configuration']['feature_enabled'] %} # feature_enabled
 
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
-{% if grains['osrelease'] in [ '5.5' ] %}
-{% set releasever='5.5' %}
-{% else %}
-{% set releasever='$releasever' %}
-{% endif %}
+{% for yum_repo_name in pillar['system_features']['yum_repos_configuration']['yum_repositories'].keys() %} # yum_repo_name
 
-yum_base:
+{% set yum_repo_conf = pillar['system_features']['yum_repos_configuration']['yum_repositories'][yum_repo_name] %}
+
+{% if yum_repo_conf['installation_type'] == 'conf_template' %} # installation_type
+
+{% set host_config = pillar['system_hosts'][grains['id']] %}
+
+{% if host_config['os_platform'] in yum_repo_conf['os_platform_configs'] %} # os_platform
+
+{% set yum_repo_os_platform_config = yum_repo_conf['os_platform_configs'][host_config['os_platform']] %}
+
+'{{ yum_repo_name }}_{{ host_config['os_platform'] }}':
     pkgrepo.managed:
-        - name: base
-        - baseurl: http://{{ offline_yum_repo_ip }}/mirror/centos/{{ releasever }}/os/$basearch/
+        - name: '{{ yum_repo_name }}'
+        - baseurl: '{{ yum_repo_os_platform_config['yum_repo_baseurl'] }}'
+        - key_url: '{{ yum_repo_os_platform_config['yum_repo_key_url'] }}'
         - enabled: 1
 
-yum_updates:
-    pkgrepo.managed:
-        - name: updates
-        - baseurl: http://{{ offline_yum_repo_ip }}/mirror/centos/{{ releasever }}/updates/$basearch/
-        - enabled: 1
+{% endif %} # os_platform
 
-yum_extras:
-    pkgrepo.managed:
-        - name: extras
-        - enabled: 0
+{% endif %} # installation_type
 
-yum_centosplus:
-    pkgrepo.managed:
-        - name: centosplus
-        - enabled: 0
+{% endfor %} # yum_repo_name
 
-{% else %} #TODO: prepare Fedora offline repo and replace yum_repo_ip
+{% endif %} # feature_enabled
 
-yum_base:
-    pkgrepo.managed:
-        - name: fedora
-        - baseurl: http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/
-        - enabled: 1
-yum_updates:
-    pkgrepo.managed:
-        - name: updates
-        - baseurl: http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/
-        - enabled: 1
-
-{% endif %}
-
-{% endif %}
-
-{% endif %}
+{% endif %} # os_platform_type
 # >>>
 ###############################################################################
 
