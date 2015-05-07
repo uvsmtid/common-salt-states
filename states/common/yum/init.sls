@@ -31,6 +31,9 @@ yum_conf:
 
 {% set yum_repo_os_platform_config = yum_repo_conf['os_platform_configs'][host_config['os_platform']] %}
 
+# TODO: Use template file with `file.managed` to configure YUM.
+#       The same configuration is supposed to be done for bootstrap
+#       and it's better to reuse the same templates.
 '{{ yum_repo_name }}_{{ host_config['os_platform'] }}':
     pkgrepo.managed:
         - name: '{{ yum_repo_name }}'
