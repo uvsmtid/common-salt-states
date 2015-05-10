@@ -9,9 +9,9 @@ system_features:
 
         vagrant_provider: 'libvirt'
 
-        #bootstrap_use_case: 'offline-minion-installer'
-        #bootstrap_use_case: 'initial-online-node'
-        bootstrap_use_case: 'initial-online-node'
+        #vagrant_bootstrap_use_case: 'offline-minion-installer'
+        #vagrant_bootstrap_use_case: 'initial-online-node'
+        vagrant_bootstrap_use_case: 'initial-online-node'
 
         vagrant_providers_configs:
             'virtualbox':
