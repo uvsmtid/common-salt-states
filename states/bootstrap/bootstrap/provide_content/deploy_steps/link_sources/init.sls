@@ -137,9 +137,12 @@
         - name: 'git archive --format tar --output="{{ export_dir_path }}/{{ selected_repo_name }}.tar" --remote="{{ git_repo_uri }}" "{{ branch_name }}"'
     {% elif export_method == 'checkout-index' %}
     {% set base_repo_dir = source_env_pillar['system_hosts'][source_system_host]['primary_user']['posix_user_home_dir'] %}
-        - name: 'git checkout-index --all --force --prefix="{{ export_dir_path }}/{{ selected_repo_name }}/{{ selected_repo_name }}/"'
+        - name: 'rm -rf "{{ export_dir_path }}/{{ selected_repo_name }}/" && git checkout-index --all --force --prefix="{{ export_dir_path }}/{{ selected_repo_name }}/"'
         # Repository location on local file system:
         - cwd: '{{ base_repo_dir }}/{{ origin_uri_ssh_path }}'
+    {% elif export_method == 'clone' %}
+        # Note that repo dir does not have `.git` extension.
+        - name: 'rm -rf "{{ export_dir_path }}/{{ selected_repo_name }}" && git clone --branch "{{ branch_name }}" "{{ git_repo_uri }}" "{{ export_dir_path }}/{{ selected_repo_name }}"'
     {% else %}
         {{ FAIL_unknown_export_method }}
     {% endif %}
@@ -159,10 +162,9 @@
     {% elif export_method == 'git-archive' %}
         - name: 'tar -c -T /dev/null -f "{{ export_dir_path }}/{{ selected_repo_name }}.tar"'
     {% elif export_method == 'checkout-index' %}
-    {% set base_repo_dir = source_env_pillar['system_hosts'][source_system_host]['primary_user']['posix_user_home_dir'] %}
-        - name: 'mkdir -p "{{ export_dir_path }}/{{ selected_repo_name }}/{{ selected_repo_name }}"'
-        # Repository location on local file system:
-        - cwd: '{{ base_repo_dir }}/{{ origin_uri_ssh_path }}'
+        - name: 'mkdir -p "{{ export_dir_path }}/{{ selected_repo_name }}"'
+    {% elif export_method == 'clone' %}
+        - name: 'mkdir -p "{{ export_dir_path }}/{{ selected_repo_name }}"'
     {% else %}
         {{ FAIL_unknown_export_method }}
     {% endif %}
