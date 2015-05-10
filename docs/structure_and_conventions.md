@@ -61,11 +61,12 @@ to configure Salt.
 ```
 └── pillars
     ├── bootstrap
-    └── {{ project_name }}*
-        ├── orchestrate
-        └── profile
-            ├── {{ profile_name }}*
-            └── this_system
+    │   └── profiles
+    │       └── {{ profile_name }}*
+    │
+    └── {{ profile_name }}
+        ├── common
+        └── {{ project_name }}
 ```
 
 *   `pillars`
