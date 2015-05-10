@@ -10,6 +10,7 @@ system_features:
         bootstrap_files_dir: 'bootstrap.dir'
 
         enable_bootstrap_target_envs:
+            profile_name:
 
         # The very initial sources (symlinks) to make Salt operational.
         # NOTE: These are only `states` and `pillars`. Even though there can
@@ -26,6 +27,14 @@ system_features:
         # Repositories which actually get exported.
         export_sources:
             common-salt-states:
+                export_enabled: True
+                export_method: clone
+                export_format: dir
+                branch_name: master
+            common-salt-pillars:
+                export_enabled: True
+                export_method: clone
+                export_format: dir
                 branch_name: master
 
         generate_packages: False

@@ -58,6 +58,10 @@ system_features:
 
             'common-salt-states': git
 
+            # Salt pillars.
+
+            'common-salt-pillars': git
+
         # This is passed to override descriptor configuration on control
         # scripts command line. It could probably be placed directly in
         # Git configuration below (as it is in descriptor), but composing
@@ -70,6 +74,8 @@ system_features:
             # - if relative, it is single per job (control scripts).
 
             'common-salt-states': '/environment.sources/common-salt-states.git'
+
+            'common-salt-pillars': '/environment.sources/common-salt-pillars.git'
 
         # Central source repository configuration.
         # The following values are passed to templates for descriptor and
@@ -104,6 +110,14 @@ system_features:
                     source_system_host: 'projector'
 
                     origin_uri_ssh_path: 'Works/common-salt-states.git'
+
+                    branch_name: 'master'
+
+            'common-salt-pillars':
+                git:
+                    source_system_host: 'projector'
+
+                    origin_uri_ssh_path: 'Works/common-salt-pillars.git'
 
                     branch_name: 'master'
 
