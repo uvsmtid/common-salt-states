@@ -1,0 +1,19 @@
+
+###############################################################################
+# Ignore everything except listed directories.
+# This is to avoid "dirty" Git dir status when symlinks are used to
+# point to project-specific states.
+
+/*
+
+# Exceptions: do not ignore expected idrectories and files.
+!/_grains
+!/common
+!/bootstrap
+!/top.sls
+!/.gitignore
+
+###############################################################################
+# EOF
+###############################################################################
+

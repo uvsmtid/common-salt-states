@@ -1,29 +1,29 @@
 
-## Basic intro to Salt with links to official documentation. ##
-
-* [salt_introduction.md](salt_introduction.md)
-
 ## How to install and configure Salt master and minions? ##
 
-* [inital_salt_setup.md](inital_salt_setup.md)
+*   [getting_started.md](getting_started.md)
 
-## How do these sources support multiple projects and systems? ##
+## How do this framework in custom external projects? ##
 
-* [approach_for_multiple_projects.md](approach_for_multiple_projects.md)
+*   [external_projects.md](external_projects.md)
 
 ## How to troubleshoot? ##
 
-* [troubleshooting.md](troubleshooting.md)
+*   [troubleshooting.md](troubleshooting.md)
 
 ## What is bootstrapping? ##
 
-* [bootstrap.md](bootstrap.md)
+*   [bootstrap.md](bootstrap.md)
 
 ## What is orchestration? ##
 
-* [orchestration.md](orchestration.md)
+*   [orchestration.md](orchestration.md)
 
 ## Source tree structure and conventions ##
 
-* [structure_and_conventions.md](structure_and_conventions.md)
+*   [structure_and_conventions.md](structure_and_conventions.md)
+
+## Framework versioning ##
+
+*   [framework_versioning.md](framework_versioning.md)
 

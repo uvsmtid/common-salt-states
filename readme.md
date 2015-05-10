@@ -1,9 +1,10 @@
 
-Start from [documentation](docs/readme.md) tailored for these sources.
+Start from [this document](docs/readme.md) to use this project.
 
-## What are these sources? ##
+# What are these sources? #
 
-It's Infrastructure as Code implemented using [Salt framework](http://saltstack.com/).
+The sources provide _Infrastructure as Code_
+implemented using [Salt framework](http://saltstack.com/).
 
 Using these sources together with external resources it is possible to
 automatically deploy:
@@ -25,12 +26,10 @@ repository some external resource may also be required:
 The [official Salt documentation](http://docs.saltstack.com/en/latest/) provides
 detailed information of all Salt aspects.
 
-## Contents of the top directory: ##
+# Contents of the top directory: #
 
 * `docs`
    All documentation materials.
-* `pillars`
-   Salt static configuration data (consumed by `states`).
 * `states`
    Salt states executable data to define require system configuration.
 * `scripts`

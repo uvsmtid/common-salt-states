@@ -28,11 +28,12 @@ TODO
   minions listed in `salt-key` (or accessed through `salt '*' test.ping) are
   actually defined in the project `system_hosts`.
 
-* TODO: There could be a mechanisim defeloped which allows Salt master to
-  automatically accept minions defined in specific project.
-  Whether minions can spoof it or not - this is another question.
-  At the moment no spoof-proof authentication needs to be done - just
-  automate.
+*   DONE: There could be a mechanisim defeloped which allows Salt master to
+    automatically accept minions defined in specific project.
+    Whether minions can spoof it or not - this is another question.
+    At the moment no spoof-proof authentication needs to be done - just
+    automate.
+    See: http://docs.saltstack.com/en/latest/ref/configuration/master.html#auto-accept
 
 # Proposal #
 

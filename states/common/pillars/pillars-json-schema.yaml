@@ -1,0 +1,97 @@
+###############################################################################
+#
+# This is a JSON schema for pillars expressed in YAML.
+# See: http://json-schema.org/
+# YAML is used to add comments and relax syntax rules for convenience.
+# Note that YAML syntax is a superset for JSON, in other words, any valid
+# JSON document is also valid YAML document (not vice versa).
+#
+#
+###############################################################################
+
+{
+    # Last time it was checked JSON schema draft is v4:
+    #   http://json-schema.org/documentation.html
+    "$schema": "http://json-schema.org/draft-04/schema#",
+
+    #
+    "definitions": {
+
+        "system_host": {
+
+            "type": "object",
+
+            "properties": {
+                "hostname": {
+                    "type": "string",
+                },
+            },
+
+            "required": [
+                "hostname",
+            ],
+
+            "additionalProperties": true,
+        },
+
+        "system_hosts": {
+
+            "type": "object",
+
+            "additionalProperties": {
+                "$ref": "#/definitions/system_host",
+            }
+
+        },
+
+        "pillars_data": {
+
+            "title": "pillars_data",
+
+            "description": "All data stored in pillar.",
+
+            "type": "object",
+
+            "properties": {
+                "registered_content_items": {
+                    "type": "object",
+                },
+                "system_features": {
+                    "type": "object",
+                },
+                "system_host_roles": {
+                    "type": "object",
+                },
+                "system_hosts": {
+                    "$ref": "#/definitions/system_hosts",
+                },
+            },
+
+            "required": [
+                "system_features",
+            ],
+
+            # Allow additional properties.
+            "additionalProperties": true,
+        },
+    },
+
+    #
+    "title": "pillars",
+
+    "description": "Output of Salt's `pillar.items` function via `salt-call`.",
+
+    "type": "object",
+
+    "properties": {
+        "local": { "$ref": "#/definitions/pillars_data" },
+    },
+
+    "required": [
+        "local",
+    ],
+
+    # Prohibit additional properties.
+    "additionalProperties": false,
+}
+

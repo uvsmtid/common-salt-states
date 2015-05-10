@@ -101,6 +101,12 @@ On Windows installer supports [unnattended installation](https://github.com/salt
   under specific keys (pillars can be included under specific keys
   to avoid merging them at the top level).
 
+NOTE: In order for `initial-online-node` use case to work, Salt master
+      has to be configured to accept minion keys automatically -
+      see [auto_accept Salt configuration][30].
+      At the moment it requires manual changes of Salt master configuration
+      because it disables security with proper authentication.
+
 ### `offline-minion-installer` ###
 
 **Case:**
@@ -182,7 +188,7 @@ On Windows installer supports [unnattended installation](https://github.com/salt
     ```
     or
     ```
-    project_name/profile_name/observer_server
+    {{ project_name }}/{{ profile_name }}/{{ host_id }}
     ```
 * The action Template Methods are implemented in `actions.*` modules.
 * Use case is a parameter for action template method coordinate
@@ -252,4 +258,5 @@ TODO: Is there something to mention for `deploy` action?
 
 [20]: docs/pillars/common/registered_content_config/URI_prefix/readme.md
 
+[30]: http://docs.saltstack.com/en/latest/ref/configuration/master.html#auto-accept
 

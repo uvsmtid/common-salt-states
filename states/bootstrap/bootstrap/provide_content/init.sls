@@ -22,10 +22,9 @@ include:
 # is also placed by `enable_bootstrap_target_envs` key in pillar.
 # See:
 #   * docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
-#   * docs/pillars/common/system_features/bootstrap_configuration/enable_bootstrap_target_envs/readme.md
+#   * docs/pillars/{# project_name #}/system_features/bootstrap_configuration/enable_bootstrap_target_envs/readme.md
 {% set load_bootstrap_target_envs = salt['config.get']('this_system_keys:load_bootstrap_target_envs') %}
-{% set current_project_name = salt['config.get']('this_system_keys:project') %}
-{% set current_profile_name = salt['config.get']('this_system_keys:profile') %}
+{% set project_name = salt['config.get']('this_system_keys:project') %}
 
 # Download file for pretty conversion.
 pretty_yaml2json_script:
@@ -37,24 +36,16 @@ pretty_yaml2json_script:
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
         - mode: 755
 
-{% for project_name in load_bootstrap_target_envs.keys() %} # project_name
+{% for profile_name in load_bootstrap_target_envs.keys() %} # profile_name
 
-{% if project_name in pillar['system_features']['bootstrap_configuration']['enable_bootstrap_target_envs'].keys() %} # enabled project_name
-
-{% for profile_name in load_bootstrap_target_envs[project_name].keys() %} # profile_name
-
-{% if profile_name in pillar['system_features']['bootstrap_configuration']['enable_bootstrap_target_envs'][project_name].keys() %} # enabled profile_name
+{% if profile_name in pillar['system_features']['bootstrap_configuration']['enable_bootstrap_target_envs'].keys() %} # enabled profile_name
 
 # Define root for pillar data.
 # Note that currently selected profile for currently selected project
 # is not loaded under `bootstrap_target_envs` pillar key.
 # See:
 #   * docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
-{% if project_name == current_project_name and ( profile_name == current_profile_name or profile_name == 'this_system' ) %}
-{% set target_env_pillar = pillar %}
-{% else %}
 {% set target_env_pillar = pillar['bootstrap_target_envs'][project_name + '.' + profile_name] %}
-{% endif %}
 
 {% set target_contents_dir = bootstrap_dir + '/targets/' + project_name + '/' + profile_name %}
 
@@ -150,10 +141,6 @@ pretty_yaml2json_script:
 {% endif %} # enabled profile_name
 
 {% endfor %} # profile_name
-
-{% endif %} # enabled project_name
-
-{% endfor %} # project_name
 
 {% endif %}
 # >>>

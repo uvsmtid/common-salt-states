@@ -1,4 +1,36 @@
 
+
+# Intro #
+
+Common Salt state set a framework for
+common configuration and deployment problems (hence `common-salt-states`).
+
+Project-specific Salt states with solutions for particular domain are not
+supposed to be put in the same repository. Instead, these project-specific
+solutions should be managed as external project.
+
+Deployment-specific Salt pillars provide configuration data for both
+common Salt states and project-specific Salt states.
+
+The main problem is how to make all these available to Salt:
+*   common Salt states
+*   project-specific Salt states
+*   deployment-specific Salt pillars
+
+And in addition to providing it to Salt:
+*   organize it clearly
+*   make it easy to use
+
+# Requirements #
+
+TODO:
+*   When `*` is specified for `salt` command, only minions participating
+    in specific project deployment should be affected.
+*   Common and project-specific Salt states should be in different namespace
+    to co-exist together.
+
+# Approaches #
+
 Several approaches were tried:
 * nodegroups - naming list of minions in master config to be used in targeting
 * assignments - use special dict in master config to assign list of minions to specific project
@@ -41,8 +73,8 @@ NOTE: There are many ways to use Salt grains from minion side to split the state
 For example, look at the current snippet from Salt master config file `/etc/salt/master`:
 ```
 this_system_keys:
-    project: project_name
-    profile: profile_name
+    project: {{ project_name }}
+    profile: {{ profile_name }}
 ```
 
 

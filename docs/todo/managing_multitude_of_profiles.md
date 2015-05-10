@@ -1,5 +1,10 @@
 TODO
 
+This document is about maintaining pillar data of each profile in a
+separate Git branch. [Another related document][1] is about having a
+common template with recommended pillar files/dirs layout in the
+filesystem with examples.
+
 # Problem #
 
 Every time any state changes require changes in pillar data (structure),
@@ -82,4 +87,5 @@ Not so good:
 
 # [footer] #
 
+[1]: docs/todo/profile_pillars_template.md
 
