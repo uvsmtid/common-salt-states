@@ -107,8 +107,6 @@ system_features:
 
                     branch_name: 'master'
 
-                    origin_uri_ssh_path: 'Works/ci-job-control.git'
-
         # Environment sources location:
         # The keys are those used in `os_type` field of system host config.
         environment_sources_location:

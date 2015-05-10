@@ -19,7 +19,7 @@ base:
     '*':
 
         # Load profile.
-        - profile.main
+        - profile
 
 {% if load_bootstrap_target_envs %}
 

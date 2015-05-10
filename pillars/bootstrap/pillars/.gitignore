@@ -1,0 +1,15 @@
+
+###############################################################################
+# Ignore everything except listed directories.
+# This is to avoid "dirty" Git dir status when symlinks are used to
+# point to different profiles.
+
+/*
+
+# Exceptions: do not ignore expected idrectories and files.
+!/.gitignore
+
+###############################################################################
+# EOF
+###############################################################################
+

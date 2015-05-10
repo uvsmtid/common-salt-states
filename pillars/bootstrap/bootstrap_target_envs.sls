@@ -1,6 +1,6 @@
 #
 
 include:
-    - bootstrap.include_projects_profiles:
+    - bootstrap.include_pillars:
         key: 'bootstrap_target_envs'
 
