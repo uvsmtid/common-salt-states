@@ -34,7 +34,7 @@ Again, directory `pillars` is just a template which should be copied
 into another repository (it should not be used directly) because
 configuration data is supposed to be specific for individual deployment.
 However, pillars are documented here as requirement for pillar data
-structure compartible with the states code which uses it.
+structure compartibility with the states code which uses it.
 
 In order to create new instance with project-specific configuration data,
 copy this directory in new repository and checked it in, for example:
@@ -67,6 +67,15 @@ to configure Salt.
             ├── {{ profile_name }}*
             └── this_system
 ```
+
+*   `pillars`
+    This directory in root is required to separate actuall pillars data
+    from anything else repository may contain.
+*   `pillars/bootstrap`
+    This is a conventional location for special template files which
+    load pillars data for other projects/profiles.
+    The templates depend on [load_bootstrap_target_envs][4]
+    Salt configuration.
 
 ## `states` ##
 
@@ -121,4 +130,5 @@ source code itself.
 [1]: docs/getting_started.md
 [2]: http://docs.saltstack.com/en/latest/topics/targeting/grains.html#writing-grains
 [3]: docs/bootstrap.md
+[4]: docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
 
