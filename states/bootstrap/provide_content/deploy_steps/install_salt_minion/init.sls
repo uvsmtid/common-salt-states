@@ -75,6 +75,7 @@
             project_name: '{{ project_name }}'
             profile_name: '{{ profile_name }}'
             selected_host_name: '{{ selected_host_name }}'
+            master_minion_id: '{{ source_env_pillar['system_features']['bootstrap_configuration']['target_master_minion_id'] }}'
             resources_links_dir: '{{ get_URI_scheme_abs_links_base_dir_path_from_pillar('salt://', target_env_pillar) }}'
         - template: jinja
         - makedirs: True

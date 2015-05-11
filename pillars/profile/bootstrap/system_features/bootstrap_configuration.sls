@@ -42,6 +42,8 @@ system_features:
 
         generate_packages: False
 
+        target_master_minion_id: {{ master_minion_id }}
+
         os_platform_package_types:
             rhel5: tar.gz
             rhel7: tar.gz
