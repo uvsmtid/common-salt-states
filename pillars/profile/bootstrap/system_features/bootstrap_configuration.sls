@@ -42,6 +42,8 @@ system_features:
 
         generate_packages: False
 
+        target_minion_auto_accept: True
+
         target_master_minion_id: {{ master_minion_id }}
 
         os_platform_package_types:
