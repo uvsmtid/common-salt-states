@@ -1,4 +1,4 @@
 
 include:
-    - {{ this_pillar }}.example_host
+    - {{ this_pillar }}.master_minion_id
 
