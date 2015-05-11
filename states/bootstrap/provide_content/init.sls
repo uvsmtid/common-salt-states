@@ -5,16 +5,11 @@
 {% if grains['os'] in [ 'Fedora' ] %}
 
 include:
-    - bootstrap.bootstrap
+    - bootstrap
 
 {% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
 {% set bootstrap_files_dir = pillar['system_features']['bootstrap_configuration']['bootstrap_files_dir'] %}
-{% set vagrant_files_dir = pillar['system_features']['vagrant_configuration']['vagrant_files_dir'] %}
-{% set vagrant_dir = user_home_dir + '/' + vagrant_files_dir %}
-# NOTE: `bootstrap_dir` is under `vagrant_dir` due to some issues of rsync-ing
-#        content via symlinks.
-#        Normally, `bootstrap_dir` and `vagrant_dir` are in user's home.
-{% set bootstrap_dir = user_home_dir + '/' + vagrant_files_dir + '/' + bootstrap_files_dir %}
+{% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
 # Note that `load_bootstrap_target_envs` is only available when Salt
 # configuration (for either master or minion) contains necessary configuration.
@@ -30,7 +25,7 @@ include:
 pretty_yaml2json_script:
     file.managed:
         - name: '{{ bootstrap_dir }}/pretty_yaml2json.py'
-        - source: 'salt://bootstrap/bootstrap/provide_content/pretty_yaml2json.py'
+        - source: 'salt://bootstrap/provide_content/pretty_yaml2json.py'
         - makedirs: True
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
@@ -63,7 +58,7 @@ pretty_yaml2json_script:
 {{ requisite_config_file_id }}:
     file.managed:
         - name: '{{ requisite_config_file_path }}'
-        - source: 'salt://bootstrap/bootstrap/provide_content/bootstrap.conf.sls'
+        - source: 'salt://bootstrap/provide_content/bootstrap.conf.sls'
         - context:
             os_platform: '{{ selected_host['os_platform'] }}'
             project_name: '{{ project_name }}'
@@ -75,12 +70,12 @@ pretty_yaml2json_script:
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
         - require:
-            - sls: bootstrap.bootstrap
+            - sls: bootstrap
 
 {% for deploy_step in target_env_pillar['system_features']['bootstrap_configuration']['deploy_steps_params'].keys() %} # deploy_step
 
 # Load the function:
-{% set deploy_step_source = 'bootstrap/bootstrap/provide_content/deploy_steps/' + deploy_step + '/init.sls' %}
+{% set deploy_step_source = 'bootstrap/provide_content/deploy_steps/' + deploy_step + '/init.sls' %}
 {% from deploy_step_source import configure_deploy_step_function with context %}
 
 # Call the function:

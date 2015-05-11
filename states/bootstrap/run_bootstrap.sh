@@ -74,7 +74,7 @@ then
     # Becides this, local overrides do not exist remotely.
     # See:
     #   http://stackoverflow.com/a/20401782/441652
-    # Use `python -m trace -t bootstrap/bootstrap.py` for extensive traces.
+    # Use `python -m trace -t bootstrap.dir/bootstrap.py` for extensive traces.
     ssh "${SSH_DST}" "sudo python /vagrant/bootstrap.dir/bootstrap.py" "${@:1:${#}-1}" 2>&1 | tee run_bootstrap.output
 else
     echo "error: this script supports only \`deploy\` action" 1>&2
