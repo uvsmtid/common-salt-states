@@ -2,7 +2,6 @@
 
 include:
     - {{ this_pillar }}.java_environments_configuration
-    - {{ this_pillar }}.bootstrap_configuration
     - {{ this_pillar }}.vagrant_configuration
     - {{ this_pillar }}.hostname_resolution_config
     - {{ this_pillar }}.maven_installation_configuration

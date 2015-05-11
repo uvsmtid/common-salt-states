@@ -2,6 +2,9 @@
 ###############################################################################
 #
 
+{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
+{% set profile = salt['config.get']('this_system_keys:profile') %}
+
 system_features:
 
     bootstrap_configuration:
@@ -10,7 +13,7 @@ system_features:
         bootstrap_files_dir: 'bootstrap.dir'
 
         enable_bootstrap_target_envs:
-            profile_name:
+            {{ profile }}:
 
         # The very initial sources (symlinks) to make Salt operational.
         # NOTE: These are only `states` and `pillars`. Even though there can

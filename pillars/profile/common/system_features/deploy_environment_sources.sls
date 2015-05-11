@@ -1,6 +1,9 @@
 ###############################################################################
 #
 
+{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
+{% set profile = salt['config.get']('this_system_keys:profile') %}
+
 system_features:
 
     # Deploy source code on all required minions.
@@ -107,7 +110,7 @@ system_features:
 
             'common-salt-states':
                 git:
-                    source_system_host: 'example_host'
+                    source_system_host: '{{ master_minion_id }}'
 
                     origin_uri_ssh_path: 'Works/common-salt-states.git'
 
@@ -115,7 +118,7 @@ system_features:
 
             'common-salt-pillars':
                 git:
-                    source_system_host: 'example_host'
+                    source_system_host: '{{ master_minion_id }}'
 
                     origin_uri_ssh_path: 'Works/common-salt-pillars.git'
 

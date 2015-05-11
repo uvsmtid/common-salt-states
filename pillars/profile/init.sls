@@ -7,8 +7,8 @@
 #
 # See also:
 #   https://github.com/saltstack/salt/issues/12916
-{% set project     = salt['config.get']('this_system_keys:project') %}
-{% set profile     = salt['config.get']('this_system_keys:profile') %}
+{% set project = salt['config.get']('this_system_keys:project') %}
+{% set profile = salt['config.get']('this_system_keys:profile') %}
 
 # Setting key `this_pillar` allows current file loading other
 # pillars files relatively while letting them know their relative location

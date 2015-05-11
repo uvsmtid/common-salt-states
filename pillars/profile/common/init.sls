@@ -20,8 +20,6 @@ include:
         'registered_content_items'
         ,
         'system_features'
-        ,
-        'test'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
