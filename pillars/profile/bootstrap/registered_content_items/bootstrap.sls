@@ -54,7 +54,7 @@ registered_content_items:
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
-        item_base_name: salt-minion-2014.7.1-1.el7.x86_64.rpms.tar
+        item_base_name: salt-master-2014.7.1-1.el7.x86_64.rpms.tar
         item_content_hash: md5=84593d8c077b10253c062ff3b95ecbe1
 
     # This is required to install Salt on CentOS 5.5 (EPEL package is
