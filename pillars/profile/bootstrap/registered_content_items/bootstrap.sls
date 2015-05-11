@@ -8,7 +8,7 @@ registered_content_items:
     # Is there `zip` or `tar` on Fedora 21 minimal?.
     salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -22,7 +22,7 @@ registered_content_items:
     # Is there `zip` or `tar` on Fedora 21 minimal?.
     salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -37,7 +37,7 @@ registered_content_items:
     # only `tar` (and `gzip`/`gunzip`).
     salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.el7.x86_64:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -50,7 +50,7 @@ registered_content_items:
     # only `tar` (and `gzip`/`gunzip`).
     salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.el7.x86_64:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -66,7 +66,7 @@ registered_content_items:
     #       but this is `zip`.
     python26-distribute_downloaded_rpms_with_dependencies_0.6.10-4.el5.x86_64:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -80,7 +80,7 @@ registered_content_items:
     #       but this is `zip`.
     salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.el5.x86_64:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -94,7 +94,7 @@ registered_content_items:
     #       but this is `zip`.
     salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.el5.x86_64:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -105,7 +105,7 @@ registered_content_items:
     #   sudo yum install --downloadonly --downloaddir=. PyYAML
     PyYAML-3.10-11.el7.x86_64.rpms.tar:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -118,7 +118,7 @@ registered_content_items:
     #   sudo yum install --downloadonly --downloaddir=. PyYAML
     PyYAML-3.09-10.el5.x86_64.rpms.tar:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -130,7 +130,7 @@ registered_content_items:
     #     https://fedoraproject.org/keys
     epel5_yum_repository_rpm_verification_key:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/epel
@@ -142,7 +142,7 @@ registered_content_items:
     #     https://fedoraproject.org/keys
     epel7_yum_repository_rpm_verification_key:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/epel
@@ -153,7 +153,7 @@ registered_content_items:
     # sudo yum install --downloadonly --downloaddir=. unzip
     unzip-6.0-13.el7.x86_64.rpm:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap
@@ -164,7 +164,7 @@ registered_content_items:
     # sudo yum install --downloadonly --downloaddir=. zip
     zip-3.0-10.el7.x86_64.rpm:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/salt/bootstrap

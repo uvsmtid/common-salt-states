@@ -107,7 +107,7 @@ system_features:
 
             'common-salt-states':
                 git:
-                    source_system_host: 'projector'
+                    source_system_host: 'example_host'
 
                     origin_uri_ssh_path: 'Works/common-salt-states.git'
 
@@ -115,7 +115,7 @@ system_features:
 
             'common-salt-pillars':
                 git:
-                    source_system_host: 'projector'
+                    source_system_host: 'example_host'
 
                     origin_uri_ssh_path: 'Works/common-salt-pillars.git'
 

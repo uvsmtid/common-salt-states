@@ -3,8 +3,7 @@
 #
 
 include:
-    - {{ this_pillar }}.main
-    - {{ this_pillar }}.ssh_keys
+    - {{ this_pillar }}.bootstrap
 
 ###############################################################################
 # EOF

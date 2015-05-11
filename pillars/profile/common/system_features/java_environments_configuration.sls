@@ -30,7 +30,7 @@ system_features:
                         # already installed.
                         rpm_version: 'jdk-1.7.0_71-fcs.x86_64'
                     rhel7:
-                        JAVA_HOME: TODO
+                        JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
                         rpm_version: 'jdk-1.7.0_71-fcs.x86_64'
                     f20:
                         JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'

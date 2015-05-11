@@ -56,6 +56,13 @@ system_features:
                 abs_link_base_path: '/srv/pillars'
                 rel_target_path: 'pillars'
 
+            # Pillars for bootstrap environments.
+
+            common.profile_name_bootstrap_pillars:
+                repo_name: 'common-salt-pillars'
+                abs_link_base_path: '/srv/pillars/bootstrap/pillars/profile_name'
+                rel_target_path: 'pillars'
+
             # NOTE: In order to access the following paths from Salt master,
             #       Salt master should be configured to use additional path
             #       in `file_roots`, for example:

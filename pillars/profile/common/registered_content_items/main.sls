@@ -31,7 +31,7 @@ registered_content_items:
     #   http://pkg.jenkins-ci.org/redhat/
     jenkins_yum_repository_rpm_verification_key:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         # In addition to importing RPM key, this enables configuration of
         # Jenkins repository:
@@ -47,7 +47,7 @@ registered_content_items:
     #   http://updates.jenkins-ci.org/download/plugins/cygpath/1.5/cygpath.hpi
     jenkins_cygpath_plugin:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/jenkins
@@ -62,7 +62,7 @@ registered_content_items:
     #   http://updates.jenkins-ci.org/download/plugins/maven-plugin/2.8/maven-plugin.hpi
     jenkins_maven-plugin_plugin:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/jenkins
@@ -77,7 +77,7 @@ registered_content_items:
     #   http://updates.jenkins-ci.org/download/plugins/m2release/0.14.0/m2release.hpi
     jenkins_m2release_plugin:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/jenkins
@@ -92,7 +92,7 @@ registered_content_items:
     #   http://updates.jenkins-ci.org/download/plugins/git-client/1.16.1/git-client.hpi
     jenkins_git-client_plugin:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/jenkins
@@ -107,7 +107,7 @@ registered_content_items:
     #   http://updates.jenkins-ci.org/download/plugins/git/2.3.4/git.hpi
     jenkins_git_plugin:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/jenkins
@@ -122,7 +122,7 @@ registered_content_items:
     #   http://updates.jenkins-ci.org/download/plugins/scm-api/0.2/scm-api.hpi
     jenkins_scm-api_plugin:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/jenkins
@@ -135,7 +135,7 @@ registered_content_items:
     #   http://www.sonatype.org/nexus/go/
     nexus_maven_repository_manager:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/nexus
@@ -150,7 +150,7 @@ registered_content_items:
     #   http://www.7-zip.org/download.html
     7zip_64_bit_windows:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/7zip
@@ -160,7 +160,7 @@ registered_content_items:
     # Pre-downloaded Cygwin package with required components.
     cygwin_package_64_bit_windows:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         installation_directory: 'C:\cygwin64'
@@ -188,7 +188,7 @@ registered_content_items:
 
     oracle_jdk-7u71-linux-x64.rpm:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/java
@@ -197,7 +197,7 @@ registered_content_items:
 
     oracle_jdk-7u65-linux-x64.rpm:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/java

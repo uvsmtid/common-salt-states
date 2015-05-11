@@ -7,7 +7,7 @@ registered_content_items:
     # Common SSH public key.
     common_insecure_ssh_public_key.id_rsa.pub:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/common
@@ -17,7 +17,7 @@ registered_content_items:
     # Common SSH public key.
     common_insecure_ssh_private_key.id_rsa:
         resource_repository: shared_content
-        bootstrap_use_case: True
+        bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: distrib/common

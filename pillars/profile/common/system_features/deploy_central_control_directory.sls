@@ -30,7 +30,7 @@ system_features:
         #
         # The reason why it may be needed is that content resources can
         # actually be distributed by Salt states (using `salt://` schema for
-        # URI), but (external) control scripts require standard/knonw URI
+        # URI), but (external) control scripts require standard/known URI
         # schemes (i.e. `http://`, `file://`, ...) to be functional.
         URI_prefix: 'http://depository_role'
 

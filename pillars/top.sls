@@ -5,9 +5,9 @@
 # If bootstrap is to be used,
 # configuration file should contain similar data structure:
 #   this_system_keys:
-#       load_bootstrap_target_envs:                                                 
-#           observer:                                                               
-#               this_system:                                                        
+#       load_bootstrap_target_envs:
+#           observer:
+#               this_system:
 #
 # See also:
 #   https://github.com/saltstack/salt/issues/12916
@@ -27,8 +27,6 @@ base:
         - bootstrap.bootstrap_target_envs
 
 {% endif %}
-
-###############################################################################
 
 ###############################################################################
 # EOF
