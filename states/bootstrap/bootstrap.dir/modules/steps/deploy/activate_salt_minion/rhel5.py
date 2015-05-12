@@ -13,8 +13,7 @@ def do(action_context):
     enable_service(action_context.conf_m.activate_salt_minion['service_name'])
     start_service(action_context.conf_m.activate_salt_minion['service_name'])
 
-    # TODO: Is there anything better than 5 sec delay?
-    # Just a 5 sec delay introduced through `ping`.
+    # Just a 5 sec delay introduced through `ping` to let service start.
     ping_host(
         'salt',
         5,

@@ -1,4 +1,5 @@
-#
+
+###############################################################################
 
 {% macro configure_deploy_step_function(
         source_env_pillar
@@ -25,6 +26,7 @@
     )
 %}
 
+# Config for the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
@@ -36,6 +38,9 @@
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 'yum_main_config': 'resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/yum.conf',
+                'platform_repos_list': 'resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/platform_repos_list.repo',
+
+                {# TODO: Add list of configurations for RPM keys.
                 'yum_repo_configs': {
                 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
                 {% for yum_repo_config_name in deploy_step_config['yum_repo_configs'][os_platform].keys() %}
@@ -58,11 +63,27 @@
                 {% endif %}
                 {% endfor %}
                 },
+                #}
+
             }
         - show_changes: True
         - require:
             - file: {{ requisite_config_file_id }}
 
+# Instantiate template for `platform_repos_list.repo`.
+{{ requisite_config_file_id }}_{{ deploy_step }}_platform_repos_list:
+    file.managed:
+        - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/platform_repos_list.repo'
+        - source: '{{ deploy_step_config['platform_repos_list_template'] }}'
+        - template: jinja
+        - makedirs: True
+        - context:
+            selected_pillar: {{ target_env_pillar }}
+        - makedirs: True
+        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+
+# Instantiate template for `yum.conf`.
 {{ requisite_config_file_id }}_{{ deploy_step }}_yum.conf:
     file.managed:
         - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/yum.conf'

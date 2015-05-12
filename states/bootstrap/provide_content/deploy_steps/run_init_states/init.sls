@@ -1,4 +1,5 @@
-#
+
+################################################################################
 
 {% macro configure_deploy_step_function(
         source_env_pillar
@@ -35,7 +36,6 @@
         - content: |
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
-                # TODO
             }
         - show_changes: True
         - require:

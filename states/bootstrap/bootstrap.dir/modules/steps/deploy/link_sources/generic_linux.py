@@ -1,4 +1,5 @@
-#
+
+###############################################################################
 
 import os
 import logging
@@ -66,8 +67,9 @@ def do(action_context):
     # Set `/srv/states` symlink to Salt `states` directory.
     # Set `/srv/pillars` symlink to Salt `pillars` directory.
     #
-    # TODO: There can be multiple sources of states (i.e. in
-    #       multi-project case. Figure out how to make it generic.
+    # We only set primary states and pillars repos.
+    # Symlinks to other states and pillars repos is already handled by
+    # Salt based on config from these initial states and pillars.
     states_src = action_context.conf_m.link_sources['salt_states_sources']
     pillars_src = action_context.conf_m.link_sources['salt_pillars_sources']
     if action_context.run_use_case == 'offline-minion-installer':

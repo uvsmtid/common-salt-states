@@ -24,33 +24,26 @@ system_features:
                         #manage_key: False
                         #yum_repo_resource_id:
                     rhel7:
-                        yum_repo_baseurl: 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os'
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
                     rhel5:
-                        yum_repo_baseurl: ''
-                        yum_repo_key_url: ''
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
             # Default repositories with updates.
             updates:
-                # Installation type:
-                # - conf_template
-                #       Configuration using template file.
                 installation_type: conf_template
 
                 os_platform_configs:
                     f21:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
-                        # TODO
-                        #manage_key: False
-                        #yum_repo_resource_id:
                     rhel7:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
                     rhel5:
-                        yum_repo_baseurl: ''
-                        yum_repo_key_url: ''
-
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
             # EPEL repository for RHEL.
             epel:
@@ -60,9 +53,10 @@ system_features:
                     rhel7:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
+
                     rhel5:
-                        yum_repo_baseurl: ''
-                        yum_repo_key_url: ''
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL'
 
             # PostgreSQL 9.3.
             # See list of available repositories:
@@ -96,15 +90,18 @@ system_features:
             jenkins:
                 installation_type: conf_template
 
+                # NOTE: This repository could probably be used on rhel5
+                #       as well. There is just one problem - key cannot be
+                #       imported in default state.
+                #       See: http://dan.carley.co/blog/2012/05/22/yum-gpg-keys-for-jenkins/
+
                 os_platform_configs:
                     f21:
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
-                        #yum_repo_key_url: ~
+                        yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
                     rhel7:
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
-                        #yum_repo_key_url: ~
-
-
+                        yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
 
 ###############################################################################
 # EOF

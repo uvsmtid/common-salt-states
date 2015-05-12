@@ -1,4 +1,5 @@
-#
+
+################################################################################
 
 {% macro configure_deploy_step_function(
         source_env_pillar
@@ -42,8 +43,9 @@
         - content: |
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
-                # TODO: There can be multiple sources of states (i.e. in
-                #       multi-project case. Figure out how to make it generic.
+                # We only set primary states and pillars repos.
+                # Symlinks to other states and pillars repos is already handled by
+                # Salt based on config from these initial states and pillars.
                 'salt_states_sources': '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['bootstrap_sources']['states'] }}',
                 'salt_pillars_sources': '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['bootstrap_sources']['pillars'] }}',
                 # Configure each extracted respository.

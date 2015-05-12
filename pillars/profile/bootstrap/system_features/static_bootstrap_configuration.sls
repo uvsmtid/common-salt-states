@@ -30,32 +30,9 @@ system_features:
             init_yum_repos:
                 step_enabled: True
                 yum_main_config_template: 'salt://common/yum/yum.conf'
-                yum_repo_configs:
-                    rhel5:
-                        #{# `pgdg` repo disabled for now - it may be configured through Salt, not bootstrap.
-                        base:
-                            installation_type: file
-                            repo_config_template_file: 'salt://'
-                            rpm_key_file_resource_id: ~
-                        #}
-                        epel:
-                            installation_type: ~ # TODO: rpm
-                            rpm_key_file_resource_id: epel5_yum_repository_rpm_verification_key
-                        #{# `pgdg` repo disabled for now - it may be configured through Salt, not bootstrap.
-                        pgdg:
-                            installation_type: rpm
-                            rpm_key_file_resource_id: epel5_yum_repository_rpm_verification_key
-                        #}
-                    rhel7:
-                        epel:
-                            installation_type: ~ # TODO: rpm
-                            rpm_key_file_resource_id: epel7_yum_repository_rpm_verification_key
-                    # TODO: remove this This is required because of pre-existing licesens.
-                    f20:
-                        base:
-                            installation_type: ~
-                    f21: {} # TODO
-                    win7: {} # TODO
+                platform_repos_list_template: 'salt://common/yum/platform_repos_list.repo'
+                # YUM configuration is based on data under
+                # `yum_repos_configuration` key in pillars.
             install_salt_master:
                 step_enabled: True
                 salt_master_template: 'salt://common/salt/master/master.conf'
@@ -83,12 +60,6 @@ system_features:
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
-                    # TODO: remove this This is required because of pre-existing licesens.
-                    f20:
-                        base:
-                            source_type: ~
-                    f21: {} # TODO
-                    win7: {} # TODO
             install_salt_minion:
                 step_enabled: True
                 salt_minion_online_template: 'salt://common/salt/minion/minion.online.conf'
@@ -117,12 +88,6 @@ system_features:
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
-                    # TODO: remove this This is required because of pre-existing licesens.
-                    f20:
-                        whatever:
-                            source_type: ~
-                    f21: {} # TODO
-                    win7: {} # TODO
             link_sources:
                 step_enabled: True
             link_resources:

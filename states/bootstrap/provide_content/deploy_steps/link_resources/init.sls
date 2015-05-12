@@ -1,4 +1,5 @@
-#
+
+################################################################################
 
 {% macro configure_deploy_step_function(
         source_env_pillar
