@@ -54,9 +54,15 @@ system_features:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
 
+                        # TODO: Add key file deployment into specific path.
+                        key_file_resource_id: epel7_yum_repository_rpm_verification_key
+
                     rhel5:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL'
+
+                        # TODO: Add key file deployment into specific path.
+                        key_file_resource_id: epel5_yum_repository_rpm_verification_key
 
             # PostgreSQL 9.3.
             # See list of available repositories:
