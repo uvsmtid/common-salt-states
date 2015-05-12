@@ -85,6 +85,13 @@ import utils.set_log
 # Set log level.
 utils.set_log.setLoggingLevel('debug')
 
+# Check if bootstrap supports this `run_use_case`.
+if run_use_case not in [
+    'initial-online-node',
+    'offline-minino-installer',
+]:
+    raise Exception("Unknown use case: " + str(run_use_case))
+
 # Compose path to configuration module.
 # NOTE: Even though configuration is also a module, it is still content
 #       and looked up in the `content_dir`.
