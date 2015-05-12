@@ -45,6 +45,9 @@ def install_rpms(
             # will exit with non-zero error code if package is
             # already updated.
             '--replacepkgs',
+            # Option `--force` is required, otherwise `rpm` exists
+            # with error due to dependencies.
+            '--force',
         ] + rpm_list,
         raise_on_error = True,
         capture_stdout = False,
