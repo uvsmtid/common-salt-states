@@ -8,7 +8,7 @@ include:
     - bootstrap
 
 {% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
-{% set bootstrap_files_dir = pillar['system_features']['bootstrap_configuration']['bootstrap_files_dir'] %}
+{% set bootstrap_files_dir = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
 # Note that `load_bootstrap_target_envs` is only available when Salt
@@ -17,7 +17,7 @@ include:
 # is also placed by `enable_bootstrap_target_envs` key in pillar.
 # See:
 #   * docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
-#   * docs/pillars/{# project_name #}/system_features/bootstrap_configuration/enable_bootstrap_target_envs/readme.md
+#   * docs/pillars/{# project_name #}/system_features/source_bootstrap_configuration/enable_bootstrap_target_envs/readme.md
 {% set load_bootstrap_target_envs = salt['config.get']('this_system_keys:load_bootstrap_target_envs') %}
 {% set project_name = salt['config.get']('this_system_keys:project') %}
 
@@ -33,7 +33,7 @@ pretty_yaml2json_script:
 
 {% for profile_name in load_bootstrap_target_envs.keys() %} # profile_name
 
-{% if profile_name in pillar['system_features']['bootstrap_configuration']['enable_bootstrap_target_envs'].keys() %} # enabled profile_name
+{% if profile_name in pillar['system_features']['source_bootstrap_configuration']['enable_bootstrap_target_envs'].keys() %} # enabled profile_name
 
 # Define root for pillar data.
 # Note that currently selected profile for currently selected project
@@ -72,7 +72,7 @@ pretty_yaml2json_script:
         - require:
             - sls: bootstrap
 
-{% for deploy_step in target_env_pillar['system_features']['bootstrap_configuration']['deploy_steps_params'].keys() %} # deploy_step
+{% for deploy_step in target_env_pillar['system_features']['static_bootstrap_configuration']['deploy_steps_params'].keys() %} # deploy_step
 
 # Load the function:
 {% set deploy_step_source = 'bootstrap/provide_content/deploy_steps/' + deploy_step + '/init.sls' %}
@@ -85,7 +85,7 @@ pretty_yaml2json_script:
         target_env_pillar,
         selected_host_name,
         deploy_step,
-        target_env_pillar['system_features']['bootstrap_configuration']['deploy_steps_params'][deploy_step],
+        target_env_pillar['system_features']['static_bootstrap_configuration']['deploy_steps_params'][deploy_step],
         project_name,
         profile_name,
         requisite_config_file_id,
@@ -106,7 +106,7 @@ pretty_yaml2json_script:
         - name: 'rsync -avp {{ bootstrap_dir }}/bootstrap.py {{ target_contents_dir }}/bootstrap.py'
 
 # Check whether generation of packages is required (time consuming).
-{% if target_env_pillar['system_features']['bootstrap_configuration']['generate_packages'] %} # generate_packages
+{% if pillar['system_features']['source_bootstrap_configuration']['generate_packages'] %} # generate_packages
 
 # Create destination package directory.
 {{ requisite_config_file_id }}_create_package_directory:
@@ -119,7 +119,7 @@ pretty_yaml2json_script:
 # Pack target directories depending on the package type.
 {{ requisite_config_file_id }}_create_package_archive:
     cmd.run:
-{% set package_type = target_env_pillar['system_features']['bootstrap_configuration']['os_platform_package_types'][target_env_pillar['system_hosts'][selected_host_name]['os_platform']] %}
+{% set package_type = target_env_pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][target_env_pillar['system_hosts'][selected_host_name]['os_platform']] %}
 {% if not package_type %} # package_type
 {% elif package_type == 'tar.gz' %} # package_type
         # Pack targets directories.

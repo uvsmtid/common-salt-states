@@ -44,20 +44,20 @@
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 # TODO: There can be multiple sources of states (i.e. in
                 #       multi-project case. Figure out how to make it generic.
-                'salt_states_sources': '{{ target_env_pillar['system_features']['bootstrap_configuration']['bootstrap_sources']['states'] }}',
-                'salt_pillars_sources': '{{ target_env_pillar['system_features']['bootstrap_configuration']['bootstrap_sources']['pillars'] }}',
+                'salt_states_sources': '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['bootstrap_sources']['states'] }}',
+                'salt_pillars_sources': '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['bootstrap_sources']['pillars'] }}',
                 # Configure each extracted respository.
                 'repos': {
             # NOTE: We put all repos in configuration but generate empty
             #       archives for those which are not part of
-            #         target_env_pillar['system_features']['bootstrap_configuration']['export_sources']
+            #         target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources']
             #       This is one way to make sure `common.source_symlinks` will
             #       be able to create symlinks to the repositories.
             {% for selected_repo_name in target_env_pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %} # selected_repo_name
             {% set selected_repo_type = target_env_pillar['system_features']['deploy_environment_sources']['source_repo_types'][selected_repo_name] %}
             {% if selected_repo_type == 'git' %} # Git SCM
             {% set repo_config = target_env_pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name][selected_repo_type] %}
-            {% set export_format = source_env_pillar['system_features']['bootstrap_configuration']['export_sources'][selected_repo_name]['export_format'] %}
+            {% set export_format = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['export_format'] %}
                     '{{ selected_repo_name }}': {
                         'repo_type': '{{ selected_repo_type }}',
                         'export_format': '{{ export_format }}',
@@ -113,15 +113,14 @@
 
 {% set git_repo_uri = define_git_repo_uri(selected_repo_name) %}
 
-# NOTE: We use `bootstrap_configuration` of `source_env_pillar`.
-#       This uses sources names and branches as they exists
-#       in current environment.
-{% if selected_repo_name in source_env_pillar['system_features']['bootstrap_configuration']['export_sources'].keys() %} # selected_repo_name
+{% if selected_repo_name in target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'].keys() %} # selected_repo_name
 
-{% set branch_name = source_env_pillar['system_features']['bootstrap_configuration']['export_sources'][selected_repo_name]['branch_name'] %}
-{% set export_enabled = source_env_pillar['system_features']['bootstrap_configuration']['export_sources'][selected_repo_name]['export_enabled'] %}
-{% set export_method = source_env_pillar['system_features']['bootstrap_configuration']['export_sources'][selected_repo_name]['export_method'] %}
+# Branch name, enabling export, and export method come from target environment.
+{% set branch_name = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['branch_name'] %}
+{% set export_enabled = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['export_enabled'] %}
+{% set export_method = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['export_method'] %}
 
+# Location of the sources are taken from source environment (where the package is being generated).
 {% set source_system_host = source_env_pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name]['git']['source_system_host'] %}
 {% set origin_uri_ssh_path = source_env_pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name]['git']['origin_uri_ssh_path'] %}
 

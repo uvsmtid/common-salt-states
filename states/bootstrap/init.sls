@@ -5,7 +5,7 @@
 {% if grains['os'] in [ 'Fedora' ] %}
 
 {% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
-{% set bootstrap_files_dir = pillar['system_features']['bootstrap_configuration']['bootstrap_files_dir'] %}
+{% set bootstrap_files_dir = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
 # Create initial bootstrap directory with sources.

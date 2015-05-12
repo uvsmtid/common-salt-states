@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set project_name = salt['config.get']('this_system_keys:project') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile') %}
 
-{% set bootstrap_dir_basename = pillar['system_features']['bootstrap_configuration']['bootstrap_files_dir'] %}
+{% set bootstrap_dir_basename = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 
 {% for selected_host_name in pillar['system_hosts'].keys() %}
 
@@ -82,8 +82,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     {% set vagrant_bootstrap_use_case = pillar['system_features']['vagrant_configuration']['vagrant_bootstrap_use_case'] %}
 
-    {% set package_type = pillar['system_features']['bootstrap_configuration']['os_platform_package_types'][pillar['system_hosts'][selected_host_name]['os_platform']] %}
-    {% if not pillar['system_features']['bootstrap_configuration']['generate_packages'] %} # generate_packages
+    {% set package_type = pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][pillar['system_hosts'][selected_host_name]['os_platform']] %}
+    {% if not pillar['system_features']['source_bootstrap_configuration']['generate_packages'] %} # generate_packages
     {% set src_sync_dir = bootstrap_dir_basename + '/targets/' + project_name + '/' + profile_name %}
     {% set boostrap_cmd = 'python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # generate_packages
