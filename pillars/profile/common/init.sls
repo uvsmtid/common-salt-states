@@ -11,6 +11,8 @@ include:
 {% for sub_item in [
         'main'
         ,
+        'common_pillar_schema_version'
+        ,
         'system_hosts'
         ,
         'system_host_roles'
