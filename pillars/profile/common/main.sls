@@ -1,4 +1,4 @@
-# Profile configuration.
+###############################################################################
 
 # For all minions (system hosts which are under automated configuration
 # control) configuration states use this temporary directory to download and

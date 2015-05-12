@@ -15,39 +15,25 @@ yum_conf:
         - mode: 644
         - template: jinja
 
+# Backup (move) directory with previously configured repos.
+backup_yum_repos_dir:
+    cmd.run:
+        - name: 'rm -rf /etc/yum.repos.d.salt_backup && mv /etc/yum.repos.d /etc/yum.repos.d.salt_backup'
+        - onlyif: 'ls /etc/yum.repos.d'
 
-
-{% if pillar['system_features']['yum_repos_configuration']['feature_enabled'] %} # feature_enabled
-
-{% for yum_repo_name in pillar['system_features']['yum_repos_configuration']['yum_repositories'].keys() %} # yum_repo_name
-
-{% set yum_repo_conf = pillar['system_features']['yum_repos_configuration']['yum_repositories'][yum_repo_name] %}
-
-{% if yum_repo_conf['installation_type'] == 'conf_template' %} # installation_type
-
-{% set host_config = pillar['system_hosts'][grains['id']] %}
-
-{% if host_config['os_platform'] in yum_repo_conf['os_platform_configs'] %} # os_platform
-
-{% set yum_repo_os_platform_config = yum_repo_conf['os_platform_configs'][host_config['os_platform']] %}
-
-# TODO: Use template file with `file.managed` to configure YUM.
-#       The same configuration is supposed to be done for bootstrap
-#       and it's better to reuse the same templates.
-'{{ yum_repo_name }}_{{ host_config['os_platform'] }}':
-    pkgrepo.managed:
-        - name: '{{ yum_repo_name }}'
-        - baseurl: '{{ yum_repo_os_platform_config['yum_repo_baseurl'] }}'
-        - key_url: '{{ yum_repo_os_platform_config['yum_repo_key_url'] }}'
-        - enabled: 1
-
-{% endif %} # os_platform
-
-{% endif %} # installation_type
-
-{% endfor %} # yum_repo_name
-
-{% endif %} # feature_enabled
+platform_yum_repos_list:
+    file.managed:
+        - name: /etc/yum.repos.d/platform_repos_list.repo
+        - source: salt://common/yum/platform_repos_list.repo
+        - makedirs: True
+        - context:
+            selected_pillar: {{ pillar }}
+        - user: root
+        - group: root
+        - mode: 644
+        - template: jinja
+        - require:
+            - cmd: backup_yum_repos_dir
 
 {% endif %} # os_platform_type
 # >>>

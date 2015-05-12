@@ -1,0 +1,33 @@
+#
+
+{% if selected_pillar['system_features']['yum_repos_configuration']['feature_enabled'] %}{# feature_enabled #}
+
+{% for yum_repo_name in selected_pillar['system_features']['yum_repos_configuration']['yum_repositories'].keys() %}{# yum_repo_name #}
+
+{% set yum_repo_conf = selected_pillar['system_features']['yum_repos_configuration']['yum_repositories'][yum_repo_name] %}
+
+{% if yum_repo_conf['installation_type'] == 'conf_template' %}{# installation_type #}
+
+{% set host_config = selected_pillar['system_hosts'][grains['id']] %}
+
+{% if host_config['os_platform'] in yum_repo_conf['os_platform_configs'] %}{# os_platform #}
+
+{% set yum_repo_os_platform_config = yum_repo_conf['os_platform_configs'][host_config['os_platform']] %}
+
+[{{ yum_repo_name }}]
+name={{ yum_repo_name }} - {{ host_config['os_platform'] }}
+baseurl={{ yum_repo_os_platform_config['yum_repo_baseurl'] }}
+enabled=1
+{% if 'yum_repo_key_url' in yum_repo_os_platform_config %}
+gpgkey={{ yum_repo_os_platform_config['yum_repo_key_url'] }}
+gpgcheck=1
+{% endif %}
+
+{% endif %}{# os_platform #}
+
+{% endif %}{# installation_type #}
+
+{% endfor %}{# yum_repo_name #}
+
+{% endif %}{# feature_enabled #}
+

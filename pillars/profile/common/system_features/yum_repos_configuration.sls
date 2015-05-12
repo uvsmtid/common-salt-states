@@ -99,10 +99,10 @@ system_features:
                 os_platform_configs:
                     f21:
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
-                        yum_repo_key_url: ~
+                        #yum_repo_key_url: ~
                     rhel7:
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
-                        yum_repo_key_url: ~
+                        #yum_repo_key_url: ~
 
 
 
