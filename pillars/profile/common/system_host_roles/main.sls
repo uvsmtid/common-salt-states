@@ -51,7 +51,7 @@ system_host_roles:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    jenkins_windows_slave_role:
+    jenkins-windows-slave-role:
         assigned_hosts: []
 
     # Sonatype Nexus is used as Maven Repository Manager.
