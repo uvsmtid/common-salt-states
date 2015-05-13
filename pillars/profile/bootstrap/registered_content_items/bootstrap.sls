@@ -3,6 +3,7 @@
 #
 
 registered_content_items:
+
     # Downloaded on Vagrant virtual box 'hansode/fedora-21-server-x86_64':
     #   sudo yum install --downloadonly --downloaddir=salt-minion.rpms/ salt-minion
     # Is there `zip` or `tar` on Fedora 21 minimal?.
@@ -200,6 +201,16 @@ registered_content_items:
         item_parent_dir_path: distrib/rhel7
         item_base_name: RPM-GPG-KEY-CentOS-7
         item_content_hash: md5=c45e7e322681292ce4c1d2a6d392c4b5
+
+    # OpenStack Juno Fedora 21 and EPEL-7 YUM repos GPG RPM key.
+    openstack_juno_repository_rpm_verification_key:
+        resource_repository: shared_content
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: distrib/openstack/juno
+        item_base_name: RPM-GPG-KEY-RDO-Juno
+        item_content_hash: md5=b401244ed3cbc53d9f2b921f9b4d3086
 
 ###############################################################################
 # EOF
