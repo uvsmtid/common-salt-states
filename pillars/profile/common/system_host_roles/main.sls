@@ -43,7 +43,7 @@ system_host_roles:
             - {{ master_minion_id }}
 
     # Jenkins master is always linux.
-    jenkins_master_role:
+    jenkins-master-role:
         assigned_hosts:
             - {{ master_minion_id }}
 

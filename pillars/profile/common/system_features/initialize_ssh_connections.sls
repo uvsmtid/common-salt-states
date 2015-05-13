@@ -60,7 +60,7 @@ system_features:
                 #        primary_group: username
                 #        posix_user_home_dir: '/home/username'
                 #        posix_user_home_dir_windows: 'C:\cygwin64\home\username'
-                jenkins_master_role:
+                jenkins-master-role:
                     jenkins:
                         username:                       jenkins
                         primary_group:                  jenkins

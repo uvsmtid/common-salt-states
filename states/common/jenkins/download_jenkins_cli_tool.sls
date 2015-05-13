@@ -15,7 +15,7 @@
 include:
     - common.wget
 
-{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins-master-role']['assigned_hosts'][0]]['hostname'] %}
 
 '{{ pillar['posix_config_temp_dir'] }}/jenkins':
     file.directory:

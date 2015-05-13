@@ -32,5 +32,5 @@ All additional configuration should go under [system_features](docs/pillars/comm
 
 ## Existing roles ##
 
-* [jenkins_master_role](docs/pillars/common/system_host_roles/jenkins_master_role/readme.md)
+* [jenkins-master-role](docs/pillars/common/system_host_roles/jenkins-master-role/readme.md)
 

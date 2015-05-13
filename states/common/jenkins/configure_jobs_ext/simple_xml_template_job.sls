@@ -18,7 +18,7 @@
 
 {% if job_config['enabled'] %}
 
-{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins-master-role']['assigned_hosts'][0]]['hostname'] %}
 
 # NOTE: At the moment (and it is probably right) only single host is selected
 #       from only first listed role.
