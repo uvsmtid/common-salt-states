@@ -38,7 +38,7 @@
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 'service_name': 'salt-master',
-                {% set salt_master_host = get_host_id_by_role_from_pillar('controller_role', target_env_pillar) %}
+                {% set salt_master_host = get_host_id_by_role_from_pillar('controller-role', target_env_pillar) %}
                 {% if salt_master_host == selected_host_name %}
                 'is_salt_master': True,
                 {% else %}

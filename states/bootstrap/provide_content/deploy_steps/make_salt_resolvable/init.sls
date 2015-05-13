@@ -53,7 +53,7 @@
         - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/hosts_file'
         - makedirs: True
         - contents: |
-            {{ get_role_ip_address_from_pillar('controller_role', target_env_pillar) }} salt
+            {{ get_role_ip_address_from_pillar('controller-role', target_env_pillar) }} salt
         - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
 

@@ -54,7 +54,7 @@ system_features:
 
             # DONE: Implemented.
             hosts_by_host_role:
-                #controller_role:
+                #controller-role:
                 #    username_item:
                 #        username: username
                 #        primary_group: username
@@ -110,7 +110,7 @@ system_features:
 
             # DONE: Implemented.
             hosts_by_host_role: {}
-                #controller_role:
+                #controller-role:
                 #    username_item:
                 #        username: username
                 #        passwrod: password

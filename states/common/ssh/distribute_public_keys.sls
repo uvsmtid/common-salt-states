@@ -8,7 +8,7 @@
 #
 # The approach which enables all primary users to connect to each
 # other on any host relies on this fact. All we need is to connect from a
-# single host (i.e. `controller_role`) and execute `ssh-copy-id` to every other
+# single host (i.e. `controller-role`) and execute `ssh-copy-id` to every other
 # host.
 #
 # The last obstacle to solve is that first connection will prompt for password
@@ -29,7 +29,7 @@
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
 
-# Even though `sshpass` may be installed on RHEL5, use `controller_role` with
+# Even though `sshpass` may be installed on RHEL5, use `controller-role` with
 # modern OS instead.
 
 {% endif %}
@@ -40,7 +40,7 @@
 # <<<
 {% if grains['os'] in [ 'Fedora' ] %}
 
-{% if grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['controller-role']['assigned_hosts'] %}
 
 {% if pillar['system_features']['initialize_ssh_connections']['feature_enabled'] %}
 
