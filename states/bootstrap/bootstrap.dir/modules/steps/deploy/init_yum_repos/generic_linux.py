@@ -95,6 +95,7 @@ def do(action_context):
         capture_stderr = False,
     )
 
+    # Deploy keys and import them.
     for repo_config in action_context.conf_m.init_yum_repos['yum_repo_configs'].values():
         assert('key_file_resource_path' in repo_config)
         assert('key_file_path' in repo_config)
@@ -121,6 +122,21 @@ def do(action_context):
             capture_stdout = False,
             capture_stderr = False,
         )
+
+    # Print all imported RPM keys.
+    # See: http://wiki.centos.org/TipsAndTricks/YumAndRPM
+    call_subprocess(
+        command_args = [
+            'rpm',
+            '-q',
+            'gpg-pubkey',
+            '--qf'
+            '%{name}-%{version}-%{release} --> %{summary}\n'
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
 
 ###############################################################################
 # EOF
