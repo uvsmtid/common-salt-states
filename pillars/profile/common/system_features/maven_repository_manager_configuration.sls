@@ -15,7 +15,7 @@ system_features:
 
         maven_repository_managers:
 
-            maven_repository_upstream_manager_role:
+            maven-repository-upstream-manager-role:
                 # The following strings will be concatenated togheter with
                 # `maven_repo_url_*_path_part` to form a complete URL.
                 maven_repo_url_scheme_part: 'http://'

@@ -55,7 +55,7 @@ system_host_roles:
         assigned_hosts: []
 
     # Sonatype Nexus is used as Maven Repository Manager.
-    maven_repository_upstream_manager_role:
+    maven-repository-upstream-manager-role:
         # NOTE: These should be hosts different from `downstream`.
         assigned_hosts: []
 
