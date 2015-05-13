@@ -59,7 +59,7 @@ system_host_roles:
         # NOTE: These should be hosts different from `downstream`.
         assigned_hosts: []
 
-    maven_repository_downstream_manager_role:
+    maven-repository-downstream-manager-role:
         # NOTE: These should be hosts different from `upstream`.
         assigned_hosts:
             - {{ master_minion_id }}
