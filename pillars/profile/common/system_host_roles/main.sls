@@ -14,7 +14,7 @@ system_host_roles:
     # For example, it should normally provide graphical environment
     # (to use browser to access Jenkins), it may provide
     # X server to run remote apps with graphical interface.
-    primary_console_role:
+    primary-console-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
