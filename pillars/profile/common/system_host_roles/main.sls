@@ -34,7 +34,7 @@ system_host_roles:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    depository_role:
+    depository-role:
         assigned_hosts:
             - {{ master_minion_id }}
 

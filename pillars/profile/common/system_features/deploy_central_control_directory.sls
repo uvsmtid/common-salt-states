@@ -5,7 +5,7 @@ system_features:
 
     # Deploy central control directory with descriptor.
     #
-    # The actual deployment only works if `depository_role` (where the directory is
+    # The actual deployment only works if `depository-role` (where the directory is
     # deployed) is under Salt control (Salt minion).
     #
     deploy_central_control_directory:
@@ -22,8 +22,8 @@ system_features:
         control_dir_src_path: 'conf'
 
         # File system path on the webserver where the configuration is
-        # deployed (see `common.webserver.depository_role` state):
-        control_dir_fs_path: '/var/www/html/depository_role/content/control/conf'
+        # deployed (see `common.webserver.depository-role` state):
+        control_dir_fs_path: '/var/www/html/depository-role/content/control/conf'
 
         # Control scripts URI prefix (similar to `URI_prefix` for registered
         # content resources).
@@ -32,7 +32,7 @@ system_features:
         # actually be distributed by Salt states (using `salt://` schema for
         # URI), but (external) control scripts require standard/known URI
         # schemes (i.e. `http://`, `file://`, ...) to be functional.
-        URI_prefix: 'http://depository_role'
+        URI_prefix: 'http://depository-role'
 
         # URL part leading to control directory on the web server (to be
         # combined with `URI_prefix`):

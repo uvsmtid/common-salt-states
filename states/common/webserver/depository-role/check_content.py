@@ -32,7 +32,7 @@ caller = salt.client.Caller()
 
 pillar = caller.function('pillar.items')
 
-depository_role_content_parent_dir = pillar['system_features']['validate_depository_role_content']['depository_role_content_parent_dir']
+depository_content_parent_dir = pillar['system_features']['validate_depository_content']['depository_content_parent_dir']
 posix_config_temp_dir = pillar['posix_config_temp_dir']
 script_name = 'check_content.sh'
 
@@ -52,7 +52,7 @@ for content_item_name in pillar['registered_content_items'].keys():
 
         registered_content [
             os.path.join(
-                depository_role_content_parent_dir,
+                depository_content_parent_dir,
                 content_item['item_parent_dir_path'],
                 content_item['item_base_name'],
             )
@@ -62,8 +62,8 @@ for content_item_name in pillar['registered_content_items'].keys():
             'found': False,
         }
 
-# Go through each and every file under `depository_role_content_parent_dir`.
-for (dirpath, dirnames, filenames) in os.walk(depository_role_content_parent_dir, followlinks = False):
+# Go through each and every file under `depository_content_parent_dir`.
+for (dirpath, dirnames, filenames) in os.walk(depository_content_parent_dir, followlinks = False):
     for filename in filenames:
         item_path = os.path.join(dirpath, filename)
         if item_path in registered_content.keys():

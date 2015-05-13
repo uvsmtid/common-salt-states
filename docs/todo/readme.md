@@ -81,7 +81,7 @@ TODO
 	     Changes:
         ```
 
-* Add deployment of "origin" Git repository from `depository_role`.
+* Add deployment of "origin" Git repository from `depository-role`.
   This is to make sure there is initial repo for "origin" of all
   environment sources.
 
@@ -103,7 +103,7 @@ TODO
         on Jenkins slave configuration.
         Or is current "restrict to host role" is good enough?
 
-* TODO: Add one more sub-dir to `depository_role` (in addition to: `distrib`
+* TODO: Add one more sub-dir to `depository-role` (in addition to: `distrib`
         `repository`, `images`): `data` with clear documented organization,
         content type, purpose of splitting, etc.
 
@@ -162,7 +162,7 @@ Check:
 * MAC,
 * name resolution,
 * access to YUM repositories,
-* access to `depository_role` (HTTP web server),
+* access to `depository-role` (HTTP web server),
 * etc.
 This is to validatate that system is running in expected state.
 The decision whether to test this or not should come from the fact whether
@@ -174,11 +174,11 @@ changes in virtual network configuration or storage). VMs have to be
 checked whether the changes took effect or the whole infrastructure should
 be rebooted.
 
-## Finish definitions for all `depository_role` items ##
+## Finish definitions for all `depository-role` items ##
 
-Add definitions for remaining items in `depository_role`:
-* wether item is validated or not in the `depository_role`;
-* path within `depository_role`;
+Add definitions for remaining items in `depository-role`:
+* wether item is validated or not in the `depository-role`;
+* path within `depository-role`;
 * hash;
 * basename;
 * etc.
@@ -332,7 +332,7 @@ For example, all hosts use the same time zone (i.e. Asia/Singapore).
 
 UPDATE: There ia already SLS for Linux (but unlikely for Windows) at the moment.
 
-## Add generic `depository_role` content validation ##
+## Add generic `depository-role` content validation ##
 
 Profile descriptor contains neccessary information to run
 achiver content validation in single generic state (rather than creating
