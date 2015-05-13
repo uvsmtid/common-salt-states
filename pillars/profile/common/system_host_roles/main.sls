@@ -38,7 +38,7 @@ system_host_roles:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    maven_build_server_role:
+    maven-build-server-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
