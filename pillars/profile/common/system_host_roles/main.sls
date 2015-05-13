@@ -26,7 +26,7 @@ system_host_roles:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    resolver_role:
+    resolver-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
