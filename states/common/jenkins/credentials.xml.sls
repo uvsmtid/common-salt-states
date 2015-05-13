@@ -7,7 +7,7 @@
       </com.cloudbees.plugins.credentials.domains.Domain>
       <java.util.concurrent.CopyOnWriteArrayList>
 {% set jenkins_slaves =
-    pillar['system_host_roles']['jenkins_linux_slave_role']['assigned_hosts']
+    pillar['system_host_roles']['jenkins-linux-slave-role']['assigned_hosts']
     +
     pillar['system_host_roles']['jenkins_windows_slave_role']['assigned_hosts']
 %}

@@ -16,10 +16,10 @@ include:
     - common.jenkins.download_jenkins_cli_tool
 
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins-master-role']['assigned_hosts'][0]]['hostname'] %}
-{% set jenkins_linux_slave_roles = pillar['system_host_roles']['jenkins_linux_slave_role']['assigned_hosts'] %}
+{% set jenkins_linux_slaves = pillar['system_host_roles']['jenkins-linux-slave-role']['assigned_hosts'] %}
 {% set jenkins_windows_slave_roles = pillar['system_host_roles']['jenkins_windows_slave_role']['assigned_hosts'] %}
 
-{% for slave in jenkins_linux_slave_roles + jenkins_windows_slave_roles %}
+{% for slave in jenkins_linux_slaves + jenkins_windows_slave_roles %}
 
 {% set host_config = pillar['system_hosts'][slave] %}
 

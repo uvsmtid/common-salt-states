@@ -47,7 +47,7 @@ system_host_roles:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    jenkins_linux_slave_role:
+    jenkins-linux-slave-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
