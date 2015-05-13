@@ -10,7 +10,7 @@ system_host_roles:
     # Primary console is the machine which user/developer
     # interacts with to control the rest of the system.
     # It should normally be a barebone machine and may
-    # share roles like `controller-role`, `hypervisor_role`, etc.
+    # share roles like `controller-role`, `hypervisor-role`, etc.
     # For example, it should normally provide graphical environment
     # (to use browser to access Jenkins), it may provide
     # X server to run remote apps with graphical interface.
@@ -30,7 +30,7 @@ system_host_roles:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    hypervisor_role:
+    hypervisor-role:
         assigned_hosts:
             - {{ master_minion_id }}
 

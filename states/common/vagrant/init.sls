@@ -25,8 +25,8 @@ include:
 {% if grains['os'] in [ 'Fedora' ] %}
 
 # To avoid unnecessary installation,
-# require this host to be assigned to `hypervisor_role`.
-{% if grains['id'] in pillar['system_host_roles']['hypervisor_role']['assigned_hosts'] %} # hypervisor_role
+# require this host to be assigned to `hypervisor-role`.
+{% if grains['id'] in pillar['system_host_roles']['hypervisor-role']['assigned_hosts'] %} # hypervisor-role
 
 install_vagrant_packages:
     pkg.installed:
@@ -97,7 +97,7 @@ vagrant_environment_variables_script:
         - mode: 555
         - template: jinja
 
-{% endif %} # hypervisor_role
+{% endif %} # hypervisor-role
 
 {% endif %}
 # >>>

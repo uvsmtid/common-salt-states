@@ -3,8 +3,8 @@
 #   http://docs.saltstack.com/topics/tutorials/cloud_controller.html
 
 # To avoid unnecessary installation,
-# require this host to be assigned to `hypervisor_role`.
-{% if grains['id'] in pillar['system_host_roles']['hypervisor_role']['assigned_hosts'] %}
+# require this host to be assigned to `hypervisor-role`.
+{% if grains['id'] in pillar['system_host_roles']['hypervisor-role']['assigned_hosts'] %}
 
 ###############################################################################
 # <<<
@@ -52,5 +52,5 @@ libvirtd_service:
 # >>>
 ###############################################################################
 
-{% endif %} # hypervisor_role
+{% endif %} # hypervisor-role
 

@@ -9,8 +9,8 @@ Even for DNS there are two types considered:
    This option configures ISC BIND DNS and DHCP services.
    The problem is that `libvirt` enforces `dnsmasq` service in each
    virtual netwrok and it conflicts with both DNS and DHCP. Therefore,
-   when host with role `hypervisor_role` is also assigned `resolver-role` role
-   and `libvirt` is running on `hypervisor_role` (typically, KVM environments),
+   when host with role `hypervisor-role` is also assigned `resolver-role` role
+   and `libvirt` is running on `hypervisor-role` (typically, KVM environments),
    use this option.
 * `libvirtd_dnsmasq`
    This option should be used in opposite condition described for
