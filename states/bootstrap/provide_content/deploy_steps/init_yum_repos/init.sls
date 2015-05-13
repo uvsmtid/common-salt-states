@@ -74,11 +74,12 @@
 {{ requisite_config_file_id }}_{{ deploy_step }}_platform_repos_list:
     file.managed:
         - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/platform_repos_list.repo'
-        - source: '{{ deploy_step_config['platform_repos_list_template'] }}'
+        - source: '{{ target_env_pillar['system_features']['static_bootstrap_configuration']['deploy_steps_params']['init_yum_repos']['platform_repos_list_template'] }}'
         - template: jinja
         - makedirs: True
         - context:
             selected_pillar: {{ target_env_pillar }}
+            host_config: {{ target_env_pillar['system_hosts'][selected_host_name] }}
         - makedirs: True
         - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
