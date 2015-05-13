@@ -128,7 +128,7 @@ registered_content_items:
     # EPEL5 YUM repository key (to verify signed RPM packages).
     # Downloadable from:
     #     https://fedoraproject.org/keys
-    epel5_yum_repository_rpm_verification_key:
+    rhel5_epel5_yum_repository_rpm_verification_key:
         resource_repository: shared_content
         bootstrap_use_cases: True
         enable_content_validation: True
@@ -140,7 +140,7 @@ registered_content_items:
     # EPEL5 YUM repository key (to verify signed RPM packages).
     # Downloadable from:
     #     https://fedoraproject.org/keys
-    epel7_yum_repository_rpm_verification_key:
+    rhel5_epel7_yum_repository_rpm_verification_key:
         resource_repository: shared_content
         bootstrap_use_cases: True
         enable_content_validation: True
@@ -170,6 +170,36 @@ registered_content_items:
         item_parent_dir_path: distrib/salt/bootstrap
         item_base_name: zip-3.0-10.el7.x86_64.rpm
         item_content_hash: md5=4623f947ddc141f4d0f8e0bf4bf10529
+
+    # PostgreSQL YUM repo GPG RPM key.
+    rhel5_postgresql_yum_repository_rpm_verification_key:
+        resource_repository: shared_content
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: distrib/postgresql
+        item_base_name: RPM-GPG-KEY-PGDG-93
+        item_content_hash: md5=78b5db170d33f80ad5a47863a7476b22
+
+    # CentOS 5 base and updates YUM repos GPG RPM key.
+    rhel5_centos5_base_updates_yum_repository_rpm_verification_key:
+        resource_repository: shared_content
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: distrib/rhel5
+        item_base_name: RPM-GPG-KEY-CentOS-5
+        item_content_hash: md5=5f7bafa185a848e2f689dba1918dcf64
+
+    # CentOS 7 base and updats YUM repos GPG RPM key.
+    rhel7_centos7_base_updates_yum_repository_rpm_verification_key:
+        resource_repository: shared_content
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: distrib/rhel7
+        item_base_name: RPM-GPG-KEY-CentOS-7
+        item_content_hash: md5=c45e7e322681292ce4c1d2a6d392c4b5
 
 ###############################################################################
 # EOF

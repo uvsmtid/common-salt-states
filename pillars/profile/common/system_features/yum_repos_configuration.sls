@@ -17,52 +17,76 @@ system_features:
                 installation_type: conf_template
 
                 os_platform_configs:
+
                     f21:
+
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
-                        # TODO
-                        #manage_key: False
-                        #yum_repo_resource_id:
+
                     rhel7:
+
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                        key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
                     rhel5:
+
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
             # Default repositories with updates.
             updates:
                 installation_type: conf_template
 
                 os_platform_configs:
+
                     f21:
+
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
+
                     rhel7:
+
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                        key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
                     rhel5:
+
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
             # EPEL repository for RHEL.
             epel:
                 installation_type: conf_template
 
                 os_platform_configs:
+
                     rhel7:
+
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
 
-                        # TODO: Add key file deployment into specific path.
-                        key_file_resource_id: epel7_yum_repository_rpm_verification_key
+                        key_file_resource_id: rhel5_epel7_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
 
                     rhel5:
-                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL'
 
-                        # TODO: Add key file deployment into specific path.
-                        key_file_resource_id: epel5_yum_repository_rpm_verification_key
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
+
+                        key_file_resource_id: rhel5_epel5_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
 
             # PostgreSQL 9.3.
             # See list of available repositories:
@@ -71,9 +95,14 @@ system_features:
                 installation_type: conf_template
 
                 os_platform_configs:
+
                     rhel5:
+
                         yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-$releasever-$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
+
+                        key_file_resource_id: rhel5_postgresql_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
 
             # Repository for OpenStack command line utils.
             # URL for installation RPM:
@@ -82,10 +111,14 @@ system_features:
                 installation_type: conf_template
 
                 os_platform_configs:
+
                     f21:
+
                         yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
+
                     rhel7:
+
                         yum_repo_baseurl: 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
 
@@ -102,12 +135,22 @@ system_features:
                 #       See: http://dan.carley.co/blog/2012/05/22/yum-gpg-keys-for-jenkins/
 
                 os_platform_configs:
+
                     f21:
+
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
+
+                        key_file_resource_id: 'jenkins_yum_repository_rpm_verification_key'
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
+
                     rhel7:
+
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
+
+                        key_file_resource_id: 'jenkins_yum_repository_rpm_verification_key'
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
 ###############################################################################
 # EOF
