@@ -10,56 +10,56 @@ system_host_roles:
     # Primary console is the machine which user/developer
     # interacts with to control the rest of the system.
     # It should normally be a barebone machine and may
-    # share roles like `controller_role`, `hypervisor_role`, etc.
+    # share roles like `controller-role`, `hypervisor-role`, etc.
     # For example, it should normally provide graphical environment
     # (to use browser to access Jenkins), it may provide
     # X server to run remote apps with graphical interface.
-    primary_console_role:
+    primary-console-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    controller_role:
+    controller-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    router_role:
+    router-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    resolver_role:
+    resolver-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    hypervisor_role:
+    hypervisor-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    depository_role:
+    depository-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    maven_build_server_role:
+    maven-build-server-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
     # Jenkins master is always linux.
-    jenkins_master_role:
+    jenkins-master-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    jenkins_linux_slave_role:
+    jenkins-linux-slave-role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    jenkins_windows_slave_role:
+    jenkins-windows-slave-role:
         assigned_hosts: []
 
     # Sonatype Nexus is used as Maven Repository Manager.
-    maven_repository_upstream_manager_role:
+    maven-repository-upstream-manager-role:
         # NOTE: These should be hosts different from `downstream`.
         assigned_hosts: []
 
-    maven_repository_downstream_manager_role:
+    maven-repository-downstream-manager-role:
         # NOTE: These should be hosts different from `upstream`.
         assigned_hosts:
             - {{ master_minion_id }}

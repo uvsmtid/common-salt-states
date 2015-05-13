@@ -22,7 +22,7 @@ system_features:
 
         # TODO
         hosts_by_host_role: {}
-            #controller_role:
+            #controller-role:
             #    username_item:
             #        username: username
 

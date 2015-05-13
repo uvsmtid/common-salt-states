@@ -23,7 +23,7 @@
 # <<<
 {% if grains['os'] in [ 'Fedora' ] %}
 
-{% set content_parent_dir = pillar['system_features']['validate_depository_role_content']['depository_role_content_parent_dir'] %}
+{% set content_parent_dir = pillar['system_features']['validate_depository_content']['depository_content_parent_dir'] %}
 {% set content_item = pillar['registered_content_items']['custom_root_CA_certificate'] %}
 {% set item_parent_dir_path = content_item['item_parent_dir_path'] %}
 {% set item_base_name = content_item['item_base_name'] %}
@@ -32,7 +32,7 @@
 custom_root_ca:
     file.managed:
         - name: '/usr/share/pki/ca-trust-source/anchors/{{ item_base_name }}'
-        - source: http://depository_role/{{ item_parent_dir_path }}/{{ item_base_name }}
+        - source: http://depository-role/{{ item_parent_dir_path }}/{{ item_base_name }}
         - source_hash: {{ item_content_hash }}
         - template: null
         - user: root

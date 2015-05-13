@@ -3,7 +3,7 @@
 # TODO: Rewrite to use `EPEL_5_4_noarch_RHEL5` content item.
 
 # NOTE: EPEL should be configured by installing package (which is supposed to
-#       exist on `depository_role` file server) because it is a prerequisite to install
+#       exist on `depository-role` file server) because it is a prerequisite to install
 #       Salt minion. This config can be used for validation.
 
 ###############################################################################

@@ -1,6 +1,6 @@
 # Custom kernel configuration.
 
-{% if grains['id'] in pillar['system_host_roles']['router_role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['router-role']['assigned_hosts'] %}
 
 ###############################################################################
 # <<< The `sysctl.d` dir does not exists on RHEL5.

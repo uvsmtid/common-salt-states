@@ -15,7 +15,7 @@ system_features:
 
         maven_repository_managers:
 
-            maven_repository_upstream_manager_role:
+            maven-repository-upstream-manager-role:
                 # The following strings will be concatenated togheter with
                 # `maven_repo_url_*_path_part` to form a complete URL.
                 maven_repo_url_scheme_part: 'http://'
@@ -25,7 +25,7 @@ system_features:
                 maven_repo_url_snapshots_path_part: 'nexus/content/repositories/snapshots'
                 maven_repo_url_public_path_part: 'nexus/content/groups/public'
 
-            maven_repository_downstream_manager_role:
+            maven-repository-downstream-manager-role:
                 # The following strings will be concatenated togheter with
                 # `maven_repo_url_*_path_part` to form a complete URL.
                 maven_repo_url_scheme_part: 'http://'

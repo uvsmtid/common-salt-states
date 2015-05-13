@@ -1,6 +1,6 @@
 # Jenkins master
 
-{% if grains['id'] in pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'] %} # jenkins_master_role
+{% if grains['id'] in pillar['system_host_roles']['jenkins-master-role']['assigned_hosts'] %} # jenkins-master-role
 
 {% if grains['kernel'] == 'Linux' %} # Linux
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
@@ -122,5 +122,5 @@ jenkins_service_start:
 # >>>
 ###############################################################################
 
-{% endif %} # jenkins_master_role
+{% endif %} # jenkins-master-role
 
