@@ -95,28 +95,32 @@ def do(action_context):
         capture_stderr = False,
     )
 
-    return
-
-    # TODO: Is it required? Can it be done through Salt?
-    # * Loop through all required YUM repositories and either install
-    #   necessary RPM packages for repository configuration
-    #   or copy pre-generated repo configs to
-    #   `/etc/yum.repos.d`.
-    # * Test connection to YUM repository.
-    #   For example, install `git` package.
-
-    # TODO: Provide RPM key locations, URLs and import them.
     for repo_config in action_context.conf_m.init_yum_repos['yum_repo_configs'].values():
-        if 'rpm_key_file' in repo_config:
-            import_rpm_key(
-                action_context.content_dir,
-                repo_config['rpm_key_file'],
-            )
-        if 'installation_type' in repo_config:
-            if repo_config['installation_type']:
-                pass
-
-    logging.critical('NOT FULLY IMPLEMENTED')
+        assert('key_file_resource_path' in repo_config)
+        assert('key_file_path' in repo_config)
+        import_rpm_key(
+            action_context.content_dir,
+            repo_config['key_file_resource_path'],
+        )
+        # Copy the key into expected location according to YUM configuration.
+        call_subprocess(
+            command_args = [
+                'cp',
+                '--force',
+                os.path.join(
+                    action_context.content_dir,
+                    repo_config['key_file_resource_path'],
+                ),
+                repo_config['key_file_path'],
+            ],
+            # Ignore this error for now, just generate the output.
+            # This is because copying the key in expected location is
+            # not required as long as the import was successful.
+            #raise_on_error = True,
+            raise_on_error = False,
+            capture_stdout = False,
+            capture_stderr = False,
+        )
 
 ###############################################################################
 # EOF
