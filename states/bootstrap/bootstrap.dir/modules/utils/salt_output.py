@@ -51,6 +51,9 @@ def check_result(salt_output):
     total_counter = 0
     for state_key in local_result.keys():
 
+        # Separate visually one result from another.
+        logging.info("---")
+
         total_counter = total_counter + 1
 
         logging.info("`comment`: " + str(local_result[state_key]['comment']))
