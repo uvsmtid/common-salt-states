@@ -22,7 +22,7 @@ system_host_roles:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    router_role:
+    router-role:
         assigned_hosts:
             - {{ master_minion_id }}
 

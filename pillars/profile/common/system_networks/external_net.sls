@@ -1,5 +1,5 @@
 ###############################################################################
-# Physical/external network which is accessible to VMs through `router_role`.
+# Physical/external network which is accessible to VMs through `router-role`.
 # WARNING: these settings are normally provided by DHCP server on the
 #          external network. They should be adjusted manually
 #          based on that network configuration.
