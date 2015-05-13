@@ -26,6 +26,11 @@
     )
 %}
 
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI_from_pillar with context %}
+{% from resources_macro_lib import get_registered_content_item_base_name_from_pillar with context %}
+{% from resources_macro_lib import get_registered_content_item_hash_from_pillar with context %}
+
 # Config for the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
@@ -40,35 +45,51 @@
                 'yum_main_config': 'resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/yum.conf',
                 'platform_repos_list': 'resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/platform_repos_list.repo',
 
-                {# TODO: Add list of configurations for RPM keys.
-                'yum_repo_configs': {
+                {% set os_platform_yum_configs = target_env_pillar['system_features']['yum_repos_configuration'] %}
                 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
-                {% for yum_repo_config_name in deploy_step_config['yum_repo_configs'][os_platform].keys() %}
-                {% set yum_repo_config = deploy_step_config['yum_repo_configs'][os_platform][yum_repo_config_name] %}
-                {% if yum_repo_config['installation_type'] %}
+                'yum_repo_configs': {
+                {% for yum_repo_config_name in os_platform_yum_configs['yum_repositories'].keys() %}
+                {% if os_platform in os_platform_yum_configs['yum_repositories'][yum_repo_config_name]['os_platform_configs'] %}
+                {% set yum_repo_config = os_platform_yum_configs['yum_repositories'][yum_repo_config_name]['os_platform_configs'][os_platform] %}
+                {% if 'key_file_resource_id' in yum_repo_config %}
                     '{{ yum_repo_config_name }}': {
-                        # TODO: Depending on installation type, there should be
-                        #       either deployment of repo configuration files
-                        #       or installation of RPM which configures these
-                        #       repositories.
-                        'installation_type': '{{ yum_repo_config['installation_type'] }}',
-                        {% if yum_repo_config['rpm_key_file_resource_id'] %}
-                        {% set content_conf = target_env_pillar['registered_content_items'][yum_repo_config['rpm_key_file_resource_id']] %}
-                        # The RPM key file is not downloaded - it is part of
-                        # resources which are supposed to be downloaded
-                        # in separate step.
-                        'rpm_key_file': 'resources/depository/{{ project_name }}/{{ profile_name }}/{{ content_conf['item_parent_dir_path'] }}/{{ content_conf['item_base_name'] }}'
-                        {% endif %}
+                        {% set file_path = get_registered_content_item_base_name_from_pillar(yum_repo_config['key_file_resource_id'], target_env_pillar) %}
+                        'key_file_resource_path': 'resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/yums/{{ yum_repo_config_name }}/{{ file_path }}',
+                        'key_file_path': '{{ yum_repo_config['key_file_path'] }}'
                     },
+                {% endif %}
                 {% endif %}
                 {% endfor %}
                 },
-                #}
 
             }
         - show_changes: True
         - require:
             - file: {{ requisite_config_file_id }}
+
+# Save resource.
+{% set os_platform_yum_configs = target_env_pillar['system_features']['yum_repos_configuration'] %}
+{% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
+
+{% for yum_repo_config_name in os_platform_yum_configs['yum_repositories'].keys() %}
+{% if os_platform in os_platform_yum_configs['yum_repositories'][yum_repo_config_name]['os_platform_configs'] %}
+
+{% set yum_repo_config = os_platform_yum_configs['yum_repositories'][yum_repo_config_name]['os_platform_configs'][os_platform] %}
+
+{% if 'key_file_resource_id' in yum_repo_config %}
+{{ requisite_config_file_id }}_{{ deploy_step }}_{{ os_platform }}_{{ yum_repo_config_name }}:
+    file.managed:
+        {% set file_path = get_registered_content_item_base_name_from_pillar(yum_repo_config['key_file_resource_id'], target_env_pillar) %}
+        - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/yums/{{ yum_repo_config_name }}/{{ file_path }}'
+        - source: '{{ get_registered_content_item_URI_from_pillar(yum_repo_config['key_file_resource_id'], target_env_pillar) }}'
+        - source_has: '{{ get_registered_content_item_hash_from_pillar(yum_repo_config['key_file_resource_id'], target_env_pillar) }}'
+        - template: ~
+        - makedirs: True
+        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+{% endif %}
+{% endif %}
+{% endfor %}
 
 # Instantiate template for `platform_repos_list.repo`.
 {{ requisite_config_file_id }}_{{ deploy_step }}_platform_repos_list:
