@@ -88,7 +88,7 @@ utils.set_log.setLoggingLevel('debug')
 # Check if bootstrap supports this `run_use_case`.
 if run_use_case not in [
     'initial-online-node',
-    'offline-minino-installer',
+    'offline-mininon-installer',
 ]:
     raise Exception("Unknown use case: " + str(run_use_case))
 
