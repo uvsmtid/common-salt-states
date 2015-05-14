@@ -15,7 +15,11 @@
 [{{ yum_repo_name }}]
 name={{ yum_repo_name }} - {{ host_config['os_platform'] }}
 baseurl={{ yum_repo_os_platform_config['yum_repo_baseurl'] }}
+{% if yum_repo_os_platform_config['repo_enabled'] %}
 enabled=1
+{% else %}
+enabled=0
+{% endif %}
 {% if 'yum_repo_key_url' in yum_repo_os_platform_config %}
 gpgkey={{ yum_repo_os_platform_config['yum_repo_key_url'] }}
 gpgcheck=1
