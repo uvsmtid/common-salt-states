@@ -19,5 +19,25 @@ TODO
         located in different place, rewrite will be merge with
         unpredictable results.
 
+*   TODO: Provide two more bootstrap modes:
+    *   salt-master-only
+    *   salt-minion-only
+    These two modes will simply install Salt on specified platform
+    The platform will be given as `host_id` (which will require config
+    file for this `host_id`) named after platform like `rhel5`, `rhel7`, etc.
+    Therefore, building of bootstrap package will require generating config
+    file for such host-like platform ids.
+
+    They will avoid environment-specific settings (only platform-specific
+    settings will be done):
+    *   None of the source code repositories or their snapshots will be deployed.
+    *   None of the states will be run (even setting source or resource links).
+    *   None of the network settings will be fixed (routing, DNS, YUM, etc.).
+    *   No pre-configured Salt minion or Salt master conf files.
+
+    Actually, this is so simple functionality that it doesn't make sense to 
+    work on. If it is just to make it seamless to install Salt on RHEL5
+    (where it is not part of EPEL anymore), then a wiki is enough.
+
 [1]: docs/bootstrap.md
 
