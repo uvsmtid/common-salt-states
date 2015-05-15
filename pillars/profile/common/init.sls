@@ -19,7 +19,7 @@ include:
         ,
         'system_networks'
         ,
-        'registered_content_items'
+        'system_resources'
         ,
         'system_features'
     ]
