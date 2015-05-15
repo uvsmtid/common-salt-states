@@ -31,7 +31,7 @@ system_features:
 
         resource_respositories:
 
-            shared_content:
+            common-resources:
 
                 URI_prefix_scheme: 'salt://'
                 rel_resource_link_path: 'resource_roots/content'

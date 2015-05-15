@@ -8,7 +8,7 @@ system_resources:
     #   sudo yum install --downloadonly --downloaddir=salt-minion.rpms/ salt-minion
     # Is there `zip` or `tar` on Fedora 21 minimal?.
     salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -22,7 +22,7 @@ system_resources:
     #   sudo yum install --downloadonly --downloaddir=salt-master.rpms/ salt-master
     # Is there `zip` or `tar` on Fedora 21 minimal?.
     salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -37,7 +37,7 @@ system_resources:
     # Note that CentOS 7.0 minimal does not have `zip`/`unzip`,
     # only `tar` (and `gzip`/`gunzip`).
     salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.el7.x86_64:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -50,7 +50,7 @@ system_resources:
     # Note that CentOS 7.0 minimal does not have `zip`/`unzip`,
     # only `tar` (and `gzip`/`gunzip`).
     salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.el7.x86_64:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -66,7 +66,7 @@ system_resources:
     # TODO: CentOS 5.5 minimal DOES have `tar` (and gzip`/`gunzip`),
     #       but this is `zip`.
     python26-distribute_downloaded_rpms_with_dependencies_0.6.10-4.el5.x86_64:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -80,7 +80,7 @@ system_resources:
     # TODO: CentOS 5.5 minimal DOES have `tar` (and gzip`/`gunzip`),
     #       but this is `zip`.
     salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.el5.x86_64:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -94,7 +94,7 @@ system_resources:
     # TODO: CentOS 5.5 minimal DOES have `tar` (and gzip`/`gunzip`),
     #       but this is `zip`.
     salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.el5.x86_64:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -105,7 +105,7 @@ system_resources:
     # PyYAML for 'uvsmtid/centos-7.0-minimal'.
     #   sudo yum install --downloadonly --downloaddir=. PyYAML
     PyYAML-3.10-11.el7.x86_64.rpms.tar:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -118,7 +118,7 @@ system_resources:
     #   sudo yum install yum-downloadonly
     #   sudo yum install --downloadonly --downloaddir=. PyYAML
     PyYAML-3.09-10.el5.x86_64.rpms.tar:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -130,7 +130,7 @@ system_resources:
     # Downloadable from:
     #     https://fedoraproject.org/keys
     rhel5_epel5_yum_repository_rpm_verification_key:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -142,7 +142,7 @@ system_resources:
     # Downloadable from:
     #     https://fedoraproject.org/keys
     rhel5_epel7_yum_repository_rpm_verification_key:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -153,7 +153,7 @@ system_resources:
     # `unzip` package for CentOS 7.0 downloaded on minimal install OS:
     # sudo yum install --downloadonly --downloaddir=. unzip
     unzip-6.0-13.el7.x86_64.rpm:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -164,7 +164,7 @@ system_resources:
     # `zip` package for CentOS 7.0 downloaded on minimal install OS:
     # sudo yum install --downloadonly --downloaddir=. zip
     zip-3.0-10.el7.x86_64.rpm:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -174,7 +174,7 @@ system_resources:
 
     # PostgreSQL YUM repo GPG RPM key.
     rhel5_postgresql_yum_repository_rpm_verification_key:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -184,7 +184,7 @@ system_resources:
 
     # CentOS 5 base and updates YUM repos GPG RPM key.
     rhel5_centos5_base_updates_yum_repository_rpm_verification_key:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -194,7 +194,7 @@ system_resources:
 
     # CentOS 7 base and updats YUM repos GPG RPM key.
     rhel7_centos7_base_updates_yum_repository_rpm_verification_key:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -204,7 +204,7 @@ system_resources:
 
     # OpenStack Juno Fedora 21 and EPEL-7 YUM repos GPG RPM key.
     openstack_juno_repository_rpm_verification_key:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True

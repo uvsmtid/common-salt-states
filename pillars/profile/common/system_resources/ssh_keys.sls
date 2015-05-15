@@ -7,7 +7,7 @@ system_resources:
     # Vagrant public SHH key.
     # URL: https://raw.githubusercontent.com/mitchellh/vagrant/004ea50bf2ae55d563fd9da23cb2d6ec6cd447e4/keys/vagrant.pub
     vagrant_insecure_ssh_public_key.id_rsa.pub:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
@@ -18,7 +18,7 @@ system_resources:
     # Vagrant private SSH key.
     # URL: https://raw.githubusercontent.com/mitchellh/vagrant/004ea50bf2ae55d563fd9da23cb2d6ec6cd447e4/keys/vagrant
     vagrant_insecure_ssh_private_key.id_rsa:
-        resource_repository: shared_content
+        resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
