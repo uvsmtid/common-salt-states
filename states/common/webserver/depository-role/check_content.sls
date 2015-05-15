@@ -52,8 +52,8 @@ def run():
 
 
     # Then, add all content items to verify checksums.
-    for content_item_name in __pillar__['registered_content_items'].keys():
-        content_item = __pillar__['registered_content_items'][content_item_name]
+    for content_item_name in __pillar__['system_resources'].keys():
+        content_item = __pillar__['system_resources'][content_item_name]
         if content_item['enable_content_validation']:
             hash_fields = content_item['item_content_hash'].split('=')
             hash_type = hash_fields[0]

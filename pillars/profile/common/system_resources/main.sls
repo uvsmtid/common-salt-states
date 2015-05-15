@@ -24,7 +24,7 @@
 #         architecture:  64_bit
 #         platform:      windows
 
-registered_content_items:
+system_resources:
 
     # Jenkins YUM repository key (to verify signed RPM packages).
     # Downloadable from:

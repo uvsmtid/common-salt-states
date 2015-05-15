@@ -40,7 +40,7 @@ install_salt_minion:
         - template: jinja
 
 # Add Salt installation dir to PATH.
-{% set installation_dir = pillar['registered_content_items']['salt_minion_64_bit_windows']['installation_dir'] %}
+{% set installation_dir = pillar['system_resources']['salt_minion_64_bit_windows']['installation_dir'] %}
 add_salt_minion_tools_to_PATH:
     cmd.run:
         - name: 'echo %PATH% | findstr /I /C:";{{ installation_dir }};" > nul || setx -m PATH "%PATH%;{{ installation_dir }};"'

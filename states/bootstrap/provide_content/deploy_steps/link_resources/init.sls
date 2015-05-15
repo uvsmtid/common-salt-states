@@ -77,7 +77,7 @@
 #       field to indicate whether it should be included or not.
 # We use `URI_prefix` from current project/profile pillar assuming that
 # it has access to all content items through the same prefix.
-{% for content_item_id in target_env_pillar['registered_content_items'].keys() %} # content_item_id
+{% for content_item_id in target_env_pillar['system_resources'].keys() %} # content_item_id
 
 # TODO: At the moment we only check boolean result of `bootstrap_use_cases` value.
 #       Consider matching tailoring bootstrap package for specific use case
@@ -91,7 +91,7 @@
         #       `resources/{{ project_name }} ` directory.
         # NOTE: Resources are downloaded into `resources/depository/{{ project_name }}/..`, not
         #       under simply `resources/{{ project_name }}/..` to differentiate
-        #       with other resources (not only those declared in `registered_content_items`.
+        #       with other resources (not only those declared in `system_resources`.
         - name: '{{ target_contents_dir }}/{{ resource_base_dir_rel_path }}/{{ get_registered_content_item_parent_dir_path_from_pillar(content_item_id, target_env_pillar) }}/{{ get_registered_content_item_base_name_from_pillar(content_item_id, target_env_pillar) }}'
         - source: {{ get_registered_content_item_URI_from_pillar(content_item_id, target_env_pillar) }}
         - source_hash: {{ get_registered_content_item_hash_from_pillar(content_item_id, target_env_pillar) }}

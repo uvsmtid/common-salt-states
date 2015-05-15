@@ -2,7 +2,7 @@
 ###############################################################################
 #
 
-registered_content_items:
+system_resources:
 
     # Downloaded on Vagrant virtual box 'hansode/fedora-21-server-x86_64':
     #   sudo yum install --downloadonly --downloaddir=salt-minion.rpms/ salt-minion

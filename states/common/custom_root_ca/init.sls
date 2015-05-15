@@ -24,7 +24,7 @@
 {% if grains['os'] in [ 'Fedora' ] %}
 
 {% set content_parent_dir = pillar['system_features']['validate_depository_content']['depository_content_parent_dir'] %}
-{% set content_item = pillar['registered_content_items']['custom_root_CA_certificate'] %}
+{% set content_item = pillar['system_resources']['custom_root_CA_certificate'] %}
 {% set item_parent_dir_path = content_item['item_parent_dir_path'] %}
 {% set item_base_name = content_item['item_base_name'] %}
 {% set item_content_hash = content_item['item_content_hash'] %}

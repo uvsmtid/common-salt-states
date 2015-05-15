@@ -43,8 +43,8 @@ script_path = os.path.join(
 
 # Prepare content items in an intermediate dict: { path: { hash_type, hash_value } }.
 registered_content = {}
-for content_item_name in pillar['registered_content_items'].keys():
-    content_item = pillar['registered_content_items'][content_item_name]
+for content_item_name in pillar['system_resources'].keys():
+    content_item = pillar['system_resources'][content_item_name]
     if content_item['enable_content_validation']:
         hash_fields = content_item['item_content_hash'].split('=')
         hash_type = hash_fields[0]

@@ -2,7 +2,7 @@
 ###############################################################################
 #
 
-registered_content_items:
+system_resources:
 
     # Common SSH public key.
     common_insecure_ssh_public_key.id_rsa.pub:

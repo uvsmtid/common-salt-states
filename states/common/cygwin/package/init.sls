@@ -19,10 +19,10 @@
 # <<<
 {% if grains['os'] in [ 'Windows' ] %}
 
-{% if pillar['registered_content_items']['cygwin_package_64_bit_windows']['enable_installation'] %}
+{% if pillar['system_resources']['cygwin_package_64_bit_windows']['enable_installation'] %}
 
-{% set cygwin_root_dir = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] %}
-{% set cygwin_installation_completion_file_indicator = pillar['registered_content_items']['cygwin_package_64_bit_windows']['completion_file_indicator'] %}
+{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_installation_completion_file_indicator = pillar['system_resources']['cygwin_package_64_bit_windows']['completion_file_indicator'] %}
 
 include:
     - common.7zip
@@ -51,14 +51,14 @@ unzip_cygwin_package:
         - name: 'cmd /c {{ config_temp_dir }}\unzip_cygwin_package.bat'
         - unless: 'cd {{ config_temp_dir }}\cygwin.distrib'
         - require:
-            - file: '{{ config_temp_dir }}\{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_base_name'] }}'
+            - file: '{{ config_temp_dir }}\{{ pillar['system_resources']['cygwin_package_64_bit_windows']['item_base_name'] }}'
             - file: '{{ config_temp_dir }}\unzip_cygwin_package.bat'
 
 # Set CYGWIN environment variable.
 # According to Cygwin:
 #   http://cygwin.com/cygwin-ug-net/using-cygwinenv.html
 #   "It contains the options listed below, separated by blank characters."
-{% set CYGWIN_env_var_value = " ".join(pillar['registered_content_items']['cygwin_package_64_bit_windows']['CYGWIN_env_var_items_list']) %}
+{% set CYGWIN_env_var_value = " ".join(pillar['system_resources']['cygwin_package_64_bit_windows']['CYGWIN_env_var_items_list']) %}
 set_CYGWIN_env_var_value:
     cmd.run:
         - name: 'setx -m CYGWIN "{{ CYGWIN_env_var_value }}"'
@@ -75,7 +75,7 @@ set_CYGWIN_env_var_value:
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 
 # Archive:
-'{{ config_temp_dir }}\{{ pillar['registered_content_items']['cygwin_package_64_bit_windows']['item_base_name'] }}':
+'{{ config_temp_dir }}\{{ pillar['system_resources']['cygwin_package_64_bit_windows']['item_base_name'] }}':
     file.managed:
         - source: {{ get_registered_content_item_URI('cygwin_package_64_bit_windows') }}
         - source_hash: {{ get_registered_content_item_hash('cygwin_package_64_bit_windows') }}
@@ -91,7 +91,7 @@ set_CYGWIN_env_var_value:
 
 # NOTE: Double backward slashes `\\` is somehow required here.
 #       Otherwise `\v` becomes a special character and PATH is not set.
-{% set cygwin_bin_path = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] + '\\bin' %}
+{% set cygwin_bin_path = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] + '\\bin' %}
 add_cygwin_bin_path_to_PATH:
     cmd.run:
         - name: 'echo %PATH% | findstr /I /C:";{{ cygwin_bin_path }};" > nul || setx -m PATH "%PATH%;{{ cygwin_bin_path }};"'

@@ -6,7 +6,7 @@ system_features:
     # `URI_prefix*` defines root or base relative which content
     # item location is looked up. For example, if `URI_prefix*` is
     # `http://some_file_server/depository/` than entries inside
-    # `registered_content_items` are found under this URI.
+    # `system_resources` are found under this URI.
     #
     # NOTE: There is no leading or trailing slashes in the value
     #       for `abs_resource_links_base_dir_path`.

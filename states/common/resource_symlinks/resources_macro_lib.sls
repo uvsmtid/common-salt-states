@@ -24,7 +24,7 @@
     )
 -%}
 
-{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+{%- set registered_content_item_config = pillar_data['system_resources'][registered_content_item_id] -%}
 
 {{- registered_content_item_config['item_base_name'] -}}
 
@@ -52,7 +52,7 @@
     )
 -%}
 
-{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+{%- set registered_content_item_config = pillar_data['system_resources'][registered_content_item_id] -%}
 
 {{- registered_content_item_config['item_parent_dir_path'] -}}
 
@@ -108,7 +108,7 @@
     )
 -%}
 
-{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+{%- set registered_content_item_config = pillar_data['system_resources'][registered_content_item_id] -%}
 {%- set resource_repository_config = pillar_data['system_features']['resource_repositories_configuration']['resource_respositories'][registered_content_item_config['resource_repository']] -%}
 
 {{- resource_repository_config['URI_prefix_scheme'] -}}
@@ -141,7 +141,7 @@
     )
 -%}
 
-{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+{%- set registered_content_item_config = pillar_data['system_resources'][registered_content_item_id] -%}
 
 {#- If there is no `item_content_hash`, return None `~`. -#}
 {%- if 'item_content_hash' in registered_content_item_config -%}
@@ -249,7 +249,7 @@ At the moment, any `bootstrap_mode` requires rewrite of resource locations.
     )
 -%}
 
-{%- set registered_content_item_config = pillar_data['registered_content_items'][registered_content_item_id] -%}
+{%- set registered_content_item_config = pillar_data['system_resources'][registered_content_item_id] -%}
 
 {%- if 'bootstrap_use_cases' in registered_content_item_config %}
 {{- registered_content_item_config['bootstrap_use_cases'] -}}

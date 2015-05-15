@@ -53,7 +53,7 @@
             "type": "object",
 
             "properties": {
-                "registered_content_items": {
+                "system_resources": {
                     "type": "object",
                 },
                 "system_features": {
