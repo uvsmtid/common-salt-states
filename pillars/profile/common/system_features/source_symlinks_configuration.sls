@@ -42,7 +42,7 @@ system_features:
                 repo_name: 'common-salt-states'
                 # Absolute path:
                 # TODO: Change it to common approach (with resources,
-                #       or possibly pluggable projects) so that value
+                #       or possibly pluggable project_names) so that value
                 #       `/srv/states` can be set for Salt config files
                 #       generated for boostrap (not just hardcoded).
                 #       See:

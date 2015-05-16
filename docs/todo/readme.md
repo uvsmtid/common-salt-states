@@ -3,7 +3,7 @@ TODO
 # See also #
 
 * All individual files under [todo directory][todo_dir].
-* All files under `todo` directories of individual projects.
+* All files under `todo` directories of individual project_names.
 
 # TODOs #
 
@@ -295,7 +295,7 @@ to every host.
 All shell environment and script installation for Linux should also
 be duplicated for Cygwin:
   * Shell settings: variables, aliases, etc.
-  * Scripts: i.e. content of package with project-specific automation, etc.
+  * Scripts: i.e. content of package with project_name-specific automation, etc.
 
 ## NOTE: Problem for Windows/Cygwin paths ##
 

@@ -1,12 +1,12 @@
 
-The id under `bootstrap_target_envs` is a strings of project name and profile
-name concatenated through `.` (dot), for example:
+The id under `bootstrap_target_envs` is a strings of
+project_name and profile_name concatenated through `.` (dot), for example:
 ```
-pillar['bootstrap_target_envs']['PROJECT_NAME.PROFILE_NAME']
+pillar['bootstrap_target_envs']['project_name.profile_name']
 ```
 
-The value represents entire pillar data for specified profile of specified
-project.
+The value represents entire pillar data for specified
+profile_name of specified project_name.
 
 See details in:
 * [bootstrap_target_envs][1] in pillar

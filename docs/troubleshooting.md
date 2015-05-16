@@ -113,7 +113,7 @@ For example, this is the top of `pillar.items.output` in case of error:
 minion_sls:
     ----------
     _errors:
-        - Include Declaration in SLS 'project.main' is not formed as a list
+        - Include Declaration in SLS 'project_name.main' is not formed as a list
     include:
         None
     master:
@@ -170,7 +170,7 @@ base:
         {% if pillar['hostname_resolution_type'] == 'static_hosts_file' %}    <======================
 
         # Generate hosts files on minions.
-        - {{ project }}.hosts
+        - {{ project_name }}.hosts
 
         {% endif %}
 [...]

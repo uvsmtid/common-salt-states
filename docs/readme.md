@@ -3,9 +3,9 @@
 
 *   [getting_started.md](getting_started.md)
 
-## How do this framework in custom external projects? ##
+## How does this framework helps in custom setups? ##
 
-*   [external_projects.md](external_projects.md)
+*   [external_project_names.md](external_project_names.md)
 
 ## How to troubleshoot? ##
 

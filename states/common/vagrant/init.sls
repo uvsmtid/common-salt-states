@@ -1,4 +1,4 @@
-# Virtualization automation using Vagrant project.
+# Virtualization automation using Vagrant.
 
 include:
 

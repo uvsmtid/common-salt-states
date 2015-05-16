@@ -36,7 +36,7 @@ configuration data is supposed to be specific for individual deployment.
 However, pillars are documented here as requirement for pillar data
 structure compartibility with the states code which uses it.
 
-In order to create new instance with project-specific configuration data,
+In order to create new instance with project_name-specific configuration data,
 copy this directory in new repository and checked it in, for example:
 ```
 mkdir /home/[username]/Works/[project_name]-salt-pillars.git
@@ -74,7 +74,7 @@ to configure Salt.
     from anything else repository may contain.
 *   `pillars/bootstrap`
     This is a conventional location for special template files which
-    load pillars data for other projects/profiles.
+    load pillars data for other project_names/profiles.
     The templates depend on [load_bootstrap_target_envs][4]
     Salt configuration.
 
@@ -95,9 +95,9 @@ to configure Salt.
 
 There are several special sub-directories in `states`:
 *   `_grains` - custom grains - see [writing grains][2]
-*   `common` - common states shared between projects
-*   `[project_name]` - symlink to repository with project-specific states
-*   `bootstrap` - special project shared together with common states to
+*   `common` - common states shared between project_names
+*   `[project_name]` - symlink to repository with project_name-specific states
+*   `bootstrap` - special project_name shared together with common states to
     create packages for fully automated deployment - see [bootstrap][3]
 
 ### `states` layout ###

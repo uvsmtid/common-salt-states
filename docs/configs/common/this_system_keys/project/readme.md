@@ -1,5 +1,5 @@
 
-Key `project` selects name of the project. This together with
+Key `project_name` selects name of the project_name. This together with
 [selected profile name][1] identifies deployment configuration to be used
 for this system.
 

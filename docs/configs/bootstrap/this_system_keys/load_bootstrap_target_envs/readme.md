@@ -13,7 +13,7 @@ pillar data itself because pillar data is not available until it is loaded.
 Once loaded, pillar data for corresponding pillar of corresponding project
 is available at:
 ```
-pillar['bootstrap_target_envs']['PROJECT_NAME.PROFILE_NAME']
+pillar['bootstrap_target_envs']['project_name.profile_name']
 ```
 
 Note that there is [additional key][6] in pillar data
@@ -26,8 +26,8 @@ In order for environment to be enabled, it should appear in both:
 
 ```
 this_system_keys:
-    project: projectA
-    profile: whatever
+    project_name: project_name_A
+    profile_name: whatever
     # ...
     load_bootstrap_target_envs:
         profileA1:
@@ -35,7 +35,7 @@ this_system_keys:
 ```
 
 [1]: docs/bootstrap.md
-[2]: docs/configs/common/this_system_keys/project/readme.md
+[2]: docs/configs/common/this_system_keys/project_name/readme.md
 [3]: docs/configs/common/this_system_keys/profile/readme.md
 [4]: #example
 [5]: docs/pillars/bootstrap/bootstrap_target_envs/readme.md

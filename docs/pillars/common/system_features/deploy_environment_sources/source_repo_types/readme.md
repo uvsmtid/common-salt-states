@@ -1,6 +1,6 @@
 
 Key `source_repo_types` specifies a map between [unique id][1] of sources
-used by the project and their corresponding repository type.
+used by the project_name and their corresponding repository type.
 
 It is possible to support various types of repositories, for example:
 * `git` specifies [Git](http://git-scm.com/) and selects its [git][2]-specific configuration

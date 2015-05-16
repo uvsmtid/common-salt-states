@@ -16,7 +16,7 @@ run_action = sys.argv[1]
 run_use_case = sys.argv[2]
 # * Target environment - path to configuration file as:
 #   ```
-#   path/to/conf/project_name/system_profile_name/host_id.py`
+#   path/to/conf/project_name/profile_name/host_id.py`
 #   ```
 target_env_conf = sys.argv[3]
 # * The last argument is optional (used for convenience of development) -

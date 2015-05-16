@@ -58,7 +58,7 @@ On Windows installer supports [unnattended installation](https://github.com/salt
 
 **Case:**
 * Run bootstrap script to configure new Salt master or Salt minion for
-  specific project/profile.
+  specific project_name/profile.
 * Cloud deployment where master itself is virtualized and
   should be prepared automatically.
 * Starts both services: Salt master and Salt minion (depending on host
@@ -69,12 +69,12 @@ On Windows installer supports [unnattended installation](https://github.com/salt
 **Input:**
 * Salt master and minion software packages.
 * Salt master and minion configuration files.
-* At least project id and profile id, possibly Salt minion id (but this
+* At least project_name and profile_name, possibly Salt minion id (but this
   can be derived from pillar).
 * Salt states sources to complete setup through Salt itself using
   profile configuration data.
 * All additional artifacts used for Salt master and minion for
-  specified project/profile.
+  specified project_name/profile.
 
 **Simplifications:**
 * It can be assumed that master is already configured and running.
@@ -88,15 +88,15 @@ On Windows installer supports [unnattended installation](https://github.com/salt
   automatically (i.e. in Jenkins job).
 * Moreover, to keep packages consistent, the build process must comply
   wiht one definition rule and rely on pillar data for specific
-  project/profile. There is a problem to access pillar data for other
-  projects/profiles if it was not published through pillar top file.
+  project_name/profile. There is a problem to access pillar data for other
+  project_names/profiles if it was not published through pillar top file.
 
 **Solution:**
 * Use Salt API in Python script to run build process based on
   configuration data in the pillar.
-* In order to access pillar from specific project/profile,
+* In order to access pillar from specific project_name/profile,
   Salt master configuration file on the system which performs
-  such builds should provide list of other projects/profiles.
+  such builds should provide list of other project_names/profiles.
   The top files shall use this list to include these pillar files
   under specific keys (pillars can be included under specific keys
   to avoid merging them at the top level).

@@ -1,5 +1,5 @@
 
-Start from [this document](docs/readme.md) to use this project.
+Start from [this document](docs/readme.md) for custom setups.
 
 # What are these sources? #
 

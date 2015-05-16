@@ -35,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set salt_master_host_name = pillar['system_host_roles']['hypervisor-role']['assigned_hosts'][0] %}
 {% set salt_master_host_ip = pillar['system_hosts'][salt_master_host_name]['internal_net']['ip'] %}
 
-{% set project_name = salt['config.get']('this_system_keys:project') %}
+{% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile') %}
 
 {% set bootstrap_dir_basename = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}

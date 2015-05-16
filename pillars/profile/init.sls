@@ -2,12 +2,12 @@
 ###############################################################################
 # Master configuration file should contain similar data structure:
 #     this_system_keys:
-#         project: project_name
+#         project_name: project_name
 #         profile: profile_name
 #
 # See also:
 #   https://github.com/saltstack/salt/issues/12916
-{% set project = salt['config.get']('this_system_keys:project') %}
+{% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set profile = salt['config.get']('this_system_keys:profile') %}
 
 # Setting key `this_pillar` allows current file loading other
@@ -36,9 +36,9 @@ include:
         defaults:
             this_pillar: {{ this_pillar }}.bootstrap
 
-{% if 'project_name' == project %}
+{% if 'project_name' == project_name %}
 
-    # Load project-specific pillars.
+    # Load project_name-specific pillars.
     - {{ this_pillar }}.project_name:
         defaults:
             this_pillar: {{ this_pillar }}.project_name

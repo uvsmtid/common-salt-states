@@ -2,7 +2,7 @@
 ## Conventions to locate pillar documentation ##
 
 Documents under this directory provide documentation for corresponding
-elements in pillar data strucutre used by a given project.
+elements in pillar data strucutre used by a given project_name.
 
 The pillar data structure corresponds one-to-one with this
 directory structure.
@@ -38,9 +38,9 @@ Mixing
 _and_
 (2) documentation of specific pillar file is avoided.
 In other words, all files under `docs/pillars/common` _always_ resemble pillar
-data structure used for `common` project and nothing else.
+data structure used for `common` project_name and nothing else.
 
-Instead, general layout conventions for all files are documented in [docs/structure_and_conventions.md](docs/structure_and_conventions.md) and clarified in related project documentation.
+Instead, general layout conventions for all files are documented in [docs/structure_and_conventions.md](docs/structure_and_conventions.md) and clarified in related project_name documentation.
 And because number of files under `pillars` is rather small,
 there is no strong need for such convention.
 

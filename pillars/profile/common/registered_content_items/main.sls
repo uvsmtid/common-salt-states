@@ -8,7 +8,7 @@
 #       and re-running installation state).
 
 # TODO: Consider adding definitions of all software versions which is built
-#       within project.
+#       within project_name.
 #       This is to be able to deploy specified versions (not just the latest)
 #       of software for testing. In fact, this can also help to create
 #       validation logic which ensures specific software versions.

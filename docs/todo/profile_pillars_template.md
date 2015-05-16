@@ -7,8 +7,8 @@ be able to diff existing pillars against the structure of template.
 
 # Requirements #
 
-*   Directory structure should be diff-able between any project/profile.
-    Pillar data common to two project/profile should be defined in similar
+*   Directory structure should be diff-able between any project_name/profile.
+    Pillar data common to two project_name/profile should be defined in similar
     directories and even files.
 
 *   There are some special files in pillars which should be accessible
@@ -22,7 +22,7 @@ be able to diff existing pillars against the structure of template.
     actually what bootstrap consumes for its target environments).
 
 *   There should be separation of pillars consumed by states
-    in different projects (common, or project-specific pillars) so
+    in different project_names (common, or project_name-specific pillars) so
     that it is clear in each diff what changes should be considered
     and what should not.
 
@@ -48,12 +48,12 @@ be able to diff existing pillars against the structure of template.
 
 *   Entire profile will be simply in `pillars/profile` sub-directory.
 
-*   Pillars are split into common and project specific right under
+*   Pillars are split into common and project_name specific right under
     `pillars/profile` directory as
     *   `pillars/profile/common` - common pillar data
-    *   `pillars/profile/[project-name] - project-specific pillar data
+    *   `pillars/profile/[project_name] - project_name-specific pillar data
     This will allow at least common part be diff-able with common
-    part of pillars for another project.
+    part of pillars for another project_name.
 
 *   Top file loads additional special stuff from other subdirectories
     of top `pillars` directory in root of Git repo.

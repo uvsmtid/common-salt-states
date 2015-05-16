@@ -122,7 +122,7 @@
 
         <!--
             These properties are used in `pom.xml` files to provide
-            Maven Release plugin with URL to publish projects in
+            Maven Release plugin with URL to publish artifacts in
             Maven Repository Manager (like Nexus).
         -->
         <profile>
