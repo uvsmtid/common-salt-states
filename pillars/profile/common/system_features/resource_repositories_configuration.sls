@@ -34,7 +34,7 @@ system_features:
             common-resources:
 
                 URI_prefix_scheme: 'salt://'
-                rel_resource_link_path: 'resource_roots/content'
+                rel_resource_link_path: 'resource_roots/common-resources'
 
                 # TODO: Streamline it: use just `abs_resource_target_dir_path`
                 #       without `resource_target_basename` because target is
@@ -42,7 +42,7 @@ system_features:
                 # Both `abs_resource_base_path` and fully concatenated
                 # `URI_prefix` specify base dir path relative to which value of
                 # `item_parent_dir_path` key in registered content is specified.
-                abs_resource_target_path: '/mnt/btrfs/home/uvsmtid/Sync/Salt.resources.distrib'
+                abs_resource_target_path: '/tmp/common-salt-resources.git'
 
 ###############################################################################
 # EOF
