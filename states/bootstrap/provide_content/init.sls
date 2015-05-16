@@ -36,7 +36,7 @@ pretty_yaml2json_script:
 {% if profile_name in pillar['system_features']['source_bootstrap_configuration']['enable_bootstrap_target_envs'].keys() %} # enabled profile_name
 
 # Define root for pillar data.
-# Note that currently selected profile for currently selected project
+# Note that currently selected profile_name for currently selected project
 # is not loaded under `bootstrap_target_envs` pillar key.
 # See:
 #   * docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
@@ -46,7 +46,7 @@ pretty_yaml2json_script:
 
 # Provide generated target configuration files.
 # NOTE: The configuration is repeated for
-#       each project_name, each profile, each host id even though differences
+#       each project_name, each profile_name, each host id even though differences
 #       sometimes matter only for specific project_name.
 {% for selected_host_name in target_env_pillar['system_hosts'].keys() %} # selected_host_name
 
@@ -97,7 +97,7 @@ pretty_yaml2json_script:
 
 {% endfor %} # deploy_step
 
-# Copy scripts content per each project_name and profile.
+# Copy scripts content per each project_name and profile_name.
 {{ requisite_config_file_id }}_modules_copy_script_to_packages:
     cmd.run:
         - name: 'rsync -avp {{ bootstrap_dir }}/modules/ {{ target_contents_dir }}/modules/'

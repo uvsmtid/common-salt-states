@@ -34,7 +34,7 @@
     </pluginGroups>
 
     <!--
-        TODO: Put hardcoded username/password in profile configuration.
+        TODO: Put hardcoded username/password in pillar.
     -->
     <servers>
 		<server>

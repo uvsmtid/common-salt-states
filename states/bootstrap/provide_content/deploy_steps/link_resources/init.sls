@@ -70,12 +70,12 @@
 
 {% set resource_respositories = target_env_pillar['system_features']['resource_repositories_configuration']['resource_respositories'] %}
 
-# Download resources for the project_name/profile.
-# Resources are shared among all hosts in the same project_name/profile.
+# Download resources for the project_name/profile_name.
+# Resources are shared among all hosts in the same project_name/profile_name.
 # TODO: Find a way to auto-limit resource download to only required items.
 #       Currently, each content item simply has `bootstrap_use_cases` boolean
 #       field to indicate whether it should be included or not.
-# We use `URI_prefix` from current project_name/profile pillar assuming that
+# We use `URI_prefix` from current project_name/profile_name pillar assuming that
 # it has access to all content items through the same prefix.
 {% for content_item_id in target_env_pillar['registered_content_items'].keys() %} # content_item_id
 

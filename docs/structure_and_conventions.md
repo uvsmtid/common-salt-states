@@ -74,7 +74,7 @@ to configure Salt.
     from anything else repository may contain.
 *   `pillars/bootstrap`
     This is a conventional location for special template files which
-    load pillars data for other project_names/profiles.
+    load pillars data for other project_names/profile_names.
     The templates depend on [load_bootstrap_target_envs][4]
     Salt configuration.
 

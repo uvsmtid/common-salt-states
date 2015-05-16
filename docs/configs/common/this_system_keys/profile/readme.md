@@ -1,5 +1,5 @@
 
-Key `profile` identifies specific profile for environment within
+Key `profile_name` identifies specific profile_name for environment within
 [selected project_name][1] which is to be be used for deployment on current system.
 
 See also [master_minion_id][2].

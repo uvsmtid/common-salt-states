@@ -3,14 +3,14 @@
 #
 
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
-{% set profile = salt['config.get']('this_system_keys:profile') %}
+{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
 
 system_features:
 
     source_bootstrap_configuration:
 
         enable_bootstrap_target_envs:
-            {{ profile }}:
+            {{ profile_name }}:
 
         bootstrap_package_use_cases:
             - 'initial-online-node'

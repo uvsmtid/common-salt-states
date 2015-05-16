@@ -314,14 +314,14 @@ this_system_keys:
 
 This is used in some template files to access necessary states and pillars.
 
-### Select profile ###
+### Select profile_name ###
 
-This sources as a framework require specification of profile id in Salt
+This sources as a framework require specification of profile_name in Salt
 master configuration file:
 ```
 this_system_keys:
     # ...
-    profile: profile_name
+    profile_name: profile_name
     # ...
 ```
 

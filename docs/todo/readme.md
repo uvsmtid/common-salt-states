@@ -112,11 +112,11 @@ TODO
 Setting up functionality on nodes should be done in sequence.
 
 The following are notes of manual execution of required states to set up
-new `blackbox` profile.
+new `blackbox` profile_name.
 
 'blackbox':
 
-    * Change profile name in `/srv/pillar/top.sls`.
+    * Change profile_name in `/srv/pillar/top.sls`.
 
     * After linking `/srv` to `./states` in repository, run
       the following command to sync everything (including
@@ -334,7 +334,7 @@ UPDATE: There ia already SLS for Linux (but unlikely for Windows) at the moment.
 
 ## Add generic `depository-role` content validation ##
 
-Profile descriptor contains neccessary information to run
+Descriptor contains neccessary information to run
 achiver content validation in single generic state (rather than creating
 separate states manually).
 

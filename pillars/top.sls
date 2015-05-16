@@ -18,12 +18,12 @@ base:
 
     '*':
 
-        # Load profile.
+        # Load `profile` directory.
         - profile
 
 {% if load_bootstrap_target_envs %}
 
-        # Load profiles for bootstrap target environments.
+        # Load other profile_namess for bootstrap target environments.
         - bootstrap.bootstrap_target_envs
 
 {% endif %}

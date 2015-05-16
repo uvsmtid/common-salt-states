@@ -74,7 +74,7 @@ For example, look at the current snippet from Salt master config file `/etc/salt
 ```
 this_system_keys:
     project_name: {{ project_name }}
-    profile: {{ profile_name }}
+    profile_name: {{ profile_name }}
 ```
 
 
