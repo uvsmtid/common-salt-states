@@ -2,7 +2,7 @@
 #
 
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
-{% set profile = salt['config.get']('this_system_keys:profile') %}
+{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
 
 system_features:
 
@@ -63,7 +63,14 @@ system_features:
 
             # Salt pillars.
 
-            'common-salt-pillars': git
+            # Normally, pillars are supposed to be in a separate repository.
+            #{#
+            'common-salt-states': git
+            #}#
+
+            # Salt resources.
+
+            'common-salt-resources': git
 
         # This is passed to override descriptor configuration on control
         # scripts command line. It could probably be placed directly in
@@ -78,7 +85,12 @@ system_features:
 
             'common-salt-states': '/environment.sources/common-salt-states.git'
 
+            # Normally, pillars are supposed to be in a separate repository.
+            #{#
             'common-salt-pillars': '/environment.sources/common-salt-pillars.git'
+            #}#
+
+            'common-salt-resources': '/environment.sources/common-salt-resources.git'
 
         # Central source repository configuration.
         # The following values are passed to templates for descriptor and
@@ -116,11 +128,22 @@ system_features:
 
                     branch_name: 'master'
 
+            # Normally, pillars are supposed to be in a separate repository.
+            #{#
             'common-salt-pillars':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
                     origin_uri_ssh_path: 'Works/common-salt-pillars.git'
+
+                    branch_name: 'master'
+            #}#
+
+            'common-salt-resources':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/common-salt-resources.git'
 
                     branch_name: 'master'
 

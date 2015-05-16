@@ -6,7 +6,7 @@ system_features:
     # `URI_prefix*` defines root or base relative which content
     # item location is looked up. For example, if `URI_prefix*` is
     # `http://some_file_server/depository/` than entries inside
-    # `registered_content_items` are found under this URI.
+    # `system_resources` are found under this URI.
     #
     # NOTE: There is no leading or trailing slashes in the value
     #       for `abs_resource_links_base_dir_path`.
@@ -31,10 +31,10 @@ system_features:
 
         resource_respositories:
 
-            shared_content:
+            common-resources:
 
                 URI_prefix_scheme: 'salt://'
-                rel_resource_link_path: 'resource_roots/content'
+                rel_resource_link_path: 'resource_roots/common-resources'
 
                 # TODO: Streamline it: use just `abs_resource_target_dir_path`
                 #       without `resource_target_basename` because target is
@@ -42,7 +42,7 @@ system_features:
                 # Both `abs_resource_base_path` and fully concatenated
                 # `URI_prefix` specify base dir path relative to which value of
                 # `item_parent_dir_path` key in registered content is specified.
-                abs_resource_target_path: '/mnt/btrfs/home/uvsmtid/Sync/Salt.resources.distrib'
+                abs_resource_target_path: '/home/uvsmtid/Works/common-salt-resources.git'
 
 ###############################################################################
 # EOF

@@ -24,7 +24,7 @@
 include:
     - common.ssh
 
-{% if pillar['registered_content_items']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %} # enable_installation
+{% if pillar['system_resources']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %} # enable_installation
 
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_registered_content_item_URI with context %}
@@ -58,7 +58,7 @@ jenkins_rpm_package:
         - name: jenkins
         - aggregate: True
 # Set dependencies on special Jenkins repository only when it is enabled.
-{% if pillar['registered_content_items']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %} # enable_installation
+{% if pillar['system_resources']['jenkins_yum_repository_rpm_verification_key']['enable_installation'] %} # enable_installation
         - require:
             - file: /etc/yum.repos.d/jenkins.repo
             - cmd: import_jenkins_yum_repository_key

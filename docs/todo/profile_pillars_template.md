@@ -1,40 +1,40 @@
 TODO
 
-This document is similar (related) to [managing multitude of profiles][1]
-with changed focus from (A) managing profiles in separate Git branches to
+This document is similar (related) to [managing multitude of profile_names][1]
+with changed focus from (A) managing profile_names in separate Git branches to
 (2) the idea that there should be a template in `common-salt-states` to
 be able to diff existing pillars against the structure of template.
 
 # Requirements #
 
-*   Directory structure should be diff-able between any project/profile.
-    Pillar data common to two project/profile should be defined in similar
+*   Directory structure should be diff-able between any project_name/profile_name.
+    Pillar data common to two project_name/profile_name should be defined in similar
     directories and even files.
 
 *   There are some special files in pillars which should be accessible
-    in the target environment but not loadable as profile data.
+    in the target environment but not loadable as profile_name data.
     For example, [bootstrap target environments][2] are not supposed to be
-    loaded as system profile - they are only loaded when bootstrap is
+    loaded as system profile_name - they are only loaded when bootstrap is
     generation is requied (and enabled) on the source system.
 
     In other words, pillar top should be able to load special pillar
-    data, and there should be clearly a profile pillar data (which is
+    data, and there should be clearly a profile_name pillar data (which is
     actually what bootstrap consumes for its target environments).
 
 *   There should be separation of pillars consumed by states
-    in different projects (common, or project-specific pillars) so
+    in different project_names (common, or project_name-specific pillars) so
     that it is clear in each diff what changes should be considered
     and what should not.
 
-*   Requirement to support multiple profiles in the same Git branch
+*   Requirement to support multiple profile_names in the same Git branch
     can be dropped. In other words, there may be nothing in the
-    files/dirs structure which indicates what profile is checked out
+    files/dirs structure which indicates what profile_name is checked out
     without looking at branch name in Git.
 
     In fact, it's already the case with the use of `this_system`
     directory. Because this directory always there, there is probably
     no need for this additional directory. Currently, it is simply
-    separating "this system profile" from profiles for all other
+    separating "this system profile_name" from profile_names for all other
     target environements of bootstrap. Bootstrap target environments
     should probably be moved under `boostrap` instead.
 
@@ -46,26 +46,26 @@ be able to diff existing pillars against the structure of template.
 
 # Solutions #
 
-*   Entire profile will be simply in `pillars/profile` sub-directory.
+*   Entire profile_name will be simply in `pillars/profile_name` sub-directory.
 
-*   Pillars are split into common and project specific right under
-    `pillars/profile` directory as
-    *   `pillars/profile/common` - common pillar data
-    *   `pillars/profile/[project-name] - project-specific pillar data
+*   Pillars are split into common and project_name specific right under
+    `pillars/profile_name` directory as
+    *   `pillars/profile_name/common` - common pillar data
+    *   `pillars/profile_name/[project_name] - project_name-specific pillar data
     This will allow at least common part be diff-able with common
-    part of pillars for another project.
+    part of pillars for another project_name.
 
 *   Top file loads additional special stuff from other subdirectories
     of top `pillars` directory in root of Git repo.
 
-    For example, bootstrap profiles will be under
-    `pillars/bootstrap/profiles/[profile-name]`.
+    For example, bootstrap profile_names will be under
+    `pillars/bootstrap/profile_names/[profile_name]`.
     Note that this way bootstrap will only be able to access profile
     data from other environments (not special additional one they
     possibly load from their top file).
 
 # [footer] #
 
-[1]: docs/todo/managing_multitude_of_profiles.md
+[1]: docs/todo/managing_multitude_of_profile_names.md
 [2]: docs/bootstrap.md
 

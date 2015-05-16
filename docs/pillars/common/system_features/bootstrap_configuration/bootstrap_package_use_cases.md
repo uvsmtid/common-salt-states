@@ -14,5 +14,5 @@ It should work together with [bootstrap_use_cases][2] to tailor bootstrap
 package for specific use case.
 
 [1]: docs/bootstrap.md
-[2]: docs/pillars/common/registered_content_items/_id/bootstrap_use_cases.md
+[2]: docs/pillars/common/system_resources/_id/bootstrap_use_cases.md
 

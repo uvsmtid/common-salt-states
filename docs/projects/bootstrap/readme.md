@@ -1,3 +1,3 @@
 
-This is a stub page for bootstrap project.
+This is a stub page for `bootstrap` project_name.
 

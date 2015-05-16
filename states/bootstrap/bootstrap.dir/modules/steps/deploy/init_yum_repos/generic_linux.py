@@ -130,8 +130,8 @@ def do(action_context):
             'rpm',
             '-q',
             'gpg-pubkey',
-            '--qf'
-            '%{name}-%{version}-%{release} --> %{summary}\n'
+            '--qf',
+            '%{name}-%{version}-%{release} --> %{summary}\n',
         ],
         raise_on_error = True,
         capture_stdout = False,

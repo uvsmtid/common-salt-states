@@ -2,10 +2,10 @@
 TODO: `pillar['registered_content_config']['URI_prefix']` is not used anymore.
 
 Key `URI_prefix` defines root (or base) for location of all content items
-listed under [registered_content_items][].
+listed under [system_resources][].
 
 For example, if `URI_prefix` is `http://some_file_server/depository/`
-than entries inside `registered_content_items` are looked up under this URI.
+than entries inside `system_resources` are looked up under this URI.
 
 ## Possible values ##
 
@@ -22,5 +22,5 @@ Example of valid (but possibly unavailable) `URI_prefix` values:
 
 NOTE: There is no trailing slash at the end of the value for `URI_prefix`.
 
-[registered_content_items]: docs/pillars/common/registered_content_items/readme.md
+[system_resources]: docs/pillars/common/system_resources/readme.md
 

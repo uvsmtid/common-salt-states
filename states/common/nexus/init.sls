@@ -28,7 +28,7 @@
 # <<<
 {% if grains['os'] in [ 'Fedora' ] %}
 
-{% if pillar['registered_content_items']['nexus_maven_repository_manager']['enable_installation'] %}
+{% if pillar['system_resources']['nexus_maven_repository_manager']['enable_installation'] %}
 
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_registered_content_item_URI with context %}
@@ -52,13 +52,13 @@ extract_nexus_archive:
     cmd.run:
         - name: 'tar -xvf "{{ config_temp_dir }}/nexus/nexus-bundle.tar.gz"'
         - cwd: '/usr/local'
-        - unless: 'ls -ld /usr/local/nexus-{{ pillar['registered_content_items']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
+        - unless: 'ls -ld /usr/local/nexus-{{ pillar['system_resources']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
         - require:
             - file: ensure_nexus_parent_deployment_dir
 
 fix_nexus_dir_permissiona:
     file.directory:
-        - name: '/usr/local/nexus-{{ pillar['registered_content_items']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
+        - name: '/usr/local/nexus-{{ pillar['system_resources']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
         - makedirs: False
@@ -86,7 +86,7 @@ fix_nexus_data_dir_permissiona:
 
 nexus_deployment_dir_exists:
     file.exists:
-        - name: '/usr/local/nexus-{{ pillar['registered_content_items']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
+        - name: '/usr/local/nexus-{{ pillar['system_resources']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
         - require:
@@ -95,7 +95,7 @@ nexus_deployment_dir_exists:
 set_nexus_deployment_dir_generic_symlink:
     file.symlink:
         - name: '/usr/local/nexus'
-        - target: '/usr/local/nexus-{{ pillar['registered_content_items']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
+        - target: '/usr/local/nexus-{{ pillar['system_resources']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
         - require:
             - file: nexus_deployment_dir_exists
 

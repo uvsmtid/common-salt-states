@@ -2,7 +2,7 @@
 
 {% set load_bootstrap_target_envs = salt['config.get']('this_system_keys:load_bootstrap_target_envs') %}
 
-{% set project_name = salt['config.get']('this_system_keys:project') %}
+{% set project_name = salt['config.get']('this_system_keys:project_name') %}
 
 include:
 

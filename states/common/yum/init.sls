@@ -28,7 +28,7 @@ platform_yum_repos_list:
         - makedirs: True
         - context:
             selected_pillar: {{ pillar }}
-            host_config: {{ selected_pillar['system_hosts'][grains['id']] }}
+            host_config: {{ pillar['system_hosts'][grains['id']] }}
         - user: root
         - group: root
         - mode: 644

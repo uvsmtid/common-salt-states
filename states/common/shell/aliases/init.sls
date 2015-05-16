@@ -27,7 +27,7 @@ include:
 # <<<
 {% if grains['os'] in [ 'Windows' ] %}
 
-{% set cygwin_content_config = pillar['registered_content_items']['cygwin_package_64_bit_windows'] %}
+{% set cygwin_content_config = pillar['system_resources']['cygwin_package_64_bit_windows'] %}
 
 {% if cygwin_content_config['enable_installation'] %}
 

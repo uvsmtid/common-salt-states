@@ -95,7 +95,7 @@ include:
 # <<<
 {% if grains['os'] in [ 'Windows' ] %}
 
-{% set cygwin_root_dir = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
 
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
@@ -185,7 +185,7 @@ include:
 # <<<
 {% if grains['os'] in [ 'Windows' ] %}
 
-{% set cygwin_root_dir = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
 
 '{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:

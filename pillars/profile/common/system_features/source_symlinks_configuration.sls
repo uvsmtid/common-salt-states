@@ -1,6 +1,9 @@
 ###############################################################################
 #
 
+{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
+{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
+
 system_features:
 
     # Set source symlinks to sources location on Salt master.
@@ -42,7 +45,7 @@ system_features:
                 repo_name: 'common-salt-states'
                 # Absolute path:
                 # TODO: Change it to common approach (with resources,
-                #       or possibly pluggable projects) so that value
+                #       or possibly pluggable project_names) so that value
                 #       `/srv/states` can be set for Salt config files
                 #       generated for boostrap (not just hardcoded).
                 #       See:
@@ -52,15 +55,17 @@ system_features:
                 rel_target_path: 'states'
 
             salt_pillars_roots:
-                repo_name: 'common-salt-pillars'
+                # Normally, pillars are supposed to be in a separate repository.
+                repo_name: 'common-salt-states'
                 abs_link_base_path: '/srv/pillars'
                 rel_target_path: 'pillars'
 
             # Pillars for bootstrap environments.
 
-            common.profile_name_bootstrap_pillars:
-                repo_name: 'common-salt-pillars'
-                abs_link_base_path: '/srv/pillars/bootstrap/pillars/profile_name'
+            common.{{ profile_name }}_bootstrap_pillars:
+                # Normally, pillars are supposed to be in a separate repository.
+                repo_name: 'common-salt-states'
+                abs_link_base_path: '/srv/pillars/bootstrap/pillars/{{ profile_name }}'
                 rel_target_path: 'pillars'
 
             # NOTE: In order to access the following paths from Salt master,
@@ -78,6 +83,11 @@ system_features:
                 repo_name: 'common-salt-states'
                 abs_link_base_path: '/srv/sources/source_roots/common-salt-states'
                 rel_target_path: ''
+
+            # NOTE: Pillars repository is not supposed to be exposed
+            #       through `salt://` accesss via symlinks.
+
+            # NOTE: Resources repository is not supposed to be set here.
 
 ###############################################################################
 # EOF

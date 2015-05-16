@@ -1,9 +1,9 @@
 
 Key `load_bootstrap_target_envs` is the root key which lists available
-profiles enabled for generating [bootstrap][1] packages.
+profile_names enabled for generating [bootstrap][1] packages.
 
-Normally, sub-keys (profiles) have the same meaning
-and correspond to [profile][3].
+Normally, sub-keys (profile_names) have the same meaning
+and correspond to [profile_name][3].
 
 The bootstrap target environments have to be specified explicitly in Salt
 configuration because they must be allowed through the top pillar file under
@@ -13,7 +13,7 @@ pillar data itself because pillar data is not available until it is loaded.
 Once loaded, pillar data for corresponding pillar of corresponding project
 is available at:
 ```
-pillar['bootstrap_target_envs']['PROJECT_NAME.PROFILE_NAME']
+pillar['bootstrap_target_envs']['project_name.profile_name']
 ```
 
 Note that there is [additional key][6] in pillar data
@@ -26,17 +26,17 @@ In order for environment to be enabled, it should appear in both:
 
 ```
 this_system_keys:
-    project: projectA
-    profile: whatever
+    project_name: project_name_A
+    profile_name: whatever
     # ...
     load_bootstrap_target_envs:
-        profileA1:
-        profileA2:
+        profile_name_A1:
+        profile_name_A2:
 ```
 
 [1]: docs/bootstrap.md
-[2]: docs/configs/common/this_system_keys/project/readme.md
-[3]: docs/configs/common/this_system_keys/profile/readme.md
+[2]: docs/configs/common/this_system_keys/project_name/readme.md
+[3]: docs/configs/common/this_system_keys/profile_name/readme.md
 [4]: #example
 [5]: docs/pillars/bootstrap/bootstrap_target_envs/readme.md
 [6]: docs/pillars/bootstrap/system_features/source_bootstrap_configuration/enable_bootstrap_target_envs/readme.md

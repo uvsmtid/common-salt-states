@@ -35,7 +35,7 @@
 # Nothing to do.
 {% elif rpm_source_conf['source_type'] == 'rpm' %} # source_type
 
-{% set content_item_conf = pillar['registered_content_items'][rpm_source_conf['resource_id']] %}
+{% set content_item_conf = pillar['system_resources'][rpm_source_conf['resource_id']] %}
 
 download_rpm_package_{{ java_environment_id }}_{{ rpm_source_name }}:
     file.managed:

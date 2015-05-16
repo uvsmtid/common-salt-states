@@ -1,7 +1,7 @@
 @echo on
 REM This script starts OpenSSH daemon for Cygwin
 
-{% set cygwin_root_dir = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
 
 REM Cygwin root directory is hardcoded/fixed (it's a convention)
 IF DEFINED PROGRAMFILES(x86) (

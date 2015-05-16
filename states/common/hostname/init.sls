@@ -22,6 +22,10 @@
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
 
+# TODO: On CentOS 7.0 it is actually the same way as on Fedora (above)
+#       or even both, but if there is file like above, CentOS use it
+#       instead of taking it from `/etc/sysconfig/network`.
+
 /etc/sysconfig/network:
     file.replace:
         - pattern: "^\\s*HOSTNAME=.*$"

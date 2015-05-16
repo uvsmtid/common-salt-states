@@ -3,7 +3,9 @@
 #
 
 include:
-    - {{ this_pillar }}.bootstrap
+    - {{ this_pillar }}.yum
+    - {{ this_pillar }}.salt
+    - {{ this_pillar }}.dependencies
 
 ###############################################################################
 # EOF

@@ -15,7 +15,7 @@ include:
 {% if grains['kernel'] == 'Windows' %}
 {% set config_temp_dir = pillar['windows_config_temp_dir'] %}
 {% set windows_config_temp_dir_cygwin = pillar['windows_config_temp_dir_cygwin'] %}
-{% set cygwin_root_dir = pillar['registered_content_items']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
 {% endif %}
 
 {% if pillar['system_features']['deploy_environment_sources']['feature_enabled'] %}

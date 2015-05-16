@@ -178,9 +178,9 @@ The following command will test replies from all (`*`) accepted minions:
 salt '*' test.ping
 ```
 
-## Multi-project organization ##
+## Multi-project_name organization ##
 
-These sources are the framework to provide automation for multiple projects.
+These sources are the framework to provide automation for multiple project_names.
 
 The necessary details on how multiple porjects are used can be
 found on [this page][2].
@@ -203,10 +203,10 @@ a file server (with `salt://` URL scheme to access files from states).
 
 The following section highlights some important configuration for
 Salt master configuration file (`/etc/salt/master`) to use automation
-for specific project, provide access to sources, resources, etc.
+for specific project_name, provide access to sources, resources, etc.
 
 These steps should be reviewed when Salt is reconfigured to
-use another project.
+use another project_name.
 
 ### Specify files and states location in Salt configuration ###
 
@@ -251,8 +251,8 @@ Checkout (these) common Salt states sources (if not done yet):
 git clone git@host:user/common-salt-states.git ~/Works/common-salt-states.git
 ```
 
-Project-specific Salt states are supposed to be in separate repository.
-Checkout project-specific Salt states sources (if not done yet):
+project_name-specific Salt states are supposed to be in separate repository.
+Checkout project_name-specific Salt states sources (if not done yet):
 ```
 git clone git@host:user/common-salt-states.git ~/Works/common-salt-states.git
 ```
@@ -262,10 +262,10 @@ Set `/srv/states` symlink to the Salt common states sources, for example:
 ln -sfn /home/[username]/Works/common-salt-states.git/states /srv/states
 ```
 
-### Link project-specific Salt states ###
+### Link project_name-specific Salt states ###
 
 Add symlink _within_ (under) Salt common states pointing to
-repository with project-specific Salt states, for example:
+repository with project_name-specific Salt states, for example:
 ```
 ln -sfn /home/[username]/Works/[project_name]-salt-states.git/states/[project_name] /srv/states/[project_name]
 ```
@@ -282,10 +282,10 @@ pillar_roots:
 
 ### Link Salt pillars ###
 
-Pillars are always project-specific (they provide configuration data
-for both common Salt states and project-specific Salt states).
+Pillars are always project_name-specific (they provide configuration data
+for both common Salt states and project_name-specific Salt states).
 
-Checkout project-specific Salt pillars sources (if not done yet):
+Checkout project_name-specific Salt pillars sources (if not done yet):
 ```
 git clone git@host:user/[project_name]-salt-pillars.git ~/Works/[project_name]-salt-pillars.git
 ```
@@ -300,28 +300,28 @@ Result of this step should look like this:
 /srv/pillars               -> /home/[username]/Works/[project_name]-salt-pillars.git/pillars
 ```
 
-### Select project ###
+### Select project_name ###
 
-This sources as a framework require specification of project id in Salt
+This sources as a framework require specification of project_name in Salt
 master configuration file:
 ```
 this_system_keys:
     # ...
-    # Salt master orchestrates only one project:
-    project: project_name
+    # Salt master orchestrates only one project_name:
+    project_name: project_name
     # ...
 ```
 
 This is used in some template files to access necessary states and pillars.
 
-### Select profile ###
+### Select profile_name ###
 
-This sources as a framework require specification of profile id in Salt
+This sources as a framework require specification of profile_name in Salt
 master configuration file:
 ```
 this_system_keys:
     # ...
-    profile: profile_name
+    profile_name: profile_name
     # ...
 ```
 
@@ -357,7 +357,7 @@ and Salt minion services.
 
 ## Next steps ##
 
-See project-specific documentation which states to run to complete setup.
+See project_name-specific documentation which states to run to complete setup.
 
 In majority of cases, when all minions are already connected,
 simply run `highstate` to setup everything:
@@ -409,7 +409,7 @@ This section demonstrates how to use master-less Salt minion.
 # [footer] #
 
 [1]: docs/bootstrap.md
-[2]: docs/external_projects.md
+[2]: docs/external_project_names.md
 [3]: docs/orchestration.md
 [4]: http://docs.saltstack.com/
 

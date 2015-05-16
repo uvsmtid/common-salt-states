@@ -37,11 +37,11 @@ Additional labels for pre-release and build metadata are available as extensions
 Any pillars repository (`*-salt-pillars`) is specific to deployment and
 cannot be part of framework release.
 
-Any project states (`*-salt-states`) repository is specific to project and
+Any project_name states (`*-salt-states`) repository is specific to project_name and
 cannot be part of framework release.
 
 Therefore, the framework logically is `common-salt-states` source code
-which may be common for both multiple projects and multiple deployments.
+which may be common for both multiple project_names and multiple deployments.
 
 ## Choice of release name ##
 

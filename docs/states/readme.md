@@ -2,10 +2,10 @@
 ## Conventions to locate documentation for files under `states` directory ##
 
 Each document under this directory provides documentation for corresponding
-file under a given project.
+file under a given project_name.
 
 The file in `states` directory and its documentation file matching one-to-one.
-For example in `common` project:
+For example in `common` project_name:
 * [File](docs/states/common/jenkins/master.sls.md) `common/jenkins/master.sls.md` documents `common.jenkins.master` state file.
 * [File](docs/states/common/jenkins/init.sls.md) `common/jenkins/init.sls.md` documents `common.jenkins` state file.
 * [File](docs/states/common/jenkins/credentials.lib.sls.md) `common/jenkins/credentials.lib.sls.md` documents `credentials.lib.sls.md` _template file_ (not a state).

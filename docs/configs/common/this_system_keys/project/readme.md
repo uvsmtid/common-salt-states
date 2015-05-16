@@ -1,8 +1,0 @@
-
-Key `project` selects name of the project. This together with
-[selected profile name][1] identifies deployment configuration to be used
-for this system.
-
-[1]: docs/configs/common/this_system_keys/profile/readme.md
-
-

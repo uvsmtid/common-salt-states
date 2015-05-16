@@ -9,7 +9,7 @@
 include:
 
 {% for sub_item in [
-        'registered_content_items'
+        'system_resources'
         ,
         'system_features'
     ]

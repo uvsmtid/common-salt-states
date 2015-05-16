@@ -19,6 +19,7 @@ system_features:
                 os_platform_configs:
 
                     f21:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
@@ -28,6 +29,7 @@ system_features:
                         #       primary deployments.
 
                     rhel7:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -36,6 +38,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                     rhel5:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -50,6 +53,7 @@ system_features:
                 os_platform_configs:
 
                     f21:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
@@ -59,6 +63,7 @@ system_features:
                         #       primary deployments.
 
                     rhel7:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -67,6 +72,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                     rhel5:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -81,6 +87,7 @@ system_features:
                 os_platform_configs:
 
                     rhel7:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
@@ -89,6 +96,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
 
                     rhel5:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
@@ -105,6 +113,7 @@ system_features:
                 os_platform_configs:
 
                     rhel5:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-$releasever-$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
@@ -125,6 +134,7 @@ system_features:
                 os_platform_configs:
 
                     f21:
+                        repo_enabled: False
 
                         yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
@@ -135,6 +145,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
 
                     rhel7:
+                        repo_enabled: False
 
                         yum_repo_baseurl: 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
@@ -157,6 +168,7 @@ system_features:
                 os_platform_configs:
 
                     f21:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
@@ -167,6 +179,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
                     rhel7:
+                        repo_enabled: True
 
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
