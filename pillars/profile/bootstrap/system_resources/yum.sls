@@ -12,7 +12,7 @@ system_resources:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/epel
+        item_parent_dir_path: bootstrap/yum/epel
         item_base_name: RPM-GPG-KEY-EPEL-5.217521F6.key.txt
         item_content_hash: md5=895459095f6dda788e022bb15a177a73
 
@@ -24,8 +24,8 @@ system_resources:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/epel
-        item_base_name: RPM-GPG-KEY-EPEL-7.352C64E5.txt
+        item_parent_dir_path: bootstrap/yum/epel
+        item_base_name: RPM-GPG-KEY-EPEL-7.352C64E5.key.txt
         item_content_hash: md5=2bab86176f606dc3a89deb55c8fbb41a
 
     # PostgreSQL YUM repo GPG RPM key.
@@ -34,7 +34,7 @@ system_resources:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/postgresql
+        item_parent_dir_path: bootstrap/yum/postgresql
         item_base_name: RPM-GPG-KEY-PGDG-93
         item_content_hash: md5=78b5db170d33f80ad5a47863a7476b22
 
@@ -44,7 +44,7 @@ system_resources:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/rhel5
+        item_parent_dir_path: bootstrap/yum/rhel5
         item_base_name: RPM-GPG-KEY-CentOS-5
         item_content_hash: md5=5f7bafa185a848e2f689dba1918dcf64
 
@@ -54,7 +54,7 @@ system_resources:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/rhel7
+        item_parent_dir_path: bootstrap/yum/rhel7
         item_base_name: RPM-GPG-KEY-CentOS-7
         item_content_hash: md5=c45e7e322681292ce4c1d2a6d392c4b5
 
@@ -64,7 +64,7 @@ system_resources:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/openstack/juno
+        item_parent_dir_path: bootstrap/yum/openstack
         item_base_name: RPM-GPG-KEY-RDO-Juno
         item_content_hash: md5=b401244ed3cbc53d9f2b921f9b4d3086
 
