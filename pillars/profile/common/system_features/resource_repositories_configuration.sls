@@ -42,7 +42,7 @@ system_features:
                 # Both `abs_resource_base_path` and fully concatenated
                 # `URI_prefix` specify base dir path relative to which value of
                 # `item_parent_dir_path` key in registered content is specified.
-                abs_resource_target_path: '/tmp/common-salt-resources.git'
+                abs_resource_target_path: '/home/uvsmtid/Works/common-salt-resources.git'
 
 ###############################################################################
 # EOF

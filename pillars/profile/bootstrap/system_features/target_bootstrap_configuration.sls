@@ -15,7 +15,8 @@ system_features:
         #       is specified (which bootstraps the rest).
         bootstrap_sources:
             states: common-salt-states
-            pillars: common-salt-pillars
+            # Normally, pillars are supposed to be in a separate repository.
+            pillars: common-salt-states
 
         # Repositories which actually get exported.
         export_sources:
@@ -23,8 +24,8 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: master
-            common-salt-pillars:
+                branch_name: develop
+            common-salt-resources:
                 export_enabled: True
                 export_method: clone
                 export_format: dir

@@ -42,7 +42,7 @@ copy this directory in new repository and checked it in, for example:
 mkdir /home/[username]/Works/[project_name]-salt-pillars.git
 cd /home/[username]/Works/[project_name]-salt-pillars.git
 git init
-cp -r /home/[username]/Works/common-salt-pillars.git/pillars /home/[username]/Works/[project_name]-salt-pillars.git
+cp -r /home/[username]/Works/common-salt-states.git/pillars /home/[username]/Works/[project_name]-salt-pillars.git
 git add pillars
 git commit -m 'Instantiate pillar template'
 ```
