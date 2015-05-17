@@ -58,6 +58,16 @@ system_features:
         #
         job_configs:
 
+            update_salt_master_sources:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/update_salt_master_sources.xml'
+
 ###############################################################################
 # EOF
 ###############################################################################
