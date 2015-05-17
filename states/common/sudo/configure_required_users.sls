@@ -24,9 +24,11 @@ include:
 /etc/sudoers_{{ case_name }}_{{ sudo_username }}:
     file.blockreplace:
         - name: /etc/sudoers
+        #{# DISABLED: `file.exists` does not support this (yet)
         - user: root
         - group: root
         - mode: 400
+        #}#
         - marker_start: "# <<< AUTOMATICALLY MANAGED by Salt for {{ sudo_username }} "
         - content: |
             {% if pillar['system_features']['configure_sudo_for_specified_users']['include_primary_users']['disable_password'] %}

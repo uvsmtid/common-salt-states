@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>{{ job_description }}</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>{{ job_assigned_host }}</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <jenkins.triggers.ReverseBuildTrigger>
+      <spec></spec>
+      <upstreamProjects>{{ trigger_after_jobs }}</upstreamProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+        <completeBuild>true</completeBuild>
+      </threshold>
+    </jenkins.triggers.ReverseBuildTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>
+
+        # This script relies on `systemd` commands.
+
+        # Update Salt config
+        sudo salt-call state.sls common.salt.master.update_config test=False
+        sudo salt-call state.sls common.salt.minion.update_config test=False
+
+        # TODO: Capture errors from Salt.
+        #       At the moment it does not return exit/error code.
+        #       See: https://github.com/saltstack/salt/issues/18510
+        # SOLUTION: Use this script:
+        #       states/bootstrap/bootstrap.dir/modules/utils/salt_output.py
+
+        # Start Salt services with new config.
+        sudo systemctl restart salt-master
+        # Pause for 5 sec.
+        ping -c 5 salt
+        sudo systemctl restart salt-minion
+        # Pause for 5 sec.
+        ping -c 5 salt
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

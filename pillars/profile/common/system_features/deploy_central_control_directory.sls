@@ -15,7 +15,9 @@ system_features:
         #       For example, Jenkins job configuration sets control URL
         #       based on these fields.
 
-        feature_enabled: True
+        # TODO: This is an obsolete approach with control scripts in special
+        #       external repository. Disable until a better solution found.
+        feature_enabled: False
 
         # Path to central configuration relative to source code root (see
         # `source_symlinks` in `source_symlinks_configuration` feature):

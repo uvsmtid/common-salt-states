@@ -17,11 +17,9 @@ install_salt_minion:
     service.running:
         - name: salt-minion
         - enable: True
-# No mananaging of Salt configuration.
-# TODO: Validation states for Salt configuration are still OK to add.
-# All configuration is inside /etc/salt/minion to be consistent with Windows.
-#        - require:
-#            - file: /etc/salt/minion_id
+# No mananaging of Salt configuration (which may restart Salt serivce).
+# See `common.salt.minion.update_config` state to
+# update config file without restart.
 
 {% endif %}
 # >>>

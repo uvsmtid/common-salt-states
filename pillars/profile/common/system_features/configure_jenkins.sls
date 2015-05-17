@@ -58,6 +58,111 @@ system_features:
         #
         job_configs:
 
+            update_salt_master_sources:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    []
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/update_salt_master_sources.xml'
+
+            restart_salt_services:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - update_salt_master_sources
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/restart_salt_services.xml'
+
+            run_salt_highstate_master:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - restart_salt_services
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_highstate_master.xml'
+
+
+            build_bootstrap_package:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - run_salt_highstate_master
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/build_bootstrap_package.xml'
+
+            configure_vagrant:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - build_bootstrap_package
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/configure_vagrant.xml'
+
+            destroy_vagrant_hosts:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - configure_vagrant
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/destroy_vagrant_hosts.xml'
+
+            instantiate_vagrant_hosts:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - destroy_vagrant_hosts
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/instantiate_vagrant_hosts.xml'
+
+            run_salt_highstate_minions:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - instantiate_vagrant_hosts
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_highstate_minions.xml'
+
 ###############################################################################
 # EOF
 ###############################################################################

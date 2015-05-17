@@ -41,6 +41,7 @@ system_host_roles:
     maven-build-server-role:
         assigned_hosts:
             - {{ master_minion_id }}
+            - rhel7_minion
 
     # Jenkins master is always linux.
     jenkins-master-role:
@@ -50,6 +51,8 @@ system_host_roles:
     jenkins-linux-slave-role:
         assigned_hosts:
             - {{ master_minion_id }}
+            - rhel5_minion
+            - rhel7_minion
 
     jenkins-windows-slave-role:
         assigned_hosts: []
