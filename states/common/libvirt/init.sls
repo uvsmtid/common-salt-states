@@ -17,17 +17,6 @@ libvirt_packages_installation:
             - vagrant-libvirt
         - aggregate: True
 
-libvirtd_service:
-    service.running:
-        - name: libvirtd
-        - require:
-            - pkg: libvirt_packages_installation
-        - watch:
-            - file: /etc/sysconfig/libvirtd
-            - file: /etc/libvirt/libvirtd.conf
-            - file: /etc/libvirt/qemu.conf
-
-
 /etc/sysconfig/libvirtd:
     file.managed:
         - source: salt://common/libvirt/libvirtd.sysconfig
@@ -47,6 +36,27 @@ libvirtd_service:
         - require:
             - pkg: libvirt_packages_installation
 
+# Create `libvirt` group.
+# And add primary user to `libvirt` group.
+# See:
+#   *   http://linuxserver.io/?p=403
+#   *   http://wiki.libvirt.org/page/Failed_to_connect_to_the_hypervisor#Permission_denied
+
+create_libvirt_group:
+    group.present:
+        - name: libvirt
+        - addusers:
+          - {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+
+libvirtd_service:
+    service.running:
+        - name: libvirtd
+        - require:
+            - pkg: libvirt_packages_installation
+        - watch:
+            - file: /etc/sysconfig/libvirtd
+            - file: /etc/libvirt/libvirtd.conf
+            - file: /etc/libvirt/qemu.conf
 
 {% endif %}
 # >>>

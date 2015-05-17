@@ -24,7 +24,8 @@ include:
         # TODO:
         #- common.orchestrate.wraps.router-role
         #- common.orchestrate.wraps.resolver-role
-        #- common.orchestrate.wraps.hypervisor-role
+
+        - common.orchestrate.wraps.hypervisor-role
 
         - common.orchestrate.wraps.depository-role
 
