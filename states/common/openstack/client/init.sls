@@ -15,6 +15,11 @@
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 {% from resources_macro_lib import get_registered_content_item_base_name with context %}
 
+
+# DISABLE: The repository is configured by stanard all-in-one YUM config.
+#          See: common.yum
+#{#
+
 # TODO: NOTE that this yum repository does not work well behind a proxy
 #       likely due to the fact that the repo is only accessible over `https`,
 #       while URL in the YUM uses `http`.
@@ -34,14 +39,19 @@ enable_openstack-juno_yum_repository:
         - require:
             - file: '{{ local_rpm_file_name }}'
 
+#}#
+
 install_openstack_client_packages:
     pkg.installed:
         - pkgs:
             - python-glanceclient
             - python-novaclient
             - python-keystoneclient
+# DISABLE: See explanation above.
+#{#
         - require:
             - cmd: enable_openstack-juno_yum_repository
+#}#
 
 openstack_client_environment_variables_script:
     file.managed:
