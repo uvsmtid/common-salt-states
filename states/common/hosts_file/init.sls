@@ -18,9 +18,11 @@ managed_hosts_file:
         - name: 'C:\Windows\system32\drivers\etc\hosts'
 {% endif %}
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+        #{# DISABLED: `file.exists` does not support this (yet)
         - user: root
         - group: root
         - mode: 644
+        #}#
 {% endif %}
         - backup: '.salt.backup'
         - append_if_not_found: True
