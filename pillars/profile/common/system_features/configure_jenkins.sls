@@ -78,6 +78,16 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/build_bootstrap_package.xml'
 
+            configure_vagrant:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/configure_vagrant.xml'
+
 ###############################################################################
 # EOF
 ###############################################################################
