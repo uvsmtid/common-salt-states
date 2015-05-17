@@ -2,7 +2,8 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+# NOTE: RHEL5 does not include `maven` package.
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 install_maven_package:
     pkg.installed:
@@ -32,7 +33,7 @@ maven_environment_variables_script:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 {% endif %}
 # >>>
