@@ -84,7 +84,7 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/restart_salt_services.xml'
 
-            build_bootstrap_package:
+            run_salt_highstate_master:
                 enabled: True
 
                 restrict_to_system_role:
@@ -92,6 +92,20 @@ system_features:
 
                 trigger_after_jobs:
                     - restart_salt_services
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_highstate_master.xml'
+
+
+            build_bootstrap_package:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - run_salt_highstate_master
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -135,6 +149,19 @@ system_features:
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/instantiate_vagrant_hosts.xml'
+
+            run_salt_highstate_minions:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - instantiate_vagrant_hosts
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_highstate_minions.xml'
 
 ###############################################################################
 # EOF
