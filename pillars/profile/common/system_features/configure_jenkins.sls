@@ -64,6 +64,9 @@ system_features:
                 restrict_to_system_role:
                     - controller-role
 
+                trigger_after_jobs:
+                    []
+
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/update_salt_master_sources.xml'
@@ -73,6 +76,9 @@ system_features:
 
                 restrict_to_system_role:
                     - controller-role
+
+                trigger_after_jobs:
+                    - update_salt_master_sources
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -84,6 +90,9 @@ system_features:
                 restrict_to_system_role:
                     - controller-role
 
+                trigger_after_jobs:
+                    - build_bootstrap_package
+
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/configure_vagrant.xml'
@@ -93,6 +102,9 @@ system_features:
 
                 restrict_to_system_role:
                     - controller-role
+
+                trigger_after_jobs:
+                    - configure_vagrant
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
