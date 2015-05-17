@@ -15,7 +15,11 @@ system_features:
         #     on all required minions.
         #   - Use control scripts on each minion to pull the rest of sources.
 
-        feature_enabled: True
+        # TODO: This is an obsolete approach with control scripts in special
+        #       external repository. Disable until a better solution found.
+        #       Even though environment sources are not deployed,
+        #       configuration is still central for all source code repos.
+        feature_enabled: False
 
         # Specify hosts by their hostname (not minion id) to avoid pushing
         # sources to them.
