@@ -16,22 +16,9 @@ salt_master:
         - enable: True
         - require:
             - pkg: salt_master
-# No mananaging of Salt configuration.
-        # Use `require` instead of `watch` to avoid restarting the service
-#        - require:
-#            - file: /etc/salt/master
-
-#/etc/salt/master:
-#    file.managed:
-#        - source: salt://common/salt/master/master.conf
-#        - user: root
-#        - group: root
-#        - mode: 644
-
-
-# TODO: Add master config validation:
-#       - sources link mapping
-#       - custom config keys
+# No mananaging of Salt configuration (which may restart Salt serivce).
+# See `common.salt.master.update_config` state to
+# update config file without restart.
 
 {% endif %}
 # >>>
