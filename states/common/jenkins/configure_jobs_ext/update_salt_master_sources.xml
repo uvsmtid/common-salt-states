@@ -26,8 +26,10 @@
   <builders>
     <hudson.tasks.Shell>
       <command>
+
         echo TODO: Get latest sources on Salt master.
         echo The idea is to get updates to be able to update system config.
+
       </command>
     </hudson.tasks.Shell>
   </builders>

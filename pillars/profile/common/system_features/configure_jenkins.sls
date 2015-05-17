@@ -110,7 +110,7 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/configure_vagrant.xml'
 
-            instantiate_vagrant_hosts:
+            destroy_vagrant_hosts:
                 enabled: True
 
                 restrict_to_system_role:
@@ -118,6 +118,19 @@ system_features:
 
                 trigger_after_jobs:
                     - configure_vagrant
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/destroy_vagrant_hosts.xml'
+
+            instantiate_vagrant_hosts:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - destroy_vagrant_hosts
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
