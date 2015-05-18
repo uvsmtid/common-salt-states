@@ -97,7 +97,6 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_highstate_master.xml'
 
-
             build_bootstrap_package:
                 enabled: True
 

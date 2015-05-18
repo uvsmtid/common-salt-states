@@ -27,7 +27,7 @@
     <hudson.tasks.Shell>
       <command>
 
-        sudo salt-call state.sls common.vagrant test=False
+        sudo salt-call state.sls common.orchestrate.wraps.hypervisor-role test=False
 
         # TODO: Capture errors from Salt.
         #       At the moment it does not return exit/error code.
