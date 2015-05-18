@@ -6,12 +6,7 @@
         <specifications/>
       </com.cloudbees.plugins.credentials.domains.Domain>
       <java.util.concurrent.CopyOnWriteArrayList>
-{% set jenkins_slaves =
-    pillar['system_host_roles']['jenkins-linux-slave-role']['assigned_hosts']
-    +
-    pillar['system_host_roles']['jenkins-windows-slave-role']['assigned_hosts']
-%}
-{% for jenkins_slave_id in jenkins_slaves %}
+{% for jenkins_slave_id in pillar['system_host_roles']['jenkins-slave-role']['assigned_hosts'] %}
 {% set jenkins_slave_config = pillar['system_hosts'][jenkins_slave_id] %}
         <com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey plugin="ssh-credentials@1.10">
           <scope>GLOBAL</scope>

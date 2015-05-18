@@ -32,8 +32,7 @@ include:
         - common.orchestrate.wraps.maven-build-server-role
 
         - common.orchestrate.wraps.jenkins-master-role
-        - common.orchestrate.wraps.jenkins-linux-slave-role
-        - common.orchestrate.wraps.jenkins-windows-slave-role
+        - common.orchestrate.wraps.jenkins-slave-role
 
         # This wrap handles both:
         # - maven-repository-upstream-manager-role
