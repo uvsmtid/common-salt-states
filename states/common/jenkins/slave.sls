@@ -6,7 +6,7 @@ include:
     - common.ssh
 # Jenkins on RHEL5 requires non-pre-installed Java (and the following state
 # installs correct version from EPEL):
-#   https://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins+on+RedHat+distributions#InstallingJenkinsonRedHatdistributions-ImportantNoteonCentOSJava
+#   https://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins+on+Red+Hat+distributions
     - common.java
 
 jenkins_slave_dummy:
