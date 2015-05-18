@@ -22,6 +22,8 @@ include:
         'system_resources'
         ,
         'system_features'
+        ,
+        'system_orchestrate_stages'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

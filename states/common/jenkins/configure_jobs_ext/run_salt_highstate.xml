@@ -27,12 +27,10 @@
     <hudson.tasks.Shell>
       <command>
 
-        # Run highstate for each minion (except master minion).
-        {% for selected_minion_id in pillar['system_hosts'].keys() %}
-        {% if not selected_minion_id in pillar['system_host_roles']['controller-role']['assigned_hosts'] %}
-        sudo salt "{{ selected_minion_id }}" state.highstate test=False
-        {% endif %}
-        {% endfor %}
+        # Run `highstate` separately as there is no known way to ask
+        # `orchestrate` to run it with test=False.
+        # TODO: How to force test=False in `highstate` via `orchestrate`?
+        sudo salt '*' -l debug state.highstate test=False
 
         # TODO: Capture errors from Salt.
         #       At the moment it does not return exit/error code.

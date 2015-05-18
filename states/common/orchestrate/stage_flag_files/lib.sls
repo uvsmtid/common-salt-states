@@ -13,7 +13,7 @@
 
 {% macro stage_flag_file_prerequisites(stage_flag_id) %}
 
-{% set config = pillar['orchestration_stages']['stage_flag_files'][stage_flag_id] %}
+{% set config = pillar['system_orchestrate_stages']['stage_flag_files'][stage_flag_id] %}
 
 {% if config['enable_prerequisite_enforcement'] %}
 {% for prereq in config['prerequisites'] %}
@@ -38,7 +38,7 @@
 
 {% macro stage_flag_file_prerequisites_include(project_name, stage_flag_id) %}
 
-{% set config = pillar['orchestration_stages']['stage_flag_files'][stage_flag_id] %}
+{% set config = pillar['system_orchestrate_stages']['stage_flag_files'][stage_flag_id] %}
 
 {% if config['enable_prerequisite_enforcement'] %}
 {% for prereq in config['prerequisites'] %}
@@ -67,8 +67,8 @@
 {% macro stage_flag_file_sls(project_name, stage_flag_id) %}
 
 {% set control_host = pillar['system_hosts'][pillar['system_host_roles']['controller-role']['assigned_hosts'][0]] %}
-{% set dir_name = control_host['primary_user']['posix_user_home_dir'] + '/' + pillar['orchestration_stages']['deployment_directory_path'] %}
-{% set config = pillar['orchestration_stages']['stage_flag_files'][stage_flag_id] %}
+{% set dir_name = control_host['primary_user']['posix_user_home_dir'] + '/' + pillar['system_orchestrate_stages']['deployment_directory_path'] %}
+{% set config = pillar['system_orchestrate_stages']['stage_flag_files'][stage_flag_id] %}
 
 # Include prerequisites of stage flag file:
 include:
@@ -77,7 +77,7 @@ include:
     - {{ project_name }}.orchestrate.stages.{{ stage_flag_id }}
 
     # Include all pre-requisites:
-    {{ stage_flag_file_prerequisites_include(stage_flag_id) }}
+    {{ stage_flag_file_prerequisites_include(project_name, stage_flag_id) }}
 
 # State name is a file name prefixed with `stage_flag_`:
 'stage_flag_{{ stage_flag_id }}':
@@ -103,8 +103,8 @@ include:
 {% macro stage_flag_file_create(unique_prefix, stage_flag_id, orchestrate_dep_list) %}
 
 {% set control_host = pillar['system_hosts'][pillar['system_host_roles']['controller-role']['assigned_hosts'][0]] %}
-{% set dir_name = control_host['primary_user']['posix_user_home_dir'] + '/' + pillar['orchestration_stages']['deployment_directory_path'] %}
-{% set config = pillar['orchestration_stages']['stage_flag_files'][stage_flag_id] %}
+{% set dir_name = control_host['primary_user']['posix_user_home_dir'] + '/' + pillar['system_orchestrate_stages']['deployment_directory_path'] %}
+{% set config = pillar['system_orchestrate_stages']['stage_flag_files'][stage_flag_id] %}
 
 {% if config['enable_auto_creation'] %}
 
