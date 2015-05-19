@@ -9,7 +9,7 @@ system_features:
         # Personal svn configuration.
         #   TODO: it is not used anywere at the moment.
         svn:
-            nel_repo:
+            some_repo:
                 url: 'TODO'
                 username: TODO
                 password: TODO

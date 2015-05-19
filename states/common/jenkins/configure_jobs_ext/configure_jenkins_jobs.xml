@@ -31,7 +31,7 @@
         #       are the same host.
 
         # Run highstate on Salt master minion only.
-        sudo salt-call state.highstate test=False
+        sudo salt-call state.sls common.jenkins.configure_jobs test=False
 
         # TODO: Capture errors from Salt.
         #       At the moment it does not return exit/error code.

@@ -19,7 +19,7 @@ system_hosts:
             host_bridge_interface: em1
             memory_size: 2024
             cpus_number: 2
-        consider_online_for_remote_connections: False
+        consider_online_for_remote_connections: True
         os_type: linux
         os_platform: rhel5
         hostname: rhel5-minion
@@ -32,8 +32,8 @@ system_hosts:
         primary_user:
             username: uvsmtid
             password: uvsmtid
-            password_hash: ~ # N/A
-            enforce_password: False
+            password_hash: '$1$kBDpSGYe$bk8YAwQshTb/LTvTTFr/4.'
+            enforce_password: True
 
             primary_group: uvsmtid
 

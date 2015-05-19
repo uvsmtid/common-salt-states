@@ -44,13 +44,14 @@ system_features:
         extra_private_key_deployment_destinations:
 
             # TODO
-            hosts_by_minion_id: {}
+            hosts_by_minion_id:
                 #minion_id:
                 #    username_item:
                 #        username: username
                 #        primary_group: username
                 #        posix_user_home_dir: '/home/username'
                 #        posix_user_home_dir_windows: 'C:\cygwin64\home\username'
+                {}
 
             # DONE: Implemented.
             hosts_by_host_role:

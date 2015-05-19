@@ -46,6 +46,10 @@ system_features:
                 os_platform_configs:
                     f21:
                         JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
+                    rhel7:
+                        JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
+                    rhel5:
+                        JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
 
             # Default for RHEL 7.0.
             java-1.7.0-openjdk:
@@ -56,6 +60,10 @@ system_features:
 
                 os_platform_configs:
                     f21:
+                        JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
+                    rhel7:
+                        JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
+                    rhel5:
                         JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
 
             # Default for RHEL 5.5.

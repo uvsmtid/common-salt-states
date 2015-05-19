@@ -84,7 +84,7 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/restart_salt_services.xml'
 
-            run_salt_highstate_master:
+            configure_jenkins_jobs:
                 enabled: True
 
                 restrict_to_system_role:
@@ -95,8 +95,7 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_highstate_master.xml'
-
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/configure_jenkins_jobs.xml'
 
             build_bootstrap_package:
                 enabled: True
@@ -105,7 +104,7 @@ system_features:
                     - controller-role
 
                 trigger_after_jobs:
-                    - run_salt_highstate_master
+                    - configure_jenkins_jobs
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -150,7 +149,7 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/instantiate_vagrant_hosts.xml'
 
-            run_salt_highstate_minions:
+            run_salt_orchestrate:
                 enabled: True
 
                 restrict_to_system_role:
@@ -161,7 +160,20 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_highstate_minions.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_orchestrate.xml'
+
+            run_salt_highstate:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller-role
+
+                trigger_after_jobs:
+                    - run_salt_orchestrate
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_highstate.xml'
 
 ###############################################################################
 # EOF

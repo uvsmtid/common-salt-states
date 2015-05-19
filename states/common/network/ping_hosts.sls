@@ -38,7 +38,6 @@
 {% set selected_account = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}
 
 #------------------------------------------------------------------------------
-# Distribute the key:
 '{{ case_name }}_ping_remote_hosts_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
     cmd.run:
         - name: '{{ config_temp_dir }}/ssh/ping_host.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}"'

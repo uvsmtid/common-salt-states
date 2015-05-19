@@ -9,7 +9,7 @@
 
 include:
 
-{% for stage_name in pillar['orchestration_stages']['stage_flag_files'].keys() %}
+{% for stage_name in pillar['system_orchestrate_stages']['stage_flag_files'].keys() %}
     - common.orchestrate.stage_flag_files.{{ stage_name }}
 {% endfor %}
 

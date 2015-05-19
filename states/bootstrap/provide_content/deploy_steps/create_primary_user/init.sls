@@ -40,6 +40,11 @@
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 'primary_user': '{{ target_env_pillar['system_hosts'][selected_host_name]['primary_user']['username'] }}',
                 'primary_group': '{{ target_env_pillar['system_hosts'][selected_host_name]['primary_user']['primary_group'] }}',
+                {% if target_env_pillar['system_hosts'][selected_host_name]['primary_user']['enforce_password'] %}
+                'user_password': '{{ target_env_pillar['system_hosts'][selected_host_name]['primary_user']['password'] }}',
+                {% else %}
+                'user_password': ~,
+                {% endif %}
             }
         - show_changes: True
         - require:

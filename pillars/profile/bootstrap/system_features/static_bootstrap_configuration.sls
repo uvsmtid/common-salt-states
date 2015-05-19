@@ -64,6 +64,7 @@ system_features:
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
+                    win7: {} # TODO
             install_salt_minion:
                 step_enabled: True
                 salt_minion_online_template: 'salt://common/salt/minion/minion.online.conf'
@@ -96,6 +97,7 @@ system_features:
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
+                    win7: {} # TODO
             link_sources:
                 step_enabled: True
             link_resources:
