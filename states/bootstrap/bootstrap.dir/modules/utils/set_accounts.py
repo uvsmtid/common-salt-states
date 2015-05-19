@@ -105,6 +105,30 @@ def add_user(
     )
 
 ###############################################################################
+#
+
+def set_password(
+    user_name,
+    user_password,
+):
+
+    logging.debug('user_password: ' + str(user_password))
+
+    # Set password for specified user.
+    process_output = call_subprocess(
+        command_args = [
+            '/usr/bin/passwd',
+            '--stdin',
+            user_name,
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+        cwd = None,
+        stdin_string = user_password,
+    )
+
+###############################################################################
 # EOF
 ###############################################################################
 
