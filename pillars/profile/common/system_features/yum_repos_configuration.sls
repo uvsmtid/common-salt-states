@@ -29,6 +29,7 @@ system_features:
                         #       primary deployments.
 
                     rhel7:
+                        # Default is enabled.
                         repo_enabled: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
@@ -38,6 +39,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                     rhel5:
+                        # Default is enabled.
                         repo_enabled: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
@@ -53,6 +55,8 @@ system_features:
                 os_platform_configs:
 
                     f21:
+                        # Default is enabled.
+                        # Keep it enabled for all updates.
                         repo_enabled: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
@@ -63,7 +67,9 @@ system_features:
                         #       primary deployments.
 
                     rhel7:
-                        repo_enabled: True
+                        # Default is enabled.
+                        # NOTE: Disable updates repo - use relase-time one.
+                        repo_enabled: False
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -72,9 +78,115 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                     rhel5:
-                        repo_enabled: True
+                        # Default is enabled.
+                        # NOTE: Disable updates repo - use relase-time one.
+                        repo_enabled: False
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+            addons:
+                installation_type: conf_template
+
+                os_platform_configs:
+
+                    # NOTE: `addons` repo is not configured on default rhel7.
+                    #{#
+                    rhel7:
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                        key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+                    #}#
+
+                    rhel5:
+                        # Default is enabled.
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+            extras:
+                installation_type: conf_template
+
+                os_platform_configs:
+
+                    rhel7:
+                        # Default is enabled.
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                        key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                    rhel5:
+                        # Default is enabled.
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+            centosplus:
+                installation_type: conf_template
+
+                os_platform_configs:
+
+                    rhel7:
+                        # Default is disabled.
+                        repo_enabled: False
+
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                        key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                    rhel5:
+                        # Default is disabled.
+                        repo_enabled: False
+
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+            contrib:
+                installation_type: conf_template
+
+                os_platform_configs:
+
+                    # NOTE: `contrib` repo is not configured on default rhel7.
+                    #{#
+                    rhel7:
+                        repo_enabled: False
+
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                        key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+                    #}#
+
+                    rhel5:
+                        # Default is disabled.
+                        repo_enabled: False
+
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key

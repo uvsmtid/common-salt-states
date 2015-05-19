@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os_platform_type'].startswith('rhel5') %}
 
 json_package_for_python:
     pkg.installed:
@@ -15,7 +15,21 @@ json_package_for_python:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel7') %}
+
+# Latest python on RHEL7 is shipped with `json` module.
+
+json_package_for_python_dummy:
+    cmd.run:
+        - name: "echo json_package_for_python_dummy"
+
+{% endif %}
+# >>>
+###############################################################################
+
+###############################################################################
+# <<<
+{% if grains['os_platform_type'].startswith('fc') %}
 
 # Latest python on Fedora is shipped with `json` module.
 
@@ -30,7 +44,7 @@ json_package_for_python_dummy:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 # Latest python on Windows is shipped with `json` module.
 
