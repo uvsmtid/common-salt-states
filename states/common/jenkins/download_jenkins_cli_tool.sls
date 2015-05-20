@@ -26,6 +26,10 @@ download_jenkins_cli_jar:
     cmd.run:
         # TODO: Port number may also need to be parameterized.
         - name: 'wget http://{{ jenkins_master_hostname }}:8080/jnlpJars/jenkins-cli.jar -O {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar'
+        - env:
+            # Disable proxy settings for `jenkins_master_hostname`.
+            - http_proxy: ~
+            - https_proxy: ~
         - require:
             - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins'
             - sls: common.wget
