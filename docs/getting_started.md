@@ -285,6 +285,15 @@ pillar_roots:
 Pillars are always project_name-specific (they provide configuration data
 for both common Salt states and project_name-specific Salt states).
 
+NOTE: If `common-salt-states.git` repo is supposed to be used on its own
+(i.g. as a demo with example configuration in its `pillars` directory),
+assume `project_name`=`common` but create a clone of `common-salt-states.git`
+repo named as `common-salt-pillars.git` to avoid modification of example
+`pillars` in original repository:
+```
+git clone /home/[username]/Works/common-salt-states.git /home/[username]/Works/common-salt-pillars.git
+```
+
 Checkout project_name-specific Salt pillars sources (if not done yet):
 ```
 git clone git@host:user/[project_name]-salt-pillars.git ~/Works/[project_name]-salt-pillars.git

@@ -67,10 +67,7 @@ system_features:
 
             # Salt pillars.
 
-            # Normally, pillars are supposed to be in a separate repository.
-            #{#
-            'common-salt-states': git
-            #}#
+            'common-salt-pillars': git
 
             # Salt resources.
 
@@ -89,10 +86,7 @@ system_features:
 
             'common-salt-states': '/environment.sources/common-salt-states.git'
 
-            # Normally, pillars are supposed to be in a separate repository.
-            #{#
             'common-salt-pillars': '/environment.sources/common-salt-pillars.git'
-            #}#
 
             'common-salt-resources': '/environment.sources/common-salt-resources.git'
 
@@ -132,16 +126,13 @@ system_features:
 
                     branch_name: 'master'
 
-            # Normally, pillars are supposed to be in a separate repository.
-            #{#
             'common-salt-pillars':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
                     origin_uri_ssh_path: 'Works/common-salt-pillars.git'
 
-                    branch_name: 'master'
-            #}#
+                    branch_name: 'develop'
 
             'common-salt-resources':
                 git:

@@ -16,7 +16,7 @@ system_features:
         bootstrap_sources:
             states: common-salt-states
             # Normally, pillars are supposed to be in a separate repository.
-            pillars: common-salt-states
+            pillars: common-salt-pillars
 
         # Repositories which actually get exported.
         export_sources:
@@ -25,6 +25,11 @@ system_features:
                 export_method: clone
                 export_format: dir
                 branch_name: jenkins-slave-role
+            common-salt-pillars:
+                export_enabled: True
+                export_method: clone
+                export_format: dir
+                branch_name: develop
             common-salt-resources:
                 export_enabled: True
                 export_method: clone

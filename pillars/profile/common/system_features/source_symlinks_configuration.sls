@@ -55,16 +55,14 @@ system_features:
                 rel_target_path: 'states'
 
             salt_pillars_roots:
-                # Normally, pillars are supposed to be in a separate repository.
-                repo_name: 'common-salt-states'
+                repo_name: 'common-salt-pillars'
                 abs_link_base_path: '/srv/pillars'
                 rel_target_path: 'pillars'
 
             # Pillars for bootstrap environments.
 
             common.{{ profile_name }}_bootstrap_pillars:
-                # Normally, pillars are supposed to be in a separate repository.
-                repo_name: 'common-salt-states'
+                repo_name: 'common-salt-pillars'
                 abs_link_base_path: '/srv/pillars/bootstrap/pillars/{{ profile_name }}'
                 rel_target_path: 'pillars'
 
