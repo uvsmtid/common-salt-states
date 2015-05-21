@@ -2,7 +2,6 @@
 ###############################################################################
 #
 
-{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
 
 system_features:
