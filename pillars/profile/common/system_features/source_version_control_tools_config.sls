@@ -19,10 +19,10 @@ system_features:
             user_config:
                 # Real name saved in git commits, for example:
                 #   name: Barack Obama
-                name: Alexey Pakseykin
+                name: First Last
                 # Email address saved in git commits, for example:
                 #   email: barack.obama@example.com
-                email: uvsmtid@gmail.com
+                email: first.last@example.com
 
 ###############################################################################
 # EOF

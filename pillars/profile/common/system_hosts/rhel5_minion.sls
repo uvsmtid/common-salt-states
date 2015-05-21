@@ -2,6 +2,8 @@
 ###############################################################################
 #
 
+{% set default_username = salt['config.get']('this_system_keys:default_username') %}
+
 system_hosts:
 
     rhel5_minion:
@@ -30,14 +32,14 @@ system_hosts:
             # This value is unused if `defined_in` is `internal_net`.
             ip: 0.0.0.0
         primary_user:
-            username: uvsmtid
-            password: uvsmtid
+            username: {{ default_username }}
+            password: {{ default_username }}
             password_hash: '$1$kBDpSGYe$bk8YAwQshTb/LTvTTFr/4.'
             enforce_password: True
 
-            primary_group: uvsmtid
+            primary_group: {{ default_username }}
 
-            posix_user_home_dir: '/home/uvsmtid'
+            posix_user_home_dir: '/home/{{ default_username }}'
             posix_user_home_dir_windows: ~ # N/A
 
             windows_user_home_dir: ~ # N/A

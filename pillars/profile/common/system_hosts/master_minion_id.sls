@@ -2,8 +2,9 @@
 ###############################################################################
 #
 
-{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
+{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
+{% set default_username = salt['config.get']('this_system_keys:default_username') %}
 
 system_hosts:
 
@@ -33,14 +34,14 @@ system_hosts:
             # This value is unused if `defined_in` is `internal_net`.
             ip: 0.0.0.0
         primary_user:
-            username: uvsmtid
-            password: uvsmtid
+            username: {{ default_username }}
+            password: {{ default_username }}
             password_hash: ~ # N/A
             enforce_password: False
 
-            primary_group: uvsmtid
+            primary_group: {{ default_username }}
 
-            posix_user_home_dir: '/home/uvsmtid'
+            posix_user_home_dir: '/home/{{ default_username }}'
             posix_user_home_dir_windows: ~ # N/A
 
             windows_user_home_dir: ~ # N/A

@@ -1,6 +1,8 @@
 ###############################################################################
 #
 
+{% set default_username = salt['config.get']('this_system_keys:default_username') %}
+
 system_features:
 
     # `URI_prefix*` defines root or base relative which content
@@ -42,7 +44,7 @@ system_features:
                 # Both `abs_resource_base_path` and fully concatenated
                 # `URI_prefix` specify base dir path relative to which value of
                 # `item_parent_dir_path` key in registered content is specified.
-                abs_resource_target_path: '/home/uvsmtid/Works/common-salt-resources.git'
+                abs_resource_target_path: '/home/{{ default_username }}/Works/common-salt-resources.git'
 
 ###############################################################################
 # EOF

@@ -3,7 +3,7 @@
 #
 
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
+{% set default_username = salt['config.get']('this_system_keys:default_username') %}
 
 system_features:
 
@@ -34,6 +34,8 @@ system_features:
         target_minion_auto_accept: True
 
         target_master_minion_id: {{ master_minion_id }}
+
+        target_default_username: {{ default_username }}
 
 ###############################################################################
 # EOF
