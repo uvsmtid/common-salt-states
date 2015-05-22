@@ -64,6 +64,8 @@ system_features:
                 restrict_to_system_role:
                     - controller-role
 
+                timer_spec: 'H */2 * * *'
+
                 trigger_after_jobs:
                     []
 
@@ -76,6 +78,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller-role
+
+                timer_spec: ~
 
                 trigger_after_jobs:
                     - update_salt_master_sources
@@ -90,6 +94,8 @@ system_features:
                 restrict_to_system_role:
                     - controller-role
 
+                timer_spec: ~
+
                 trigger_after_jobs:
                     - restart_salt_services
 
@@ -102,6 +108,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller-role
+
+                timer_spec: ~
 
                 trigger_after_jobs:
                     - configure_jenkins_jobs
@@ -116,6 +124,8 @@ system_features:
                 restrict_to_system_role:
                     - controller-role
 
+                timer_spec: ~
+
                 trigger_after_jobs:
                     - build_bootstrap_package
 
@@ -128,6 +138,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller-role
+
+                timer_spec: ~
 
                 trigger_after_jobs:
                     - configure_vagrant
@@ -142,6 +154,8 @@ system_features:
                 restrict_to_system_role:
                     - controller-role
 
+                timer_spec: ~
+
                 trigger_after_jobs:
                     - destroy_vagrant_hosts
 
@@ -155,6 +169,8 @@ system_features:
                 restrict_to_system_role:
                     - controller-role
 
+                timer_spec: ~
+
                 trigger_after_jobs:
                     - instantiate_vagrant_hosts
 
@@ -167,6 +183,10 @@ system_features:
 
                 restrict_to_system_role:
                     - controller-role
+
+                #{#
+                timer_spec: ~
+                #}#
 
                 trigger_after_jobs:
                     - run_salt_orchestrate

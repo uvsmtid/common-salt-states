@@ -21,6 +21,13 @@
         <completeBuild>true</completeBuild>
       </threshold>
     </jenkins.triggers.ReverseBuildTrigger>
+    {% if 'timer_spec' in job_config %}
+    {% if job_config['timer_spec'] %}
+    <hudson.triggers.TimerTrigger>
+      <spec>{{ job_config['timer_spec'] }}</spec>
+    </hudson.triggers.TimerTrigger>
+    {% endif %}
+    {% endif %}
   </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
