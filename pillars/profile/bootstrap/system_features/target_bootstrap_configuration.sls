@@ -24,7 +24,7 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: jenkins-slave-role
+                branch_name: develop
             common-salt-pillars:
                 export_enabled: True
                 export_method: clone
