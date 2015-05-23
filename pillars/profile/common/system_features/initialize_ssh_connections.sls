@@ -27,8 +27,8 @@ system_features:
         # TODO: Manage keys via new credentials top-level pillar
         #       key which takes care of configuring accounts in
         #       every aspect of it.
-        ssh_private_key_res_id: common_insecure_ssh_private_key.id_rsa
-        ssh_public_key_res_id: common_insecure_ssh_public_key.id_rsa.pub
+        ssh_private_key_res_id: vagrant_insecure_ssh_private_key.id_rsa
+        ssh_public_key_res_id: vagrant_insecure_ssh_public_key.id_rsa.pub
 
         # NOTE: The feature already enables all primary user to primary
         #       user connections (with some restrictions described above).

@@ -2,9 +2,9 @@
 ###############################################################################
 #
 
-# TODO: Consider adding definitions of all software versions on `depository_role`.
+# TODO: Consider adding definitions of all software versions on `depository-role`.
 #       This is to be able to rebase versions relatively easily
-#       (i.e. manually putting files on `depository_role`, changing the definition
+#       (i.e. manually putting files on `depository-role`, changing the definition
 #       and re-running installation state).
 
 # TODO: Consider adding definitions of all software versions which is built
@@ -36,7 +36,7 @@ registered_content_items:
         # In addition to importing RPM key, this enables configuration of
         # Jenkins repository:
         enable_installation: True
-        item_parent_dir_path: distrib/jenkins
+        item_parent_dir_path: common/jenkins
         item_base_name: jenkins-ci.org.key
         item_content_hash: md5=9fa06089848262c5a6383ec27fdd2575
 
@@ -50,7 +50,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/jenkins
+        item_parent_dir_path: common/jenkins
         item_base_name: cygpath.hpi
         item_content_hash: md5=fec9d1b734089f8fae0e9755f2a1bc75
         plugin_name: cygpath
@@ -65,7 +65,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/jenkins
+        item_parent_dir_path: common/jenkins
         item_base_name: maven-plugin.hpi
         item_content_hash: md5=d05426ca23528ff782cc3bf926da999e
         plugin_name: maven-plugin
@@ -80,7 +80,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/jenkins
+        item_parent_dir_path: common/jenkins
         item_base_name: m2release.hpi
         item_content_hash: md5=fde761d8d19f2154a24461d005340e91
         plugin_name: m2release
@@ -95,7 +95,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/jenkins
+        item_parent_dir_path: common/jenkins
         item_base_name: git-client.hpi
         item_content_hash: md5=5331dd9f233228bca6486f51e21bf6ac
         plugin_name: git-client
@@ -110,7 +110,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/jenkins
+        item_parent_dir_path: common/jenkins
         item_base_name: git.hpi
         item_content_hash: md5=e3ead2aa0ba8b7666566e0e3dea964e3
         plugin_name: git
@@ -125,7 +125,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/jenkins
+        item_parent_dir_path: common/jenkins
         item_base_name: scm-api.hpi
         item_content_hash: md5=9574c07bf6bfd02a57b451145c870f0e
         plugin_name: scm-api
@@ -138,9 +138,9 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/nexus
-        item_base_name: nexus-bundle.tar.gz
+        item_parent_dir_path: common/nexus
         # Version 2.11.1-01: `nexus-2.11.1-01-bundle.tar.gz`
+        item_base_name: nexus-2.11.1-01-bundle.tar.gz
         item_content_hash: md5=fec9d1b734089f8fae0e9755f2a1bc75
         nexus_bundle_version_infix: '2.11.1-01'
 
@@ -153,7 +153,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/7zip
+        item_parent_dir_path: common/7zip
         item_base_name: 7z920-x64.msi
         item_content_hash: md5=cac92727c33bec0a79965c61bbb1c82f
 
@@ -166,7 +166,7 @@ registered_content_items:
         installation_directory: 'C:\cygwin64'
         # Checking existance of this file confirms existing installation.
         completion_file_indicator: 'C:\cygwin64\installed.txt'
-        item_parent_dir_path: distrib/cygwin
+        item_parent_dir_path: common/cygwin
         item_base_name: 2014-02-13-T03-11-40.056190700.cygwin.distrib.zip
         item_content_hash: md5=9c37559140d5510ce768f7b0fb7daff0
         # See docs for CYGWIN environment variable:
@@ -184,25 +184,30 @@ registered_content_items:
     # Available mirrors:
     #   http://cygwin.com/mirrors.html
     # For example, this command worked:
-    #   rsync -vaz rsync://mirrors.kernel.org/sourceware/cygwin/x86_64/ /var/www/html/depository_role/content/distrib/cygwin/x86_64/
+    #   rsync -vaz rsync://mirrors.kernel.org/sourceware/cygwin/x86_64/ /var/www/html/depository-role/content/distrib/cygwin/x86_64/
 
+    # Oracle Java 1.7 JDK.
+    # Link: http://www.oracle.com/technetwork/java/javase/downloads/index.html
     oracle_jdk-7u71-linux-x64.rpm:
         resource_repository: shared_content
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/java
+        item_parent_dir_path: common/java
         item_base_name: jdk-7u71-linux-x64.rpm
         item_content_hash: md5=f9dafcc0bd52f085c8b0894c27b39d10
 
-    oracle_jdk-7u65-linux-x64.rpm:
+    # OpenStack YUM repository config RPM package.
+    # Downloadable from:
+    #   https://repos.fedorapeople.org/repos/openstack/openstack-juno/
+    openstack-rdo-release-juno-1.noarch.rpm:
         resource_repository: shared_content
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/java
-        item_base_name: jdk-7u65-linux-x64.rpm
-        item_content_hash: md5=f5a975d77d35bc7713a8806090f5f9e2
+        item_parent_dir_path: common/openstack
+        item_base_name: rdo-release-juno-1.noarch.rpm
+        item_content_hash: md5=ec6cb4b3d103bd57cde344df6f5759ac
 
 ###############################################################################
 # EOF

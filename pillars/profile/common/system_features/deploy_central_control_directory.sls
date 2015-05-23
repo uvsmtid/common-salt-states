@@ -15,7 +15,7 @@ system_features:
         #       For example, Jenkins job configuration sets control URL
         #       based on these fields.
 
-        feature_enabled: True
+        feature_enabled: False
 
         # Path to central configuration relative to source code root (see
         # `source_symlinks` in `source_symlinks_configuration` feature):

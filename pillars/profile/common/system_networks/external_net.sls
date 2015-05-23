@@ -17,7 +17,7 @@ external_net:
 
     # WARNING: netmask and prefix should be consistent (they define
     #          the same thing).
-    #netmask: 255.255.255.0
+    netmask: 255.255.255.0
     netprefix: 24
 
     broadcast: 192.168.1.255
@@ -27,6 +27,8 @@ external_net:
     # - 128.1.6.64
     # - 10.33.68.94
     dns_server: 8.8.8.8
+
+    resolvable_hostname: google.com
 
     gateway: 192.168.1.254
 

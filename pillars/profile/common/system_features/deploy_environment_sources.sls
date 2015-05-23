@@ -15,7 +15,7 @@ system_features:
         #     on all required minions.
         #   - Use control scripts on each minion to pull the rest of sources.
 
-        feature_enabled: True
+        feature_enabled: False
 
         # Specify hosts by their hostname (not minion id) to avoid pushing
         # sources to them.
@@ -61,6 +61,10 @@ system_features:
 
             'common-salt-states': git
 
+            # Salt resources.
+
+            'common-salt-resources': git
+
             # Salt pillars.
 
             'common-salt-pillars': git
@@ -76,9 +80,23 @@ system_features:
             # - if absolute, it is single for all checkouts;
             # - if relative, it is single per job (control scripts).
 
+            # Salt states.
+
             'common-salt-states': '/environment.sources/common-salt-states.git'
 
+            # Salt resources.
+
+            'common-salt-resources': '/environment.sources/common-salt-resources.git'
+
+            # Salt pillars.
+
             'common-salt-pillars': '/environment.sources/common-salt-pillars.git'
+
+            'common-salt-pillars.target': '/environment.sources/common-salt-pillars.target.git'
+
+            # Other repositories.
+
+            # ...
 
         # Central source repository configuration.
         # The following values are passed to templates for descriptor and
@@ -108,6 +126,8 @@ system_features:
         #     Specify path to branch relative to repository root URL.
         source_repositories:
 
+            # Salt states.
+
             'common-salt-states':
                 git:
                     source_system_host: '{{ master_minion_id }}'
@@ -116,11 +136,32 @@ system_features:
 
                     branch_name: 'master'
 
+
+            # Salt resources.
+
+            'common-salt-resources':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/common-salt-resources.git'
+
+                    branch_name: 'master'
+
+            # Salt pillars.
+
             'common-salt-pillars':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
                     origin_uri_ssh_path: 'Works/common-salt-pillars.git'
+
+                    branch_name: 'master'
+
+            'common-salt-pillars.target':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/common-salt-pillars.target.git'
 
                     branch_name: 'master'
 

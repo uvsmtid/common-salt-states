@@ -12,7 +12,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/salt
         item_base_name: salt-minion-2014.7.1-1.fc21.x86_64.rpms.tar
         item_content_hash: md5=6bb9952118afc6c1da97b41d81f9426a
         #item_base_name: salt-minion-2014.7.1-1.fc21.x86_64.rpms.zip
@@ -26,7 +26,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/salt
         item_base_name: salt-master-2014.7.1-1.fc21.x86_64.rpms.tar
         item_content_hash: md5=f5814046b76dcfaa7157eac6fcd56990
         #item_base_name: salt-master-2014.7.1-1.fc21.x86_64.rpms.zip
@@ -41,7 +41,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/salt
         item_base_name: salt-minion-2014.7.1-1.el7.x86_64.rpms.tar
         item_content_hash: md5=4781e6b4e73bf9b15da27396631946cf
 
@@ -54,7 +54,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/salt
         item_base_name: salt-master-2014.7.1-1.el7.x86_64.rpms.tar
         item_content_hash: md5=84593d8c077b10253c062ff3b95ecbe1
 
@@ -70,7 +70,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/dependencies
         item_base_name: python26-distribute-0.6.10-4.el5.x86_64.rpms.zip
         item_content_hash: md5=8406a25dbd3bacdf87b52acaec096c8e
 
@@ -84,7 +84,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/salt
         item_base_name: salt-minion-2014.7.1-1.el5.x86_64.rpms.zip
         item_content_hash: md5=fa1d8b766d48cd35964df123afde7813
 
@@ -98,7 +98,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/salt
         item_base_name: salt-master-2014.7.1-1.el5.x86_64.rpms.zip
         item_content_hash: md5=76dbefa4c6703a5bfd4f78ea9571c42e
 
@@ -109,7 +109,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/dependencies
         item_base_name: PyYAML-3.10-11.el7.x86_64.rpms.tar
         item_content_hash: md5=258e9621d85ffe2ff682dbd4b1a8083b
 
@@ -122,7 +122,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/dependencies
         item_base_name: PyYAML-3.09-10.el5.x86_64.rpms.tar
         item_content_hash: md5=10c7855bdaafae965725d697d99d6b6b
 
@@ -134,7 +134,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/epel
+        item_parent_dir_path: bootstrap/yum/epel
         item_base_name: RPM-GPG-KEY-EPEL-5.217521F6.key.txt
         item_content_hash: md5=895459095f6dda788e022bb15a177a73
 
@@ -146,8 +146,8 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/epel
-        item_base_name: RPM-GPG-KEY-EPEL-7.352C64E5.txt
+        item_parent_dir_path: bootstrap/yum/epel
+        item_base_name: RPM-GPG-KEY-EPEL-7.352C64E5.key.txt
         item_content_hash: md5=2bab86176f606dc3a89deb55c8fbb41a
 
     # `unzip` package for CentOS 7.0 downloaded on minimal install OS:
@@ -157,7 +157,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/dependencies
         item_base_name: unzip-6.0-13.el7.x86_64.rpm
         item_content_hash: md5=abbb421ceca1a5c74e1b09609c97688e
 
@@ -168,7 +168,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/salt/bootstrap
+        item_parent_dir_path: bootstrap/dependencies
         item_base_name: zip-3.0-10.el7.x86_64.rpm
         item_content_hash: md5=4623f947ddc141f4d0f8e0bf4bf10529
 
@@ -178,7 +178,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/postgresql
+        item_parent_dir_path: bootstrap/yum/postgresql
         item_base_name: RPM-GPG-KEY-PGDG-93
         item_content_hash: md5=78b5db170d33f80ad5a47863a7476b22
 
@@ -188,7 +188,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/rhel5
+        item_parent_dir_path: bootstrap/yum/rhel5
         item_base_name: RPM-GPG-KEY-CentOS-5
         item_content_hash: md5=5f7bafa185a848e2f689dba1918dcf64
 
@@ -198,7 +198,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/rhel7
+        item_parent_dir_path: bootstrap/yum/rhel7
         item_base_name: RPM-GPG-KEY-CentOS-7
         item_content_hash: md5=c45e7e322681292ce4c1d2a6d392c4b5
 
@@ -208,7 +208,7 @@ registered_content_items:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: distrib/openstack/juno
+        item_parent_dir_path: bootstrap/yum/openstack
         item_base_name: RPM-GPG-KEY-RDO-Juno
         item_content_hash: md5=b401244ed3cbc53d9f2b921f9b4d3086
 
