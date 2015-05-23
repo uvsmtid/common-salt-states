@@ -40,7 +40,10 @@
                 # IP address to route IP traffic by default.
                 'default_route_ip': '{{ target_env_pillar[net_host_defined_in]['gateway'] }}',
                 # IP address behind network router to confirm successful routing configuration.
-                'remote_network_ip': '{{ target_env_pillar[net_host_defined_in]['dns_server'] }}',
+                # Use `external_dns_server` for bootstrap at the moment
+                # even if it is not necessarily outside of current network.
+                # TODO: Should we add config for IP surely outside current network?
+                'remote_network_ip': '{{ target_env_pillar['system_features']['hostname_resolution_config']['external_dns_server'] }}',
             }
         - show_changes: True
         - require:
