@@ -3,7 +3,7 @@
 
 system_networks:
 
-    # See: docs/pillars/common/external_net/readme.md
+    # See: docs/pillars/common/system_networks/external_net/readme.md
     external_net:
 
         subnet: 192.168.1.0

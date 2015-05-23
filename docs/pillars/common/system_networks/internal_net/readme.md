@@ -13,6 +13,6 @@ necessarily a [private network][2].
 
 See also [external_net][1].
 
-[1]: docs/pillars/common/external_net/readme.md
+[1]: docs/pillars/common/system_networks/external_net/readme.md
 [2]: https://en.wikipedia.org/wiki/Private_network
 

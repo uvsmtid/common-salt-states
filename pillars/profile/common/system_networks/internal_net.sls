@@ -4,7 +4,7 @@
 
 system_networks:
 
-    # See: docs/pillars/common/internal_net/readme.md
+    # See: docs/pillars/common/system_networks/internal_net/readme.md
     internal_net:
 
         subnet: 192.168.50.0
