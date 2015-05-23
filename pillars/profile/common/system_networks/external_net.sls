@@ -1,19 +1,21 @@
 ###############################################################################
 #
 
-# See: docs/pillars/common/external_net/readme.md
-external_net:
+system_networks:
 
-    subnet: 192.168.1.0
+    # See: docs/pillars/common/system_networks/external_net/readme.md
+    external_net:
 
-    # WARNING: netmask and prefix should be consistent
-    #          (they define the same thing).
-    netmask: 255.255.255.0
-    netprefix: 24
+        subnet: 192.168.1.0
 
-    broadcast: 192.168.1.255
+        # WARNING: netmask and prefix should be consistent
+        #          (they define the same thing).
+        netmask: 255.255.255.0
+        netprefix: 24
 
-    gateway: 192.168.1.254
+        broadcast: 192.168.1.255
+
+        gateway: 192.168.1.254
 
 ###############################################################################
 # EOF

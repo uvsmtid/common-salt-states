@@ -11,5 +11,5 @@ One of the practical consequences is that DHCP server which is configured
 through Salt will _not_ use parameters from `external_net`. Instead,
 it will always use [internal_net][1].
 
-[1]: docs/pillars/common/internal_net/readme.md
+[1]: docs/pillars/common/system_networks/internal_net/readme.md
 
