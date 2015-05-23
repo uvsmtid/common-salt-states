@@ -25,6 +25,15 @@ system_features:
         # developer interacts with the system.
         x_display_server: 142.1.1.1
 
+        # See: docs/pillars/common/system_features/hostname_resolution_config/dns_server_type/readme.md
+        dns_server_type: external
+
+        # See: docs/pillars/common/system_features/hostname_resolution_config/dns_server_type/readme.md
+        external_dns_server: 8.8.8.8
+
+        # See: docs/pillars/common/system_features/hostname_resolution_config/resolvable_hostname/readme.md
+        resolvable_hostname: google.com
+
 ###############################################################################
 # EOF
 ###############################################################################
