@@ -49,7 +49,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set instantiated_by = selected_host['instantiated_by'] %}
 {% set instance_configuration = selected_host[instantiated_by] %}
 {% set network_defined_in = selected_host['defined_in'] %}
-{% set network_config = pillar[network_defined_in] %}
+{% set network_config = pillar['system_networks'][network_defined_in] %}
 
 {% if vagrant_provider == instance_configuration['vagrant_provider'] %} # match provider
 {% else %} # match provider

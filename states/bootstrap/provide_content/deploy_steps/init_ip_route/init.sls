@@ -38,7 +38,7 @@
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 # IP address to route IP traffic by default.
-                'default_route_ip': '{{ target_env_pillar[net_host_defined_in]['gateway'] }}',
+                'default_route_ip': '{{ target_env_pillar['system_networks'][net_host_defined_in]['gateway'] }}',
                 # IP address behind network router to confirm successful routing configuration.
                 # Use `external_dns_server` for bootstrap at the moment
                 # even if it is not necessarily outside of current network.
