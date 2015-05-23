@@ -20,6 +20,9 @@ system_features:
                 step_enabled: True
             init_dns_server:
                 step_enabled: True
+                # TODO: Both `resolv.external.dns.conf` and `resolv.conf`
+                #       files are identical after moving DNS settings into
+                #       `hostname_resolution_config`. Leave only one.
                 resolv_conf_template: 'salt://common/resolver/resolv.external.dns.conf'
             make_salt_resolvable:
                 step_enabled: True
