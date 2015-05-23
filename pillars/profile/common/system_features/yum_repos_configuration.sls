@@ -299,6 +299,19 @@ system_features:
                         key_file_resource_id: jenkins_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
+            # Saltstack repository for RHEL5.
+            # See: https://copr.fedoraproject.org/coprs/saltstack/salt-el5/
+            saltstack-salt-el5:
+                installation_type: conf_template
+
+                os_platform_configs:
+
+                    rhel5:
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://copr-be.cloud.fedoraproject.org/results/saltstack/salt-el5/epel-5-$basearch/'
+                        yum_repo_key_url: 'http://copr-be.cloud.fedoraproject.org/results/saltstack/salt-el5/pubkey.gpg'
+
 ###############################################################################
 # EOF
 ###############################################################################
