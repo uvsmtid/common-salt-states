@@ -7,6 +7,7 @@
 system_hosts:
 
     rhel7_minion:
+
         instantiated_by: vagrant_instance_configuration
         vagrant_instance_configuration:
             vagrant_provider: 'libvirt'
@@ -19,11 +20,12 @@ system_hosts:
             base_image: 'uvsmtid/centos-7.0-minimal' # libvirt
             memory_size: 2024
             cpus_number: 2
-        consider_online_for_remote_connections: True
-        os_type: linux
+
         os_platform: rhel7
+
         hostname: rhel7-minion
         resolved_in: internal_net
+        consider_online_for_remote_connections: True
         host_networks:
             internal_net:
                 ip: 192.168.51.20
@@ -33,6 +35,7 @@ system_hosts:
                 ip: 192.168.61.20
             secondary_external_net:
                 ip: 192.168.62.20
+
         primary_user:
             username: {{ default_username }}
             password: {{ default_username }}

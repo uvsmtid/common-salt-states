@@ -21,6 +21,8 @@ include:
 
 {% set host_config = pillar['system_hosts'][slave] %}
 
+{% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
+
 # Put node configuration:
 '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ host_config['hostname'] }}.xml':
     file.managed:
@@ -42,7 +44,7 @@ include:
             #       There is even related bug in Jenkins bug tracker which
             #       does the same workaround (specyfing Windows-style path):
             #         https://issues.jenkins-ci.org/browse/JENKINS-21770
-{% if host_config['os_type'] == 'windows' %}
+{% if os_type == 'windows' %}
             jenkins_path: '{{ host_config['primary_user']['windows_user_home_dir'] }}\jenkins'
 {% else %}
             jenkins_path: '{{ host_config['primary_user']['posix_user_home_dir'] }}/jenkins'

@@ -13,6 +13,8 @@ include:
         ,
         'common_pillar_schema_version'
         ,
+        'system_platforms'
+        ,
         'system_hosts'
         ,
         'system_host_roles'
