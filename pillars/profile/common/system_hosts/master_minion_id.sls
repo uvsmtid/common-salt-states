@@ -23,7 +23,7 @@ system_hosts:
             memory_size: 2024
             cpus_number: 2
 
-        os_platform: f21
+        os_platform: fc21
 
         hostname: {{ master_minion_id }}
         resolved_in: internal_net

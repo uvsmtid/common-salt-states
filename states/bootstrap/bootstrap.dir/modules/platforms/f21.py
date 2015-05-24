@@ -3,7 +3,7 @@ from platforms.generic_linux import generic_linux_build
 ###############################################################################
 #
 
-class f21_linux_build(generic_linux_build):
+class fc21_linux_build(generic_linux_build):
     pass
 
 ###############################################################################
@@ -22,7 +22,7 @@ def get_instance(
         if run_action is None:
             raise RuntimeError
         elif run_action == 'build':
-            return f21_linux_build(
+            return fc21_linux_build(
                 run_dir,
                 script_dir,
                 content_dir,

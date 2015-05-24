@@ -36,7 +36,7 @@ system_features:
                         JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
                         rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
 
-            # Default for F21.
+            # Default for fc21.
             java-1.8.0-openjdk:
                 installation_type: yum_repositories
 
@@ -44,7 +44,7 @@ system_features:
                     - java-1.8.0-openjdk
 
                 os_platform_configs:
-                    f21:
+                    fc21:
                         JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
                     rhel7:
                         JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
@@ -59,7 +59,7 @@ system_features:
                     - java-1.7.0-openjdk
 
                 os_platform_configs:
-                    f21:
+                    fc21:
                         JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
                     rhel7:
                         JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'

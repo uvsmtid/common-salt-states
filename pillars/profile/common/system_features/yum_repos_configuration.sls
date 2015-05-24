@@ -18,7 +18,7 @@ system_features:
 
                 os_platform_configs:
 
-                    f21:
+                    fc21:
                         repo_enabled: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
@@ -54,7 +54,7 @@ system_features:
 
                 os_platform_configs:
 
-                    f21:
+                    fc21:
                         # Default is enabled.
                         # Keep it enabled for all updates.
                         repo_enabled: True
@@ -245,7 +245,7 @@ system_features:
 
                 os_platform_configs:
 
-                    f21:
+                    fc21:
                         repo_enabled: False
 
                         yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
@@ -279,7 +279,7 @@ system_features:
 
                 os_platform_configs:
 
-                    f21:
+                    fc21:
                         repo_enabled: True
 
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'

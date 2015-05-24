@@ -10,7 +10,7 @@ system_features:
         bootstrap_files_dir: 'bootstrap.dir'
 
         os_platform_package_types:
-            f21: tar.gz
+            fc21: tar.gz
             rhel5: tar.gz
             rhel7: tar.gz
             win7: zip
@@ -40,7 +40,7 @@ system_features:
                 step_enabled: True
                 salt_master_template: 'salt://common/salt/master/master.conf'
                 salt_master_rpm_sources:
-                    f21:
+                    fc21:
                         salt-master:
                             source_type: tar
                             resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
@@ -73,7 +73,7 @@ system_features:
                 salt_minion_online_template: 'salt://common/salt/minion/minion.online.conf'
                 salt_minion_offline_template: 'salt://common/salt/minion/minion.offline.conf'
                 salt_minion_rpm_sources:
-                    f21:
+                    fc21:
                         salt-master:
                             source_type: tar
                             resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
