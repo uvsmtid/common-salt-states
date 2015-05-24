@@ -34,6 +34,13 @@ system_features:
         # See: docs/pillars/common/system_features/hostname_resolution_config/resolvable_hostname/readme.md
         resolvable_hostname: google.com
 
+        # Networks to be served by DHCP server.
+        dchp_networks:
+            internal_net:
+                enabled: False
+            external_net:
+                enabled: False
+
 ###############################################################################
 # EOF
 ###############################################################################

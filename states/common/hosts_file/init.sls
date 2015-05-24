@@ -33,7 +33,7 @@ managed_hosts_file:
             {% if pillar['system_host_roles'][selected_role]['assigned_hosts']|length != 0 %}
             {% set selected_minion_id = pillar['system_host_roles'][selected_role]['assigned_hosts'][0] %}
             {% set selected_host = pillar['system_hosts'][selected_minion_id] %}
-            {% set selected_net = selected_host['defined_in'] %}
+            {% set selected_net = selected_host['resolved_in'] %}
             {{ selected_host[selected_net]['ip'] }} salt salt.{{ hostname_res['domain_name'] }}
             {% endif %}
 
@@ -42,7 +42,7 @@ managed_hosts_file:
 
             # Hosts by their hostname.
             {% for selected_host in pillar['system_hosts'].values() %}
-            {% set selected_net = selected_host['defined_in'] %}
+            {% set selected_net = selected_host['resolved_in'] %}
             {{ selected_host[selected_net]['ip'] }} {{ selected_host['hostname'] }} {{ selected_host['hostname'] }}.{{ hostname_res['domain_name'] }}
             {% endfor %}
 
@@ -51,7 +51,7 @@ managed_hosts_file:
             {% if pillar['system_host_roles'][selected_role]['assigned_hosts']|length != 0 %}
             {% set selected_minion_id = pillar['system_host_roles'][selected_role]['assigned_hosts'][0] %}
             {% set selected_host = pillar['system_hosts'][selected_minion_id] %}
-            {% set selected_net = selected_host['defined_in'] %}
+            {% set selected_net = selected_host['resolved_in'] %}
             {{ selected_host[selected_net]['ip'] }} {{ selected_role }} {{ selected_role }}.{{ hostname_res['domain_name'] }}
             {% endif %}
             {% endfor %}

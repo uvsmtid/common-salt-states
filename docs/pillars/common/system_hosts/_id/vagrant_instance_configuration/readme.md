@@ -19,7 +19,7 @@ key.
   the interface which was used for the bridge) -
   see [host_bridge_interface][6] configuration per host.
 * If `private_network` is used, Vagrant is supposed to create network
-  named according to what [defined_in][10] specifies.
+  named according to what [resolved_in][10] specifies.
   
   Note that Vagrant does not restrict using IP addresses only from
   [private address space][11].
@@ -43,7 +43,7 @@ with [external_net][12] and [internal_net][7] in configuration's sense
 [7]: docs/pillars/common/system_networks/internal_net/readme.md
 [8]: http://docs.vagrantup.com/v2/networking/private_network.html
 [9]: docs/pillars/common/system_hosts/_id/vagrant_instance_configuration/network_type/readme.md
-[10]: docs/pillars/common/system_hosts/_id/defined_in/readme.md
+[10]: docs/pillars/common/system_hosts/_id/resolved_in/readme.md
 [11]: https://en.wikipedia.org/wiki/Private_network
 [12]: docs/pillars/common/system_networks/external_net/readme.md
 

@@ -25,7 +25,7 @@
     )
 %}
 
-{% set net_host_defined_in = target_env_pillar['system_hosts'][selected_host_name]['defined_in'] %}
+{% set net_host_resolved_in = target_env_pillar['system_hosts'][selected_host_name]['resolved_in'] %}
 
 {{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
@@ -38,7 +38,7 @@
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
                 # IP address to route IP traffic by default.
-                'default_route_ip': '{{ target_env_pillar['system_networks'][net_host_defined_in]['gateway'] }}',
+                'default_route_ip': '{{ target_env_pillar['system_networks'][net_host_resolved_in]['gateway'] }}',
                 # IP address behind network router to confirm successful routing configuration.
                 # Use `external_dns_server` for bootstrap at the moment
                 # even if it is not necessarily outside of current network.

@@ -19,20 +19,22 @@ system_hosts:
             #   - 'hansode/fedora-21-server-x86_64' # virtualbox
             #   - 'fedora:21' # docker
             base_image: 'uvsmtid/fedora-21-server-minimal' # libvirt
-            network_type: 'private_network'
-            host_bridge_interface: em1
             memory_size: 2024
             cpus_number: 2
         consider_online_for_remote_connections: True
         os_type: linux
         os_platform: f21
         hostname: {{ master_minion_id }}
-        defined_in: internal_net
-        internal_net:
-            ip: 192.168.50.1
-        external_net:
-            # This value is unused if `defined_in` is `internal_net`.
-            ip: 0.0.0.0
+        resolved_in: internal_net
+        host_networks:
+            internal_net:
+                ip: 192.168.51.1
+            secondary_internal_net:
+                ip: 192.168.52.1
+            external_net:
+                ip: 192.168.61.1
+            secondary_external_net:
+                ip: 192.168.62.1
         primary_user:
             username: {{ default_username }}
             password: {{ default_username }}

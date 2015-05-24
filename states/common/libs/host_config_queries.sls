@@ -43,7 +43,7 @@
 {%- set selected_host_id = get_host_id_by_role_from_pillar(host_role_id, pillar_data) -%}
 {%- set selected_host_config = pillar_data['system_hosts'][selected_host_id] -%}
 
-{%- set selected_net_id = selected_host_config['defined_in'] -%}
+{%- set selected_net_id = selected_host_config['resolved_in'] -%}
 {{- selected_host_config[selected_net_id]['ip'] -}}
 
 {%- endmacro -%}
