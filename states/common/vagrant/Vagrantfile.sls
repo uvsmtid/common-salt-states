@@ -48,8 +48,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 {% set instantiated_by = selected_host['instantiated_by'] %}
 {% set instance_configuration = selected_host[instantiated_by] %}
-{% set network_defined_in = selected_host['defined_in'] %}
-{% set network_config = pillar['system_networks'][network_defined_in] %}
+{% set network_resolved_in = selected_host['resolved_in'] %}
+{% set network_config = pillar['system_networks'][network_resolved_in] %}
 
 {% if vagrant_provider == instance_configuration['vagrant_provider'] %} # match provider
 {% else %} # match provider
@@ -126,16 +126,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #}
 {% if instance_configuration['network_type'] == 'public_network' %} # public_network
     {{ selected_host_name }}.vm.network 'public_network',
-        ip: '{{ selected_host[network_defined_in]['ip'] }}',
+        ip: '{{ selected_host[network_resolved_in]['ip'] }}',
         :dev => '{{ instance_configuration['host_bridge_interface'] }}',
         :mode => 'bridge'
 {% endif %} # public_network
 {% if instance_configuration['network_type'] == 'private_network' %} # private_network
     {{ selected_host_name }}.vm.network 'private_network',
-        ip: '{{ selected_host[network_defined_in]['ip'] }}',
+        ip: '{{ selected_host[network_resolved_in]['ip'] }}',
         :dev => '{{ instance_configuration['host_bridge_interface'] }}',
         :libvirt__netmask => '{{ network_config['netmask'] }}',
-        :libvirt__network_name => '{{ network_defined_in }}',
+        :libvirt__network_name => '{{ network_resolved_in }}',
         :libvirt__forward_mode => 'nat',
         # Use DHCP to offer addresses to avoid too long initialization
         # of network interfaces during first boot (before static IP is
@@ -152,7 +152,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #}
 {% if instance_configuration['network_type'] == 'public_network' %} # public_network
     {{ selected_host_name }}.vm.network 'public_network',
-        ip: '{{ selected_host[network_defined_in]['ip'] }}',
+        ip: '{{ selected_host[network_resolved_in]['ip'] }}',
         bridge: '{{ instance_configuration['host_bridge_interface'] }}'
 {% endif %} # public_network
 {% if instance_configuration['network_type'] == 'private_network' %} # private_network

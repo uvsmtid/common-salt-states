@@ -27,7 +27,7 @@ system_hosts:
         os_type: linux
         os_platform: f21
         hostname: {{ master_minion_id }}
-        defined_in: internal_net
+        resolved_in: internal_net
         internal_net:
             ip: 192.168.50.1
         external_net:

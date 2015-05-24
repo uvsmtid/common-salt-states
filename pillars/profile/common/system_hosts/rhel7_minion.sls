@@ -25,7 +25,7 @@ system_hosts:
         os_type: linux
         os_platform: rhel7
         hostname: rhel7-minion
-        defined_in: internal_net
+        resolved_in: internal_net
         internal_net:
             ip: 192.168.50.20
         external_net:
