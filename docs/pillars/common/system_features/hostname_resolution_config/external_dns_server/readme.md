@@ -1,7 +1,7 @@
 
 Field `external_dns_server` specifies DNS server to be used either
 directly in DNS settings for all hosts or inderectly (forwarding DNS
-requests via `resolver-role`).
+requests via `resolver_role`).
 
 See [dns_server_type][1] for details.
 

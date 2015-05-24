@@ -2,23 +2,20 @@
 # Determine task based on different os flavor
 ##############################################################################
 
-{% if grains['os'] == 'Fedora' %}
+{% if grains['os_platform_type'].startswith('fc') or grains['os_platform_type'].startswith('rhel7') %}
     {% set task = 'firewalld' %}
-{% elif grains['os'] in [ 'CentOS', 'RedHat' ] %}
-    {% if grains['osmajorrelease'] == '7' %}
-        {% set task = 'firewalld' %}
-    {% else %}
-        {% set task = 'iptables' %}
-    {% endif %}
+{% elif grains['os_platform_type'].startswith('rhel5') %}
+    {% set task = 'iptables' %}
 {% elif grains['os'] == 'Windows' %}
     {% set task = 'windows' %}
+{% else %}
+    {{ FAIL_UNKNOWN_PLATFORM }}
 {% endif %}
 
 ###############################################################################
-# <<< Fedora
 {% if task  == 'firewalld' %}
 # Configuration file for `firewalld`.
-# NOTE: On Fedora, we don't disable firewall, we remove all restrictions.
+# NOTE: We don't disable firewall, we remove all restrictions.
 #       We also assume it hosts VMs and the better option is to have NAT
 #       instead of blocking routed traffic.
 
@@ -55,11 +52,9 @@ firewall:
         - mode: 600
 
 {% endif %}
-# >>> Fedora
 ###############################################################################
 
 ###############################################################################
-# <<< RHEL5
 {% if task == 'iptables' %}
 
 # Simply disable iptables on all RHEL5 nodes.
@@ -69,11 +64,9 @@ firewall:
         - enable: False
 
 {% endif %}
-# >>> RHEL5
 ###############################################################################
 
 ###############################################################################
-# <<< Windows
 {% if task == 'Windows' %}
 
 # See also:
@@ -85,6 +78,5 @@ disable_windows_firewall:
         - name: "netsh advfirewall set AllProfiles state off"
 
 {% endif %}
-# >>> RHEL5
 ###############################################################################
 

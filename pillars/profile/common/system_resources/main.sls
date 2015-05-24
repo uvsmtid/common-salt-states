@@ -184,11 +184,11 @@ system_resources:
     # Available mirrors:
     #   http://cygwin.com/mirrors.html
     # For example, this command worked:
-    #   rsync -vaz rsync://mirrors.kernel.org/sourceware/cygwin/x86_64/ /var/www/html/depository_role/content/distrib/cygwin/x86_64/
+    #   rsync -vaz rsync://mirrors.kernel.org/sourceware/cygwin/x86_64/ /var/www/html/depository-role/content/distrib/cygwin/x86_64/
 
     # Oracle Java 1.7 JDK.
     # Link: http://www.oracle.com/technetwork/java/javase/downloads/index.html
-    oracle_jdk-7u65-linux-x64.rpm:
+    oracle_jdk-7u71-linux-x64.rpm:
         resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
@@ -196,6 +196,18 @@ system_resources:
         item_parent_dir_path: common/java
         item_base_name: jdk-7u71-linux-x64.rpm
         item_content_hash: md5=f9dafcc0bd52f085c8b0894c27b39d10
+
+    # OpenStack YUM repository config RPM package.
+    # Downloadable from:
+    #   https://repos.fedorapeople.org/repos/openstack/openstack-juno/
+    openstack-rdo-release-juno-1.noarch.rpm:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/openstack
+        item_base_name: rdo-release-juno-1.noarch.rpm
+        item_content_hash: md5=ec6cb4b3d103bd57cde344df6f5759ac
 
 ###############################################################################
 # EOF
