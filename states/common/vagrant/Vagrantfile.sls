@@ -119,6 +119,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 #{#
 # There is some difference how the network configuration line looks for `virtualbox` and `libvirt`.
+# TODO: There is huge code duplication - consolidate loops into single one
+#       spanning all networks at once regardless of provider.
+#       Do differentiation based on profile and network type inside the loop.
 #}#
 {% if instance_configuration['vagrant_provider'] == 'libvirt' %} # vagrant_provider-network
 
@@ -141,7 +144,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ip: '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
         :dev => '{{ vagrant_net_conf['host_bridge_interface'] }}',
         :libvirt__network_name => '{{ vagrant_net_name }}',
-        :mode => 'bridge'
+        {% if vagrant_net_conf['enable_dhcp'] %}
+        :libvirt__dhcp_enabled => true,
+        {% else %}
+        :libvirt__dhcp_enabled => false,
+        {% endif %}
+        :mode => 'bridge',
+        :whatever => true
 {% endif %} # host_networks
 
 {% endif %} # enabled
@@ -173,7 +182,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # NOTE: At the time of coding IP range for DHCP server was not
         #       configurable. So, we hope that there will be no conflicts
         #       with IP addresses assigned statically.
-        :libvirt__dhcp_enabled => true
+        {% if vagrant_net_conf['enable_dhcp'] %}
+        :libvirt__dhcp_enabled => true,
+        {% else %}
+        :libvirt__dhcp_enabled => false,
+        {% endif %}
+        :whatever => true
 {% endif %} # host_networks
 
 {% endif %} # enabled

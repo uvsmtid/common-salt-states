@@ -19,9 +19,14 @@ system_features:
         #
         # See: http://docs.vagrantup.com/v2/networking/private_network.html
         private_networks:
-            private_network:
+            primary_int_network:
                 enabled: True
+                enable_dhcp: True
                 system_network: internal_net
+            secondary_int_network:
+                enabled: True
+                enable_dhcp: True
+                system_network: secondary_internal_net
 
         # Specify Vagrant "public networks" (which is essentially
         # bridged networking requiring MAC address to be used in
@@ -29,9 +34,15 @@ system_features:
         #
         # See: http://docs.vagrantup.com/v2/networking/public_network.html
         public_networks:
-            public_network:
-                enabled: False
+            primary_ext_network:
+                enabled: True
+                enable_dhcp: True
                 system_network: external_net
+                host_bridge_interface: em1
+            secondary_ext_network:
+                enabled: True
+                enable_dhcp: True
+                system_network: secondary_external_net
                 host_bridge_interface: em1
 
         vagrant_providers_configs:

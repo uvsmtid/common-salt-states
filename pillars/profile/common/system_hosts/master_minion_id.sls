@@ -28,7 +28,13 @@ system_hosts:
         resolved_in: internal_net
         host_networks:
             internal_net:
-                ip: 192.168.50.1
+                ip: 192.168.51.1
+            secondary_internal_net:
+                ip: 192.168.52.1
+            external_net:
+                ip: 192.168.61.1
+            secondary_external_net:
+                ip: 192.168.62.1
         primary_user:
             username: {{ default_username }}
             password: {{ default_username }}
