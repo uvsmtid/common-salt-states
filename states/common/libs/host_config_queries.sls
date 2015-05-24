@@ -44,7 +44,7 @@
 {%- set selected_host_config = pillar_data['system_hosts'][selected_host_id] -%}
 
 {%- set selected_net_id = selected_host_config['resolved_in'] -%}
-{{- selected_host_config[selected_net_id]['ip'] -}}
+{{- selected_host_config['host_networks'][selected_net_id]['ip'] -}}
 
 {%- endmacro -%}
 
