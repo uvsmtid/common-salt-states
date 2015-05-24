@@ -7,11 +7,6 @@ TODO
 
 # TODOs #
 
-* TODO: Make sure that Jenkins jobs can be chained.
-
-* TODO: Add jenkins job which runs Salt highstate to make sure that
-        configuration is up to date and verified.
-
 * TODO: Create a proper script to add new path items to PATH env var.
         Basically, there is no easy way on Windows to do it properly.
         The script should remove duplicates and use registry directly.

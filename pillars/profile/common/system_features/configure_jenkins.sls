@@ -20,6 +20,10 @@ system_features:
         #       usernames per host, there is a need to be flexible and
         #       support multiple username credentials (even if key is
         #       the same).
+        #
+        # TODO: Review the following statement
+        #       (as it seems to be automatic already).
+        #
         # At the moment, simply disable connecting to the nodes as it should
         # be done manually:
         #   - Go to "Credentials" configuration, select:
@@ -34,29 +38,19 @@ system_features:
         #
         make_sure_nodes_are_connected: False
 
-        # Job names should be according to the list in the following
-        # directory:
-        #   <BRANCH_PATH>/test/control/conf/jobs/
-        # The job configuration all eventually refers to configuration there.
-        #
-        # TODO: Add the following note to docs.
-        # NOTE: When Git is used with absolute path to repository, all
-        #       checkouts reuse this repo (only symlinks are created).
-        #       When Jenkins is used with Git sources, it may not be desirable
-        #       because different jobs will clean each other's compilation
-        #       results. In order to solve this problem, `override_git_repo_local_paths`
-        #       may be used. By default, there is only single Git repository
-        #       (pointed by `git_repo_local_paths` from `deploy_environment_sources`)
-        #       per host. If Jenkins jobs overrides it, there will be as many
-        #       Git repositories as there are unique absolute paths in total.
-        #
-        #       So, if defined, `override_git_repo_local_paths` goes to co-named
-        #       `--override_git_repo_local_paths` parameter of `init.py` from
-        #       CI control scripts.
-        #       If not defined, `git_repo_local_paths` from `deploy_environment_sources`
-        #       is used.
-        #
+        # See: docs/pillars/common/system_features/configure_jenkins/job_configs/readme.md
         job_configs:
+
+        # Documetnation.
+        #   _id:
+        #       # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/readme.md
+        #
+        #       timer_spec:
+        #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/timer_spec/readme.md
+        #
+        #       trigger_after_jobs:
+        #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_after_jobs/readme.md
+        #
 
             update_salt_master_sources:
                 enabled: True
@@ -184,6 +178,8 @@ system_features:
                 restrict_to_system_role:
                     - controller-role
 
+                # NOTE: This tests that this field is optional
+                #       (can be omitted).
                 #{#
                 timer_spec: ~
                 #}#
