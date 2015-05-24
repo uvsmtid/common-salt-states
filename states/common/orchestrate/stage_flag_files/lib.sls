@@ -66,7 +66,7 @@
 
 {% macro stage_flag_file_sls(project_name, stage_flag_id) %}
 
-{% set control_host = pillar['system_hosts'][pillar['system_host_roles']['controller-role']['assigned_hosts'][0]] %}
+{% set control_host = pillar['system_hosts'][pillar['system_host_roles']['controller_role']['assigned_hosts'][0]] %}
 {% set dir_name = control_host['primary_user']['posix_user_home_dir'] + '/' + pillar['system_orchestrate_stages']['deployment_directory_path'] %}
 {% set config = pillar['system_orchestrate_stages']['stage_flag_files'][stage_flag_id] %}
 
@@ -102,7 +102,7 @@ include:
 
 {% macro stage_flag_file_create(unique_prefix, stage_flag_id, orchestrate_dep_list) %}
 
-{% set control_host = pillar['system_hosts'][pillar['system_host_roles']['controller-role']['assigned_hosts'][0]] %}
+{% set control_host = pillar['system_hosts'][pillar['system_host_roles']['controller_role']['assigned_hosts'][0]] %}
 {% set dir_name = control_host['primary_user']['posix_user_home_dir'] + '/' + pillar['system_orchestrate_stages']['deployment_directory_path'] %}
 {% set config = pillar['system_orchestrate_stages']['stage_flag_files'][stage_flag_id] %}
 

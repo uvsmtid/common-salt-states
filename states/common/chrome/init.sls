@@ -36,10 +36,11 @@ install_chrome_on_windows:
         - source: salt://common/chrome/install_chrome_on_windows.bat
         - template: jinja
 
-# Download file from depository-role
+# Download file.
+# TODO: Rewrite using macros to get resource files.
 '{{ config_temp_dir }}\ChromeStandaloneSetup.exe':
     file.managed:
-        - source: http://depository-role/distrib/chrome/ChromeStandaloneSetup.exe
+        - source: http://{{ pillar['system_host_roles']['depository_role']['hostname'] }}/distrib/chrome/ChromeStandaloneSetup.exe
         - source_hash: md5=b7427051a09887aee412911141497a9d
 
 {% endif %}

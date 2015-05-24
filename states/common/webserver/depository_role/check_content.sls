@@ -22,15 +22,15 @@ def run():
     sls_config = {}
 
     # Make sure the content validation feature is enabled.
-    if not __pillar__['system_features']['validate_depository_content']['feature_enabled']:
+    if not __pillar__['system_features']['validate_depository_role_content']['feature_enabled']:
         return sls_config
 
-    # Make sure it is `depository-role`.
-    if not __grains__['id'] in __pillar__['system_host_roles']['depository-role']['assigned_hosts']:
+    # Make sure it is `depository_role`.
+    if not __grains__['id'] in __pillar__['system_host_roles']['depository_role']['assigned_hosts']:
         return sls_config
 
     script_name = 'check_content.sh'
-    depository_content_parent_dir = __pillar__['system_features']['validate_depository_content']['depository_content_parent_dir']
+    depository_role_content_parent_dir = __pillar__['system_features']['validate_depository_role_content']['depository_role_content_parent_dir']
     posix_config_temp_dir = __pillar__['posix_config_temp_dir']
 
     # First, deploy the script.
@@ -41,7 +41,7 @@ def run():
     deploy_script = {
         'file.managed': [
             { 'name': script_path },
-            { 'source': 'salt://common/webserver/depository-role/' + script_name },
+            { 'source': 'salt://common/webserver/depository_role/' + script_name },
             { 'user': 'root' },
             { 'group': 'root' },
             { 'mode': '755' },
@@ -68,7 +68,7 @@ def run():
                             hash_type_to_command_map[hash_type] +
                             ' ' +
                             os.path.join(
-                                depository_content_parent_dir,
+                                depository_role_content_parent_dir,
                                 content_item['item_parent_dir_path'],
                                 content_item['item_base_name'],
                             ) +

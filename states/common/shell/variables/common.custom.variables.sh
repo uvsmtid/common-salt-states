@@ -5,10 +5,8 @@ export EDITOR="vim"
 
 {% if pillar['system_features']['assign_DISPLAY_environment_variable'] %}
 
-# Use dereferenced host:
-{% set x_display_server = pillar['system_host_roles']['primary-console-role']['assigned_hosts'][0] %}
-# Use role name (which should be part of DNS):
-{% set x_display_server = 'primary-console-role' %}
+# Use role name (which should be part of DNS or any host resolution method):
+{% set x_display_server = pillar['system_host_roles']['primary_console_role']['hostname'] %}
 
 if [ -n "$DISPLAY" ]
 then

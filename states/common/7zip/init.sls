@@ -41,7 +41,7 @@ install_7zip_on_windows:
 {% from resources_macro_lib import get_registered_content_item_URI with context %}
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 
-# Download file from depository-role.
+# Download file.
 '{{ config_temp_dir }}/{{ pillar['system_resources']['7zip_64_bit_windows']['item_base_name'] }}':
     file.managed:
         - source: {{ get_registered_content_item_URI('7zip_64_bit_windows') }}

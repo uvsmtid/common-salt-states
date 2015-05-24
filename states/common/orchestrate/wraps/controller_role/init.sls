@@ -1,6 +1,6 @@
-# Configure `controller-role` role (Salt master).
+# Configure `controller_role` role (Salt master).
 
-{% if grains['id'] in pillar['system_host_roles']['controller-role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] %}
 
 include:
 

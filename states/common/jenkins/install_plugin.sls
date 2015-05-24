@@ -9,7 +9,7 @@
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins-master-role']['assigned_hosts'][0]]['hostname'] %}
+{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 {% set plugin_name = pillar['system_resources'][registered_content_item_id]['plugin_name'] %}
 
 '{{ config_temp_dir }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }}':

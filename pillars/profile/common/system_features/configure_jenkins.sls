@@ -56,7 +56,7 @@ system_features:
                 enabled: True
 
                 restrict_to_system_role:
-                    - controller-role
+                    - controller_role
 
                 timer_spec: 'H */2 * * *'
 
@@ -71,7 +71,7 @@ system_features:
                 enabled: True
 
                 restrict_to_system_role:
-                    - controller-role
+                    - controller_role
 
                 timer_spec: ~
 
@@ -86,7 +86,7 @@ system_features:
                 enabled: True
 
                 restrict_to_system_role:
-                    - controller-role
+                    - controller_role
 
                 timer_spec: ~
 
@@ -101,7 +101,7 @@ system_features:
                 enabled: True
 
                 restrict_to_system_role:
-                    - controller-role
+                    - controller_role
 
                 timer_spec: ~
 
@@ -116,7 +116,7 @@ system_features:
                 enabled: True
 
                 restrict_to_system_role:
-                    - controller-role
+                    - controller_role
 
                 timer_spec: ~
 
@@ -131,7 +131,7 @@ system_features:
                 enabled: True
 
                 restrict_to_system_role:
-                    - controller-role
+                    - controller_role
 
                 timer_spec: ~
 
@@ -146,7 +146,7 @@ system_features:
                 enabled: True
 
                 restrict_to_system_role:
-                    - controller-role
+                    - controller_role
 
                 timer_spec: ~
 
@@ -161,7 +161,7 @@ system_features:
                 enabled: True
 
                 restrict_to_system_role:
-                    - controller-role
+                    - controller_role
 
                 timer_spec: ~
 
@@ -176,7 +176,7 @@ system_features:
                 enabled: True
 
                 restrict_to_system_role:
-                    - controller-role
+                    - controller_role
 
                 # NOTE: This tests that this field is optional
                 #       (can be omitted).

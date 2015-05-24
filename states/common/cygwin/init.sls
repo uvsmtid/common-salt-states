@@ -44,11 +44,12 @@ install_cygwin_on_windows:
         - source: salt://common/cygwin/install_cygwin_on_windows.bat
         - template: jinja
 
-# Download file from depository-role
+# Download file.
+# TODO: Rewrite using macros to get resource files.
 "C:\cygwin.distrib\installer\setup-x86_64.exe":
     file.managed:
         - makedirs: True
-        - source: http://depository-role/distrib/cygwin/setup-x86_64.exe
+        - source: http://{{ pillar['system_host_roles']['depository_role']['hostname'] }}/distrib/cygwin/setup-x86_64.exe
         - source_hash: md5=93ee19b4143133ec0d9462a27e5c92cb
 
 {% endif %}

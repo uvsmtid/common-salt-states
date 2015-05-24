@@ -19,9 +19,9 @@ Even for DNS there are two types considered:
 
     This configures `dnsmasq` through `libvirtd`.
 
-    Use this option only when host with role `hypervisor-role` is also
-    assigned `resolver-role` role and `libvirt` is running
-    on `hypervisor-role` (typically, KVM virtualization).
+    Use this option only when host with role `hypervisor_role` is also
+    assigned `resolver_role` role and `libvirt` is running
+    on `hypervisor_role` (typically, KVM virtualization).
 
 The last one is the simplest type:
 

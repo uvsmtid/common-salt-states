@@ -17,29 +17,29 @@ include:
     # roles
 
         # TODO:
-        #- primary-console-role
+        #- primary_console_role
 
-        - common.orchestrate.wraps.controller-role
+        - common.orchestrate.wraps.controller_role
 
         # TODO:
-        #- common.orchestrate.wraps.router-role
-        #- common.orchestrate.wraps.resolver-role
+        #- common.orchestrate.wraps.router_role
+        #- common.orchestrate.wraps.resolver_role
 
-        - common.orchestrate.wraps.hypervisor-role
+        - common.orchestrate.wraps.hypervisor_role
 
-        - common.orchestrate.wraps.depository-role
+        - common.orchestrate.wraps.depository_role
 
-        - common.orchestrate.wraps.maven-build-server-role
+        - common.orchestrate.wraps.maven_build_server_role
 
-        - common.orchestrate.wraps.jenkins-master-role
-        - common.orchestrate.wraps.jenkins-slave-role
+        - common.orchestrate.wraps.jenkins_master_role
+        - common.orchestrate.wraps.jenkins_slave_role
 
         # This wrap handles both:
-        # - maven-repository-upstream-manager-role
-        # - maven-repository-downstream-manager-role
-        - common.orchestrate.wraps.maven-repository-manager-role
+        # - maven_repository_upstream_manager_role
+        # - maven_repository_downstream_manager_role
+        - common.orchestrate.wraps.maven_repository_manager_role
 
-        - common.orchestrate.wraps.openstack-client-role
+        - common.orchestrate.wraps.openstack_client_role
 
     # main
         - common.orchestrate.wraps.main
