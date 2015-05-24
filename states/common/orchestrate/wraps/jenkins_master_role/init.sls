@@ -1,6 +1,6 @@
-# Configure `jenkins-master-role` role.
+# Configure `jenkins_master_role` role.
 
-{% if grains['id'] in pillar['system_host_roles']['jenkins-master-role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'] %}
 
 include:
 

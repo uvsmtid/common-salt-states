@@ -45,10 +45,10 @@ install_python_on_windows:
         - source: salt://common/python/install_python_on_windows.bat
         - template: jinja
 
-# Download file from depository-role
+# Download file from depository_role
 '{{ config_temp_dir }}\python-2.7.6.amd64.msi':
     file.managed:
-        - source: http://depository-role/distrib/python/python-2.7.6.amd64.msi
+        - source: http://depository_role/distrib/python/python-2.7.6.amd64.msi
         - source_hash: md5=b73f8753c76924bc7b75afaa6d304645
 
 # Set PATH.

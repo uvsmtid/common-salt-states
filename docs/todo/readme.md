@@ -76,12 +76,12 @@ TODO
 	     Changes:
         ```
 
-* Add deployment of "origin" Git repository from `depository-role`.
+* Add deployment of "origin" Git repository from `depository_role`.
   This is to make sure there is initial repo for "origin" of all
   environment sources.
 
 * TODO: Add support for bigger resolution on Virtual Box running this command
-        on hypervisor-role:
+        on hypervisor_role:
             VBoxManage setextradata global GUI/MaxGuestResolution any
 
 * TODO: Retrospectively, add `repository_role`'s items for 7Zip and Python:
@@ -98,7 +98,7 @@ TODO
         on Jenkins slave configuration.
         Or is current "restrict to host role" is good enough?
 
-* TODO: Add one more sub-dir to `depository-role` (in addition to: `distrib`
+* TODO: Add one more sub-dir to `depository_role` (in addition to: `distrib`
         `repository`, `images`): `data` with clear documented organization,
         content type, purpose of splitting, etc.
 
@@ -122,8 +122,8 @@ new `blackbox` profile_name.
     * Setup common packages (make life more comfortable):
           salt-run -l all state.orchestrate {{ project_name }}.orchestrate.setup.common
 
-    * Configure hypervisor-role:
-          salt-run -l all state.orchestrate {{ project_name }}.orchestrate.setup.hypervisor-role
+    * Configure hypervisor_role:
+          salt-run -l all state.orchestrate {{ project_name }}.orchestrate.setup.hypervisor_role
       This sets /etc/resolv.conf to non-existing network address on
       Linux hypervisor (because network is not automatically configured).
       So, the following manual step is required to recover and continue:
@@ -157,7 +157,7 @@ Check:
 * MAC,
 * name resolution,
 * access to YUM repositories,
-* access to `depository-role` (HTTP web server),
+* access to `depository_role` (HTTP web server),
 * etc.
 This is to validatate that system is running in expected state.
 The decision whether to test this or not should come from the fact whether
@@ -169,11 +169,11 @@ changes in virtual network configuration or storage). VMs have to be
 checked whether the changes took effect or the whole infrastructure should
 be rebooted.
 
-## Finish definitions for all `depository-role` items ##
+## Finish definitions for all `depository_role` items ##
 
-Add definitions for remaining items in `depository-role`:
-* wether item is validated or not in the `depository-role`;
-* path within `depository-role`;
+Add definitions for remaining items in `depository_role`:
+* wether item is validated or not in the `depository_role`;
+* path within `depository_role`;
 * hash;
 * basename;
 * etc.
@@ -315,7 +315,7 @@ in various paths depending on whether Windows or Cygwin uses it.
 ## Add time synchronization for minions (NTP) ##
 
 There should be a role of Time server (Linux only, normally provided by
-`hypervisor-role`) and role of Time client (all other hosts: Linux and Windows).
+`hypervisor_role`) and role of Time client (all other hosts: Linux and Windows).
 
 Find a command line way to configure Windows NTP client.
 See this:
@@ -327,7 +327,7 @@ For example, all hosts use the same time zone (i.e. Asia/Singapore).
 
 UPDATE: There ia already SLS for Linux (but unlikely for Windows) at the moment.
 
-## Add generic `depository-role` content validation ##
+## Add generic `depository_role` content validation ##
 
 Descriptor contains neccessary information to run
 achiver content validation in single generic state (rather than creating

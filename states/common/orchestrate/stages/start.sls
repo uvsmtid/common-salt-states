@@ -34,7 +34,7 @@ include:
 # START: Orchestratioin logic
 ###############################################################################
 
-{% set controller_role_host = pillar['system_host_roles']['controller-role']['assigned_hosts'][0] %}
+{% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
 
 install_stage_flag_files_firectory:
     salt.state:

@@ -34,7 +34,7 @@ include:
 # START: Orchestratioin logic
 ###############################################################################
 
-{% set controller_role_host = pillar['system_host_roles']['controller-role']['assigned_hosts'][0] %}
+{% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
 
 configure_minions_on_all_minions:
     salt.state:

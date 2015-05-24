@@ -1,6 +1,6 @@
-# Configure `jenkins-slave-role` role.
+# Configure `jenkins_slave_role` role.
 
-{% if grains['id'] in pillar['system_host_roles']['jenkins-slave-role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['jenkins_slave_role']['assigned_hosts'] %}
 
 include:
 

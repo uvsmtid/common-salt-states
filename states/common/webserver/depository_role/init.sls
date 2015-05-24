@@ -1,15 +1,15 @@
-# Configuration of `depository-role` on a webserver.
+# Configuration of `depository_role` on a webserver.
 
 # TODO: This and default templates are almost identical.
 #       Try using a common template instead.
 
-{% if grains['id'] in pillar['system_host_roles']['depository-role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['depository_role']['assigned_hosts'] %}
 
 ###############################################################################
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
-{% set depository_content_parent_dir = pillar['system_features']['validate_depository_content']['depository_content_parent_dir'] %}
+{% set depository_role_content_parent_dir = pillar['system_features']['validate_depository_role_content']['depository_role_content_parent_dir'] %}
 
 include:
     - common.webserver
@@ -23,34 +23,34 @@ extend:
     webserver:
         service:
             - watch:
-                - file: /etc/httpd/conf.d/depository-role.conf
+                - file: /etc/httpd/conf.d/depository_role.conf
             - require:
-                - file: '{{ depository_content_parent_dir }}/depository-role.txt'
-                - file: /var/log/httpd/hosts/depository-role
+                - file: '{{ depository_role_content_parent_dir }}/depository_role.txt'
+                - file: /var/log/httpd/hosts/depository_role
 
 # Configuration for Apache virtual server:
-/etc/httpd/conf.d/depository-role.conf:
+/etc/httpd/conf.d/depository_role.conf:
     file.managed:
-        - source: salt://common/webserver/depository-role/depository-role.conf
+        - source: salt://common/webserver/depository_role/depository_role.conf
         - template: jinja
         - user: apache
         - group: apache
         - mode: 660
 
 # Hint file pointing to web server name.
-'{{ depository_content_parent_dir }}/depository-role.txt':
+'{{ depository_role_content_parent_dir }}/depository_role.txt':
     file.managed:
-        - contents: "/etc/httpd/conf.d/depository-role.conf"
+        - contents: "/etc/httpd/conf.d/depository_role.conf"
         - user: apache
         - group: apache
         - mode: 660
         - dir_mode: 770
         - makedirs: True
         - require:
-            - file: /var/www/html/depository-role
+            - file: /var/www/html/depository_role
 
 # Base directory for Apache virtual server:
-/var/www/html/depository-role:
+/var/www/html/depository_role:
     file.directory:
         - user: apache
         - group: apache
@@ -73,10 +73,10 @@ extend:
 #       `recurse` option.
 fix_content_permissions:
     cmd.run:
-        - name: 'chown -R apache:apache "{{ depository_content_parent_dir }}" && chmod -R u+rX "{{ depository_content_parent_dir }}" && chmod -R g+rX "{{ depository_content_parent_dir }}"'
+        - name: 'chown -R apache:apache "{{ depository_role_content_parent_dir }}" && chmod -R u+rX "{{ depository_role_content_parent_dir }}" && chmod -R g+rX "{{ depository_role_content_parent_dir }}"'
 
 # Logs for Apache virtual server:
-/var/log/httpd/hosts/depository-role:
+/var/log/httpd/hosts/depository_role:
     file.directory:
         - user: apache
         - group: apache

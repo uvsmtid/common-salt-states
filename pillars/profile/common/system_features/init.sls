@@ -22,7 +22,7 @@ include:
     - {{ this_pillar }}.assign_DISPLAY_environment_variable
     - {{ this_pillar }}.initialize_ssh_connections
     - {{ this_pillar }}.configure_sudo_for_specified_users
-    - {{ this_pillar }}.validate_depository_content
+    - {{ this_pillar }}.validate_depository_role_content
     - {{ this_pillar }}.time_configuration
     - {{ this_pillar }}.yum_repos_configuration
 

@@ -42,7 +42,7 @@
 
         # Remove old minion keys (keys before hosts are re-instantiated).
         {% for selected_minion_id in pillar['system_hosts'].keys() %}
-        {% if not selected_minion_id in pillar['system_host_roles']['controller-role']['assigned_hosts'] %}
+        {% if not selected_minion_id in pillar['system_host_roles']['controller_role']['assigned_hosts'] %}
         sudo salt-key -y -d "{{ selected_minion_id }}"
         {% endif %}
         {% endfor %}

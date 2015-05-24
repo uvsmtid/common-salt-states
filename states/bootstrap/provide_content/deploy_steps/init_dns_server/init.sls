@@ -38,7 +38,7 @@
                 'resolv_conf_file': 'resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/resolv.conf',
                 # Regardless of the `dns_server_type`, use `external_dns_server`
                 # for bootstrap because it should be accessible anyway.
-                # Salt stateswill reconfigure host settings, if `resolver-role`
+                # Salt stateswill reconfigure host settings, if `resolver_role`
                 # is supposed to be used.
                 'dns_server_ip': '{{ target_env_pillar['system_features']['hostname_resolution_config']['external_dns_server'] }}',
                 'remote_hostname': '{{ target_env_pillar['system_features']['hostname_resolution_config']['resolvable_hostname'] }}',

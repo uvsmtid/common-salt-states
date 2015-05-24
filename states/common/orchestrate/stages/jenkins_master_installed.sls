@@ -36,7 +36,7 @@ include:
 # Applies only when feature is enabled.
 {% if pillar['system_features']['configure_jenkins']['feature_enabled'] %}
 
-{% set jenkins_master_role_host = pillar['system_host_roles']['jenkins-master-role']['assigned_hosts'][0] %}
+{% set jenkins_master_role_host = pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0] %}
 
 configure_jenkins_master_role:
     salt.state:

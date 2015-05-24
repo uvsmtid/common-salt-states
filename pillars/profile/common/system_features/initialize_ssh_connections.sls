@@ -55,13 +55,13 @@ system_features:
 
             # DONE: Implemented.
             hosts_by_host_role:
-                #controller-role:
+                #controller_role:
                 #    username_item:
                 #        username: username
                 #        primary_group: username
                 #        posix_user_home_dir: '/home/username'
                 #        posix_user_home_dir_windows: 'C:\cygwin64\home\username'
-                jenkins-master-role:
+                jenkins_master_role:
                     jenkins:
                         username:                       jenkins
                         primary_group:                  jenkins
@@ -111,7 +111,7 @@ system_features:
 
             # DONE: Implemented.
             hosts_by_host_role: {}
-                #controller-role:
+                #controller_role:
                 #    username_item:
                 #        username: username
                 #        passwrod: password

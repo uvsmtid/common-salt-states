@@ -2,9 +2,9 @@
 ###############################################################################
 #
 
-# TODO: Consider adding definitions of all software versions on `depository-role`.
+# TODO: Consider adding definitions of all software versions on `depository_role`.
 #       This is to be able to rebase versions relatively easily
-#       (i.e. manually putting files on `depository-role`, changing the definition
+#       (i.e. manually putting files on `depository_role`, changing the definition
 #       and re-running installation state).
 
 # TODO: Consider adding definitions of all software versions which is built
@@ -184,7 +184,7 @@ system_resources:
     # Available mirrors:
     #   http://cygwin.com/mirrors.html
     # For example, this command worked:
-    #   rsync -vaz rsync://mirrors.kernel.org/sourceware/cygwin/x86_64/ /var/www/html/depository-role/content/distrib/cygwin/x86_64/
+    #   rsync -vaz rsync://mirrors.kernel.org/sourceware/cygwin/x86_64/ /var/www/html/depository_role/content/distrib/cygwin/x86_64/
 
     # Oracle Java 1.7 JDK.
     # Link: http://www.oracle.com/technetwork/java/javase/downloads/index.html

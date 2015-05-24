@@ -1,7 +1,7 @@
 
 State `common.jenkins.master` installs Jenkins Master (server).
 
-Normally, Jenkins Master is only installed if a minion is assigned [jenkins-master-role](docs/pillars/common/system_host_roles/jenkins-master-role/readme.md).
+Normally, Jenkins Master is only installed if a minion is assigned [jenkins_master_role](docs/pillars/common/system_host_roles/jenkins_master_role/readme.md).
 
 ## Credentials ##
 

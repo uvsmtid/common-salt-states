@@ -14,7 +14,7 @@ system_features:
         # All hosts in `internal_net` or `external_net` are resolved as part
         # of this domain zone.
         #
-        # The DNS server is configured in `resolver-role` role. See `system_host_roles`.
+        # The DNS server is configured in `resolver_role` role. See `system_host_roles`.
         domain_name: project.example.com
 
         # TODO: It is better to use role name to select host (with IP)

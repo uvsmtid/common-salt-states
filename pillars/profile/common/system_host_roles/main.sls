@@ -10,61 +10,61 @@ system_host_roles:
     # Primary console is the machine which user/developer
     # interacts with to control the rest of the system.
     # It should normally be a barebone machine and may
-    # share roles like `controller-role`, `hypervisor-role`, etc.
+    # share roles like `controller_role`, `hypervisor_role`, etc.
     # For example, it should normally provide graphical environment
     # (to use browser to access Jenkins), it may provide
     # X server to run remote apps with graphical interface.
-    primary-console-role:
+    primary_console_role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    controller-role:
+    controller_role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    router-role:
+    router_role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    resolver-role:
+    resolver_role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    hypervisor-role:
+    hypervisor_role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    depository-role:
+    depository_role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    maven-build-server-role:
+    maven_build_server_role:
         assigned_hosts:
             - {{ master_minion_id }}
             - rhel7_minion
 
     # Jenkins master is always linux.
-    jenkins-master-role:
+    jenkins_master_role:
         assigned_hosts:
             - {{ master_minion_id }}
 
-    jenkins-slave-role:
+    jenkins_slave_role:
         assigned_hosts:
             - {{ master_minion_id }}
             - rhel5_minion
             - rhel7_minion
 
     # Sonatype Nexus is used as Maven Repository Manager.
-    maven-repository-upstream-manager-role:
+    maven_repository_upstream_manager_role:
         # NOTE: These should be hosts different from `downstream`.
         assigned_hosts: []
 
-    maven-repository-downstream-manager-role:
+    maven_repository_downstream_manager_role:
         # NOTE: These should be hosts different from `upstream`.
         assigned_hosts:
             - {{ master_minion_id }}
 
-    openstack-client-role:
+    openstack_client_role:
         assigned_hosts:
             - {{ master_minion_id }}
 

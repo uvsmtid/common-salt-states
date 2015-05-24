@@ -32,7 +32,7 @@
 custom_root_ca:
     file.managed:
         - name: '/usr/share/pki/ca-trust-source/anchors/{{ item_base_name }}'
-        - source: http://depository-role/{{ item_parent_dir_path }}/{{ item_base_name }}
+        - source: http://depository_role/{{ item_parent_dir_path }}/{{ item_base_name }}
         - source_hash: {{ item_content_hash }}
         - template: null
         - user: root

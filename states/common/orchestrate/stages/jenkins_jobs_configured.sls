@@ -35,9 +35,9 @@ include:
 # Applies only when feature is enabled.
 {% if pillar['system_features']['configure_jenkins']['feature_enabled'] %}
 
-{% set controller_role_host = pillar['system_host_roles']['controller-role']['assigned_hosts'][0] %}
-{% set depository_role_host = pillar['system_host_roles']['depository-role']['assigned_hosts'][0] %}
-{% set jenkins_master_role = pillar['system_host_roles']['jenkins-master-role']['assigned_hosts'][0] %}
+{% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
+{% set depository_role_host = pillar['system_host_roles']['depository_role']['assigned_hosts'][0] %}
+{% set jenkins_master_role = pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0] %}
 
 configure_jenkins_jobs:
     salt.state:

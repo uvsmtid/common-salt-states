@@ -5,14 +5,14 @@
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
 {% if pillar['system_features']['deploy_central_control_directory']['feature_enabled'] %}
-{% if grains['id'] in pillar['system_host_roles']['depository-role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['depository_role']['assigned_hosts'] %}
 
-{% set depository_content_parent_dir = pillar['system_features']['validate_depository_content']['depository_content_parent_dir'] %}
+{% set depository_role_content_parent_dir = pillar['system_features']['validate_depository_role_content']['depository_role_content_parent_dir'] %}
 
 {% set repo_name = pillar['system_features']['deploy_environment_sources']['control_scripts_repo_name'] %}
 
 include:
-    - common.webserver.depository-role
+    - common.webserver.depository_role
 
 setup_control_directory_recursively_from_sources:
     file.recurse:
@@ -26,7 +26,7 @@ setup_control_directory_recursively_from_sources:
         - include_empty: True
         - clean: False
         - require:
-            - file: '{{ depository_content_parent_dir }}/depository-role.txt'
+            - file: '{{ depository_role_content_parent_dir }}/depository_role.txt'
 
 {% endif %}
 {% endif %}
