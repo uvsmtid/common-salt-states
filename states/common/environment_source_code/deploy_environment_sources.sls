@@ -23,12 +23,12 @@ include:
 {% set selected_host = pillar['system_hosts'][grains['id']] %}
 
 {% set control_scripts_dir_basename = pillar['system_features']['deploy_environment_sources']['control_scripts_dir_basename'] %}
-
+{% set os_type = pillar['system_platforms'][selected_host['os_platform']]['os_type'] %}
 {% if grains['kernel'] == 'Linux' %}
-{% set path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][selected_host['os_type']]['path'] %}
+{% set path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][os_type]['path'] %}
 {% elif grains['kernel'] == 'Windows' %}
-{% set path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][selected_host['os_type']]['path'] %}
-{% set path_to_sources_cygwin = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][selected_host['os_type']]['path_cygwin'] %}
+{% set path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][os_type]['path'] %}
+{% set path_to_sources_cygwin = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][os_type]['path_cygwin'] %}
 {% endif %}
 
 '{{ path_to_sources }}_existing_path':

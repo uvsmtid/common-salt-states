@@ -79,11 +79,13 @@ package_sshpass:
 # Compose expected data object:
 {% set selected_account = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}
 
+{% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
+
 #------------------------------------------------------------------------------
 # Distribute the key:
 '{{ case_name }}_place_public_key_on_remote_account_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ host_config['os_type'] }}"'
+        - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         # Pass password in environment variable (`SSHPASS` according to `sshpass` documentation).
         - env:
@@ -117,12 +119,13 @@ package_sshpass:
 
 # Compose expected data object:
 {% set selected_account = { 'hostname': host_config['hostname'], 'username': user_config['username'], 'password': user_config['password'] } %}
+{% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
 #------------------------------------------------------------------------------
 # Distribute the key:
 '{{ case_name }}_place_public_key_on_remote_account_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ host_config['os_type'] }}"'
+        - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         # Pass password in environment variable (`SSHPASS` according to `sshpass` documentation).
         - env:
@@ -156,12 +159,13 @@ package_sshpass:
 
 # Compose expected data object:
 {% set selected_account = { 'hostname': hostname, 'username': user_config['username'], 'password': user_config['password'] } %}
+{% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
 #------------------------------------------------------------------------------
 # Distribute the key:
 '{{ case_name }}_place_public_key_on_remote_account_{{ selected_account['hostname'] }}_{{ selected_account['username'] }}_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ host_config['os_type'] }}"'
+        - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
         - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
         # Pass password in environment variable (`SSHPASS` according to `sshpass` documentation).
         - env:

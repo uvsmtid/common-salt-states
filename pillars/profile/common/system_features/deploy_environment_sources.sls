@@ -143,7 +143,7 @@ system_features:
                     branch_name: 'master'
 
         # Environment sources location:
-        # The keys are those used in `os_type` field of system host config.
+        # The keys are those used in `os_type` field under `system_platforms`.
         environment_sources_location:
             windows:
                 path: 'C:\environment.sources'

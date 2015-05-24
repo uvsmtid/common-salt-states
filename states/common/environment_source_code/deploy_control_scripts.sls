@@ -64,7 +64,7 @@
 
 {% if host_config['hostname'] not in pillar['system_features']['deploy_environment_sources']['exclude_hosts'] %} # exclude_hosts
 
-{% set remote_host_type = host_config['os_type'] %}
+{% set remote_host_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
 {% if remote_host_type == 'windows' %}
 {% set remote_path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location'][remote_host_type]['path_cygwin'] %}

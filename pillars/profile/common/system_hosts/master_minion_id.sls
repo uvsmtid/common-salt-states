@@ -9,6 +9,7 @@
 system_hosts:
 
     {{ master_minion_id }}:
+
         instantiated_by: ~
         vagrant_instance_configuration:
             vagrant_provider: 'libvirt'
@@ -21,11 +22,12 @@ system_hosts:
             base_image: 'uvsmtid/fedora-21-server-minimal' # libvirt
             memory_size: 2024
             cpus_number: 2
-        consider_online_for_remote_connections: True
-        os_type: linux
+
         os_platform: f21
+
         hostname: {{ master_minion_id }}
         resolved_in: internal_net
+        consider_online_for_remote_connections: True
         host_networks:
             internal_net:
                 ip: 192.168.51.1
@@ -35,6 +37,7 @@ system_hosts:
                 ip: 192.168.61.1
             secondary_external_net:
                 ip: 192.168.62.1
+
         primary_user:
             username: {{ default_username }}
             password: {{ default_username }}

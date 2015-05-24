@@ -27,7 +27,7 @@ to `git` and set [origin_uri_ssh_path][6] to `devops/common-salt-states.git`:
 system_hosts:
     git.example.com:
         consider_online_for_remote_connections: False
-        os_type: linux
+        os_platform: rhel7
         hostname: git.example.com
         primary_user:
             username: git
