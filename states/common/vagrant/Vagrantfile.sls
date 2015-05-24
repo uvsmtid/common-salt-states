@@ -32,9 +32,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "public_network", ip: "{{ pillar['system_hosts'][hypervisor_host_id]['internal_net']['ip'] }}"
 {% endif %}
 
-{% set salt_master_host_name = pillar['system_host_roles']['hypervisor_role']['assigned_hosts'][0] %}
-{% set salt_master_host_ip = pillar['system_hosts'][salt_master_host_name]['internal_net']['ip'] %}
-
 {% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
 
@@ -68,6 +65,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
 {% else %} # vagrant_provider
+
+# Common part for all non-docker providers.
 
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
 
@@ -118,24 +117,55 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # set of VMs (outside of individual configuration).
     #{{ selected_host_name }}.vm.provider = "{{ instance_configuration['vagrant_provider'] }}"
 
-{# There is some difference how the network configuration line looks for `virtualbox` and `libvirt`. #}
-{% if instance_configuration['vagrant_provider'] == 'libvirt' %} # libvirt
-    {#
+#{#
+# There is some difference how the network configuration line looks for `virtualbox` and `libvirt`.
+#}#
+{% if instance_configuration['vagrant_provider'] == 'libvirt' %} # vagrant_provider-network
+
+    #{#
         # This works for `libvirt`.
         # See example config at: https://github.com/pradels/vagrant-libvirt
-    #}
-{% if instance_configuration['network_type'] == 'public_network' %} # public_network
+    #}#
+
+{% for vagrant_net_name in pillar['system_features']['vagrant_configuration']['public_networks'].keys() %} # public_networks
+# Vagrant configuration maps `vagrant_net_name` into system net name via `system_network`.
+{% set vagrant_net_conf = pillar['system_features']['vagrant_configuration']['public_networks'][vagrant_net_name] %}
+{% set sys_net_name = vagrant_net_conf['system_network'] %}
+{% set sys_net_conf = pillar['system_networks'][sys_net_name] %}
+{% if vagrant_net_conf['enabled'] %} # enabled
+
+# NOTE: If host does not list this network,
+#       the network will silently be omitted.
+{% if sys_net_name in selected_host['host_networks'] %} # host_networks
     {{ selected_host_name }}.vm.network 'public_network',
-        ip: '{{ selected_host[network_resolved_in]['ip'] }}',
-        :dev => '{{ instance_configuration['host_bridge_interface'] }}',
+        ip: '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
+        :dev => '{{ vagrant_net_conf['host_bridge_interface'] }}',
+        :libvirt__network_name => '{{ vagrant_net_name }}',
         :mode => 'bridge'
-{% endif %} # public_network
-{% if instance_configuration['network_type'] == 'private_network' %} # private_network
+{% endif %} # host_networks
+
+{% endif %} # enabled
+{% endfor %} # public_networks
+
+{% for vagrant_net_name in pillar['system_features']['vagrant_configuration']['private_networks'].keys() %} # private_networks
+# Vagrant configuration maps `vagrant_net_name` into system net name via `system_network`.
+{% set vagrant_net_conf = pillar['system_features']['vagrant_configuration']['private_networks'][vagrant_net_name] %}
+{% set sys_net_name = vagrant_net_conf['system_network'] %}
+{% set sys_net_conf = pillar['system_networks'][sys_net_name] %}
+{% if vagrant_net_conf['enabled'] %} # enabled
+
+# NOTE: If host does not list this network,
+#       the network will silently be omitted.
+{% if sys_net_name in selected_host['host_networks'] %} # host_networks
     {{ selected_host_name }}.vm.network 'private_network',
-        ip: '{{ selected_host[network_resolved_in]['ip'] }}',
-        :dev => '{{ instance_configuration['host_bridge_interface'] }}',
-        :libvirt__netmask => '{{ network_config['netmask'] }}',
-        :libvirt__network_name => '{{ network_resolved_in }}',
+        ip: '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
+        #{#
+            # TODO: Clean up: `host_bridge_interface` is only required
+            #       for `public_network`.
+        :dev => '{{ vagrant_net_conf['host_bridge_interface'] }}',
+        #}#
+        :libvirt__netmask => '{{ sys_net_conf['netmask'] }}',
+        :libvirt__network_name => '{{ vagrant_net_name }}',
         :libvirt__forward_mode => 'nat',
         # Use DHCP to offer addresses to avoid too long initialization
         # of network interfaces during first boot (before static IP is
@@ -144,21 +174,44 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         #       configurable. So, we hope that there will be no conflicts
         #       with IP addresses assigned statically.
         :libvirt__dhcp_enabled => true
-{% endif %} # private_network
+{% endif %} # host_networks
 
-{% else %} # libvirt
-    {#
+{% endif %} # enabled
+{% endfor %} # private_networks
+
+{% elif instance_configuration['vagrant_provider'] == 'virtualbox' %} # vagrant_provider-network
+
+    #{#
         # This works for `virtualbox`.
-    #}
-{% if instance_configuration['network_type'] == 'public_network' %} # public_network
+    #}#
+
+{% for vagrant_net_name in pillar['system_features']['vagrant_configuration']['public_networks'].keys() %} # public_networks
+# Vagrant configuration maps `vagrant_net_name` into system net name via `system_network`.
+{% set vagrant_net_conf = pillar['system_features']['vagrant_configuration']['public_networks'][vagrant_net_name] %}
+{% set sys_net_name = vagrant_net_conf['system_network'] %}
+{% set sys_net_conf = pillar['system_networks'][sys_net_name] %}
+{% if vagrant_net_conf['enabled'] %} # enabled
+
+# NOTE: If host does not list this network,
+#       the network will silently be omitted.
+{% if sys_net_name in selected_host['host_networks'] %} # host_networks
     {{ selected_host_name }}.vm.network 'public_network',
-        ip: '{{ selected_host[network_resolved_in]['ip'] }}',
-        bridge: '{{ instance_configuration['host_bridge_interface'] }}'
-{% endif %} # public_network
-{% if instance_configuration['network_type'] == 'private_network' %} # private_network
-    {{ TODO }}
-{% endif %} # private_network
-{% endif %} # libvirt
+        ip: '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
+        bridge: '{{ vagrant_net_conf['host_bridge_interface'] }}',
+        virtualbox__intnet: '{{ vagrant_net_name }}'
+{% endif %} # host_networks
+
+{% endif %} # enabled
+{% endfor %} # public_networks
+
+
+{% for vagrant_net_name in pillar['system_features']['vagrant_configuration']['private_networks'].keys() %} # private_networks
+
+    {{ TODO_not_implemented }}
+
+{% endfor %} # private_networks
+
+{% endif %} # vagrant_provider-network
 
   end
 
