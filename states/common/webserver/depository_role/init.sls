@@ -26,7 +26,7 @@ extend:
                 - file: /etc/httpd/conf.d/depository_role.conf
             - require:
                 - file: '{{ depository_role_content_parent_dir }}/depository_role.txt'
-                - file: /var/log/httpd/hosts/depository_role
+                - file: '/var/log/httpd/hosts/{{ pillar['system_host_roles']['depository_role']['hostname'] }}'
 
 # Configuration for Apache virtual server:
 /etc/httpd/conf.d/depository_role.conf:
@@ -47,10 +47,10 @@ extend:
         - dir_mode: 770
         - makedirs: True
         - require:
-            - file: /var/www/html/depository_role
+            - file: '/var/www/html/{{ pillar['system_host_roles']['depository_role']['hostname'] }}'
 
 # Base directory for Apache virtual server:
-/var/www/html/depository_role:
+'/var/www/html/{{ pillar['system_host_roles']['depository_role']['hostname'] }}':
     file.directory:
         - user: apache
         - group: apache
@@ -76,7 +76,7 @@ fix_content_permissions:
         - name: 'chown -R apache:apache "{{ depository_role_content_parent_dir }}" && chmod -R u+rX "{{ depository_role_content_parent_dir }}" && chmod -R g+rX "{{ depository_role_content_parent_dir }}"'
 
 # Logs for Apache virtual server:
-/var/log/httpd/hosts/depository_role:
+'/var/log/httpd/hosts/{{ pillar['system_host_roles']['depository_role']['hostname'] }}':
     file.directory:
         - user: apache
         - group: apache
