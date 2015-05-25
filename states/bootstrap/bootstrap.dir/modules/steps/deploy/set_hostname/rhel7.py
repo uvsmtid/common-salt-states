@@ -7,7 +7,7 @@ def do(action_context):
 
     # Persistent configuration of hostname is simply content of
     # `/etc/hostname` file.
-    with open('/etc/sysconfig/network', 'a') as config_file:
+    with open('/etc/hostname', 'a') as config_file:
         config_file.write(action_context.conf_m.set_hostname['hostname'])
 
     # Set currently used hostname.
