@@ -128,6 +128,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     {{ selected_host_name }}.vm.network 'public_network',
         ip: '{{ selected_host[network_defined_in]['ip'] }}',
         :dev => '{{ instance_configuration['host_bridge_interface'] }}',
+
+        {% if 'mac' in selected_host[network_defined_in] %}
+        :mac => '{{ selected_host[network_defined_in]['mac'] }}',
+        {% endif %}
+
         :mode => 'bridge'
 {% endif %} # public_network
 {% if instance_configuration['network_type'] == 'private_network' %} # private_network
@@ -137,6 +142,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :libvirt__netmask => '{{ network_config['netmask'] }}',
         :libvirt__network_name => '{{ network_defined_in }}',
         :libvirt__forward_mode => 'nat',
+
+        {% if 'mac' in selected_host[network_defined_in] %}
+        :mac => '{{ selected_host[network_defined_in]['mac'] }}',
+        {% endif %}
+
         # Use DHCP to offer addresses to avoid too long initialization
         # of network interfaces during first boot (before static IP is
         # configured by Vagrant).
