@@ -139,6 +139,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         ip: '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
 
+        {% if 'mac' in selected_host['host_networks'][sys_net_name] %}
+        :mac => '{{ selected_host['host_networks'][sys_net_name]['mac'] }}',
+        {% endif %}
+
         # TODO: How to configure netmask on `virtualbox`?
         {% if instance_configuration['vagrant_provider'] == 'libvirt' %}
         :libvirt__netmask => '{{ sys_net_conf['netmask'] }}',
@@ -167,7 +171,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         {{ FAIL_unknown_vagrant_net_type }}
 
         {% endif %} # vagrant_net_type
-
 
         # Use DHCP to offer addresses to avoid too long initialization
         # of network interfaces during first boot (before static IP is
