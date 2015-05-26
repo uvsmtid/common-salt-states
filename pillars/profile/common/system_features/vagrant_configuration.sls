@@ -28,6 +28,7 @@ system_features:
         #   See: http://docs.vagrantup.com/v2/networking/public_network.html
         #
         vagrant_networks:
+
             primary_vagrant_private_net:
                 enabled: True
                 vagrant_net_type: 'private_network'
@@ -38,14 +39,15 @@ system_features:
                 vagrant_net_type: 'private_network'
                 enable_dhcp: True
                 system_network: secondary_internal_net
+
             primary_vagrant_public_net:
-                enabled: True
+                enabled: False
                 vagrant_net_type: 'public_network'
                 enable_dhcp: True
                 system_network: external_net
                 host_bridge_interface: em1
             secondary_vagrant_public_net:
-                enabled: True
+                enabled: False
                 vagrant_net_type: 'public_network'
                 enable_dhcp: True
                 system_network: secondary_external_net
