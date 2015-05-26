@@ -34,7 +34,13 @@
     <hudson.tasks.Shell>
       <command>
 
-        sudo salt-call state.sls common.orchestrate.wraps.hypervisor_role test=False
+        set -e
+        set -u
+
+        sudo salt-call \
+            --out json \
+            state.sls common.orchestrate.wraps.hypervisor_role \
+            test=False | tee salt.output.json
 
         # TODO: Capture errors from Salt.
         #       At the moment it does not return exit/error code.

@@ -34,10 +34,18 @@
     <hudson.tasks.Shell>
       <command>
 
+        set -e
+        set -u
+
         # Run `highstate` separately as there is no known way to ask
         # `orchestrate` to run it with test=False.
         # TODO: How to force test=False in `highstate` via `orchestrate`?
-        sudo salt '*' -l debug state.highstate test=False
+        sudo salt \
+            --out json \
+            '*' \
+            -l debug \
+            state.highstate \
+            test=False | tee salt.output.json
 
         # TODO: Capture errors from Salt.
         #       At the moment it does not return exit/error code.

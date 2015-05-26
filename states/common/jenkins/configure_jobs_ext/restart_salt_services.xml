@@ -34,11 +34,19 @@
     <hudson.tasks.Shell>
       <command>
 
+        set -e
+        set -u
+
         # This script relies on `systemd` commands.
 
         # Update Salt config
-        sudo salt-call state.sls common.salt.master.update_config test=False
-        sudo salt-call state.sls common.salt.minion.update_config test=False
+        for SLS in common.salt.master.update_config common.salt.minion.update_config
+        do
+            sudo salt-call \
+                --out json \
+                state.sls $SLS \
+                test=False | tee salt.output.json
+        done
 
         # TODO: Capture errors from Salt.
         #       At the moment it does not return exit/error code.
@@ -47,9 +55,11 @@
         #       states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py
 
         # Start Salt services with new config.
+
         sudo systemctl restart salt-master
         # Pause for 5 sec.
         ping -c 5 salt
+
         sudo systemctl restart salt-minion
         # Pause for 5 sec.
         ping -c 5 salt
