@@ -17,7 +17,7 @@ system_hosts:
             #   - 'uvsmtid/centos-7.0-minimal' # libvirt
             #   - 'hansode/fedora-21-server-x86_64' # virtualbox
             #   - 'fedora:21' # docker
-            base_image: 'uvsmtid/centos-7.0-minimal' # libvirt
+            base_image: 'uvsmtid/centos-7.1-1503-gnome' # libvirt
             memory_size: 2024
             cpus_number: 2
 
