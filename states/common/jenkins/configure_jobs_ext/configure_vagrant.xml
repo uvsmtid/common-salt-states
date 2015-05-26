@@ -40,7 +40,7 @@
         #       At the moment it does not return exit/error code.
         #       See: https://github.com/saltstack/salt/issues/18510
         # SOLUTION: Use this script:
-        #       states/bootstrap/bootstrap.dir/modules/utils/salt_output.py
+        #       states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py
 
       </command>
     </hudson.tasks.Shell>

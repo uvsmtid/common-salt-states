@@ -90,8 +90,8 @@ def check_result(salt_output):
 ###############################################################################
 # MAIN
 
-# Execute futher only if this file is executed as a script (not imported
-# as a module).
+# Execute futher only if this file is executed as a script
+# (not imported as a module).
 if __name__ == '__main__':
 
     logging.getLogger().setLevel(0)

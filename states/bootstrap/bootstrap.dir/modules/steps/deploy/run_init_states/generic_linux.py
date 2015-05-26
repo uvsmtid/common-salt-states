@@ -4,8 +4,8 @@ import sys
 import logging
 
 from utils.exec_command import call_subprocess
-from utils.salt_output import load_yaml_string_data
-from utils.salt_output import check_result
+from utils.check_salt_output import load_yaml_string_data
+from utils.check_salt_output import check_result
 
 ###############################################################################
 #
