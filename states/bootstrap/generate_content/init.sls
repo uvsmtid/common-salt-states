@@ -25,7 +25,7 @@ include:
 pretty_yaml2json_script:
     file.managed:
         - name: '{{ bootstrap_dir }}/pretty_yaml2json.py'
-        - source: 'salt://bootstrap/provide_content/pretty_yaml2json.py'
+        - source: 'salt://bootstrap/generate_content/pretty_yaml2json.py'
         - makedirs: True
         - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
         - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
@@ -58,7 +58,7 @@ pretty_yaml2json_script:
 {{ requisite_config_file_id }}:
     file.managed:
         - name: '{{ requisite_config_file_path }}'
-        - source: 'salt://bootstrap/provide_content/bootstrap.conf.sls'
+        - source: 'salt://bootstrap/generate_content/bootstrap.conf.sls'
         - context:
             os_platform: '{{ selected_host['os_platform'] }}'
             project_name: '{{ project_name }}'
@@ -75,7 +75,7 @@ pretty_yaml2json_script:
 {% for deploy_step in target_env_pillar['system_features']['static_bootstrap_configuration']['deploy_steps_params'].keys() %} # deploy_step
 
 # Load the function:
-{% set deploy_step_source = 'bootstrap/provide_content/deploy_steps/' + deploy_step + '/init.sls' %}
+{% set deploy_step_source = 'bootstrap/generate_content/deploy_steps/' + deploy_step + '/init.sls' %}
 {% from deploy_step_source import configure_deploy_step_function with context %}
 
 # Call the function:

@@ -34,7 +34,7 @@
     <hudson.tasks.Shell>
       <command>
 
-        sudo salt-call state.sls bootstrap.provide_content test=False
+        sudo salt-call state.sls bootstrap.generate_content test=False
 
         # TODO: Capture errors from Salt.
         #       At the moment it does not return exit/error code.
