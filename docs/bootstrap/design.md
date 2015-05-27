@@ -212,7 +212,7 @@ TODO: Is there something to mention for `deploy` action?
 
 [1]: https://en.wikipedia.org/wiki/Template_method_pattern
 [2]: https://en.wikipedia.org/wiki/Factory_method_pattern
-[3]: docs/bootstrap/create_package.md
+[3]: docs/bootstrap/build.md
 
 [13]: #offline-minion-installer
 [14]: #initial-online-node

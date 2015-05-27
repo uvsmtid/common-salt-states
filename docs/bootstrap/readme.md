@@ -53,7 +53,7 @@ bootstrap packages created by other environments.
 This case is not "chicken and egg" problem,
 it is rather "chicken spawns chicken" solution.
 
-This process is described in [document][3] about creating bootstrap package.
+This process is described in [document][3] about building bootstrap package.
 
 The main scenario for boostrapping is to deploy configured Salt minion using
 automated script in a bootstrap package. Then pass control to Salt states to
@@ -61,14 +61,6 @@ deploy all software components required by the system.
 
 # [footer] #
 
-[1]: https://en.wikipedia.org/wiki/Template_method_pattern
-[2]: https://en.wikipedia.org/wiki/Factory_method_pattern
-[3]: docs/bootstrap/create_package.md
-
-[13]: #offline-minion-installer
-[14]: #initial-online-node
-
-[20]: docs/pillars/common/registered_content_config/URI_prefix/readme.md
-
-[30]: http://docs.saltstack.com/en/latest/ref/configuration/master.html#auto-accept
+[2]: docs/orchestration.md
+[3]: docs/bootstrap/build.md
 
