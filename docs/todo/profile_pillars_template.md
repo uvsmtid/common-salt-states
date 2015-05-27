@@ -67,5 +67,5 @@ be able to diff existing pillars against the structure of template.
 # [footer] #
 
 [1]: docs/todo/managing_multitude_of_profile_names.md
-[2]: docs/bootstrap.md
+[2]: docs/bootstrap/readme.md
 

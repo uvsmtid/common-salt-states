@@ -417,7 +417,7 @@ This section demonstrates how to use master-less Salt minion.
     ```
 # [footer] #
 
-[1]: docs/bootstrap.md
+[1]: docs/bootstrap/readme.md
 [2]: docs/external_project_names.md
 [3]: docs/orchestration.md
 [4]: http://docs.saltstack.com/

@@ -1,6 +1,6 @@
 
 Key `load_bootstrap_target_envs` is the root key which lists available
-profile_names enabled for generating [bootstrap][1] packages.
+profile_names enabled for generating [bootstrap packages][1].
 
 Normally, sub-keys (profile_names) have the same meaning
 and correspond to [profile_name][3].
@@ -34,7 +34,7 @@ this_system_keys:
         profile_name_A2:
 ```
 
-[1]: docs/bootstrap.md
+[1]: docs/bootstrap/create_package.md
 [2]: docs/configs/common/this_system_keys/project_name/readme.md
 [3]: docs/configs/common/this_system_keys/profile_name/readme.md
 [4]: #example

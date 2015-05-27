@@ -13,7 +13,7 @@
 
 ## What is bootstrapping? ##
 
-*   [bootstrap.md](bootstrap.md)
+*   [bootstrap/readme.md](bootstrap/readme.md)
 
 ## What is orchestration? ##
 

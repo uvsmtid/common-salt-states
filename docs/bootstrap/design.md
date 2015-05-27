@@ -1,44 +1,4 @@
 
-## What is bootstrapping? ##
-
-Bootstrapping is a process of deploying system on a clean unconfigured OS.
-
-Deployable resources can either be provided offline locally, or still be
-downloadable from Internet, or accessible within isolated network -
-this can be made a configuration option. The main point is to provide
-support of installation on virtual guests or bare metal hosts with clean OSes.
-
-## Achieving total control ##
-
-### Clean OS configuration ###
-
-Salt cannot istall itself because it is "chicken and egg" problem.
-Initial Salt installation and configuration should be done by other means.
-
-Note that it is still possible to install Salt using another Salt
-pre-installed on external media (i.e. on a USB disk). This case is
-not "chicken and egg" problem, it is rather "chicken spawns chicken" solution.
-
-One of the possible scenarios for boostrapping here is to deploy Salt minion
-and use Salt states to install all software components using offline locally
-available resources.
-
-### Hardware configuration ###
-
-Salt obviously cannot redefine parameters of hardware resources which are
-in use by OS where it executes. However, there are also two cased:
-physical machines and virtual machines.
-
-When it comes to _virtual_ machine, hardware parameters, OS type, and image
-can actually be programmatically defined before provisioning. This opens
-a door to make Salt instruct _hypervisor_ or _host OS_ to instantiate all
-other nodes required by the managed system with all parameters defined
-_through_ Salt configuration.
-
-In case of virtualization bootstrapping can be used to deploy only Salt minion
-and continue [orchestrated](orchestration.md) system installation with
-all resources available on the network.
-
 ## Use Cases ##
 
 Ultimately, all Use Cases set up Salt minion. This is inevitable because
@@ -252,6 +212,7 @@ TODO: Is there something to mention for `deploy` action?
 
 [1]: https://en.wikipedia.org/wiki/Template_method_pattern
 [2]: https://en.wikipedia.org/wiki/Factory_method_pattern
+[3]: docs/bootstrap/create_package.md
 
 [13]: #offline-minion-installer
 [14]: #initial-online-node
