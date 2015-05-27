@@ -25,23 +25,17 @@ Differences between the Salt outputs:
 *   If you use Salt minion config options like `show_jid`, it will corrupt
     stdout injecting job id into JSON output.
 
-    The script handles it by removing any line which does not match
-    `^[{}\s]`(only indended JSON output gets through).
+    The script handles it by filtering out any line which is out of
+    object data (first char is either braces or space in indended JSON output).
 
 *   If `highstate` is used with multipe hosts, each of them will generate
     its own JSON object (which breaks parser expectations).
 
-    TODO: Two approaches
-    *
-    The script handles it by wrapping file's content into another outter
-    pair of brackets `[]` (making it an array). In addition to this,
-    each objects within the array have to be separated by comma `,`.
-    *
     The script handles this by loading one object at a time into
     a list of objects.
 
 *   If `orchestrate` runner is used, the output data structure becomes
-    too complex to deal with assumed schema.
+    rather complex to deal with assumed schema.
 
     The script simply traverses all objects within the data and processes
     only those which have `result` field (assuming it was state result).
@@ -58,6 +52,58 @@ import logging
 
 ###############################################################################
 #
+
+# http://stackoverflow.com/a/7795029/441652
+def object_stream_splitter(stream):
+
+    # Patterns for beginning/end of new object.
+    b_regex = re.compile('^[{]')
+    e_regex = re.compile('^[}]')
+
+    is_in_object = False
+
+    # Loop through each line returning set of lines parsable as single object.
+    object_lines = []
+    for line in stream:
+        if is_in_object:
+
+            # Add lines continuously while in object.
+            object_lines.append(line)
+
+            # Look for end.
+            if re.search(e_regex, line):
+                is_in_object = False
+                return object_lines
+        else:
+            # Look for beginning.
+            if re.search(b_regex, line):
+                is_in_object = True
+                object_lines.append(line)
+
+    # We haven't reached a natural return.
+    # The lines do not have end or there is no object beginning.
+    # Regardless of the reason, let parser decide what lines really are.
+    return object_lines
+
+###############################################################################
+#
+
+def json_multi_object_loader(stream):
+
+    output_objects = []
+
+    while True:
+        object_lines = object_stream_splitter(stream)
+        object_string = '\n'.join(object_lines)
+        if object_string:
+            output_object = yaml.load(object_string)
+            output_objects.append(output_object)
+        else:
+            break
+
+    return output_objects
+
+###############################################################################
 
 def describe_result(state_id_suspect, result_data):
 
@@ -79,13 +125,12 @@ def describe_result(state_id_suspect, result_data):
         overall_result = False
 
     elif result_value == False:
-        logging.info("result: " + str(result_value))
         overall_result = False
         # Do not break the loop.
         # Instead, keep on generating log output
 
     elif result_value == True:
-        logging.info("result: " + str(result_value))
+        pass
 
     else:
         logging.info("unexpected `result` value: " + str(result_value))
@@ -110,7 +155,6 @@ def describe_result(state_id_suspect, result_data):
 def consolidate_results(state_id_suspect, overall_result, item):
 
     result = check_objects(state_id_suspect, item)
-    logging.debug("result: " + str(result))
     if not result['overall_result']:
         overall_result['overall_result'] = False
 
@@ -146,7 +190,6 @@ def check_objects(state_id_suspect, output_data):
         if 'result' in output_data:
             # Key `result` exists - it must be result of state execution.
             result = describe_result(state_id_suspect, output_data)
-            logging.debug("result: " + str(result))
             return result
         else:
             # Key `result` does not exist - it must be complex object.
@@ -198,7 +241,7 @@ if __name__ == '__main__':
     # to support Python 2.5 on RHEL5.
     yaml_file = open(file_path, 'r')
     try:
-        salt_output = yaml.load_all(yaml_file)
+        salt_output= json_multi_object_loader(yaml_file)
         overall_result = check_result(salt_output)
     finally:
         yaml_file.close()
