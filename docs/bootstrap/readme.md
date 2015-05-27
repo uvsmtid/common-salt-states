@@ -1,4 +1,12 @@
 
+*   See [build][3] document to
+    produce new bootstrap package.
+*   See [deploy][4] document to
+    configure clean hosts using existing bootstrap package.
+
+*   See ideas used in [design][5] of the bootstrap framework.
+*   See details of bootstrap framework [implementation][6].
+
 ## What is bootstrapping? ##
 
 Bootstrapping is a process of deploying system on a clean unconfigured OS.
@@ -41,7 +49,7 @@ other nodes required by the managed system with all parameters defined
 _through_ Salt configuration.
 
 In case of virtualization, bootstrapping can be used to deploy only Salt
-minion and continue [orchestrated](orchestration.md) system installation
+minion and continue [orchestrated][2] system installation
 with all resources available on the network.
 
 ### Solution ###
@@ -63,4 +71,7 @@ deploy all software components required by the system.
 
 [2]: docs/orchestration.md
 [3]: docs/bootstrap/build.md
+[4]: docs/bootstrap/deploy.md
+[5]: docs/bootstrap/design.md
+
 
