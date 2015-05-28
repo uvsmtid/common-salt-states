@@ -4,8 +4,7 @@ import sys
 import logging
 
 from utils.exec_command import call_subprocess
-from utils.check_salt_output import load_yaml_string_data
-from utils.check_salt_output import check_result
+from utils.check_salt_output import process_string
 
 ###############################################################################
 #
@@ -53,8 +52,7 @@ def do(action_context):
         logging.info("DONE: Salt execution completed and its output captured for analysis")
 
         # Check output results from `salt-call`.
-        loaded_data = load_yaml_string_data(process_output["stdout"])
-        if not check_result(loaded_data):
+        if not process_string(process_output["stdout"]):
             logging.critical("some Salt states failed")
             raise RuntimeError
 
