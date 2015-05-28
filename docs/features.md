@@ -1,6 +1,24 @@
 
 TODO: Populate draft with more details.
 
+# Offline installation #
+
+## Disable online checks ##
+
+If there is a top level key `bootstrap_mode` set to `offline-minion-installer`,
+some states which depend on availability of other hosts online
+will be disabled.
+
+This is primarily applied to ignore hosts with
+`consider_online_for_remote_connections` set to `True`.
+
+This is specifically designed to achieve maximum
+possible configuration offline.
+
+See also:
+*   [bootstrap_mode][docs/pillars/common/bootstrap_mode/readme.md]
+*   [consider_online_for_remote_connections][docs/pillars/common/system_hosts/_id/consider_online_for_remote_connections/readme.md]
+
 # Jenkins #
 
 Jenkins is automatically configured to self-test `common-salt-states` with

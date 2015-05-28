@@ -142,7 +142,6 @@ system_features:
 
                     branch_name: 'master'
 
-
             # Salt resources.
 
             'common-salt-resources':

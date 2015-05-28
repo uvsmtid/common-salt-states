@@ -1,4 +1,12 @@
-TODO
+
+TODO:
+
+*   Remove `branch_name` from repository definitions.
+    Define only all fixed parts without branch.
+    Specify branches specific to bootstrap,
+    environment source code deployment, etc. (based on the purpose
+    of specific states).
+
 
 # Problem #
 

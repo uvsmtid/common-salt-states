@@ -34,16 +34,25 @@
     <hudson.tasks.Shell>
       <command>
 
-        # Run `highstate` separately as there is no known way to ask
-        # `orchestrate` to run it with test=False.
-        # TODO: How to force test=False in `highstate` via `orchestrate`?
-        sudo salt '*' -l debug state.highstate test=False
+        set -e
+        set -u
 
-        # TODO: Capture errors from Salt.
-        #       At the moment it does not return exit/error code.
-        #       See: https://github.com/saltstack/salt/issues/18510
-        # SOLUTION: Use this script:
-        #       states/bootstrap/bootstrap.dir/modules/utils/salt_output.py
+        # Run `highstate` separately (not as part of `orchestrate` runner)
+        # as there is no known way to ask `orchestrate` to run it
+        # with test=False.
+        # See: https://github.com/saltstack/salt/issues/24209
+        sudo salt \
+            --out json \
+            '*' \
+            -l debug \
+            state.highstate \
+            test=False | tee salt.output.json
+
+        # Capture errors from Salt.
+        # At the moment salt does not return exit/error code.
+        # See: https://github.com/saltstack/salt/issues/18510
+        /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
+            salt.output.json
 
       </command>
     </hudson.tasks.Shell>

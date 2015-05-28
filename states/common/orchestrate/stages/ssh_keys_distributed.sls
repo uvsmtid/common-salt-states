@@ -44,7 +44,8 @@ distribute_primary_user_ssh_private_key_everywhere:
         - require:
             {{ stage_flag_file_prerequisites(flag_name) }}
 
-# Use single host (control host) to push the same single public key everywhere.
+# Use single host (control host) to push the same public keys everywhere.
+# NOTE: This will also accept host keys but only on `contoller_role`.
 distribute_primary_user_ssh_pubic_key_everywhere:
     salt.state:
         - tgt: '{{ controller_role_host }}'
@@ -53,6 +54,7 @@ distribute_primary_user_ssh_pubic_key_everywhere:
             {{ stage_flag_file_prerequisites(flag_name) }}
 
 # Attempt connection on each minion to accept host keys of all other hosts.
+# NOTE: This will accept host keys on each minion to each required hosts.
 accept_all_ssh_host_keys_everywhere:
     salt.state:
         - tgt: '*'

@@ -219,6 +219,8 @@ include:
 
 {% set host_config = pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_hostname'][hostname] %}
 
+{% if is_network_checks_allowed(None) == 'True' %}
+
 {% for user_config in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_hostname'][hostname]['user_configs'].values() %}
 
 # Compose expected data object:
@@ -263,6 +265,8 @@ include:
 #------------------------------------------------------------------------------
 
 {% endfor %} # Inner loop of 5.
+
+{% endif %} # online
 
 {% endfor %} # Outer loop of 5.
 # End of 5.

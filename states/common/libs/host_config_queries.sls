@@ -88,13 +88,19 @@
 
 ###############################################################################
 # is_network_checks_allowed
+#
+# If `system_host_id` is false-ish, check is done only based
+# on `bootstrap_mode`.
 
 {%- macro is_network_checks_allowed(
         system_host_id
     )
 -%}
 
+{%- if system_host_id -%}
+
 {%- set selected_host_config = pillar['system_hosts'][system_host_id] -%}
+
 {%- if 'bootstrap_mode' in pillar -%}
 {%- set bootstrap_mode = pillar['bootstrap_mode'] -%}
 {%- else -%}
@@ -111,6 +117,19 @@ True
 False
 {%- endif -%}
 
+{%- else -%}
+
+{%- if
+    ( 'bootstrap_mode' in pillar )
+    and
+    ( pillar['bootstrap_mode'] == 'offline-minion-installer' )
+-%}
+False
+{%- else -%}
+True
+{%- endif -%}
+
+{%- endif -%}
 
 {%- endmacro -%}
 

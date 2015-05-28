@@ -95,7 +95,7 @@ system_features:
                 #       to connect to it will fail - so, it is required.
                 localhost:
                     # Local OS type.
-                    os_type: ''
+                    os_platform: 'fc21'
                     user_configs:
                         current_user:
                             # Current local user.

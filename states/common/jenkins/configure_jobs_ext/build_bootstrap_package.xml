@@ -34,13 +34,19 @@
     <hudson.tasks.Shell>
       <command>
 
-        sudo salt-call state.sls bootstrap.provide_content test=False
+        set -e
+        set -u
 
-        # TODO: Capture errors from Salt.
-        #       At the moment it does not return exit/error code.
-        #       See: https://github.com/saltstack/salt/issues/18510
-        # SOLUTION: Use this script:
-        #       states/bootstrap/bootstrap.dir/modules/utils/salt_output.py
+        sudo salt-call \
+            --out json \
+            state.sls bootstrap.provide_content \
+            test=False | tee salt.output.json
+
+        # Capture errors from Salt.
+        # At the moment salt does not return exit/error code.
+        # See: https://github.com/saltstack/salt/issues/18510
+        /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
+            salt.output.json
 
       </command>
     </hudson.tasks.Shell>

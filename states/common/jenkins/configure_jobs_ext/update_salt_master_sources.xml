@@ -34,6 +34,9 @@
     <hudson.tasks.Shell>
       <command>
 
+        set -e
+        set -u
+
         echo TODO: Get latest sources on Salt master.
         echo The idea is to get updates to be able to update system config.
 

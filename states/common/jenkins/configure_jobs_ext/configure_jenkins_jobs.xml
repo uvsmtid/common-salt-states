@@ -34,17 +34,23 @@
     <hudson.tasks.Shell>
       <command>
 
+        set -e
+        set -u
+
         # TODO: This script assumes that Salt master and Jenkins master
         #       are the same host.
 
         # Run highstate on Salt master minion only.
-        sudo salt-call state.sls common.jenkins.configure_jobs test=False
+        sudo salt-call \
+            --out json \
+            state.sls common.jenkins.configure_jobs \
+            test=False | tee salt.output.json
 
-        # TODO: Capture errors from Salt.
-        #       At the moment it does not return exit/error code.
-        #       See: https://github.com/saltstack/salt/issues/18510
-        # SOLUTION: Use this script:
-        #       states/bootstrap/bootstrap.dir/modules/utils/salt_output.py
+        # Capture errors from Salt.
+        # At the moment salt does not return exit/error code.
+        # See: https://github.com/saltstack/salt/issues/18510
+        /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
+            salt.output.json
 
       </command>
     </hudson.tasks.Shell>

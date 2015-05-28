@@ -26,9 +26,14 @@ system_hosts:
         os_platform: fc21
 
         hostname: {{ master_minion_id }}
-        resolved_in: internal_net
+        resolved_in: primary_net
         consider_online_for_remote_connections: True
         host_networks:
+
+            # Network available without virtualization.
+            primary_net:
+                ip: 192.168.1.1
+
             internal_net:
                 ip: 192.168.51.1
             secondary_internal_net:
