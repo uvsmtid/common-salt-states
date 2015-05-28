@@ -45,11 +45,11 @@
             state.orchestrate common.orchestrate.run_all_stages \
             test=False | tee salt.output.json
 
-        # TODO: Capture errors from Salt.
-        #       At the moment it does not return exit/error code.
-        #       See: https://github.com/saltstack/salt/issues/18510
-        # SOLUTION: Use this script:
-        #       states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py
+        # Capture errors from Salt.
+        # At the moment salt does not return exit/error code.
+        # See: https://github.com/saltstack/salt/issues/18510
+        /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
+            salt.output.json
 
       </command>
     </hudson.tasks.Shell>
