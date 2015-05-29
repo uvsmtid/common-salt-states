@@ -14,7 +14,12 @@ TODO:
 *   Add new first class objects:
     *   `system_platforms`
     *   `system_networks`
-    *   `bootstrap`
-    *   `system_credentials`
-    *   `system_artifact_repositories`
+    *   `bootstrap` - separate pillar info only for environments configured
+        to generate bootstrap packages.
+    *   `system_secrets` - simple key-value pairs with secret information
+        (keys, passwords, etc.) to be easy to populate from scratch.
+    *   `system_repositories` - any type of repository (filesystem,
+        subversion, git).
+    *   `system_accounts` - all possible user information (except secret
+        info which is under `system_secrets`).
 

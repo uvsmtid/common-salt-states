@@ -1,6 +1,4 @@
 
-Start from [this document](docs/readme.md) for custom setups.
-
 # What are these sources? #
 
 The sources provide _"Infrastructure as Code"_
@@ -15,7 +13,7 @@ automatically deploy:
 Salt framework simplifies dealing with:
 *   consistent identical deployment across multiple hosts
 *   various stages of software cycles: development, testing, production, etc.
-*   heterogeneous platforms: Linux, Windows, etc.
+*   heterogeneous platforms: Linux, Windows, Mac, etc.
 
 In order to instantiate a system, in addition to the content of this
 repository, some external resource may also be required:
@@ -25,26 +23,32 @@ repository, some external resource may also be required:
 
 See also [official Salt documentation](http://docs.saltstack.com/en/latest/).
 
-# Contents of this top directory #
+# Offline Bootstrap #
 
-*   `docs`
+One distinctive feature of this framework is generation of
+[offline bootstrap package](docs/bootstrap) to bring up
+entire systems on hosts from clean OS.
 
-    All documentation for this common framework.
+# Get Started #
 
-*   `states`
+*   [Salt Installation](docs/salt_installation.md)
+    provides every detail to get Salt up and running
+    on RHEL-based system.
 
-    Salt states executable data to define require system configuration.
+*   [Salt Configuration](docs/salt_configuration.md)
+    enables [this framework](docs/framework.md).
 
-*   `scripts`
+*   [Salt Runtime](docs/salt_runtime.md)
+    introduces steps to automate deployment.
 
-    Support scripts for various purposes.
+# Documentation #
 
-    These scripts are those which are not supposed to be used by Salt states
-    (under `states` directory) because files under `scripts` directory are not
-    easily accessible through `salt://` URI scheme.
+*   [Features](docs/features.md)
+    describe architecture to simplify definition of complex systems.
 
-*   `pillars`
+*   [`docs`](docs/readme.md)
+    directory structure explains how to navigate documentation.
 
-    Salt pillars which can be cloned to configure system profile for
-    individual deployment.
+*   [Versioning](docs/versioning.md) explains rules for
+    development and maintenance.
 

@@ -39,7 +39,7 @@
 
         sudo salt-call \
             --out json \
-            state.sls bootstrap.provide_content \
+            state.sls bootstrap.generate_content \
             test=False | tee salt.output.json
 
         # Capture errors from Salt.

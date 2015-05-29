@@ -40,7 +40,7 @@ _and_
 In other words, all files under `docs/pillars/common` _always_ resemble pillar
 data structure used for `common` project_name and nothing else.
 
-Instead, general layout conventions for all files are documented in [docs/structure_and_conventions.md](docs/structure_and_conventions.md) and clarified in related project_name documentation.
+Instead, general layout conventions for all files are documented in [docs/readme.md](docs/readme.md) and clarified in related project_name documentation.
 And because number of files under `pillars` is rather small,
 there is no strong need for such convention.
 

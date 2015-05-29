@@ -11,5 +11,5 @@ See also:
 * Main [bootstrap][2] documentation.
 
 [1]: docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
-[2]: docs/bootstrap.md
+[2]: docs/bootstrap/readme.md
 
