@@ -541,7 +541,7 @@ This section demonstrates how to use master-less Salt minion.
 # [footer] #
 
 [1]: docs/bootstrap/readme.md
-[2]: docs/external_project_names.md
+[2]: docs/framework.md
 [3]: docs/orchestration.md
 [4]: http://docs.saltstack.com/
 [5]: https://github.com/uvsmtid/vagrant-boxes/tree/master/centos-5.5-minimal

@@ -5,7 +5,7 @@
 
 ## How does this framework helps in custom setups? ##
 
-*   [external_project_names.md](external_project_names.md)
+*   [framework.md](framework.md)
 
 ## How to troubleshoot? ##
 
