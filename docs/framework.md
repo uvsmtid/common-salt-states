@@ -47,7 +47,7 @@ There are three types of repositories defined within this framework:
     *   `project_name-salt-states` is required as part of the project.
 
         In case of framework development, only `common-salt-states`
-        repository is required ([project_name][1] variable is set
+        repository is required ([`project_name`][1] variable is set
         to `common` then).
 
     *   Other additional repositories with Salt states are optional and
@@ -73,37 +73,88 @@ There are three types of repositories defined within this framework:
 
 ## Configuration ##
 
-TODO
+Update `/etc/salt/master` configuration after [initial setup][3]
+which has to be done first.
 
-## Development ##
-
-TODO
-
-*   States for all projects co-exists in different state namespaces.
-
-    This applies for both single `common` and multiple `project_name` states:
-    *   `common` states use `common.*` ids
-    *   `project_name` states use `project_name.*` ids
-
-## Runtime ##
-
-All registered minions are considered to be managed by
-the same `project_name`.
-
-In other words, all mininos in `Accepted Minions` list shown by `salt-key`
-command will be configured as `project_name` requires.
-
-This is to allow selecting all minions by `*`:
+### Update Salt configuration ###
 
 ```
-salt `*` state.highstate
+# ...
+
+# ...
+this_system_keys:
+    # ...
+    project_name: project_name
+    profile_name: profile_name
+    master_minion_id: minion_id
+    default_username: username
+    # ...
 ```
 
-If some minions have nothing to do with the `project_name` configuration,
-their keys should be removed first (see `salt-key -d`).
+See description for parameters:
+*   [`project_name`][9]
+*   [`profile_name`][10]
+*   [`master_minion_id`][11]
+*   [`default_username`][12]
+
+### Update repository links ###
+
+Check out necessary repositories and create symlinks
+so that Salt can access them:
+
+*   states
+
+    *   `common-salt-states`
+
+        ```
+         /srv/states -> ~/Works/common-salt-states.git/states
+        ```
+
+    *   `project_name-salt-states`
+
+        ```
+        /srv/states/[project_name] -> /home/[username]/Works/[project_name]-salt-states.git/states/[project_name]
+        ```
+
+        Note that `project_name` link is created under `states` directory
+        of `common-salt-states` repository.
+
+    *   Additonal repository with Salt states can be set up similar to
+        the symlink for `project_name-salt-states`.
+
+*   pillars
+
+    *   `project_name-salt-pillars`
+
+        ```
+        /srv/pillars -> /home/[username]/Works/[project_name]-salt-pillars.git/pillars
+        ```
+
+        There is only one active profile and it is defined by contents of
+        `pillars` directory of `[project_name]-salt-pillars` repository.
+
+        Additional profiles (with configuration for other deployments) are
+        modelled either using different repositories or using branches
+        within the same repository.
+
+*   resources
+
+    Symlinks for resource respositories are configured
+    automatically using `common.resource_symlinks` state.
+
+## Next steps ##
+
+See [Salt runtime][13] document.
 
 # [footer] #
 
 [1]: docs/configs/common/this_system_keys/project_name/readme.md
-[2]: bootstrap/deploy.md
+[2]: docs/bootstrap/deploy.md
+[3]: docs/getting_started.md
+[4]: docs/orchestration.md
+[9]: docs/configs/common/this_system_keys/project_name/readme.md
+[10]: docs/configs/common/this_system_keys/profile_name/readme.md
+[11]: docs/configs/common/this_system_keys/master_minion_id/readme.md
+[12]: docs/configs/common/this_system_keys/default_username/readme.md
+[13]: docs/salt_runtime.md
 
