@@ -1,28 +1,81 @@
 
-## Configure Salt ##
+# Configure Salt #
 
-These sources provide a [framework][2] for automation for multiple projects.
+The following staps configure [framework][2] for multiple projects.
 
-However, the following steps result in installation of only framework itself
-using sample configuration.
+## Set repository links ##
+
+The following command examples may actually be executed
+after setting these variables:
+
+*   `project_name="PROJECT_NAME"`
+
+*   `default_username="$(whoami)"`
+
+    It is recommended to use regular user (rather than `root`).
+
+Check out necessary repositories and create symlinks
+so that Salt can access them.
+
+*   states
+
+    *   `common-salt-states`
+
+        ```
+        # /srv/states -> ~/Works/common-salt-states.git/states
+
+        sudo ln -sfn /home/${default_username}/Works/common-salt-states.git/states /srv/states
+        ```
+
+    *   `${project_name}-salt-states`
+
+        ```
+        /srv/states/${project_name} -> /home/${default_username}/Works/${project_name}-salt-states.git/states/${project_name}
+
+        sudo ln -sfn /home/${default_username}/Works/${default_username}-salt-states.git/states/${default_username} /srv/states/states/${default_username}
+        ```
+
+        Note that `project_name` link is created under `states` directory
+        of `common-salt-states` repository.
+
+    *   Additonal repository with Salt states can be set up similar to
+        the symlink for `${project_name}-salt-states`.
+
+*   pillars
+
+    *   `${project_name}-salt-pillars`
+
+        ```
+        # /srv/pillars -> /home/${default_username}/Works/${project_name}-salt-pillars.git/pillars
+
+        sudo ln -sfn /home/${default_username}/Works/${default_username}-salt-pillars.git/pillars /srv/pillars
+        ```
+
+        There is only one active profile and it is defined by contents of
+        `pillars` directory of `${project_name}-salt-pillars` repository.
+
+        Additional profiles (with configuration for other deployments) are
+        modelled either using different repositories or using branches
+        within the same repository.
+
+*   resources
+
+    Symlinks for resource respositories are configured
+    automatically using `common.resource_symlinks` state.
+
+## Change Salt configuration ##
+
+### `file_roots` ###
 
 Option `file_roots` specifies location where Salt looks up file references
 (including state files).
-
-Option `pillar_roots` specifies location where Salt loads pillars.
-
-Other parameters are framework-specific:
-*   [`project_name`][9]
-*   [`profile_name`][10]
-*   [`master_minion_id`][11]
-*   [`default_username`][12]
 
 ```
 # ...
 file_roots:
     base:
         # Conventionally, the following directory is a symlink pointing to
-        # `/home/[username]/Works/common-salt-states.git/states`
+        # `/home/${default_username}/Works/common-salt-states.git/states`
         - /srv/states
 
         # The following directory is a common place for all additional
@@ -34,83 +87,63 @@ file_roots:
         # A directory with symlinks to resources.
         - /srv/resources
 # ...
+```
+
+### `pillar_roots` ###
+
+Option `pillar_roots` specifies location where Salt loads pillars.
+
+```
+# ...
 pillar_roots:
     base:
         # Conventionally, the following directory is a symlink pointing to
-        # `/home/[username]/Works/project_name-salt-states.git/pillars`
+        # `/home/${default_username}/Works/${project_name}-salt-pillars.git/pillars`
         - /srv/pillars
-# ...
-this_system_keys:
-    # ...
-    # Salt master orchestrates only one `project_name`:
-    project_name: common
-    # Profile can be named after the same host which is used as Salt master.
-    profile_name: whatever
-    # Specify id of the Salt minion which is collocated with Salt master. 
-    master_minion_id: minion_id
-    # Specify name of the user which is used by default.
-    # This is the user which has `~/Works/common-salt-states.git` repository.
-    default_username: username
-    # ...
+
 # ...
 ```
 
-### Clone repositories ###
+### `this_system_keys` ###
 
-Clone repositories (if not done yet):
+Other parameters are framework-specific:
+*   [`project_name`][9]
+*   [`profile_name`][10]
+*   [`master_minion_id`][11]
+*   [`default_username`][12]
 
-*   states
+```
+# ...
 
-    ```
-    git clone git@[hostname]:[username]/common-salt-states.git ~/Works/common-salt-states.git
-    ```
+this_system_keys:
 
-*   resources
+    # Salt master orchestrates only one `project_name`:
+    project_name: project_name
 
-    ```
-    git clone git@[hostname]:[username]/common-salt-resources.git ~/Works/common-salt-resources.git
-    ```
+    # Profile can be named after the same host which is used as Salt master.
+    profile_name: this_system
 
-*   pillars
+    # Specify id of the Salt minion which is collocated with Salt master.
+    master_minion_id: master_minion_id
 
-    ```
-    git clone git@[hostname]:[username]/common-salt-pillars.git ~/Works/common-salt-pillars.git
-    ```
+    # Specify name of the user which is used by default.
+    # This is the user who has `~/Works/common-salt-states.git` repository
+    # under its home directory.
+    default_username: default_username
 
-### Link repositories ###
+# ...
+```
 
-Set up links to repositories so that Salt can use them:
+## Next steps ##
 
-*   states
-
-    ```
-    ln -sfn /home/[username]/Works/common-salt-states.git/states /srv/states
-    ```
-
-*   resources
-
-    The resources are linked automatically later by Salt itself using `common.resource_symlink` state.
-
-*   pillars
-
-    ```
-    ln -sfn /home/[username]/Works/common-salt-pillars.git/pillars /srv/pillars
-    ```
+See [Salt runtime][14] document.
 
 # [footer] #
 
-[1]: docs/bootstrap/readme.md
 [2]: docs/framework.md
-[3]: docs/orchestration.md
-[4]: http://docs.saltstack.com/
-[5]: https://github.com/uvsmtid/vagrant-boxes/tree/master/centos-5.5-minimal
-[6]: http://docs.saltstack.com/en/latest/topics/installation/rhel.html
-[7]: https://copr.fedoraproject.org/coprs/saltstack/salt-el5/
-[8]: https://copr.fedoraproject.org/coprs/saltstack/salt-el5/repo/epel-5/saltstack-salt-el5-epel-5.repo
 [9]: docs/configs/common/this_system_keys/project_name/readme.md
 [10]: docs/configs/common/this_system_keys/profile_name/readme.md
 [11]: docs/configs/common/this_system_keys/master_minion_id/readme.md
 [12]: docs/configs/common/this_system_keys/default_username/readme.md
-[13]: pillars
 [14]: docs/salt_runtime.md
 

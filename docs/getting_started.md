@@ -3,7 +3,7 @@
 
 This document is about getting started in framework set by
 these `common` Salt states. For Salt introduction itself refer to
-[the official documentation][4].
+[the official Salt documentation][4].
 
 ## Salt installation ##
 
