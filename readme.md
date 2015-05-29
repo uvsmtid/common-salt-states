@@ -23,3 +23,32 @@ repository, some external resource may also be required:
 
 See also [official Salt documentation](http://docs.saltstack.com/en/latest/).
 
+# Offline Bootstrap #
+
+One distinctive feature of this framework is generation of
+[offline bootstrap package](docs/bootstrap) to bring up
+entire systems on hosts from clean OS.
+
+# Get Started #
+
+*   [Salt Installation](docs/salt_installation.md)
+    provides every detail to get Salt up and running
+    on RHEL-based system.
+
+*   [Salt Configuration](docs/salt_configuration.md)
+    enables [this framework](docs/framework.md).
+
+*   [Salt Runtime](docs/salt_runtime.md)
+    introduces steps to automate deployment.
+
+# Documentation #
+
+*   [Features](docs/features.md)
+    describe architecture to simplify definition of complex systems.
+
+*   [`docs`](docs/readme.md)
+    directory structure explains how to navigate documentation.
+
+*   [Versioning](docs/versioning.md) explains rules for
+    development and maintenance.
+

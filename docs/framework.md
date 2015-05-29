@@ -1,6 +1,6 @@
 # Framework #
 
-## Concepts ##
+## Deployment concepts ##
 
 The framework is designed to distinguish:
 
@@ -32,7 +32,7 @@ The framework is designed to distinguish:
 These concepts are reflected in the way
 how [deployment using bootstrap package][2] is done.
 
-## Repositories ##
+## Required repositories ##
 
 There are three types of repositories defined within this framework:
 
