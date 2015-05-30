@@ -2,7 +2,7 @@
 # What are these sources? #
 
 The sources provide _"Infrastructure as Code"_
-framework on top of [Salt](http://saltstack.com/).
+framework on top of [Salt][1].
 
 The sources serve as common framework for other projects to
 automatically deploy:
@@ -21,7 +21,8 @@ repository, some external resource may also be required:
 *   YUM, Maven, and other package repositories
 *   Subversion, Git and other source control repositories
 
-See also [official Salt documentation](http://docs.saltstack.com/en/latest/).
+See [`common-salt-resources`][2] (shared on GitLab to avoid file size limits)
+to be used with Salt states in this repository.
 
 # Offline Bootstrap #
 
@@ -41,6 +42,8 @@ entire systems on hosts from clean OS.
 *   [Salt Runtime](docs/salt_runtime.md)
     introduces steps to automate deployment.
 
+See also [official Salt documentation](http://docs.saltstack.com/en/latest/).
+
 # Documentation #
 
 *   [Features](docs/features.md)
@@ -51,4 +54,7 @@ entire systems on hosts from clean OS.
 
 *   [Versioning](docs/versioning.md) explains rules for
     development and maintenance.
+
+[1]: http://saltstack.com/
+[2]: https://gitlab.com/uvsmtid/common-salt-resources/tree/develop
 
