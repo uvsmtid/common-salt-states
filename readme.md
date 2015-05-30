@@ -4,16 +4,11 @@
 The sources provide _"Infrastructure as Code"_
 framework on top of [Salt][1].
 
-The sources serve as common framework for other projects to
-automatically deploy:
-*   developer environments
-*   continuous integration platforms
-*   production systems
-
-Salt framework simplifies dealing with:
-*   consistent identical deployment across multiple hosts
-*   various stages of software cycles: development, testing, production, etc.
-*   heterogeneous platforms: Linux, Windows, Mac, etc.
+Beside all common benefits, the framework is specifically
+aimed at one distinctive feature -
+[production of offline bootstrap package](docs/bootstrap) which allows
+bringing up entire systems on empty machines from clean OSes
+without connection to Internet.
 
 In order to instantiate a system, in addition to the content of this
 repository, some external resource may also be required:
@@ -24,11 +19,18 @@ repository, some external resource may also be required:
 See [`common-salt-resources`][2] (shared on GitLab to avoid file size limits)
 to be used with Salt states in this repository.
 
-# Offline Bootstrap #
+# Benefits gained with Salt #
 
-One distinctive feature of this framework is generation of
-[offline bootstrap package](docs/bootstrap) to bring up
-entire systems on hosts from clean OS.
+The [Features](docs/features.md) describe architecture to streamline
+definition and automatic deployment of complex systems:
+*   developer environments
+*   continuous integration platforms
+*   production systems
+
+Salt framework simplifies dealing with:
+*   needs of consistent identical deployment across multiple hosts
+*   various stages of software cycles: development, testing, production, etc.
+*   heterogeneous platforms: Linux, Windows, Mac, etc.
 
 # Get Started #
 
@@ -45,9 +47,6 @@ entire systems on hosts from clean OS.
 See also [official Salt documentation](http://docs.saltstack.com/en/latest/).
 
 # Documentation #
-
-*   [Features](docs/features.md)
-    describe architecture to simplify definition of complex systems.
 
 *   [`docs`](docs/readme.md)
     directory structure explains how to navigate documentation.
