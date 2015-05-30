@@ -113,9 +113,10 @@ at the moment. Action `build` is fully implemented by Salt states.
 [13]: #offline-minion-installer
 [14]: #initial-online-node
 
-[20]: docs/pillars/common/registered_content_config/URI_prefix/readme.md
+[20]: /docs/pillars/common/registered_content_config/URI_prefix/readme.md
 
 [30]: http://docs.saltstack.com/en/latest/ref/configuration/master.html#auto-accept
 
-[40]: docs/bootstrap/deploy.md
-[41]: states/bootstrap/bootstrap.dir
+[40]: /docs/bootstrap/deploy.md
+[41]: /states/bootstrap/bootstrap.dir
+

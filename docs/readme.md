@@ -155,11 +155,11 @@ the source code itself.
 
 # [footer] #
 
-[1]: docs/getting_started.md
+[1]: /docs/getting_started.md
 [2]: http://docs.saltstack.com/en/latest/topics/targeting/grains.html#writing-grains
-[3]: docs/bootstrap/readme.md
-[4]: docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
+[3]: /docs/bootstrap/readme.md
+[4]: /docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
 
-[5]: docs/states/readme.md
-[6]: docs/pillars/readme.md
+[5]: /docs/states/readme.md
+[6]: /docs/pillars/readme.md
 

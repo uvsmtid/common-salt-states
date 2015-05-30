@@ -76,9 +76,9 @@ TODO
 
 # [footer] #
 
-[1]: docs/bootstrap/design.md
-[2]: docs/bootstrap/implementation.md
-[3]: docs/configs/common/this_system_keys/project_name/readme.md
-[4]: docs/configs/common/this_system_keys/profile_name/readme.md
-[5]: docs/pillars/common/system_hosts/readme.md
+[1]: /docs/bootstrap/design.md
+[2]: /docs/bootstrap/implementation.md
+[3]: /docs/configs/common/this_system_keys/project_name/readme.md
+[4]: /docs/configs/common/this_system_keys/profile_name/readme.md
+[5]: /docs/pillars/common/system_hosts/readme.md
 

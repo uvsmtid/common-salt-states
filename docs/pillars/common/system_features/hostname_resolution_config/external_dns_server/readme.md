@@ -5,5 +5,5 @@ requests via `resolver_role`).
 
 See [dns_server_type][1] for details.
 
-[1]: docs/pillars/common/system_features/hostname_resolution_config/dns_server_type/readme.md
+[1]: /docs/pillars/common/system_features/hostname_resolution_config/dns_server_type/readme.md
 

@@ -5,5 +5,5 @@ Note that this per host `vagrant_provider` and system-wide (or global) [vagrant_
 should currently be the same because Vagrant does not support difference
 between at the moment.
 
-[1]: docs/pillars/common/system_features/vagrant_configuration/vagrant_provider/readme.md
+[1]: /docs/pillars/common/system_features/vagrant_configuration/vagrant_provider/readme.md
 

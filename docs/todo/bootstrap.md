@@ -39,5 +39,5 @@ TODO
     work on. If it is just to make it seamless to install Salt on RHEL5
     (where it is not part of EPEL anymore), then a wiki is enough.
 
-[1]: docs/bootstrap/readme.md
+[1]: /docs/bootstrap/readme.md
 

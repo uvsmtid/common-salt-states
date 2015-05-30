@@ -7,5 +7,5 @@ to be changed often:
 
 See [bootstrap process][1].
 
-[1]: docs/bootstrap/readme.md
+[1]: /docs/bootstrap/readme.md
 

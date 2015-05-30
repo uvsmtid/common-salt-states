@@ -21,11 +21,6 @@ NOTE:
 *   This is different convention compared to ["states" directory convention][5]
     where each document file one-to-one corresponds to a _file_ (not a pillar _data item_).
 
-[1]: docs/pillars/common/system_hosts/readme.md
-[2]: docs/pillars/common/registered_content_config/URI_prefix/readme.md
-[3]: docs/pillars/common/system_host_roles/jenkins_master_role/readme.md
-[4]: docs/pillars/common/system_hosts/_id/hostname/readme.md
-
 ## Conventions to locate documentation for files under `pillars` directory ##
 
 The pillar namespace is [flattened](http://docs.saltstack.com/en/latest/topics/pillar/#pillar-namespace-flattened).

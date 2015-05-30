@@ -34,16 +34,16 @@ with [external_net][12] and [internal_net][7] in configuration's sense
 
 ## _footer_ ##
 
-[1]: docs/pillars/common/system_hosts/_id/instantiated_by/readme.md
-[2]: docs/pillars/common/system_features/vagrant_configuration/readme.md
-[3]: docs/states/common/vagrant/init.sls.md
+[1]: /docs/pillars/common/system_hosts/_id/instantiated_by/readme.md
+[2]: /docs/pillars/common/system_features/vagrant_configuration/readme.md
+[3]: /docs/states/common/vagrant/init.sls.md
 [4]: http://docs.vagrantup.com/v2/vagrantfile/
 [5]: http://docs.vagrantup.com/v2/networking/public_network.html
-[6]: docs/pillars/common/system_hosts/_id/vagrant_instance_configuration/host_bridge_interface/readme.md
-[7]: docs/pillars/common/system_networks/internal_net/readme.md
+[6]: /docs/pillars/common/system_hosts/_id/vagrant_instance_configuration/host_bridge_interface/readme.md
+[7]: /docs/pillars/common/system_networks/internal_net/readme.md
 [8]: http://docs.vagrantup.com/v2/networking/private_network.html
-[9]: docs/pillars/common/system_hosts/_id/vagrant_instance_configuration/network_type/readme.md
-[10]: docs/pillars/common/system_hosts/_id/resolved_in/readme.md
+[9]: /docs/pillars/common/system_hosts/_id/vagrant_instance_configuration/network_type/readme.md
+[10]: /docs/pillars/common/system_hosts/_id/resolved_in/readme.md
 [11]: https://en.wikipedia.org/wiki/Private_network
-[12]: docs/pillars/common/system_networks/external_net/readme.md
+[12]: /docs/pillars/common/system_networks/external_net/readme.md
 

@@ -7,5 +7,5 @@ For example, one of the important consequences is hostname resolution
 * The IP address which hostname is resolved to will be selected from
   the network provided in `resolved_in` value.
 
-[1]: docs/pillars/common/system_features/hostname_resolution_config/hostname_resolution_type/readme.md
+[1]: /docs/pillars/common/system_features/hostname_resolution_config/hostname_resolution_type/readme.md
 

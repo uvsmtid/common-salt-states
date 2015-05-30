@@ -69,9 +69,9 @@ deploy all software components required by the system.
 
 # [footer] #
 
-[2]: docs/orchestration.md
-[3]: docs/bootstrap/build.md
-[4]: docs/bootstrap/deploy.md
-[5]: docs/bootstrap/design.md
-[6]: docs/bootstrap/implementation.md
+[2]: /docs/orchestration.md
+[3]: /docs/bootstrap/build.md
+[4]: /docs/bootstrap/deploy.md
+[5]: /docs/bootstrap/design.md
+[6]: /docs/bootstrap/implementation.md
 

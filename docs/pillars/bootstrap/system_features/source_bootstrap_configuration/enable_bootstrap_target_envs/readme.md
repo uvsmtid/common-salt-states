@@ -10,6 +10,6 @@ In order for profile_name to be enabled, it should appear in both:
 See also:
 * Main [bootstrap][2] documentation.
 
-[1]: docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
-[2]: docs/bootstrap/readme.md
+[1]: /docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
+[2]: /docs/bootstrap/readme.md
 

@@ -43,11 +43,11 @@ It important that:
 * There should not be Salt minion named as `git.example.com` and listed as accepted in the output of `salt-key` command.
 * Key [consider_online_for_remote_connections][7] should be False to avoid contacts with this host during various deployment stages (i.e. to distribute SSH keys).
 
-[1]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/readme.md
-[2]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/readme.md
-[3]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/source_system_host/readme.md
-[4]: docs/pillars/common/system_hosts/readme.md
-[5]: docs/pillars/common/system_hosts/_id/primary_user/readme.md
-[6]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/origin_uri_ssh_path/readme.md
-[7]: docs/pillars/common/system_hosts/_id/consider_online_for_remote_connections/readme.md
+[1]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/readme.md
+[2]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/readme.md
+[3]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/source_system_host/readme.md
+[4]: /docs/pillars/common/system_hosts/readme.md
+[5]: /docs/pillars/common/system_hosts/_id/primary_user/readme.md
+[6]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/origin_uri_ssh_path/readme.md
+[7]: /docs/pillars/common/system_hosts/_id/consider_online_for_remote_connections/readme.md
 

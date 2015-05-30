@@ -383,4 +383,5 @@ A somewhat throught description of the problem is here:
 
 # [footer] #
 
-[todo_dir]: docs/todo
+[todo_dir]: /docs/todo
+

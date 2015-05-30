@@ -11,7 +11,7 @@ The following vagrant providers can be configured:
 * `docker` - deprecated, see [www.boycottdocker.org][3];
 * ...
 
-[1]: docs/pillars/common/system_features/vagrant_configuration/vagrant_providers_configs/readme.md
-[2]: docs/pillars/common/system_features/vagrant_configuration/vagrant_provider/readme.md
+[1]: /docs/pillars/common/system_features/vagrant_configuration/vagrant_providers_configs/readme.md
+[2]: /docs/pillars/common/system_features/vagrant_configuration/vagrant_provider/readme.md
 [3]: http://www.boycottdocker.org/
 

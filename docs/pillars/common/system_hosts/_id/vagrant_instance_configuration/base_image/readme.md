@@ -12,5 +12,5 @@ One of the example minimal base boxes for various [providers][1]:
   * `fedora:21`
 
 [1]: http://docs.vagrantup.com/v2/boxes.html
-[2]: docs/pillars/common/system_hosts/_id/vagrant_instance_configuration/vagrant_provider/readme.md
+[2]: /docs/pillars/common/system_hosts/_id/vagrant_instance_configuration/vagrant_provider/readme.md
 
