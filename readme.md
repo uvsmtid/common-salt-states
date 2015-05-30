@@ -52,8 +52,8 @@ See also [official Salt documentation](http://docs.saltstack.com/en/latest/).
 *   [`docs`](docs/readme.md)
     directory structure explains how to navigate documentation.
 
-*   [Versioning](docs/versioning.md) explains rules for
-    development and maintenance.
+*   [Versioning](docs/versioning.md) and [Branching](docs/branching.md)
+    explain rules for development, releasing and maintenance.
 
 [1]: http://saltstack.com/
 [2]: https://gitlab.com/uvsmtid/common-salt-resources/tree/develop
