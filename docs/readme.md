@@ -1,24 +1,24 @@
 
 ## Contents of the repository root ##
 
-*   [`docs`][#docs]
+*   [`docs`](#docs)
 
     All documentation for this common framework.
 
-*   [`states`][#states]
+*   [`states`](#states)
 
     Source code with Salt states to define require system configuration.
 
     See [conventions for documenting states][5]
 
-*   [`pillars`][#pillars]
+*   [`pillars`](#pillars)
 
     Template for Salt pillars configuring system profile for
     individual deployments.
 
     See [conventions for documenting pillars][6]
 
-*   [`scripts`][#scripts]
+*   [`scripts`](#scripts)
 
     Support scripts for various purposes.
 
