@@ -7,7 +7,7 @@ to simplify state templates which install plugin for Jenkins.
 ## `jenkins_plugin_installation_macros` ##
 
 Macro `jenkins_plugin_installation_macros` takes one parameter `registered_content_item_id` which
-specifies a key to [system_resources](docs/pillars/system_resources/readme.md)
+specifies a key to [system_resources][1]
 dictionary defined in pillar. Using this key, macros can access all necessary
 information to download and install plugin.
 
@@ -52,4 +52,4 @@ install_jenkins_{{ registered_content_item_id }}
 ```
 Use this SLS id make other (subsequent) steps depend on successful plugin installation.
 
-
+[1]: /docs/pillars/system_resources/readme.md
