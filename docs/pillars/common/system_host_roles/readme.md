@@ -40,11 +40,12 @@ system_host_roles:
 
 ## Existing roles ##
 
-* [jenkins_master_role](docs/pillars/common/system_host_roles/jenkins_master_role/readme.md)
+* [jenkins_master_role][4]
 
 # [footer] #
 
-[1]: docs/pillars/common/system_hosts/readme.md
-[2]: docs/pillars/common/system_host_roles/_id/assigned_hosts/readme.md
-[3]: docs/pillars/common/system_host_roles/_id/hostname/readme.md
+[1]: /docs/pillars/common/system_hosts/readme.md
+[2]: /docs/pillars/common/system_host_roles/_id/assigned_hosts/readme.md
+[3]: /docs/pillars/common/system_host_roles/_id/hostname/readme.md
+[4]: /docs/pillars/common/system_host_roles/jenkins_master_role/readme.md
 

@@ -17,5 +17,5 @@ Field `dns_server_type` can have two string values:
     This means that DNS settings for all hosts will point to server
     specified in [external_dns_server][1] parameter.
 
-[1]: docs/pillars/common/system_features/hostname_resolution_config/external_dns_server/readme.md
+[1]: /docs/pillars/common/system_features/hostname_resolution_config/external_dns_server/readme.md
 

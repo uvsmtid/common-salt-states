@@ -46,5 +46,5 @@ See also [plugable project_names' proposal][1].
 
 # [footer] #
 
-[1]: docs/todo/plugable_project_names.md#proposal
+[1]: /docs/todo/plugable_project_names.md#proposal
 

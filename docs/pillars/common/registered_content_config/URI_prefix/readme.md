@@ -22,5 +22,5 @@ Example of valid (but possibly unavailable) `URI_prefix` values:
 
 NOTE: There is no trailing slash at the end of the value for `URI_prefix`.
 
-[system_resources]: docs/pillars/common/system_resources/readme.md
+[system_resources]: /docs/pillars/common/system_resources/readme.md
 

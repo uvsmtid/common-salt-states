@@ -73,6 +73,6 @@ There are three types of repositories defined within this framework:
 
 # [footer] #
 
-[1]: docs/configs/common/this_system_keys/project_name/readme.md
-[2]: docs/bootstrap/deploy.md
+[1]: /docs/configs/common/this_system_keys/project_name/readme.md
+[2]: /docs/bootstrap/deploy.md
 

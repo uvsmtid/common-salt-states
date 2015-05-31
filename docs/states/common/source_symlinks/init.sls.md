@@ -11,5 +11,5 @@ TODO:
 * Add all necessary details and examples.
 * Copy & paste existing docs from pillar's comments.
 
-[1]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/source_system_host/readme.md
+[1]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/source_system_host/readme.md
 

@@ -11,9 +11,9 @@ configuration file (minion or master) under [load_bootstrap_target_envs][3].
 pillar['bootstrap_target_envs']['PROJECT_NAME.PROFILE_NAME']
 ```
 
-[1]: docs/configs/common/this_system_keys/project_name/readme.md
-[2]: docs/configs/common/this_system_keys/profile_name/readme.md
-[3]: docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
-[4]: docs/pillars/bootstrap/bootstrap_target_envs/_id/readme.md
-[5]: docs/bootstrap/build.md
+[1]: /docs/configs/common/this_system_keys/project_name/readme.md
+[2]: /docs/configs/common/this_system_keys/profile_name/readme.md
+[3]: /docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
+[4]: /docs/pillars/bootstrap/bootstrap_target_envs/_id/readme.md
+[5]: /docs/bootstrap/build.md
 

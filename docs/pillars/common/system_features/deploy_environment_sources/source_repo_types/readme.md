@@ -10,8 +10,8 @@ Combinded with unique id of the sources, the repository type value
 (mapped through `source_repo_types`) is later used to select related
 configuration under [source_repositories][4].
 
-[1]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/readme.md
-[2]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/readme.md
-[3]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/svn/readme.md
-[4]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/readme.md
+[1]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/readme.md
+[2]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/readme.md
+[3]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/svn/readme.md
+[4]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/readme.md
 

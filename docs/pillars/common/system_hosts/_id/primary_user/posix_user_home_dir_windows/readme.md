@@ -28,9 +28,9 @@ consolidated explanation in their parent [primary_user][1] key):
 * [windows_user_home_dir][4]
 * [windows_user_home_dir_cygwin][5]
 
-[1]: docs/pillars/common/system_hosts/_id/primary_user/readme.md
-[2]: docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir/readme.md
-[3]: docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir_windows/readme.md
-[4]: docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir/readme.md
-[5]: docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir_cygwin/readme.md
+[1]: /docs/pillars/common/system_hosts/_id/primary_user/readme.md
+[2]: /docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir/readme.md
+[3]: /docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir_windows/readme.md
+[4]: /docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir/readme.md
+[5]: /docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir_cygwin/readme.md
 

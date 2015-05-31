@@ -18,9 +18,9 @@ to be used in Maven settings, for example:
 scm:git:ssh://username@hostname:22/~/path/to/repo.git
 ```
 
-[1]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/readme.md
-[2]: docs/pillars/common/system_features/deploy_environment_sources/source_repo_types/readme.md
-[3]: docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/readme.md
+[1]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/readme.md
+[2]: /docs/pillars/common/system_features/deploy_environment_sources/source_repo_types/readme.md
+[3]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/readme.md
 
 
 

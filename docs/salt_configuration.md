@@ -140,10 +140,10 @@ See [Salt runtime][14] document.
 
 # [footer] #
 
-[2]: docs/framework.md
-[9]: docs/configs/common/this_system_keys/project_name/readme.md
-[10]: docs/configs/common/this_system_keys/profile_name/readme.md
-[11]: docs/configs/common/this_system_keys/master_minion_id/readme.md
-[12]: docs/configs/common/this_system_keys/default_username/readme.md
-[14]: docs/salt_runtime.md
+[2]: /docs/framework.md
+[9]: /docs/configs/common/this_system_keys/project_name/readme.md
+[10]: /docs/configs/common/this_system_keys/profile_name/readme.md
+[11]: /docs/configs/common/this_system_keys/master_minion_id/readme.md
+[12]: /docs/configs/common/this_system_keys/default_username/readme.md
+[14]: /docs/salt_runtime.md
 

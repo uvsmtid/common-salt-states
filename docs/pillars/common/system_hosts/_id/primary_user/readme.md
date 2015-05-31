@@ -16,7 +16,7 @@ TODO:
 *   `password_hash`
 
     This is password hash as used for `password` field in `user.present`
-    Salt state function - see [official docs][6].
+    Salt state function - see [official Salt documentation][6].
 
 ## Various `*_user_home_dir*` values ##
 
@@ -55,10 +55,10 @@ configuration values for single `username`, for example:
 *   `C:\users\username` ([windows_user_home_dir][4]) points to user home directory as seen from native Windows.
 *   `/cygdrive/c/users/username` ([windows_user_home_dir_cygwin][5]) points to user home directory in Windows as seen from Cygwin.
 
-[1]: docs/pillars/common/system_hosts/_id/primary_user/readme.md
-[2]: docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir/readme.md
-[3]: docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir_windows/readme.md
-[4]: docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir/readme.md
-[5]: docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir_cygwin/readme.md
+[1]: /docs/pillars/common/system_hosts/_id/primary_user/readme.md
+[2]: /docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir/readme.md
+[3]: /docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir_windows/readme.md
+[4]: /docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir/readme.md
+[5]: /docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir_cygwin/readme.md
 [6]: http://docs.saltstack.com/en/latest/ref/states/all/salt.states.user.html
 

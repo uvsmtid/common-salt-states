@@ -40,7 +40,7 @@ be able to diff existing pillars against the structure of template.
 
 *   Pillars should still be under `pillars` directory in the root of
     Git repository. This is to make it clear where is required data
-    and where is everything else (docs, some supporting scripts, etc.).
+    and where is everything else (documents, some supporting scripts, etc.).
     It also makes this repository theoretically mergable with states
     (while this is not recommmended).
 
@@ -66,6 +66,6 @@ be able to diff existing pillars against the structure of template.
 
 # [footer] #
 
-[1]: docs/todo/managing_multitude_of_profile_names.md
-[2]: docs/bootstrap/readme.md
+[1]: /docs/todo/managing_multitude_of_profile_names.md
+[2]: /docs/bootstrap/readme.md
 

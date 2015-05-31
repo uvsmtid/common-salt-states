@@ -35,6 +35,6 @@ This section demonstrates how to use master-less Salt minion.
 
 # [footer] #
 
-[1]: docs/getting_started.md
+[1]: /docs/getting_started.md
 
 

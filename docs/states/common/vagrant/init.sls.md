@@ -19,5 +19,5 @@ sudo ip addr add dev em1 192.168.50.5/24
 TODO:
 * Add `libvirt` provider support. Currently, only `virtualbox` provider worked predictably without blocking issues.
 
-[1]: docs/pillars/common/system_features/vagrant_configuration/vagrant_files_dir/readme.md
+[1]: /docs/pillars/common/system_features/vagrant_configuration/vagrant_files_dir/readme.md
 

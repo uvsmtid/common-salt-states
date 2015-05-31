@@ -87,5 +87,5 @@ Not so good:
 
 # [footer] #
 
-[1]: docs/todo/profile_pillars_template.md
+[1]: /docs/todo/profile_pillars_template.md
 
