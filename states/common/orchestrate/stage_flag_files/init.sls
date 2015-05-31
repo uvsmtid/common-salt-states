@@ -16,7 +16,8 @@
 
 {% set controller_role_host = pillar['system_hosts'][pillar['system_host_roles']['controller_role']['assigned_hosts'][0]] %}
 
-{% set dir_name = controller_role_host['primary_user']['posix_user_home_dir'] + '/' + pillar['system_orchestrate_stages']['deployment_directory_path'] %}
+{% set account_conf = pillar['system_accounts'][ controller_role_host['primary_user'] ] %}
+{% set dir_name = account_conf['posix_user_home_dir'] + '/' + pillar['system_orchestrate_stages']['deployment_directory_path'] %}
 
 '{{ dir_name }}':
     file.directory:

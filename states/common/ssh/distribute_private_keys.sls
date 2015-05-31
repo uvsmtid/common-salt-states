@@ -49,42 +49,42 @@ include:
 
 {% set selected_role_name = 'none' %}
 {% set primary_user = pillar['system_hosts'][grains['id']]['primary_user'] %}
-{% for selected_user in [ primary_user ] %}
+{% for account_conf in [ pillar['system_accounts'][ primary_user ] ] %}
 
 ###############################################################################
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
-'{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa':
+'{{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}/.ssh/id_rsa':
     file.managed:
-        - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa'
+        - name: '{{ account_conf['posix_user_home_dir'] }}/.ssh/id_rsa'
         - source: {{ get_registered_content_item_URI(private_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
-        - user: {{ selected_user['username'] }}
-        - group: {{ selected_user['primary_group'] }}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - mode: 600
         - makedirs: True
         - require:
             - sls: common.ssh
-            - file: {{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}_ensure_key_files_permissions
+            - file: {{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions
 
-'{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa.pub':
+'{{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}/.ssh/id_rsa.pub':
     file.managed:
-        - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
+        - name: '{{ account_conf['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
         - source: {{ get_registered_content_item_URI(public_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
-        - user: {{ selected_user['username'] }}
-        - group: {{ selected_user['primary_group'] }}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - mode: 644
         - makedirs: True
         - require:
             - sls: common.ssh
-            - file: {{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}_ensure_key_files_permissions
+            - file: {{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions
 
-{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}_ensure_key_files_permissions:
+{{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions:
     file.directory:
-        - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh'
-        - user: {{ selected_user['username'] }}
-        - group: {{ selected_user['primary_group'] }}
+        - name: '{{ account_conf['posix_user_home_dir'] }}/.ssh'
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - mode: 700
 
 {% endif %}
@@ -97,30 +97,30 @@ include:
 
 {% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
 
-'{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
+'{{ case_name }}_{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
-        - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
+        - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
         - source: {{ get_registered_content_item_URI(private_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
 
-'{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
+'{{ case_name }}_{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
-        - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
+        - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
         - source: {{ get_registered_content_item_URI(public_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
 
-{{ case_name }}_{{ selected_user['username'] }}_ensure_key_files_permissions:
+{{ case_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions:
     cmd.run:
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "chown {{ selected_user['username'] }} ~/.ssh/id_rsa ~/.ssh/id_rsa.pub ; chmod 600 ~/.ssh/id_rsa; chmod 644 ~/.ssh/id_rsa.pub "'
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "chown {{ account_conf['username'] }} ~/.ssh/id_rsa ~/.ssh/id_rsa.pub ; chmod 600 ~/.ssh/id_rsa; chmod 644 ~/.ssh/id_rsa.pub "'
         - require:
-            - file: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
-            - file: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
+            - file: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
+            - file: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
 
 {% endif %}
 # >>>
@@ -139,42 +139,42 @@ include:
 {% for selected_role_name in pillar['system_features']['initialize_ssh_connections']['extra_private_key_deployment_destinations']['hosts_by_host_role'].keys() %}
 {% if grains['id'] in pillar['system_host_roles'][selected_role_name]['assigned_hosts'] %}
 
-{% for selected_user in pillar['system_features']['initialize_ssh_connections']['extra_private_key_deployment_destinations']['hosts_by_host_role'][selected_role_name].values() %}
+{% for account_conf in pillar['system_features']['initialize_ssh_connections']['extra_private_key_deployment_destinations']['hosts_by_host_role'][selected_role_name].values() %}
 
 ###############################################################################
 # <<<
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
-'{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa':
+'{{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}/.ssh/id_rsa':
     file.managed:
-        - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa'
+        - name: '{{ account_conf['posix_user_home_dir'] }}/.ssh/id_rsa'
         - source: {{ get_registered_content_item_URI(private_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
-        - user: {{ selected_user['username'] }}
-        - group: {{ selected_user['primary_group'] }}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - mode: 600
         - makedirs: True
         - require:
             - sls: common.ssh
-            - file: {{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}_ensure_key_files_permissions
+            - file: {{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions
 
-'{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}/.ssh/id_rsa.pub':
+'{{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}/.ssh/id_rsa.pub':
     file.managed:
-        - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
+        - name: '{{ account_conf['posix_user_home_dir'] }}/.ssh/id_rsa.pub'
         - source: {{ get_registered_content_item_URI(public_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
-        - user: {{ selected_user['username'] }}
-        - group: {{ selected_user['primary_group'] }}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - mode: 644
         - makedirs: True
         - require:
             - sls: common.ssh
-            - file: {{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}_ensure_key_files_permissions
+            - file: {{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions
 
-{{ case_name }}_{{ selected_role_name }}_{{ selected_user['username'] }}_ensure_key_files_permissions:
+{{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions:
     file.directory:
-        - name: '{{ selected_user['posix_user_home_dir'] }}/.ssh'
-        - user: {{ selected_user['username'] }}
-        - group: {{ selected_user['primary_group'] }}
+        - name: '{{ account_conf['posix_user_home_dir'] }}/.ssh'
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - mode: 700
 
 {% endif %}
@@ -187,30 +187,30 @@ include:
 
 {% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
 
-'{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
+'{{ case_name }}_{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
-        - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
+        - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
         - source: {{ get_registered_content_item_URI(private_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
 
-'{{ case_name }}_{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
+'{{ case_name }}_{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
-        - name: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
+        - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
         - source: {{ get_registered_content_item_URI(public_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
 
-{{ case_name }}_{{ selected_user['username'] }}_ensure_key_files_permissions:
+{{ case_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions:
     cmd.run:
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "chown {{ selected_user['username'] }} ~/.ssh/id_rsa ~/.ssh/id_rsa.pub ; chmod 600 ~/.ssh/id_rsa; chmod 644 ~/.ssh/id_rsa.pub "'
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "chown {{ account_conf['username'] }} ~/.ssh/id_rsa ~/.ssh/id_rsa.pub ; chmod 600 ~/.ssh/id_rsa; chmod 644 ~/.ssh/id_rsa.pub "'
         - require:
-            - file: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
-            - file: '{{ selected_user['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
+            - file: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
+            - file: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
 
 {% endif %}
 # >>>

@@ -44,10 +44,11 @@ include:
             #       There is even related bug in Jenkins bug tracker which
             #       does the same workaround (specyfing Windows-style path):
             #         https://issues.jenkins-ci.org/browse/JENKINS-21770
+{% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
 {% if os_type == 'windows' %}
-            jenkins_path: '{{ host_config['primary_user']['windows_user_home_dir'] }}\jenkins'
+            jenkins_path: '{{ account_conf['windows_user_home_dir'] }}\jenkins'
 {% else %}
-            jenkins_path: '{{ host_config['primary_user']['posix_user_home_dir'] }}/jenkins'
+            jenkins_path: '{{ account_conf['posix_user_home_dir'] }}/jenkins'
 {% endif %}
 
 # Make sure node configuration does not exist:

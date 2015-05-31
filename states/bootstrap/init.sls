@@ -4,7 +4,8 @@
 # <<<
 {% if grains['os'] in [ 'Fedora' ] %}
 
-{% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
+{% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+{% set user_home_dir = account_conf['posix_user_home_dir'] %}
 {% set bootstrap_files_dir = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
@@ -14,8 +15,8 @@ bootstrap_directory_copy:
         - name: '{{ bootstrap_dir }}'
         - source: 'salt://bootstrap/bootstrap.dir'
         - makedirs: True
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
         - file_mode: 644
         - dir_mode: 755
         - include_empty: True
@@ -34,8 +35,8 @@ bootstrap_file_exec_perms:
         - name: '{{ bootstrap_dir }}/bootstrap.py'
         - source: 'salt://bootstrap/bootstrap.dir/bootstrap.py'
         - makedirs: True
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
         - mode: 755
         - require:
             - file: bootstrap_directory_copy

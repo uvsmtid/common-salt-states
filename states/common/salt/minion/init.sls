@@ -30,7 +30,8 @@ install_salt_minion:
 {% if grains['os'] in [ 'Windows' ] %}
 
 # File to start Salt minion per user.
-'{{ pillar['system_hosts'][grains['id']]['primary_user']['windows_user_home_dir'] }}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\run_salt_minion.bat':
+{% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+'{{ account_conf['windows_user_home_dir'] }}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\run_salt_minion.bat':
     file.managed:
         # NOTE: Paths for Windows in state tree are provided in Cygwin notation.
         # This is to avoid messing with drive letters.

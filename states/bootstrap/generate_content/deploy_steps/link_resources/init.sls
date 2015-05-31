@@ -97,8 +97,9 @@
         - source_hash: {{ get_registered_content_item_hash_from_pillar(content_item_id, target_env_pillar) }}
         - makedirs: True
         - mode: 644
-        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
 
 {% endif %}
 

@@ -5,7 +5,8 @@
 {%- set git_repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][git_repo_id]['git'] -%}
 {%- set git_repo_uri_ssh_path = git_repo_config['origin_uri_ssh_path'] -%}
 {%- set source_system_host = git_repo_config['source_system_host'] -%}
-{%- set git_repo_uri_ssh_username = pillar['system_hosts'][source_system_host]['primary_user']['username'] -%}
+{%- set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] -%}
+{%- set git_repo_uri_ssh_username = account_conf['username'] -%}
 {%- set git_repo_uri_ssh_hostname = pillar['system_hosts'][source_system_host]['hostname'] -%}
 {%- set git_repo_uri = git_repo_uri_ssh_username + '@' + git_repo_uri_ssh_hostname + ':' + git_repo_uri_ssh_path -%}
 {{- git_repo_uri -}}
@@ -18,7 +19,8 @@
 {%- set git_repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][git_repo_id]['git'] -%}
 {%- set git_repo_uri_ssh_path = git_repo_config['origin_uri_ssh_path'] -%}
 {%- set source_system_host = git_repo_config['source_system_host'] -%}
-{%- set git_repo_uri_ssh_username = pillar['system_hosts'][source_system_host]['primary_user']['username'] -%}
+{%- set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] -%}
+{%- set git_repo_uri_ssh_username = account_conf['username'] -%}
 {%- set git_repo_uri_ssh_hostname = pillar['system_hosts'][source_system_host]['hostname'] -%}
 {%- set git_repo_uri_address = git_repo_uri_ssh_username + '@' + git_repo_uri_ssh_hostname -%}
 

@@ -13,7 +13,8 @@
 {% from 'common/jenkins/credentials.lib.sls' import get_jenkins_credentials_id_by_host_id with context %}
           <id>{{ get_jenkins_credentials_id_by_host_id(jenkins_slave_id) }}</id>
           <description>{{ get_jenkins_credentials_id_by_host_id(jenkins_slave_id) }}</description>
-          <username>{{ jenkins_slave_config['primary_user']['username'] }}</username>
+{% set account_conf = pillar['system_accounts'][ jenkins_slave_config['primary_user'] ] %}
+          <username>{{ account_conf['username'] }}</username>
           <!-- Password is not required for SSH public key auth.
           <passphrase></passphrase>
           -->

@@ -39,8 +39,9 @@ include:
     file.managed:
         - source: salt://common/ssh/accept_host_keys.sh
         - template: jinja
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - mode: 544
         - makedirs: True
         - require:
@@ -96,7 +97,8 @@ include:
 {% if is_network_checks_allowed(host_id) == 'True' %}
 
 # Compose expected data object:
-{% set selected_host = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}
+{% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
+{% set selected_host = { 'hostname': host_config['hostname'], 'username': account_conf['username'], 'password': account_conf['password'] } %}
 
 #------------------------------------------------------------------------------
 
@@ -107,7 +109,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
     cmd.run:
         - name: '{{ config_temp_dir }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: '{{ account_conf['username'] }}'
         - require:
             - sls: common.ssh
             - file: '{{ config_temp_dir }}/ssh/accept_host_keys.sh'
@@ -170,7 +173,8 @@ include:
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
     cmd.run:
         - name: '{{ config_temp_dir }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: '{{ account_conf['username'] }}'
         - require:
             - sls: common.ssh
             - file: '{{ config_temp_dir }}/ssh/accept_host_keys.sh'
@@ -235,7 +239,8 @@ include:
 '{{ case_name }}_{{ hostname }}_{{ selected_host['username'] }}_accept_ssh_key_cmd':
     cmd.run:
         - name: '{{ config_temp_dir }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: '{{ account_conf['username'] }}'
         - require:
             - sls: common.ssh
             - file: '{{ config_temp_dir }}/ssh/accept_host_keys.sh'

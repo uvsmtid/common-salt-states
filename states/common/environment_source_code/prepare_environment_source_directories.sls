@@ -10,7 +10,8 @@
 
 '{{ path_to_sources }}':
     file.directory:
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
         - makedirs: True
 
 {% endif %}
@@ -28,8 +29,9 @@
 
 '{{ path_to_sources }}':
     file.directory:
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         # Windows does not support `user` field.
-        #- user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        #- user: {{ account_conf['username'] }}
         - makedirs: True
 
 'add_symlink_to_{{ path_to_sources }}_cmd':

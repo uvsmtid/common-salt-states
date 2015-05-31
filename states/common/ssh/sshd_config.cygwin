@@ -24,7 +24,8 @@
 #HostKey /etc/ssh_host_rsa_key
 #HostKey /etc/ssh_host_dsa_key
 #HostKey /etc/ssh_host_ecdsa_key
-HostKey /home/{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}/sshd/ssh_host_dsa_key
+{% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+HostKey /home/{{ account_conf['username'] }}/sshd/ssh_host_dsa_key
 
 # Lifetime and size of ephemeral version 1 server key
 #KeyRegenerationInterval 1h
