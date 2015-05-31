@@ -329,7 +329,7 @@ There are two options for `generate_packages` field of
 
 [0]: #bootstrap-configuration-checklist
 [1]: https://github.com/uvsmtid/common-salt-states
-[2]: https://github.com/uvsmtid/common-salt-resources
+[2]: https://gitlab.com/uvsmtid/common-salt-resources/tree/develop
 [3]: http://example.com/git/project_name-salt-states
 [4]: http://example.com/git/project_name-salt-resources
 [5]: http://example.com/git/project_name-salt-pillars
