@@ -4,8 +4,9 @@ user's home directory.
 
 User home directory is identified through [source_system_host][1] which points
 to host id in [system_hosts][2] with `hostname` and [primary_user][3]'s
-`username`. Combining all this information, it is possible to to form complete
+`username`. Combining all this information, it is possible to form complete
 SSH-like URI for Git respository:
+
 ```
 {{ username }}@{{ hostname }}:{{ origin_uri_ssh_path }}
 ```

@@ -29,5 +29,5 @@ is actually the Salt master).
 [3]: /docs/pillars/common/system_hosts/_id/primary_user/readme.md
 [4]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/origin_uri_ssh_path/readme.md
 [5]: /docs/states/common/source_symlinks/init.sls.md
-[6]: /docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir/readme.md
+[6]: /docs/pillars/common/system_accounts/_id/posix_user_home_dir/readme.md
 
