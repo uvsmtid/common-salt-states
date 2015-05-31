@@ -3,7 +3,6 @@
     produce new bootstrap package.
 *   See [deploy][4] document to
     configure clean hosts using existing bootstrap package.
-
 *   See ideas used in [design][5] of the bootstrap framework.
 *   See details of bootstrap framework [implementation][6].
 

@@ -1,5 +1,5 @@
 
-## Use Cases ##
+# Use Cases #
 
 Ultimately, all Use Cases set up Salt minion. This is inevitable because
 only Salt minion is able to execute all configuration steps.
@@ -7,9 +7,9 @@ only Salt minion is able to execute all configuration steps.
 However, there some differences of the state the system should be after
 running the bootstrap script. They are called bootstrap use cases:
 
-*   [initial-online-node][14]
+*   [`initial-online-node`][14]
 
-*   [offline-minion-installer][13]
+*   [`offline-minion-installer`][13]
 
 Steps done automatically by bootstrap script:
 
@@ -28,7 +28,7 @@ Steps done automatically by bootstrap script:
 
 *   Run highstate (`offline-minion-installer` only).
 
-### `initial-online-node` ###
+## `initial-online-node` ##
 
 This use case is primarily needed to set up Salt-managed environment and let
 all other configuration be run by Salt at later time.
@@ -43,9 +43,9 @@ use case, configuration of Salt minion hosts are minimal.
 NOTE:
 *   In order for `initial-online-node` use case to work,
     Salt master has to be configured to accept minion keys automatically
-    - see [auto_accept Salt configuration][30].
+    - see [`auto_accept` Salt configuration][30].
 
-### `offline-minion-installer` ###
+## `offline-minion-installer` ##
 
 This use case is primarily needed for installation of hosts independently
 (i.e. via USB drive) without connecting anywhere else.
