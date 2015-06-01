@@ -85,8 +85,9 @@
         - source_has: '{{ get_registered_content_item_hash_from_pillar(yum_repo_config['key_file_resource_id'], target_env_pillar) }}'
         - template: ~
         - makedirs: True
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
 {% endif %}
 {% endif %}
 {% endfor %}
@@ -102,8 +103,9 @@
             selected_pillar: {{ target_env_pillar }}
             host_config: {{ target_env_pillar['system_hosts'][selected_host_name] }}
         - makedirs: True
-        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - group: '{{ account_conf['username'] }}'
+        - user: '{{ account_conf['username'] }}'
 
 # Instantiate template for `yum.conf`.
 {{ requisite_config_file_id }}_{{ deploy_step }}_yum.conf:
@@ -112,10 +114,11 @@
         - source: '{{ deploy_step_config['yum_main_config_template'] }}'
         - template: jinja
         - makedirs: True
+        {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - context:
             selected_pillar: {{ target_env_pillar }}
-        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - group: '{{ account_conf['username'] }}'
+        - user: '{{ account_conf['username'] }}'
 
 {% endmacro %}
 

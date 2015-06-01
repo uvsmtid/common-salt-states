@@ -35,13 +35,14 @@
         - marker_end:   '# Salt auto-config END:   {{ requisite_config_file_id }}_{{ deploy_step }}'
         - append_if_not_found: True
         - backup: False
+        {% set account_conf = target_env_pillar['system_accounts'][ target_env_pillar['system_hosts'][selected_host_name]['primary_user'] ] %}
         - content: |
             {{ deploy_step }} = {
                 'step_enabled': {{ deploy_step_config['step_enabled'] }},
-                'primary_user': '{{ target_env_pillar['system_hosts'][selected_host_name]['primary_user']['username'] }}',
-                'primary_group': '{{ target_env_pillar['system_hosts'][selected_host_name]['primary_user']['primary_group'] }}',
-                {% if target_env_pillar['system_hosts'][selected_host_name]['primary_user']['enforce_password'] %}
-                'user_password': '{{ target_env_pillar['system_hosts'][selected_host_name]['primary_user']['password'] }}',
+                'primary_user': '{{ account_conf['username'] }}',
+                'primary_group': '{{ account_conf['primary_group'] }}',
+                {% if account_conf['enforce_password'] %}
+                'user_password': '{{ account_conf['password'] }}',
                 {% else %}
                 'user_password': ~,
                 {% endif %}

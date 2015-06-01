@@ -10,14 +10,15 @@ install_maven_package:
         - name: maven
         - aggregate: True
 
+{% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
 maven_configuration_file:
     file.managed:
-        - name: '{{ pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] }}/.m2/settings.xml'
+        - name: '{{ account_conf['posix_user_home_dir'] }}/.m2/settings.xml'
         - source: 'salt://common/maven/settings.xml.sls'
         - template: jinja
         - makedirs: True
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
         - mode: 644
 
 maven_environment_variables_script:

@@ -21,7 +21,7 @@ manually to avoid loosing this configuration.
 *   [common.jenkins.maven][4]
 
 [1]: /docs/pillars/common/system_host_roles/jenkins_master_role/readme.md
-[2]: /docs/pillars/common/system_hosts/_id/primary_user/username/reame.md
+[2]: /docs/pillars/common/system_accounts/_id/username/reame.md
 [3]: /docs/pillars/common/system_hosts/_id/hostname/readme.md
 [4]: /docs/states/common/jenkins/maven/init.sls.md
 

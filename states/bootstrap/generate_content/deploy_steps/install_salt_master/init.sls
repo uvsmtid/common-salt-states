@@ -77,8 +77,9 @@
             load_bootstrap_target_envs: ~
         - template: jinja
         - makedirs: True
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
 
 # Resources used by the step.
 
@@ -92,8 +93,9 @@
         - source: '{{ get_registered_content_item_URI_from_pillar(rpm_source_config['resource_id'], target_env_pillar) }}'
         - template: ~
         - makedirs: True
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
 {% endif %}
 {% endfor %}
 

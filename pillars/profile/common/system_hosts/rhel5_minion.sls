@@ -36,19 +36,7 @@ system_hosts:
             secondary_external_net:
                 ip: 192.168.62.10
 
-        primary_user:
-            username: {{ default_username }}
-            password: {{ default_username }}
-            password_hash: '$1$kBDpSGYe$bk8YAwQshTb/LTvTTFr/4.'
-            enforce_password: True
-
-            primary_group: {{ default_username }}
-
-            posix_user_home_dir: '/home/{{ default_username }}'
-            posix_user_home_dir_windows: ~ # N/A
-
-            windows_user_home_dir: ~ # N/A
-            windows_user_home_dir_cygwin: ~ # N/A
+        primary_user: default_user
 
 ###############################################################################
 # EOF

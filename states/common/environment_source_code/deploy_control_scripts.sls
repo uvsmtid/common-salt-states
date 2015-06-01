@@ -47,7 +47,8 @@
 # And current minion is supposed to be Linux.
 # This is why only `posix_user_home_dir` is used.
 # TODO: Move this code to `git_uri.lib.sls`.
-{% set local_path_base = pillar['system_hosts'][source_system_host]['primary_user']['posix_user_home_dir'] %}
+{% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][source_system_host]['primary_user'] ] %}
+{% set local_path_base = account_conf['posix_user_home_dir'] %}
 {% set local_path_rest = control_scripts_repo_config['origin_uri_ssh_path'] %}
 {% set local_path = local_path_base + '/' + local_path_rest %}
 
@@ -79,22 +80,27 @@
 #       because of user's permissions.
 make_environment_sources_location_dir_{{ host_config['hostname'] }}_cmd:
     cmd.run:
-        - name: 'ssh "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}" "mkdir -p {{ remote_path_to_sources }}"'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        {% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
+        - name: 'ssh "{{ account_conf['username'] }}"@"{{ host_config['hostname'] }}" "mkdir -p {{ remote_path_to_sources }}"'
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
 
 # Remove destination directory before copying.
 # If `path/to/dest/dir` is not removed, copying by `cp -r dir path/to/dest/dir`
 # will create a directory `path/to/dest/dir/dir`.
 'remove_destination_directory_on_remote_host_{{ host_config['hostname'] }}_cmd':
     cmd.run:
-        - name: 'ssh "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}" "rm -rf {{ remote_path_to_sources }}/{{ control_scripts_dir_basename }}"'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        {% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
+        - name: 'ssh "{{ account_conf['username'] }}"@"{{ host_config['hostname'] }}" "rm -rf {{ remote_path_to_sources }}/{{ control_scripts_dir_basename }}"'
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
 
 # `scp`-copy sources on remote host.
 'deploy_control_scripts_on_remote_host_{{ host_config['hostname'] }}_cmd':
     cmd.run:
         - name: 'scp -r "{{ local_path }}/{{ control_scripts_dir_path }}" "{{ host_config['primary_user']['username'] }}"@"{{ host_config['hostname'] }}":"{{ remote_path_to_sources }}/{{ control_scripts_dir_basename }}"'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
         - require:
             - cmd: 'remove_destination_directory_on_remote_host_{{ host_config['hostname'] }}_cmd'
         # Assume SSH keys are already distributed to make this state faster.

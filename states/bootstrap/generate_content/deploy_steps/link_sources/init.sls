@@ -114,8 +114,9 @@
         - name: '{{ export_dir_path }}'
         - makedirs: True
         - mode: 755
-        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['username'] }}'
 
 # Import shared marco.
 {# Call marco `define_git_repo_uri` to define variable `git_repo_uri`. #}
@@ -161,7 +162,8 @@
     {% elif export_method == 'git-archive' %}
         - name: 'git archive --format tar --output="{{ export_dir_path }}/{{ target_repo_name }}.tar" --remote="{{ git_repo_uri }}" "{{ branch_name }}"'
     {% elif export_method == 'checkout-index' %}
-    {% set base_repo_dir = source_env_pillar['system_hosts'][source_system_host]['primary_user']['posix_user_home_dir'] %}
+    {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][source_system_host]['primary_user'] ] %}
+    {% set base_repo_dir = account_conf['posix_user_home_dir'] %}
         - name: 'rm -rf "{{ export_dir_path }}/{{ target_repo_name }}/" && git checkout-index --all --force --prefix="{{ export_dir_path }}/{{ target_repo_name }}/"'
         # Repository location on local file system:
         - cwd: '{{ base_repo_dir }}/{{ origin_uri_ssh_path }}'
@@ -171,9 +173,10 @@
     {% else %}
         {{ FAIL_unknown_export_method }}
     {% endif %}
+    {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][grains['id']]['primary_user'] ] %}
         # User and Group are from source env pillar - where the package is build.
-        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['username'] }}'
         - require:
             - file: {{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
     {% if not selected_repo_name == target_repo_name %}
@@ -198,9 +201,10 @@
     {% else %}
         {{ FAIL_unknown_export_method }}
     {% endif %}
+    {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][grains['id']]['primary_user'] ] %}
         # User and Group are from source env pillar - where the package is build.
-        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['username'] }}'
         - require:
             - file: {{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
 

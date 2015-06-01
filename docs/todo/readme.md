@@ -250,7 +250,12 @@ like some VMs were answerded by different simultaneously running dnsmasq.
 ## WARNING: Make sure correct slash is used in paths ##
 
 Check template expressions, for example, like these:
- {{ pillar['system_hosts'][grains['os']]['primary_user']['user_home_dir'] }}/whatever
+
+```
+ {% set user_account = pillar['system_hosts'][grains['os']]['primary_user'] %}
+ {{ pillar['system_accounts']['user_home_dir'] }}/whatever
+```
+
 Make sure that for forward slash is used for Linux and backslash is used for Windows.
 
 ## VirtIO drivers for Windows storage ##

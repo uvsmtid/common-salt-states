@@ -15,7 +15,8 @@ include:
 
 {% set case_name = 'primary_user' %}
 
-{% set sudo_username = pillar['system_hosts'][grains['id']]['primary_user']['username'] %}
+{% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+{% set sudo_username = account_conf['username'] %}
 
 ###############################################################################
 # <<<

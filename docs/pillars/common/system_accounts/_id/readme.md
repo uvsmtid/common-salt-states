@@ -1,6 +1,6 @@
 
 TODO:
-* Explain other fields of `primary_user`
+*   Explain other fields of `system_accounts`
 
 ## Key credentials ##
 
@@ -42,6 +42,7 @@ Python translate native Windows path into Cygwin path?
 
 These two paths can be tralsated by Cygwin utility in the other two,
 for example:
+
 ```
 cygpath -w '/home/username'
 cygpath -u 'C:\users\username'
@@ -55,10 +56,10 @@ configuration values for single `username`, for example:
 *   `C:\users\username` ([windows_user_home_dir][4]) points to user home directory as seen from native Windows.
 *   `/cygdrive/c/users/username` ([windows_user_home_dir_cygwin][5]) points to user home directory in Windows as seen from Cygwin.
 
-[1]: /docs/pillars/common/system_hosts/_id/primary_user/readme.md
-[2]: /docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir/readme.md
-[3]: /docs/pillars/common/system_hosts/_id/primary_user/posix_user_home_dir_windows/readme.md
-[4]: /docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir/readme.md
-[5]: /docs/pillars/common/system_hosts/_id/primary_user/windows_user_home_dir_cygwin/readme.md
+[1]: /docs/pillars/common/system_accounts/_id/readme.md
+[2]: /docs/pillars/common/system_accounts/_id/posix_user_home_dir/readme.md
+[3]: /docs/pillars/common/system_accounts/_id/posix_user_home_dir_windows/readme.md
+[4]: /docs/pillars/common/system_accounts/_id/windows_user_home_dir/readme.md
+[5]: /docs/pillars/common/system_accounts/_id/windows_user_home_dir_cygwin/readme.md
 [6]: http://docs.saltstack.com/en/latest/ref/states/all/salt.states.user.html
 

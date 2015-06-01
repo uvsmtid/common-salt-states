@@ -5,6 +5,7 @@
 
 # Jenkins credentials id: [username]@[hostname]_credentials.
 {%- macro get_jenkins_credentials_id_by_host_id(host_id) -%}
-{{ pillar['system_hosts'][host_id]['primary_user']['username'] }}@{{ pillar['system_hosts'][host_id]['hostname'] }}_credentials
+{%- set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] -%}
+{{ account_conf['username'] }}@{{ pillar['system_hosts'][host_id]['hostname'] }}_credentials
 {%- endmacro -%}
 

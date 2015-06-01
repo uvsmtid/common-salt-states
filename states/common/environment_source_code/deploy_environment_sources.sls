@@ -45,8 +45,9 @@ include:
         - source: salt://common/environment_source_code/environment.source.deployment.descriptor.conf
         - template: jinja
 {% if grains['kernel'] == 'Linux' %}
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
 {% endif %}
         - makedirs: True
         - require:
@@ -62,8 +63,9 @@ include:
         - source: salt://common/environment_source_code/deployment.job.environment.sources.conf
         - template: jinja
 {% if grains['kernel'] == 'Linux' %}
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
 {% endif %}
         - makedirs: True
         - require:
@@ -96,7 +98,8 @@ convert_passwordless_ssh_config_file_to_unix_line_endings:
 {% if grains['kernel'] == 'Linux' %}
         # On Windows it is executed by Cygwin python using posix paths.
         - name: '         /usr/bin/python {{ control_scripts_dir_basename }}/init.py --skip_branch_control -j environment_sources -l debug -c file://{{ path_to_sources        }}/control/conf/'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
         - cwd: '{{ path_to_sources }}'
         - env:
             - GIT_SSH: '{{ config_temp_dir               }}/passwordless_ssh_config.sh'

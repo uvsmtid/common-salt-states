@@ -54,8 +54,9 @@
         - makedirs: True
         - contents: |
             {{ get_role_ip_address_from_pillar('controller_role', target_env_pillar) }} salt
-        - group: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - user: '{{ source_env_pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
+        {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - group: '{{ account_conf['username'] }}'
+        - user: '{{ account_conf['username'] }}'
 
 {% endmacro %}
 

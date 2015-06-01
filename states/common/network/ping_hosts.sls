@@ -17,8 +17,9 @@
     file.managed:
         - source: salt://common/network/ping_host.sh
         - template: jinja
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - makedirs: True
         - mode: 544
 
@@ -35,13 +36,15 @@
 {% if is_network_checks_allowed(host_id) == 'True' %}
 
 # Compose expected data object:
-{% set selected_account = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}
+{% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
+{% set selected_account = { 'hostname': host_config['hostname'], 'username': account_conf['username'], 'password': account_conf['password'] } %}
 
 #------------------------------------------------------------------------------
 '{{ case_name }}_ping_remote_hosts_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
     cmd.run:
         - name: '{{ config_temp_dir }}/ssh/ping_host.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}"'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ local_account_conf['username'] }}
         - require:
             - file: '{{ config_temp_dir }}/ssh/ping_host.sh'
 #------------------------------------------------------------------------------

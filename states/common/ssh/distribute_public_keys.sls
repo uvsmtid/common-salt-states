@@ -53,8 +53,9 @@ package_sshpass:
     file.managed:
         - source: salt://common/ssh/distribute_public_keys.sh
         - template: jinja
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - mode: 544
 
 # Loop through all defined hosts and execute `ssh-copy-id` to them.
@@ -77,7 +78,8 @@ package_sshpass:
 {% if is_network_checks_allowed(host_id) == 'True' %}
 
 # Compose expected data object:
-{% set selected_account = { 'hostname': host_config['hostname'], 'username': host_config['primary_user']['username'], 'password': host_config['primary_user']['password'] } %}
+{% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
+{% set selected_account = { 'hostname': host_config['hostname'], 'username': account_conf['username'], 'password': account_conf['password'] } %}
 
 {% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
@@ -86,7 +88,8 @@ package_sshpass:
 '{{ case_name }}_place_public_key_on_remote_account_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
     cmd.run:
         - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ local_account_conf['username'] }}
         # Pass password in environment variable (`SSHPASS` according to `sshpass` documentation).
         - env:
             - SSHPASS: '{{ selected_account['password'] }}'
@@ -115,10 +118,10 @@ package_sshpass:
 
 {% if is_network_checks_allowed(minion_id) == 'True' %}
 
-{% for user_config in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_host_role'][selected_role_name].values() %}
+{% for account_conf in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_host_role'][selected_role_name].values() %}
 
 # Compose expected data object:
-{% set selected_account = { 'hostname': host_config['hostname'], 'username': user_config['username'], 'password': user_config['password'] } %}
+{% set selected_account = { 'hostname': host_config['hostname'], 'username': account_conf['username'], 'password': account_conf['password'] } %}
 {% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
 #------------------------------------------------------------------------------
@@ -126,7 +129,8 @@ package_sshpass:
 '{{ case_name }}_place_public_key_on_remote_account_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
     cmd.run:
         - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ local_account_conf['username'] }}
         # Pass password in environment variable (`SSHPASS` according to `sshpass` documentation).
         - env:
             - SSHPASS: '{{ selected_account['password'] }}'
@@ -157,10 +161,10 @@ package_sshpass:
 
 {% if is_network_checks_allowed(None) == 'True' %}
 
-{% for user_config in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_hostname'][hostname]['user_configs'].values() %}
+{% for account_conf in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_hostname'][hostname]['user_configs'].values() %}
 
 # Compose expected data object:
-{% set selected_account = { 'hostname': hostname, 'username': user_config['username'], 'password': user_config['password'] } %}
+{% set selected_account = { 'hostname': hostname, 'username': account_conf['username'], 'password': account_conf['password'] } %}
 {% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
 #------------------------------------------------------------------------------
@@ -168,7 +172,8 @@ package_sshpass:
 '{{ case_name }}_place_public_key_on_remote_account_{{ selected_account['hostname'] }}_{{ selected_account['username'] }}_cmd':
     cmd.run:
         - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+        {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ local_account_conf['username'] }}
         # Pass password in environment variable (`SSHPASS` according to `sshpass` documentation).
         - env:
             - SSHPASS: '{{ selected_account['password'] }}'

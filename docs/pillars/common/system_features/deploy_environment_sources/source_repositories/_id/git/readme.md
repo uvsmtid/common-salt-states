@@ -21,16 +21,21 @@ For example, if Git repository is hosted on some arbitrary unmanaged host
 like `git.example.com` under [GitLab][http://gitlab.com/] and accessed
 with SSH public key authentication via SSH-like URI
 `git@git.example.com:devops/common-salt-states.git`, it is possible to define
-such `git.example.com` host under `system_hosts` with [primary_user][5] equal
+such `git.example.com` host under `system_hosts` with [username][5] equal
 to `git` and set [origin_uri_ssh_path][6] to `devops/common-salt-states.git`:
+
 ```
+system_accounts:
+    git_surrogate_user:
+        username: git
+
 system_hosts:
     git.example.com:
         consider_online_for_remote_connections: False
         os_platform: rhel7
         hostname: git.example.com
-        primary_user:
-            username: git
+        primary_user: git_surrogate_user
+
 system_features:
     deploy_environment_sources:
         source_repositories:
@@ -39,15 +44,16 @@ system_features:
                     source_system_host: 'git.example.com'
                     origin_uri_ssh_path: 'devops/common-salt-states.git'
 ```
+
 It important that:
-* There should not be Salt minion named as `git.example.com` and listed as accepted in the output of `salt-key` command.
-* Key [consider_online_for_remote_connections][7] should be False to avoid contacts with this host during various deployment stages (i.e. to distribute SSH keys).
+*   There should not be Salt minion named as `git.example.com` and listed as accepted in the output of `salt-key` command.
+*   Key [consider_online_for_remote_connections][7] should be False to avoid contacts with this host during various deployment stages (i.e. to distribute SSH keys).
 
 [1]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/readme.md
 [2]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/readme.md
 [3]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/source_system_host/readme.md
 [4]: /docs/pillars/common/system_hosts/readme.md
-[5]: /docs/pillars/common/system_hosts/_id/primary_user/readme.md
+[5]: /docs/pillars/common/system_hosts/system_accounts/_id/username/readme.md
 [6]: /docs/pillars/common/system_features/deploy_environment_sources/source_repositories/_id/git/origin_uri_ssh_path/readme.md
 [7]: /docs/pillars/common/system_hosts/_id/consider_online_for_remote_connections/readme.md
 

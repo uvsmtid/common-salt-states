@@ -40,8 +40,9 @@ download_nexus_archive:
         - source: {{ get_registered_content_item_URI('nexus_maven_repository_manager') }}
         - source_hash: {{ get_registered_content_item_hash('nexus_maven_repository_manager') }}
         - makedirs: True
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
 
 ensure_nexus_parent_deployment_dir:
     file.directory:
@@ -59,8 +60,9 @@ extract_nexus_archive:
 fix_nexus_dir_permissiona:
     file.directory:
         - name: '/usr/local/nexus-{{ pillar['system_resources']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - makedirs: False
         - recurse:
             - user
@@ -70,8 +72,9 @@ nexus_data_dir_exists:
     file.exists:
         - name: '/usr/local/sonatype-work'
         #{# DISABLED: `file.exists` does not support this (yet)
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         #}#
         - require:
             - cmd: extract_nexus_archive
@@ -79,8 +82,9 @@ nexus_data_dir_exists:
 fix_nexus_data_dir_permissiona:
     file.directory:
         - name: '/usr/local/sonatype-work'
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         - makedirs: False
         - recurse:
             - user
@@ -90,8 +94,9 @@ nexus_deployment_dir_exists:
     file.exists:
         - name: '/usr/local/nexus-{{ pillar['system_resources']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
         #{# DISABLED: `file.exists` does not support this (yet)
-        - user: {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
-        - group: {{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        - user: {{ account_conf['username'] }}
+        - group: {{ account_conf['primary_group'] }}
         #}#
         - require:
             - cmd: extract_nexus_archive
@@ -183,3 +188,4 @@ nexus_service_start:
 {% endif %}
 
 {% endfor %} # maven_repository_manager_role
+

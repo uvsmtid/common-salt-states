@@ -45,8 +45,9 @@ libvirt_packages_installation:
 create_libvirt_group:
     group.present:
         - name: libvirt
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - addusers:
-          - {{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}
+          - {{ account_conf['username'] }}
 
 libvirtd_service:
     service.running:

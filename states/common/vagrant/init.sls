@@ -34,7 +34,8 @@ install_vagrant_packages:
             - vagrant
         - aggregate: True
 
-{% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
+{% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+{% set user_home_dir = account_conf['posix_user_home_dir'] %}
 {% set bootstrap_files_dir = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set vagrant_files_dir = pillar['system_features']['vagrant_configuration']['vagrant_files_dir'] %}
 {% set vagrant_dir = user_home_dir + '/' + vagrant_files_dir %}
@@ -48,8 +49,8 @@ deploy_vagrant_file:
         - makedirs: True
         - template: jinja
         - mode: 644
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
 
 bootstrap_symlink_from_vagrant_dir:
     file.symlink:
@@ -79,8 +80,8 @@ bootstrap_symlink_from_vagrant_dir:
         - context:
             selected_host_name: '{{ selected_host_name }}'
         - mode: 644
-        - user: '{{ pillar['system_hosts'][grains['id']]['primary_user']['username'] }}'
-        - group: '{{ pillar['system_hosts'][grains['id']]['primary_user']['primary_group'] }}'
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
 
 {% endif %} # vagrant_provider
 

@@ -70,8 +70,9 @@
 -%}
 
 {%- set selected_host_config = pillar_data['system_hosts'][system_host_id] -%}
+{%- set account_conf = pillar['system_accounts'][ selected_host_config['primary_user'] ] -%}
 
-{{- selected_host_config['primary_user']['posix_user_home_dir'] -}}
+{{- account_conf['posix_user_home_dir'] -}}
 
 {%- endmacro -%}
 

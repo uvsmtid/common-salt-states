@@ -37,7 +37,8 @@
         set -e
         set -u
 
-        {% set user_home_dir = pillar['system_hosts'][grains['id']]['primary_user']['posix_user_home_dir'] %}
+        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        {% set user_home_dir = account_conf['posix_user_home_dir'] %}
         {% set vagrant_files_dir = pillar['system_features']['vagrant_configuration']['vagrant_files_dir'] %}
         {% set vagrant_dir = user_home_dir + '/' + vagrant_files_dir %}
         cd "{{ vagrant_dir }}"

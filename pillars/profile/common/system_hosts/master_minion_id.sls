@@ -2,9 +2,7 @@
 ###############################################################################
 #
 
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
-{% set default_username = salt['config.get']('this_system_keys:default_username') %}
 
 system_hosts:
 
@@ -43,19 +41,7 @@ system_hosts:
             secondary_external_net:
                 ip: 192.168.62.1
 
-        primary_user:
-            username: {{ default_username }}
-            password: {{ default_username }}
-            password_hash: ~ # N/A
-            enforce_password: False
-
-            primary_group: {{ default_username }}
-
-            posix_user_home_dir: '/home/{{ default_username }}'
-            posix_user_home_dir_windows: ~ # N/A
-
-            windows_user_home_dir: ~ # N/A
-            windows_user_home_dir_cygwin: ~ # N/A
+        primary_user: master_minion_user
 
 ###############################################################################
 # EOF
