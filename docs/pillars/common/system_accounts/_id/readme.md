@@ -8,14 +8,17 @@ TODO:
 
     As it implies, synonym is "account name".
 
-*   `password`
+*   `password_secret`
 
-    This clear-text password may be used to distribute public SSH keys
-    first time (for subsequent passwordless auth).
+    This field specifies secret_id for `password_value`.
+
+    It may be used to create user account with pre-set `password_value`
+    or distribute public SSH keys first time (using `password_value`
+    for subsequent  passwordless auth).
 
 *   `password_hash`
 
-    This is password hash as used for `password` field in `user.present`
+    This is hash as used for `password` field in `user.present`
     Salt state function - see [official Salt documentation][6].
 
 ## Various `*_user_home_dir*` values ##

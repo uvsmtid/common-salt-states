@@ -85,7 +85,7 @@ system_features:
                 #        # used (current local user or from `~/.ssh/config`).
                 #        username_item:
                 #            username: username
-                #            passwrod: password
+                #            password_secret: secret_id
 
                 # NOTE: Pushing SSH public key of current (primary) user to
                 #       `localhost` is seemingly not required because other
@@ -100,21 +100,21 @@ system_features:
                         current_user:
                             # Current local user.
                             username: ''
-                            password: ''
+                            password_secret: default_user_password
 
             # TODO
             hosts_by_minion_id: {}
                 #minion_id:
                 #    username_item:
                 #        username: username
-                #        passwrod: password
+                #        password_secret: secret_id
 
             # DONE: Implemented.
             hosts_by_host_role: {}
                 #controller_role:
                 #    username_item:
                 #        username: username
-                #        passwrod: password
+                #        password_secret: secret_id
 
 ###############################################################################
 # EOF

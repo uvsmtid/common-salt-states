@@ -26,6 +26,8 @@
 %}
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
+{% set system_secrets_macro_lib = 'common/system_secrets/lib.sls' %}
+{% from system_secrets_macro_lib import get_single_line_system_secret_from_pillar with context %}
 
 # Config for the step.
 {{ requisite_config_file_id }}_{{ deploy_step }}:
@@ -42,7 +44,7 @@
                 'primary_user': '{{ account_conf['username'] }}',
                 'primary_group': '{{ account_conf['primary_group'] }}',
                 {% if account_conf['enforce_password'] %}
-                'user_password': '{{ account_conf['password'] }}',
+                'user_password': '{{ get_single_line_system_secret_from_pillar(account_conf['password_secret'], target_env_pillar) }}',
                 {% else %}
                 'user_password': ~,
                 {% endif %}

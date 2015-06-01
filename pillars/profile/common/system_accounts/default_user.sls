@@ -8,7 +8,7 @@ system_accounts:
 
     default_user:
         username: {{ default_username }}
-        password: {{ default_username }}
+        password_secret: default_user_password
         password_hash: ~ # N/A
         enforce_password: True
 

@@ -98,7 +98,15 @@ include:
 
 # Compose expected data object:
 {% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
-{% set selected_host = { 'hostname': host_config['hostname'], 'username': account_conf['username'], 'password': account_conf['password'] } %}
+{%
+    set selected_host = {
+        'hostname': host_config['hostname']
+        ,
+        'username': account_conf['username']
+        ,
+        'password_secret': account_conf['password_secret']
+    }
+%}
 
 #------------------------------------------------------------------------------
 
@@ -162,7 +170,15 @@ include:
 {% for user_config in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_host_role'][selected_role_name].values() %}
 
 # Compose expected data object:
-{% set selected_host = { 'hostname': host_config['hostname'], 'username': user_config['username'], 'password': user_config['password'] } %}
+{%
+    set selected_host = {
+        'hostname': host_config['hostname']
+        ,
+        'username': user_config['username']
+        ,
+        'password_secret': user_config['password_secret']
+    }
+%}
 
 #------------------------------------------------------------------------------
 
@@ -228,7 +244,15 @@ include:
 {% for user_config in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_hostname'][hostname]['user_configs'].values() %}
 
 # Compose expected data object:
-{% set selected_host = { 'hostname': hostname, 'username': user_config['username'], 'password': user_config['password'] } %}
+{%
+    set selected_host = {
+        'hostname': hostname
+        ,
+        'username': user_config['username']
+        ,
+        'password_secret': user_config['password_secret']
+    }
+%}
 
 #------------------------------------------------------------------------------
 

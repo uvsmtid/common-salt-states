@@ -10,7 +10,8 @@
 {% set proxy_config = pillar['system_features']['external_http_proxy'] %}
 {% if proxy_config['feature_enabled'] %}
 
-# Proxy settings
+# Proxy settings:
+# TODO: Use `secret_id` from `system_secrets` for `password_value`.
 export http_proxy='{{ proxy_config['proxy_url_schema'] }}{{ proxy_config['proxy_username'] }}:{{ proxy_config['proxy_password'] }}@{{ proxy_config['proxy_url_hostname'] }}:{{ proxy_config['proxy_url_port'] }}/'
 export https_proxy="${http_proxy}"
 

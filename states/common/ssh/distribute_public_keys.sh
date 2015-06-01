@@ -46,7 +46,7 @@ fi
 if ping -c 1 "$HOSTNAME"
 then
 
-    # Distribute with password:
+    # Distribute by authenticating with `password_value`:
     sshpass -e ssh-copy-id \
         -o "StrictHostKeyChecking no" \
         -o "PreferredAuthentications password,publickey" \

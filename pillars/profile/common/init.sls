@@ -15,6 +15,8 @@ include:
         ,
         'system_platforms'
         ,
+        'system_secrets'
+        ,
         'system_accounts'
         ,
         'system_hosts'
