@@ -8,7 +8,7 @@ system_accounts:
 
     master_minion_user:
         username: {{ default_username }}
-        password: default_user_password
+        password_secret: default_user_password
         password_hash: ~ # N/A
         enforce_password: False
 

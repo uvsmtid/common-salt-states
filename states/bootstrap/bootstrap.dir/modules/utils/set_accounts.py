@@ -114,7 +114,7 @@ def set_password(
 
     logging.debug('user_password: ' + str(user_password))
 
-    # Set password for specified user.
+    # Set `user_password` for specified user.
     process_output = call_subprocess(
         command_args = [
             '/usr/bin/passwd',

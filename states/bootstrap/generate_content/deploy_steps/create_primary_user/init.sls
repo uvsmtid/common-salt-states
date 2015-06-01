@@ -42,7 +42,7 @@
                 'primary_user': '{{ account_conf['username'] }}',
                 'primary_group': '{{ account_conf['primary_group'] }}',
                 {% if account_conf['enforce_password'] %}
-                'user_password': '{{ account_conf['password'] }}',
+                'user_password': '{{ account_conf['password_secret'] }}',
                 {% else %}
                 'user_password': ~,
                 {% endif %}

@@ -12,6 +12,7 @@ system_features:
             some_repo:
                 url: 'TODO'
                 username: TODO
+                # TODO: Use `secret_id` from `system_secrets` for `password_value`.
                 password: TODO
 
         # Personal git configuration.

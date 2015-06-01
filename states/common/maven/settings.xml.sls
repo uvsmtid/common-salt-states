@@ -34,17 +34,19 @@
     </pluginGroups>
 
     <!--
-        TODO: Put hardcoded username/password in pillar.
+        TODO: Put hardcoded `username`/`password_value` in pillar.
     -->
     <servers>
 		<server>
             <id>releaseDeployRepo</id>
             <username>deployment</username>
+            <!-- TODO: Use `secret_id` from `system_secrets` for `password_value`. -->
             <password>deployment123</password>
       </server>
       <server>
             <id>snapshotDeployRepo</id>
             <username>deployment</username>
+            <!-- TODO: Use `secret_id` from `system_secrets` for `password_value`. -->
             <password>deployment123</password>
       </server>
     </servers>

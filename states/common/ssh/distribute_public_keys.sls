@@ -88,7 +88,7 @@ package_sshpass:
         ,
         'username': account_conf['username']
         ,
-        'password': get_single_line_system_secret(account_conf['password'])
+        'password_value': get_single_line_system_secret(account_conf['password_secret'])
     }
 %}
 
@@ -101,9 +101,9 @@ package_sshpass:
         - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
         {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: {{ local_account_conf['username'] }}
-        # Pass password in environment variable (`SSHPASS` according to `sshpass` documentation).
+        # Pass `password_value` in environment variable (`SSHPASS` according to `sshpass` documentation).
         - env:
-            - SSHPASS: '{{ selected_account['password'] }}'
+            - SSHPASS: '{{ selected_account['password_value'] }}'
         - require:
             - pkg: package_sshpass
             - file: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh'
@@ -138,7 +138,7 @@ package_sshpass:
         ,
         'username': account_conf['username']
         ,
-        'password': get_single_line_system_secret(account_conf['password'])
+        'password_value': get_single_line_system_secret(account_conf['password_secret'])
     }
 %}
 {% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
@@ -150,9 +150,9 @@ package_sshpass:
         - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
         {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: {{ local_account_conf['username'] }}
-        # Pass password in environment variable (`SSHPASS` according to `sshpass` documentation).
+        # Pass `password_value` in environment variable (`SSHPASS` according to `sshpass` documentation).
         - env:
-            - SSHPASS: '{{ selected_account['password'] }}'
+            - SSHPASS: '{{ selected_account['password_value'] }}'
         - require:
             - pkg: package_sshpass
             - file: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh'
@@ -189,7 +189,7 @@ package_sshpass:
         ,
         'username': account_conf['username']
         ,
-        'password': get_single_line_system_secret(account_conf['password'])
+        'password_value': get_single_line_system_secret(account_conf['password_secret'])
     }
 %}
 {% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
@@ -201,9 +201,9 @@ package_sshpass:
         - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
         {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: {{ local_account_conf['username'] }}
-        # Pass password in environment variable (`SSHPASS` according to `sshpass` documentation).
+        # Pass `password_value` in environment variable (`SSHPASS` according to `sshpass` documentation).
         - env:
-            - SSHPASS: '{{ selected_account['password'] }}'
+            - SSHPASS: '{{ selected_account['password_value'] }}'
         - require:
             - pkg: package_sshpass
             - file: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh'
