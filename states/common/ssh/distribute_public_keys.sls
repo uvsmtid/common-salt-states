@@ -23,6 +23,9 @@
 {% set config_temp_dir = pillar['windows_config_temp_dir'] %}
 {% endif %}
 
+{% set system_secrets_macro_lib = 'common/system_secrets/lib.sls' %}
+{% from system_secrets_macro_lib import get_single_line_system_secret with context %}
+
 {% from 'common/libs/host_config_queries.sls' import is_network_checks_allowed with context %}
 
 ###############################################################################
@@ -79,7 +82,15 @@ package_sshpass:
 
 # Compose expected data object:
 {% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
-{% set selected_account = { 'hostname': host_config['hostname'], 'username': account_conf['username'], 'password': account_conf['password'] } %}
+{%
+    set selected_account = {
+        'hostname': host_config['hostname']
+        ,
+        'username': account_conf['username']
+        ,
+        'password': get_single_line_system_secret(account_conf['password'])
+    }
+%}
 
 {% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
@@ -121,7 +132,15 @@ package_sshpass:
 {% for account_conf in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_host_role'][selected_role_name].values() %}
 
 # Compose expected data object:
-{% set selected_account = { 'hostname': host_config['hostname'], 'username': account_conf['username'], 'password': account_conf['password'] } %}
+{% set
+    selected_account = {
+        'hostname': host_config['hostname']
+        ,
+        'username': account_conf['username']
+        ,
+        'password': get_single_line_system_secret(account_conf['password'])
+    }
+%}
 {% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
 #------------------------------------------------------------------------------
@@ -164,7 +183,15 @@ package_sshpass:
 {% for account_conf in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_hostname'][hostname]['user_configs'].values() %}
 
 # Compose expected data object:
-{% set selected_account = { 'hostname': hostname, 'username': account_conf['username'], 'password': account_conf['password'] } %}
+{%
+    set selected_account = {
+        'hostname': hostname
+        ,
+        'username': account_conf['username']
+        ,
+        'password': get_single_line_system_secret(account_conf['password'])
+    }
+%}
 {% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
 #------------------------------------------------------------------------------

@@ -100,7 +100,7 @@ system_features:
                         current_user:
                             # Current local user.
                             username: ''
-                            password: ''
+                            password: default_user_password
 
             # TODO
             hosts_by_minion_id: {}
