@@ -37,7 +37,15 @@
 
 # Compose expected data object:
 {% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
-{% set selected_account = { 'hostname': host_config['hostname'], 'username': account_conf['username'], 'password_secret': account_conf['password_secret'] } %}
+{%
+    set selected_account = {
+        'hostname': host_config['hostname']
+        ,
+        'username': account_conf['username']
+        ,
+        'password_secret': account_conf['password_secret']
+    }
+%}
 
 #------------------------------------------------------------------------------
 '{{ case_name }}_ping_remote_hosts_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
