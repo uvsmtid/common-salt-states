@@ -6,6 +6,7 @@
 # In order to use them for Jinja, there should be different function
 # to insert these values into templates so that YAML parsing won't break.
 
+# TODO:
 # In addition to this, in order to provide binary values, base64 encoding
 # is used (which is always multiline). Binary (base64-encoded) data is
 # only used for deployment into a file (not into sls template).

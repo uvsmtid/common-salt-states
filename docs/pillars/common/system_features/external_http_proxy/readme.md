@@ -21,7 +21,7 @@ There are basically three configuration parameters:
   If authentication info is required to be embedded inside URL itself,
   the following concatenation is uses:
   ```
-  {{ proxy_url_schema }}{{ username }}:{{ password }}@{{ proxy_url_hostname }}:{{ proxy_url_port }}/
+  {{ proxy_url_schema }}{{ username }}:{{ password_value }}@{{ proxy_url_hostname }}:{{ proxy_url_port }}/
   ```
 * Authentication info:
   * `proxy_username`
