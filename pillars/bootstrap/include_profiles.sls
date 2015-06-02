@@ -8,9 +8,9 @@ include:
 
 {% for profile_name in load_bootstrap_target_envs.keys() %}
 
-    - 'bootstrap.pillars.{{ profile_name }}.profile':
+    - 'bootstrap.profiles.{{ profile_name }}':
         defaults:
-            this_pillar: bootstrap.pillars.{{ profile_name }}.profile
+            this_pillar: bootstrap.profiles.{{ profile_name }}
         key: '{{ project_name }}.{{ profile_name }}'
 
 {% endfor %}

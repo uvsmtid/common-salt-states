@@ -148,11 +148,11 @@ in addition to those mentioned in [Salt configuration][7] document
 
 *   Target pillar
 
-    Make sure `/srv/pillars/bootstrap/pillars/${TRG_env_profile}`
+    Make sure `/srv/pillars/bootstrap/profiles/${TRG_env_profile}`
     symlink points to:
 
     ```
-    ~/Works/${project_name}-salt-pillars.git/pillars
+    ~/Works/${project_name}-salt-pillars.git/pillars/profile
     ```
 
     Make repository is switched to correct branch name.
