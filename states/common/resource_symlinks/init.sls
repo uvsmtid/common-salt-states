@@ -38,13 +38,15 @@
 # Do not set symlink for any other than `salt://` URI scheme.
 {% if resource_respository_config['URI_prefix_scheme'] == 'salt://' %} # URI_prefix_scheme
 
-# Make sure that directory for links to all resource repositories
-# was pre-created.
+# Pre-create directory for resource symlinks.
 # This directory is supposed to be configured in `file_roots`
 # of Salt configuration.
 '{{ resource_respository_id }}_base_dir_salt_config':
-    file.exists:
+    file.directory:
         - name: '{{ get_URI_scheme_abs_links_base_dir_path('salt://') }}'
+        - makedirs: True
+        - force: False
+        - allow_symlink: True
 
 ensure_resource_repository_link_{{ resource_respository_id }}_cmd:
     cmd.run:
