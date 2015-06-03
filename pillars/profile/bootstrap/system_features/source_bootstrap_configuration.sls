@@ -9,7 +9,7 @@ system_features:
     source_bootstrap_configuration:
 
         enable_bootstrap_target_envs:
-            {{ profile_name }}:
+            {{ profile_name }}: ~
 
         bootstrap_package_use_cases:
             - 'initial-online-node'

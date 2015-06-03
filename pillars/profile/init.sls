@@ -38,8 +38,8 @@ include:
 
 {% if 'project_name' == project_name %}
 
-    # Load project_name-specific pillars.
-    - {{ this_pillar }}.project_name:
+    # Load `project_name`-specific pillars.
+    - {{ this_pillar }}.{{ project_name }}:
         defaults:
             this_pillar: {{ this_pillar }}.project_name
 

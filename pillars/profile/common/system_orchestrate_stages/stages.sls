@@ -1,5 +1,7 @@
 
 ###############################################################################
+#
+
 system_orchestrate_stages:
 
     # This path is relative to primary user's home:
@@ -135,4 +137,8 @@ system_orchestrate_stages:
                 - jenkins_master_installed
                 - jenkins_slaves_connected
                 - jenkins_jobs_configured
+
+###############################################################################
+# EOF
+###############################################################################
 

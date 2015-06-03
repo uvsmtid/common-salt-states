@@ -1,3 +1,4 @@
+
 ###############################################################################
 #
 
@@ -36,6 +37,7 @@ system_features:
             common-resources:
 
                 URI_prefix_scheme: 'salt://'
+
                 rel_resource_link_path: 'resource_roots/common-resources'
 
                 # TODO: Streamline it: use just `abs_resource_target_dir_path`
