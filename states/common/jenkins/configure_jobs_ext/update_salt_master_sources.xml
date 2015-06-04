@@ -42,6 +42,10 @@
         set -e
         set -u
 
+        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+        exit 0
+        {% endif %}
+
         echo TODO: Get latest sources on Salt master.
         echo The idea is to get updates to be able to update system config.
 

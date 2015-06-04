@@ -147,6 +147,8 @@ system_features:
                 trigger_after_jobs:
                     - configure_vagrant
 
+                skip_script_execution: True
+
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'

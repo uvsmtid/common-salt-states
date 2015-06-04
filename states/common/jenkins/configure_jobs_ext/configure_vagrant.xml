@@ -42,6 +42,10 @@
         set -e
         set -u
 
+        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+        exit 0
+        {% endif %}
+
         sudo salt-call \
             --out json \
             state.sls common.orchestrate.wraps.hypervisor_role \
