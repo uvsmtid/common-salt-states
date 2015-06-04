@@ -149,7 +149,7 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            {% set job_id = 'instantiate_vagrant_hosts' %}
+            {% set job_id = 'remove_salt_minion_keys' %}
             {{ job_id }}:
                 enabled: True
 
@@ -160,6 +160,22 @@ system_features:
 
                 trigger_after_jobs:
                     - destroy_vagrant_hosts
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+            {% set job_id = 'instantiate_vagrant_hosts' %}
+            {{ job_id }}:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                timer_spec: ~
+
+                trigger_after_jobs:
+                    - remove_salt_minion_keys
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
