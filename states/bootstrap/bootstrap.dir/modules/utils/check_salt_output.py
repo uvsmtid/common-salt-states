@@ -4,9 +4,15 @@
 
 """
 Usage:
-*   %(script_name)s path/to/salt/output/file # process output file
-*   %(script_name)s                          # print usage
-*   %(script_name)s test                     # run tests
+
+*   process output file
+        %(script_name)s path/to/salt/output/file [min_count]
+        *   min_count - minimum expected total count (default: 1)
+*   print usage
+        %(script_name)s
+
+*   run tests
+        %(script_name)s test
 
 At the moment Salt (version `2015.5.0`) does not return non-zero error code
 consistently and this requies verification of result by parsing its output.
@@ -59,32 +65,41 @@ import cStringIO
 ###############################################################################
 #
 
-def process_file(file_path):
+def process_file(
+    file_path,
+    min_count = 1,
+):
 
     # Instead of using `with` keyword, perform standard `try`/`finally`
     # to support Python 2.5 on RHEL5.
     yaml_file = open(file_path, 'r')
     try:
-        return process_stream(yaml_file)
+        return process_stream(yaml_file, min_count)
     finally:
         yaml_file.close()
 
 ###############################################################################
 #
 
-def process_string(string):
+def process_string(
+    string,
+    min_count = 1,
+):
     stream = cStringIO.StringIO(string)
     try:
-        return process_stream(stream)
+        return process_stream(stream, min_count)
     finally:
         stream.close()
 
 ###############################################################################
 #
 
-def process_stream(stream):
+def process_stream(
+    stream,
+    min_count = 1,
+):
     output_data = json_multi_object_loader(stream)
-    return check_output_data(output_data)
+    return check_output_data(output_data, min_count)
 
 ###############################################################################
 #
@@ -256,7 +271,10 @@ def traverse_output_data(potential_state_id, output_data):
 
 ###############################################################################
 
-def check_output_data(output_data):
+def check_output_data(
+    output_data,
+    min_count = 1,
+):
 
     """
     Check result provided by Salt for local (see `salt-call`) execution.
@@ -264,6 +282,14 @@ def check_output_data(output_data):
 
     overall_result = traverse_output_data(None, output_data)
 
+    # Check minimal required total count.
+    if overall_result['total_counter'] < min_count:
+        logging.critical("FAILURE: " + str(overall_result['total_counter']) + " is less than `min_count` = " + str(min_count))
+        overall_result['overall_result'] = False
+    else:
+        logging.info(str("`total_counter` = " + str(overall_result['total_counter'])) + " satisfies `min_count` = " + str(min_count))
+
+    # Notify about overall result.
     if overall_result['overall_result']:
         logging.info("SUCCESS: " + str(overall_result['success_counter']) + " of " + str(overall_result['total_counter']))
     else:
@@ -290,7 +316,11 @@ def main():
 
     file_path = sys.argv[1]
 
-    overall_result = process_file(file_path)
+    min_count = 1
+    if len(sys.argv) > 2:
+        min_count = int(sys.argv[2])
+
+    overall_result = process_file(file_path, min_count)
 
     if overall_result:
         sys.exit(0)
@@ -307,7 +337,8 @@ def run_tests():
         process_string(
             """
 
-            """
+            """,
+            0,
         ) == True
     )
 
@@ -317,7 +348,19 @@ def run_tests():
             """
 {
 }
+            """,
+            0,
+        ) == True
+    )
+
+    # Minimal couter shall trigger error without results.
+    assert(
+        process_string(
             """
+{
+}
+            """,
+            0,
         ) == True
     )
 
@@ -332,7 +375,8 @@ asdfghjkl
 {
 }
             This line is also ignored.
-            """
+            """,
+            0,
         ) == True
     )
 
