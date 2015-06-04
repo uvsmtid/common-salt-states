@@ -69,7 +69,7 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            {% set job_id = 'restart_salt_services' %}
+            {% set job_id = 'restart_master_salt_services' %}
             {{ job_id }}:
                 enabled: True
 
@@ -95,7 +95,7 @@ system_features:
                 timer_spec: ~
 
                 trigger_after_jobs:
-                    - restart_salt_services
+                    - restart_master_salt_services
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
