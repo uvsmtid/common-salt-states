@@ -11,9 +11,11 @@
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers>
+
+    {% if 'trigger_after_jobs' in job_config and job_config['trigger_after_jobs'] %}
     <jenkins.triggers.ReverseBuildTrigger>
       <spec></spec>
-      <upstreamProjects>{{ trigger_after_jobs }}</upstreamProjects>
+      <upstreamProjects>{{ job_config['trigger_after_jobs']|join(',') }}</upstreamProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>
@@ -21,6 +23,8 @@
         <completeBuild>true</completeBuild>
       </threshold>
     </jenkins.triggers.ReverseBuildTrigger>
+    {% endif %}
+
     {% if 'timer_spec' in job_config %}
     {% if job_config['timer_spec'] %}
     <hudson.triggers.TimerTrigger>
@@ -28,6 +32,7 @@
     </hudson.triggers.TimerTrigger>
     {% endif %}
     {% endif %}
+
   </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>

@@ -46,8 +46,6 @@
             job_assigned_host: "{{ assigned_slave_host }}"
             control_url: '{{ URI_prefix }}/{{ pillar['system_features']['deploy_central_control_directory']['control_dir_url_path'] }}'
 
-            trigger_after_jobs: '{{ job_config['trigger_after_jobs']|join(',') }}'
-
 # Make sure job configuration does not exist:
 add_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
