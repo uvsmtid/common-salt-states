@@ -29,7 +29,7 @@
 # target boostrap environment (or other similar purposes).
 # In this case, use `project_name` and `profile_name` to ensure
 # there is a matching pillar file.
-{% set verify_pillar_file = True%}
+{% set verify_pillar_file = True %}
 {% endif %}
 
 include:

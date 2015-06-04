@@ -23,6 +23,7 @@ include:
         flag_name,
         flag_name,
         [
+            'minions_refresh_pillar',
             'configure_minions_on_all_minions',
             'minions_sync_all',
             'primary_configuration_for_all_minions',
@@ -36,18 +37,28 @@ include:
 
 {% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
 
+# For some reasons state `configure_minions_on_all_minions` may
+# fail if `saltutil.refresh_pillar` is not called before.
+minions_refresh_pillar:
+    salt.function:
+        - name: saltutil.refresh_pillar
+        - tgt: '*'
+
 configure_minions_on_all_minions:
     salt.state:
         - tgt: '*'
         - sls:
             - common.salt.minion
         - require:
+            - salt: minions_refresh_pillar
             {{ stage_flag_file_prerequisites(flag_name) }}
 
 minions_sync_all:
     salt.function:
         - name: saltutil.sync_all
         - tgt: '*'
+        - require:
+            - salt: configure_minions_on_all_minions
 
 primary_configuration_for_all_minions:
     salt.state:
