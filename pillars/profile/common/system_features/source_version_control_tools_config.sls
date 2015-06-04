@@ -18,6 +18,7 @@ system_features:
 
         # Personal git configuration.
         git:
+            {% if False %} # Do not configure user system-wide by default.
             user_config:
                 # Real name saved in git commits, for example:
                 #   name: Barack Obama
@@ -25,6 +26,7 @@ system_features:
                 # Email address saved in git commits, for example:
                 #   email: barack.obama@example.com
                 email: first.last@example.com
+            {% endif %}
 
 ###############################################################################
 # EOF

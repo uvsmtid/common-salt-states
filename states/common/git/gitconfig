@@ -12,10 +12,18 @@
 
     ui = auto
 
+#{#
+#   Do not configure users system-wide.
+#   This will force them to set author consciously.
+#}#
+{% if False %}
+{% if 'user_config' in git_config %}
 [user]
 
     name = {{ git_config['user_config']['name'] }}
     email = {{ git_config['user_config']['email'] }}
+{% endif %}
+{% endif %}
 
 [diff]
 
