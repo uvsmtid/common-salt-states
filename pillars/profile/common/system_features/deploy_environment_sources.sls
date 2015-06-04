@@ -83,7 +83,7 @@ system_features:
 
             '{{ project_name }}-salt-pillars': git
 
-            '{{ project_name }}-salt-pillars.target': git
+            '{{ project_name }}-salt-pillars-target': git
 
             # Other repositories.
 
@@ -120,7 +120,7 @@ system_features:
 
             '{{ project_name }}-salt-pillars': '/environment.sources/{{ project_name }}-salt-pillars.git'
 
-            '{{ project_name }}-salt-pillars.target': '/environment.sources/{{ project_name }}-salt-pillars.target.git'
+            '{{ project_name }}-salt-pillars-target': '/environment.sources/{{ project_name }}-salt-pillars-target.git'
 
             # Other repositories.
 
@@ -204,11 +204,11 @@ system_features:
 
                     branch_name: '{{ profile_name }}'
 
-            '{{ project_name }}-salt-pillars.target':
+            '{{ project_name }}-salt-pillars-target':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.target.git'
+                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars-target.git'
 
                     branch_name: '{{ profile_name }}'
 

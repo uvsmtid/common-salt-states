@@ -111,7 +111,7 @@ in addition to those mentioned in [Salt configuration][7] document
 
         *   Repo related to `SRC_env_profile` is clonned in local path: `~/Works/${project_name}-salt-pillars.git`
 
-        *   Repo related to `TRG_env_profile` is clonned in local path: `~/Works/${project_name}-salt-pillars.target.git`
+        *   Repo related to `TRG_env_profile` is clonned in local path: `~/Works/${project_name}-salt-pillars-target.git`
 
 # Bootstrap configuration checklist #
 
@@ -206,7 +206,7 @@ in addition to those mentioned in [Salt configuration][7] document
     defined under [`source_repositories`][10] for `TRG_env_profile`:
 
     ```
-    ~/Works/${project_name}-salt-pillars.target.git
+    ~/Works/${project_name}-salt-pillars-target.git
     ```
 
     Make repository is switched to correct branch name.
@@ -216,7 +216,7 @@ in addition to those mentioned in [Salt configuration][7] document
     Open this file (see [example in template pillar][17]):
 
     ```
-    ~/Works/${project_name}-salt-pillars.target.git/pillars/profile/bootstrap/system_features/target_bootstrap_configuration.sls
+    ~/Works/${project_name}-salt-pillars-target.git/pillars/profile/bootstrap/system_features/target_bootstrap_configuration.sls
     ```
 
     Make sure all these keys set correctly:

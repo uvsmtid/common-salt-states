@@ -64,7 +64,7 @@ system_features:
 
             # We only need to export pillars for target environment
             # but rename them.
-            {{ project_name }}-salt-pillars.target:
+            {{ project_name }}-salt-pillars-target:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
