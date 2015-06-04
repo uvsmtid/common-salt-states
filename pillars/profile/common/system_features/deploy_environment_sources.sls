@@ -2,6 +2,7 @@
 ###############################################################################
 #
 
+{% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
 
@@ -66,15 +67,27 @@ system_features:
 
             'common-salt-states': git
 
+            {% if project_name != 'common' %}
+            '{{ project_name }}-salt-states': git
+            {% endif %}
+
             # Salt resources.
 
             'common-salt-resources': git
 
+            {% if project_name != 'common' %}
+            '{{ project_name }}-salt-resources': git
+            {% endif %}
+
             # Salt pillars.
 
-            'common-salt-pillars': git
+            '{{ project_name }}-salt-pillars': git
 
-            'common-salt-pillars.target': git
+            '{{ project_name }}-salt-pillars.target': git
+
+            # Other repositories.
+
+            # ...
 
         # This is passed to override descriptor configuration on control
         # scripts command line. It could probably be placed directly in
@@ -91,15 +104,23 @@ system_features:
 
             'common-salt-states': '/environment.sources/common-salt-states.git'
 
+            {% if project_name != 'common' %}
+            '{{ project_name }}-salt-states': '/environment.sources/{{ project_name }}-salt-states.git'
+            {% endif %}
+
             # Salt resources.
 
             'common-salt-resources': '/environment.sources/common-salt-resources.git'
 
+            {% if project_name != 'common' %}
+            '{{ project_name }}-salt-resources': '/environment.sources/{{ project_name }}-salt-resources.git'
+            {% endif %}
+
             # Salt pillars.
 
-            'common-salt-pillars': '/environment.sources/common-salt-pillars.git'
+            '{{ project_name }}-salt-pillars': '/environment.sources/{{ project_name }}-salt-pillars.git'
 
-            'common-salt-pillars.target': '/environment.sources/common-salt-pillars.target.git'
+            '{{ project_name }}-salt-pillars.target': '/environment.sources/{{ project_name }}-salt-pillars.target.git'
 
             # Other repositories.
 
@@ -143,6 +164,16 @@ system_features:
 
                     branch_name: 'master'
 
+            {% if project_name != 'common' %}
+            '{{ project_name }}-salt-states':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-states.git'
+
+                    branch_name: 'master'
+            {% endif %}
+
             # Salt resources.
 
             'common-salt-resources':
@@ -153,23 +184,37 @@ system_features:
 
                     branch_name: 'master'
 
-            # Salt pillars.
-
-            'common-salt-pillars':
+            {% if project_name != 'common' %}
+            '{{ project_name }}-salt-resources':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/common-salt-pillars.git'
-
-                    branch_name: 'develop'
-
-            'common-salt-pillars.target':
-                git:
-                    source_system_host: '{{ master_minion_id }}'
-
-                    origin_uri_ssh_path: 'Works/common-salt-pillars.target.git'
+                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-resources.git'
 
                     branch_name: 'master'
+            {% endif %}
+
+            # Salt pillars.
+
+            '{{ project_name }}-salt-pillars':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.git'
+
+                    branch_name: '{{ profile_name }}'
+
+            '{{ project_name }}-salt-pillars.target':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.target.git'
+
+                    branch_name: '{{ profile_name }}'
+
+            # Other repositories.
+
+            # ...
 
         # Environment sources location:
         # The keys are those used in `os_type` field under `system_platforms`.

@@ -25,6 +25,8 @@
     )
 %}
 
+{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
+
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
 
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
@@ -72,6 +74,7 @@
         - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/minion.{{ minion_type }}.conf'
         - source: '{{ deploy_step_config[salt_minion_template] }}'
         - context:
+            is_generic_profile: '{{ is_generic_profile }}'
             project_name: '{{ project_name }}'
             profile_name: '{{ profile_name }}'
             selected_host_name: '{{ selected_host_name }}'
