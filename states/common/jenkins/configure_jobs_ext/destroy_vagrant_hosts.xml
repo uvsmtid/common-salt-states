@@ -11,9 +11,11 @@
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers>
+
+    {% if 'trigger_after_jobs' in job_config and job_config['trigger_after_jobs'] %}
     <jenkins.triggers.ReverseBuildTrigger>
       <spec></spec>
-      <upstreamProjects>{{ trigger_after_jobs }}</upstreamProjects>
+      <upstreamProjects>{{ job_config['trigger_after_jobs']|join(',') }}</upstreamProjects>
       <threshold>
         <name>SUCCESS</name>
         <ordinal>0</ordinal>
@@ -21,6 +23,8 @@
         <completeBuild>true</completeBuild>
       </threshold>
     </jenkins.triggers.ReverseBuildTrigger>
+    {% endif %}
+
     {% if 'timer_spec' in job_config %}
     {% if job_config['timer_spec'] %}
     <hudson.triggers.TimerTrigger>
@@ -28,6 +32,7 @@
     </hudson.triggers.TimerTrigger>
     {% endif %}
     {% endif %}
+
   </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
@@ -43,13 +48,6 @@
         {% set vagrant_dir = user_home_dir + '/' + vagrant_files_dir %}
         cd "{{ vagrant_dir }}"
         vagrant destroy
-
-        # Remove old minion keys (keys before hosts are re-instantiated).
-        {% for selected_minion_id in pillar['system_hosts'].keys() %}
-        {% if not selected_minion_id in pillar['system_host_roles']['controller_role']['assigned_hosts'] %}
-        sudo salt-key -y -d "{{ selected_minion_id }}"
-        {% endif %}
-        {% endfor %}
 
       </command>
     </hudson.tasks.Shell>

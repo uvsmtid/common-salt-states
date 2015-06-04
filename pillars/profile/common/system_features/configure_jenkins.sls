@@ -53,7 +53,8 @@ system_features:
         #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_after_jobs/readme.md
         #
 
-            update_salt_master_sources:
+            {% set job_id = 'update_salt_master_sources' %}
+            {{ job_id }}:
                 enabled: True
 
                 restrict_to_system_role:
@@ -66,9 +67,10 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/update_salt_master_sources.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            restart_salt_services:
+            {% set job_id = 'restart_master_salt_services' %}
+            {{ job_id }}:
                 enabled: True
 
                 restrict_to_system_role:
@@ -81,9 +83,10 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/restart_salt_services.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            configure_jenkins_jobs:
+            {% set job_id = 'configure_jenkins_jobs' %}
+            {{ job_id }}:
                 enabled: True
 
                 restrict_to_system_role:
@@ -92,13 +95,14 @@ system_features:
                 timer_spec: ~
 
                 trigger_after_jobs:
-                    - restart_salt_services
+                    - restart_master_salt_services
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/configure_jenkins_jobs.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            build_bootstrap_package:
+            {% set job_id = 'build_bootstrap_package' %}
+            {{ job_id }}:
                 enabled: True
 
                 restrict_to_system_role:
@@ -111,9 +115,10 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/build_bootstrap_package.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            configure_vagrant:
+            {% set job_id = 'configure_vagrant' %}
+            {{ job_id }}:
                 enabled: True
 
                 restrict_to_system_role:
@@ -126,9 +131,10 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/configure_vagrant.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            destroy_vagrant_hosts:
+            {% set job_id = 'destroy_vagrant_hosts' %}
+            {{ job_id }}:
                 enabled: True
 
                 restrict_to_system_role:
@@ -141,9 +147,10 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/destroy_vagrant_hosts.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            instantiate_vagrant_hosts:
+            {% set job_id = 'remove_salt_minion_keys' %}
+            {{ job_id }}:
                 enabled: True
 
                 restrict_to_system_role:
@@ -156,9 +163,26 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/instantiate_vagrant_hosts.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            run_salt_orchestrate:
+            {% set job_id = 'instantiate_vagrant_hosts' %}
+            {{ job_id }}:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                timer_spec: ~
+
+                trigger_after_jobs:
+                    - remove_salt_minion_keys
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+            {% set job_id = 'run_salt_orchestrate' %}
+            {{ job_id }}:
                 enabled: True
 
                 restrict_to_system_role:
@@ -171,9 +195,10 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_orchestrate.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
-            run_salt_highstate:
+            {% set job_id = 'run_salt_highstate' %}
+            {{ job_id }}:
                 enabled: True
 
                 restrict_to_system_role:
@@ -190,7 +215,7 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/run_salt_highstate.xml'
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
 ###############################################################################
 # EOF
