@@ -9,6 +9,7 @@
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_URI_scheme_abs_links_base_dir_path_from_pillar with context %}
 
+{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
 {% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
@@ -21,6 +22,7 @@
         - template: jinja
         - context:
             auto_accept: {{ pillar['system_features']['target_bootstrap_configuration']['target_minion_auto_accept'] }}
+            is_generic_profile: {{ is_generic_profile }}
             project_name: {{ project_name }}
             profile_name: {{ profile_name }}
             master_minion_id: {{ master_minion_id }}
