@@ -67,7 +67,8 @@ system_host_roles:
     maven_repository_upstream_manager_role:
         hostname: maven-repository-upstream-manager-role-host
         # NOTE: These should be hosts different from `downstream`.
-        assigned_hosts: []
+        assigned_hosts:
+            - []
 
     maven_repository_downstream_manager_role:
         hostname: maven-repository-downstream-manager-role-host

@@ -53,6 +53,9 @@ system_features:
         #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_after_jobs/readme.md
         #
 
+            ###################################################################
+            # The `common` pipeline
+
             {% set job_id = 'update_salt_master_sources' %}
             {{ job_id }}:
                 enabled: True
@@ -62,8 +65,7 @@ system_features:
 
                 timer_spec: 'H */2 * * *'
 
-                trigger_after_jobs:
-                    []
+                trigger_after_jobs: ~
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
