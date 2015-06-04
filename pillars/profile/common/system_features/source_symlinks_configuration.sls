@@ -2,6 +2,7 @@
 ###############################################################################
 #
 
+{% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
 
@@ -56,14 +57,23 @@ system_features:
                 rel_target_path: 'states'
 
             salt_pillars_roots:
-                repo_name: 'common-salt-pillars'
+                repo_name: '{{ project_name }}-salt-pillars'
                 abs_link_base_path: '/srv/pillars'
                 rel_target_path: 'pillars'
 
+            # Project-specific states.
+
+            {% if project_name != 'common' %}
+            {{ project_name }}_states_roots:
+                repo_name: '{{ project_name }}-salt-states'
+                abs_link_base_path: '/srv/states/{{ project_name }}'
+                rel_target_path: 'states/{{ project_name }}'
+            {% endif %}
+
             # Pillars for bootstrap environments.
 
-            common.{{ profile_name }}_bootstrap_profiles:
-                repo_name: 'common-salt-pillars'
+            {{ project_name }}.{{ profile_name }}_bootstrap_profiles:
+                repo_name: '{{ project_name }}-salt-pillars'
                 abs_link_base_path: '/srv/pillars/bootstrap/profiles/{{ profile_name }}'
                 rel_target_path: 'pillars'
 
@@ -82,6 +92,13 @@ system_features:
                 repo_name: 'common-salt-states'
                 abs_link_base_path: '/srv/sources/source_roots/common-salt-states'
                 rel_target_path: ''
+
+            {% if project_name != 'common' %}
+            {{ project_name }}-salt-states_sources:
+                repo_name: '{{ project_name }}-salt-states'
+                abs_link_base_path: '/srv/sources/source_roots/{{ project_name }}-salt-states'
+                rel_target_path: ''
+            {% endif %}
 
             # NOTE: Pillars repository is not supposed to be exposed
             #       through `salt://` accesss via symlinks.

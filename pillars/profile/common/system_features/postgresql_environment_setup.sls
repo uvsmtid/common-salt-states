@@ -2,6 +2,10 @@
 ###############################################################################
 #
 
+{% set project_name = salt['config.get']('this_system_keys:project_name') %}
+
+# TODO: Move PostgreSQL installation into `common`.
+
 system_features:
 
     # Configuration for PostgreSQL database.
@@ -17,7 +21,7 @@ system_features:
         postgresql_orig_service_name: 'postgresql-9.3'
 
         # PostgreSQL service name for Observer server.
-        postgresql_observer_service_name: 'postgresql-project_name'
+        postgresql_observer_service_name: 'postgresql-{{ project_name }}'
 
         # PostgreSQL database directory with data files.
         # Default is `/var/lib/pgsql/9.3/data`.

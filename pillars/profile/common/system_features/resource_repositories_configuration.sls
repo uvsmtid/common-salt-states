@@ -2,6 +2,7 @@
 ###############################################################################
 #
 
+{% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set default_username = salt['config.get']('this_system_keys:default_username') %}
 
 system_features:
@@ -47,6 +48,16 @@ system_features:
                 # `URI_prefix` specify base dir path relative to which value of
                 # `item_parent_dir_path` key in registered content is specified.
                 abs_resource_target_path: '/home/{{ default_username }}/Works/common-salt-resources.git'
+
+            {% if project_name != 'common' %}
+            {{ project_name }}-resources:
+
+                URI_prefix_scheme: 'salt://'
+
+                rel_resource_link_path: 'resource_roots/{{ project_name }}-resources'
+
+                abs_resource_target_path: '/home/{{ default_username }}/Works/{{ project_name }}-salt-resources.git'
+            {% endif %}
 
 ###############################################################################
 # EOF

@@ -2,6 +2,7 @@
 ###############################################################################
 #
 
+{% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
 {% set default_username = salt['config.get']('this_system_keys:default_username') %}
 
@@ -15,8 +16,7 @@ system_features:
         #       is specified (which bootstraps the rest).
         bootstrap_sources:
             states: common-salt-states
-            # Normally, pillars are supposed to be in a separate repository.
-            pillars: common-salt-pillars
+            pillars: {{ project_name }}-salt-pillars
 
         # Repositories which actually get exported.
         export_sources:
@@ -29,6 +29,14 @@ system_features:
                 export_format: dir
                 branch_name: develop
 
+            {% if project_name != 'common' %}
+            {{ project_name }}-salt-states:
+                export_enabled: True
+                export_method: clone
+                export_format: dir
+                branch_name: develop
+            {% endif %}
+
             # Salt resources.
 
             common-salt-resources:
@@ -37,9 +45,17 @@ system_features:
                 export_format: dir
                 branch_name: develop
 
+            {% if project_name != 'common' %}
+            {{ project_name }}-salt-resources:
+                export_enabled: True
+                export_method: clone
+                export_format: dir
+                branch_name: develop
+            {% endif %}
+
             # Salt pillars.
 
-            common-salt-pillars:
+            {{ project_name }}-salt-pillars:
                 # This repo is replaced by "target" pillar repository.
                 export_enabled: False
                 export_method: clone
@@ -48,7 +64,7 @@ system_features:
 
             # We only need to export pillars for target environment
             # but rename them.
-            common-salt-pillars.target:
+            {{ project_name }}-salt-pillars.target:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
@@ -56,7 +72,7 @@ system_features:
                 # This is required.
                 # Pillars repository considered as "target" in the "source" environment
                 # becomes "source" configuration in the "target" environment.
-                target_repo_name: common-salt-pillars
+                target_repo_name: {{ project_name }}-salt-pillars
 
             # Other repositories.
 

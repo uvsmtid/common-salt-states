@@ -2,6 +2,8 @@
 ###############################################################################
 #
 
+{% set project_name = salt['config.get']('this_system_keys:project_name') %}
+
 system_features:
 
     # Hostname resolution configuration.
@@ -16,7 +18,7 @@ system_features:
         # of this domain zone.
         #
         # The DNS server is configured in `resolver_role` role. See `system_host_roles`.
-        domain_name: project.example.com
+        domain_name: {{ project_name }}.example.com
 
         # TODO: It is better to use role name to select host (with IP)
         #       rather than specify raw IP address.
