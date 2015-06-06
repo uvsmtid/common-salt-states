@@ -4,7 +4,9 @@
 
 {% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
+{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
 {% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
+{% set current_task_branch = salt['config.get']('this_system_keys:current_task_branch') %}
 
 system_features:
 
@@ -162,7 +164,7 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/common-salt-states.git'
 
-                    branch_name: 'master'
+                    branch_name: '{{ current_task_branch }}'
 
             {% if project_name != 'common' %}
             '{{ project_name }}-salt-states':
@@ -171,7 +173,7 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-states.git'
 
-                    branch_name: 'master'
+                    branch_name: '{{ current_task_branch }}'
             {% endif %}
 
             # Salt resources.
@@ -182,7 +184,7 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/common-salt-resources.git'
 
-                    branch_name: 'master'
+                    branch_name: '{{ current_task_branch }}'
 
             {% if project_name != 'common' %}
             '{{ project_name }}-salt-resources':
@@ -191,7 +193,7 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-resources.git'
 
-                    branch_name: 'master'
+                    branch_name: '{{ current_task_branch }}'
             {% endif %}
 
             # Salt pillars.
@@ -202,7 +204,11 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.git'
 
+                {% if is_generic_profile %}
+                    branch_name: '{{ current_task_branch }}'
+                {% else %}
                     branch_name: '{{ profile_name }}'
+                {% endif %}
 
             '{{ project_name }}-salt-pillars-target':
                 git:
@@ -210,7 +216,11 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars-target.git'
 
+                {% if is_generic_profile %}
+                    branch_name: '{{ current_task_branch }}'
+                {% else %}
                     branch_name: '{{ profile_name }}'
+                {% endif %}
 
             # Other repositories.
 

@@ -3,8 +3,11 @@
 #
 
 {% set project_name = salt['config.get']('this_system_keys:project_name') %}
+{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
+{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
 {% set default_username = salt['config.get']('this_system_keys:default_username') %}
+{% set current_task_branch = salt['config.get']('this_system_keys:current_task_branch') %}
 
 system_features:
 
@@ -27,14 +30,14 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+                branch_name: '{{ current_task_branch }}'
 
             {% if project_name != 'common' %}
             {{ project_name }}-salt-states:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+                branch_name: '{{ current_task_branch }}'
             {% endif %}
 
             # Salt resources.
@@ -43,14 +46,14 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+                branch_name: '{{ current_task_branch }}'
 
             {% if project_name != 'common' %}
             {{ project_name }}-salt-resources:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+                branch_name: '{{ current_task_branch }}'
             {% endif %}
 
             # Salt pillars.
@@ -60,7 +63,11 @@ system_features:
                 export_enabled: False
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+            {% if is_generic_profile %}
+                branch_name: '{{ current_task_branch }}'
+            {% else %}
+                branch_name: '{{ profile_name }}'
+            {% endif %}
 
             # We only need to export pillars for target environment
             # but rename them.
@@ -68,7 +75,11 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+            {% if is_generic_profile %}
+                branch_name: '{{ current_task_branch }}'
+            {% else %}
+                branch_name: '{{ profile_name }}'
+            {% endif %}
                 # This is required.
                 # Pillars repository considered as "target" in the "source" environment
                 # becomes "source" configuration in the "target" environment.
