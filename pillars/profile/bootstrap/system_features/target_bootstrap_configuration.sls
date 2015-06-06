@@ -5,6 +5,7 @@
 {% set project_name = salt['config.get']('this_system_keys:project_name') %}
 {% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
 {% set default_username = salt['config.get']('this_system_keys:default_username') %}
+{% set current_task_branch = salt['config.get']('this_system_keys:current_task_branch') %}
 
 system_features:
 
@@ -27,14 +28,14 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+                branch_name: '{{ current_task_branch }}'
 
             {% if project_name != 'common' %}
             {{ project_name }}-salt-states:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+                branch_name: '{{ current_task_branch }}'
             {% endif %}
 
             # Salt resources.
@@ -43,14 +44,14 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+                branch_name: '{{ current_task_branch }}'
 
             {% if project_name != 'common' %}
             {{ project_name }}-salt-resources:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                branch_name: develop
+                branch_name: '{{ current_task_branch }}'
             {% endif %}
 
             # Salt pillars.
