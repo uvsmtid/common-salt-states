@@ -10,6 +10,23 @@ include:
 # <<< Any RedHat-originated OS
 {% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
 
+
+# Variable PROMPT_COMMAND is sometimes set by some scripts in `profile.d`
+# directory (like `vte.sh`) which are placed there by packages automaticall
+# (not by human) which makes little sense as prompt is essentially a humah
+# requirement.
+# Run command and rename all `PROMPT_COMMAND` in all `*.sh` scripts under
+# `profile.d` directory to make sure it does not interfere with our
+# customization.
+rename_PROMPT_COMMAND_in_profile_dir:
+    cmd.run:
+        - name: "find /etc/profile.d -name '*.sh' -and -not -name 'common.custom.prompt.sh' -exec sed -i 's/\\<PROMPT_COMMAND\\>/PROMPT_COMMAND_RENAMED/g' '{}' ';'"
+        # Note that double grep is required:
+        # - The first one generates output but does not produce error code.
+        # - The second one checks the output again and generates error code.
+        - onlyif: "find /etc/profile.d -name '*.sh' -and -not -name 'common.custom.prompt.sh' -exec grep '\\<PROMPT_COMMAND\\>' '{}' ';' | grep '\\<PROMPT_COMMAND\\>'"
+        - cwd: '/etc/profile.d'
+
 /etc/profile.d/common.custom.prompt.sh:
     file.managed:
         - source: salt://common/shell/prompt/common.custom.prompt.sh
@@ -17,6 +34,7 @@ include:
         - template: jinja
         - require:
             - sls: common.shell
+            - cmd: rename_PROMPT_COMMAND_in_profile_dir
 
 {% if 'bash_prompt_info_config' in pillar['system_features'] %}
 
