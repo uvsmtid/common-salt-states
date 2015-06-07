@@ -62,6 +62,14 @@ import types
 import logging
 import cStringIO
 
+
+###############################################################################
+#
+
+# This is what all states failed due to failed requisites have
+# in their `comment` string.
+requisite_failure_prefix = "One or more requisite failed:"
+
 ###############################################################################
 #
 
@@ -167,6 +175,8 @@ def describe_result(potential_state_id, output_data):
 
     overall_result = True
 
+    independent_failures = 0
+
     # Separate visually one result from another.
     logging.info("---")
 
@@ -182,6 +192,7 @@ def describe_result(potential_state_id, output_data):
         logging.info("`name`: " + str(output_data['name']))
 
     result_value = output_data['result']
+    logging.info("`result`: " + str(result_value))
 
     if result_value is None:
         logging.critical("unexpected `result` value: " + str(result_value))
@@ -189,8 +200,10 @@ def describe_result(potential_state_id, output_data):
 
     elif result_value == False:
         overall_result = False
-        # Do not break the loop.
-        # Instead, keep on generating log output
+
+        if not output_data['comment'].startswith(requisite_failure_prefix):
+            logging.error("`independent_failure`: " + str(True))
+            independent_failures += 1
 
     elif result_value == True:
         pass
@@ -204,12 +217,14 @@ def describe_result(potential_state_id, output_data):
             'overall_result': True,
             'total_counter': 1,
             'success_counter': 1,
+            'independent_failures': independent_failures,
         }
     else:
         return {
             'overall_result': False,
             'total_counter': 1,
             'success_counter': 0,
+            'independent_failures': independent_failures,
         }
 
 ###############################################################################
@@ -226,6 +241,7 @@ def consolidate_results(potential_state_id, overall_result, output_data):
 
     overall_result['success_counter'] += result['success_counter']
     overall_result['total_counter'] += result['total_counter']
+    overall_result['independent_failures'] += result['independent_failures']
 
     logging.debug("overall_result: " + str(potential_state_id) + " = " + str(overall_result))
     return overall_result
@@ -239,6 +255,7 @@ def traverse_output_data(potential_state_id, output_data):
         'overall_result': True,
         'total_counter': 0,
         'success_counter': 0,
+        'independent_failures': 0,
     }
 
     if (
@@ -444,6 +461,122 @@ asdfghjkl
             """
         ) == False
     )
+
+    # If many requisite states fail, the output is very noizy (having
+    # many failed results) while the requisite state which caused
+    # these failures has to be found manually. In order to highlight
+    # such state, `failed_state` field is added to the final output.
+    # All states with failed requisites have similar signature -
+    # their `comment` starts with string saved in `requisite_failure_prefix`.
+    #
+    # * Case A: one independent and one dependent failures.
+    case_result = traverse_output_data(
+        None
+        ,
+        yaml.load(
+"""
+{
+    "dependent_1": {
+        "result": false
+        ,
+        "comment": """ + '"' + requisite_failure_prefix + """ whatever the 1st reason is"
+    }
+    ,
+    "independent_2": {
+        "result": false
+        ,
+        "comment": "whatever the 2nd reason is"
+    }
+}
+"""
+        )
+    )
+    logging.debug(str(case_result))
+    assert(case_result['independent_failures'] == 1)
+    assert(case_result['overall_result'] == False)
+    assert(case_result['total_counter'] == 2)
+    assert(case_result['success_counter'] == 0)
+    # * Case B: two dependent failures.
+    case_result = traverse_output_data(
+        None
+        ,
+        yaml.load(
+"""
+{
+    "dependent_1": {
+        "result": false
+        ,
+        "comment": """ + '"' + requisite_failure_prefix + """ whatever the 1st reason is"
+    }
+    ,
+    "dependent_2": {
+        "result": false
+        ,
+        "comment": """ + '"' + requisite_failure_prefix + """ whatever the 2nd reason is"
+    }
+}
+"""
+        )
+    )
+    logging.debug(str(case_result))
+    assert(case_result['independent_failures'] == 0)
+    assert(case_result['overall_result'] == False)
+    assert(case_result['total_counter'] == 2)
+    assert(case_result['success_counter'] == 0)
+    # * Case C: two independent failures.
+    case_result = traverse_output_data(
+        None
+        ,
+        yaml.load(
+"""
+{
+    "independent_1": {
+        "result": false
+        ,
+        "comment": "whatever the 1st reason is"
+    }
+    ,
+    "independent_2": {
+        "result": false
+        ,
+        "comment": "whatever the 2nd reason is"
+    }
+}
+"""
+        )
+    )
+    logging.debug(str(case_result))
+    assert(case_result['independent_failures'] == 2)
+    assert(case_result['overall_result'] == False)
+    assert(case_result['total_counter'] == 2)
+    assert(case_result['success_counter'] == 0)
+    # * Case D: no actual failure (only comments look like failure).
+    case_result = traverse_output_data(
+        None
+        ,
+        yaml.load(
+"""
+{
+    "success_1": {
+        "result": true
+        ,
+        "comment": """ + '"' + requisite_failure_prefix + """ whatever the 1st reason is"
+    }
+    ,
+    "success_2": {
+        "result": true
+        ,
+        "comment": """ + '"' + requisite_failure_prefix + """ whatever the 2nd reason is"
+    }
+}
+"""
+        )
+    )
+    logging.debug(str(case_result))
+    assert(case_result['independent_failures'] == 0)
+    assert(case_result['overall_result'] == True)
+    assert(case_result['total_counter'] == 2)
+    assert(case_result['success_counter'] == 2)
 
 ###############################################################################
 # MAIN
