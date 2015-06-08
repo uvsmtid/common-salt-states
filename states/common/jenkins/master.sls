@@ -11,7 +11,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %} # OS
+{% if grains['os_platform_type'].startswith('rhel5') %} # OS
 
 {% endif %} # OS
 # >>>
@@ -19,7 +19,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora' ] %} # OS
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %} # OS
 
 include:
     - common.ssh

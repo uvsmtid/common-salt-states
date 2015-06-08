@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os_platform_type'].startswith('rhel5') %}
 
 {% endif %}
 # >>>
@@ -10,7 +10,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 
 
@@ -98,7 +98,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 {% endif %}
 # >>>
