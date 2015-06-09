@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>{{ job_description }}</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>{{ job_assigned_host }}</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+
+    {% if 'trigger_after_jobs' in job_config and job_config['trigger_after_jobs'] %}
+    <jenkins.triggers.ReverseBuildTrigger>
+      <spec></spec>
+      <upstreamProjects>{{ job_config['trigger_after_jobs']|join(',') }}</upstreamProjects>
+      <threshold>
+        <name>SUCCESS</name>
+        <ordinal>0</ordinal>
+        <color>BLUE</color>
+        <completeBuild>true</completeBuild>
+      </threshold>
+    </jenkins.triggers.ReverseBuildTrigger>
+    {% endif %}
+
+    {% if 'timer_spec' in job_config %}
+    {% if job_config['timer_spec'] %}
+    <hudson.triggers.TimerTrigger>
+      <spec>{{ job_config['timer_spec'] }}</spec>
+    </hudson.triggers.TimerTrigger>
+    {% endif %}
+    {% endif %}
+
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>
+
+        set -e
+        set -u
+
+        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+        exit 0
+        {% endif %}
+
+
+        # NOTE: This job does nothing.
+        #       It is used as a trigger (dependency) for other Maven jobs.
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

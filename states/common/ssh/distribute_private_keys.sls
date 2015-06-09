@@ -6,7 +6,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 include:
     - common.ssh
@@ -17,7 +17,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 include:
     - common.cygwin.package
@@ -53,7 +53,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 '{{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}/.ssh/id_rsa':
     file.managed:
         - name: '{{ account_conf['posix_user_home_dir'] }}/.ssh/id_rsa'
@@ -93,7 +93,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 {% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
 
@@ -143,7 +143,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 '{{ case_name }}_{{ selected_role_name }}_{{ account_conf['username'] }}/.ssh/id_rsa':
     file.managed:
         - name: '{{ account_conf['posix_user_home_dir'] }}/.ssh/id_rsa'
@@ -183,7 +183,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 {% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
 

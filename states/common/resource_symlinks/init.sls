@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora', 'RedHat', 'CentOS' ] %} # OS
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %} # OS
 
 # This state can either be run on Salt master or Salt minion in
 # case of `offline-minion-installer` `bootstrap_mode`.
@@ -67,7 +67,7 @@ ensure_resource_repository_link_{{ resource_respository_id }}_cmd:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 {% endif %}
 # >>>

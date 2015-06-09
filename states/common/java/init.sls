@@ -48,7 +48,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 install_observer_java_on_windows:
     cmd.run:

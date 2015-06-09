@@ -1,4 +1,4 @@
-# Git plugins and configuration Jenkins.
+# Various views and layout plugins.
 
 # Import generic template for Jenkins plugin installation.
 {% from 'common/jenkins/install_plugin.sls' import jenkins_plugin_installation_macros with context %}
@@ -21,9 +21,7 @@ include:
 
 # Git plugin and its dependencies.
 {% for registered_content_item_id in [
-        'jenkins_scm-api_plugin',
-        'jenkins_git-client_plugin',
-        'jenkins_git_plugin',
+        'jenkins_build-pipeline-plugin_plugin',
     ]
 %}
 

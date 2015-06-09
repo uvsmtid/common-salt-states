@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 /etc/hostname:
     file.managed:
@@ -20,7 +20,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os_platform_type'].startswith('rhel5') %}
 
 # TODO: On CentOS 7.0 it is actually the same way as on Fedora (above)
 #       or even both, but if there is file like above, CentOS use it
@@ -37,7 +37,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
     # TODO: Write state which changes hostname in Windows.
 

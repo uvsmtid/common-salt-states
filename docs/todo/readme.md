@@ -252,7 +252,7 @@ like some VMs were answerded by different simultaneously running dnsmasq.
 Check template expressions, for example, like these:
 
 ```
- {% set user_account = pillar['system_hosts'][grains['os']]['primary_user'] %}
+ {% set user_account = pillar['system_hosts'][grains['id']]['primary_user'] %}
  {{ pillar['system_accounts']['user_home_dir'] }}/whatever
 ```
 

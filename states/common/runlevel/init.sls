@@ -14,7 +14,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os_platform_type'].startswith('rhel5') %}
 
 # RHEL5 systems use System V init.
 
@@ -49,7 +49,7 @@ inittab_set_default_runlevel_per_role_{{ role_name }}:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 # Modern Linux systems use systemd as init.
 

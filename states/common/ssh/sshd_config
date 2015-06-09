@@ -122,7 +122,7 @@ X11Forwarding yes
 #TCPKeepAlive yes
 #UseLogin no
 
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 # This parameter is only supported on newer software (Fedora).
 UsePrivilegeSeparation sandbox		# Default for new installations.
 {% endif %}

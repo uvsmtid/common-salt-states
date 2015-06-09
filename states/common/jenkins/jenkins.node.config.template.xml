@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <slave>
 {% set jenkins_slave_config = pillar['system_hosts'][minion_id] %}
-  <name>{{ jenkins_slave_config['hostname'] }}</name>
+  <name>{{ minion_id }}</name>
   <description></description>
   <remoteFS>{{ jenkins_path }}</remoteFS>
   <numExecutors>1</numExecutors>

@@ -56,7 +56,7 @@
 {#
 This is only supported in the latest Git versions not available on Cygwin.
 #}
-{% if grains['os'] not in [ 'Windows' ] %}
+{% if not grains['os_platform_type'].startswith('win') %}
     # When no refspec is given, push only current branch only if
     # upstream branch's name is the same as local one.
     default = simple

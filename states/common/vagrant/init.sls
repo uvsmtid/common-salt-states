@@ -21,8 +21,8 @@ include:
     - common.dummy
 
 ###############################################################################
-# <<<
-{% if grains['os'] in [ 'Fedora' ] %}
+# <<< Fedora only (Vagrant is not available on RHEL7).
+{% if grains['os_platform_type'].startswith('fc') %}
 
 # To avoid unnecessary installation,
 # require this host to be assigned to `hypervisor_role`.
@@ -106,7 +106,7 @@ vagrant_environment_variables_script:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 # TODO
 

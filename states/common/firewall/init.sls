@@ -6,7 +6,7 @@
     {% set task = 'firewalld' %}
 {% elif grains['os_platform_type'].startswith('rhel5') %}
     {% set task = 'iptables' %}
-{% elif grains['os'] == 'Windows' %}
+{% elif grains['os_platform_type'].startswith('win') %}
     {% set task = 'windows' %}
 {% else %}
     {{ FAIL_UNKNOWN_PLATFORM }}

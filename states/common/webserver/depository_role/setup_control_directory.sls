@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 {% if pillar['system_features']['deploy_central_control_directory']['feature_enabled'] %}
 {% if grains['id'] in pillar['system_host_roles']['depository_role']['assigned_hosts'] %}

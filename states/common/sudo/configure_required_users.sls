@@ -20,7 +20,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 /etc/sudoers_{{ case_name }}_{{ sudo_username }}:
     file.blockreplace:

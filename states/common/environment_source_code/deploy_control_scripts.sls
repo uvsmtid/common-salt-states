@@ -16,7 +16,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os_platform_type'].startswith('rhel5') %}
 
 {% endif %}
 # >>>
@@ -24,7 +24,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora', ] %} # OS
+{% if grains['os_platform_type'].startswith('fc') %} # OS
 
 {% if pillar['system_features']['deploy_environment_sources']['feature_enabled'] %} # deploy_environment_sources
 
@@ -122,7 +122,7 @@ make_environment_sources_location_dir_{{ host_config['hostname'] }}_cmd:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 {% endif %}
 # >>>

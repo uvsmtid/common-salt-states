@@ -9,7 +9,7 @@
 ###############################################################################
 # <<< RHEL5 & 7
 # EPEL is created only for RHEL-based OSes (Fedora does not need it).
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os_platform_type'].startswith('rhel5') %}
 
 /etc/yum.repos.d/epel.repo:
     file.managed:

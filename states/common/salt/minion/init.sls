@@ -8,7 +8,7 @@
 
 ###############################################################################
 # <<< Any RedHat-originated OS
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 install_salt_minion:
     pkg.installed:
@@ -27,7 +27,7 @@ install_salt_minion:
 
 ###############################################################################
 # <<< Windows
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 # File to start Salt minion per user.
 {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}

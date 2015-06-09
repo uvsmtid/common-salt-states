@@ -2,13 +2,13 @@
 
 include:
     - common.shell
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
     - common.cygwin.package
 {% endif %}
 
 ###############################################################################
 # <<< Any RedHat-originated OS
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 
 # Variable PROMPT_COMMAND is sometimes set by some scripts in `profile.d`
@@ -68,7 +68,7 @@ last_command_non_zero_exit_code_functions_script:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 {% set cygwin_content_config = pillar['system_resources']['cygwin_package_64_bit_windows'] %}
 
