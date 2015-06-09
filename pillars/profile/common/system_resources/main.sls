@@ -100,6 +100,21 @@ system_resources:
         item_content_hash: md5=5331dd9f233228bca6486f51e21bf6ac
         plugin_name: git-client
 
+    # Jenkins: Build Pipeline Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Build+Pipeline+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/download/plugins/build-pipeline-plugin/1.4.7/build-pipeline-plugin.hpi
+    jenkins_build-pipeline-plugin_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: build-pipeline-plugin.v1.4.7.hpi
+        item_content_hash: md5=4bc24f01d487ab356cac5d9edce9a23b
+        plugin_name: build-pipeline-plugin
+
     # Jenkins: Git Plugin
     # Downloadable from:
     #   https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin
