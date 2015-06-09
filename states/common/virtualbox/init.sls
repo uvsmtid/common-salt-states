@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 # To avoid unnecessary installation,
 # require this host to be assigned to `hypervisor_role`.
@@ -24,7 +24,7 @@ install_virtualbox_packages:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 # TODO
 

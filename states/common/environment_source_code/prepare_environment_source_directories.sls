@@ -4,7 +4,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora', ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 {% set path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location']['linux']['path'] %}
 
@@ -21,7 +21,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 {% set path_to_sources = pillar['system_features']['deploy_environment_sources']['environment_sources_location']['windows']['path'] %}
 {% set path_to_sources_cygwin = pillar['system_features']['deploy_environment_sources']['environment_sources_location']['windows']['path_cygwin'] %}

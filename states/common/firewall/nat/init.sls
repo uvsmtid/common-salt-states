@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<< Service firewalld exists only in Fedora.
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 include:
     - common.firewall
@@ -29,7 +29,7 @@ extend:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os_platform_type'].startswith('rhel5') %}
 
     # TODO: configure iptables for NAT.
 

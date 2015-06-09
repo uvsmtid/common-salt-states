@@ -11,7 +11,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os_platform_type'].startswith('rhel5') %}
 
 # TODO: Implement configuration on RHEL5.
 
@@ -21,7 +21,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 {% set content_parent_dir = pillar['system_features']['validate_depository_content']['depository_content_parent_dir'] %}
 {% set content_item = pillar['system_resources']['custom_root_CA_certificate'] %}
@@ -52,7 +52,7 @@ update_ca_trust_command:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 # TODO: Implement configuration on Windows.
 

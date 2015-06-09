@@ -78,7 +78,7 @@ set shiftwidth=4
 set paste
 
 " The `colorcolumn` only works with modern vim (i.e. on Fedora).
-{% if not ( grains['os'] in [ 'RedHat', 'CentOS' ] and grains['osrelease'][0] == '5' ) %}
+{% if grains['os_platform_type'].startswith('fc') or grains['os_platform_type'].startswith('rhel7') %}
 set colorcolumn=80
 {% else %}
 " This is not supported on RHEL5's vim (due to old version).

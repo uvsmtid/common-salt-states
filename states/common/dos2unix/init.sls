@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 dos2unix_package:
     pkg.installed:
@@ -15,7 +15,7 @@ dos2unix_package:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 include:
     - common.cygwin.package

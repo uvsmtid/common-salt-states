@@ -116,7 +116,7 @@ jenkins_service_start:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %} # OS
+{% if grains['os_platform_type'].startswith('win') %} # OS
 
 {% endif %} # OS
 # >>>

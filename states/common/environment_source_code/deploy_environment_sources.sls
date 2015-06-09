@@ -7,7 +7,8 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora', 'Windows' ] %}
+# Any OS:
+{% if grains['os_platform_type'] %}
 
 {% if grains['kernel'] == 'Linux' %}
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}

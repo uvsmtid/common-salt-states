@@ -30,7 +30,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 include:
     - common.ssh
@@ -53,7 +53,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 include:
     - common.ssh
@@ -112,7 +112,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
     cmd.run:
@@ -129,7 +129,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
     cmd.run:
@@ -184,7 +184,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
     cmd.run:
@@ -201,7 +201,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
     cmd.run:
@@ -258,7 +258,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 '{{ case_name }}_{{ hostname }}_{{ selected_host['username'] }}_accept_ssh_key_cmd':
     cmd.run:
@@ -275,7 +275,7 @@ include:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 '{{ case_name }}_{{ hostname }}_{{ selected_host['username'] }}_accept_ssh_key_cmd':
     cmd.run:

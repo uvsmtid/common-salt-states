@@ -9,7 +9,7 @@
 
 ###############################################################################
 # <<< Any RedHat-originated OS
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 /etc/resolv.conf:
     file.managed:

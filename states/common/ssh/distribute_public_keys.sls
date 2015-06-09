@@ -30,7 +30,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS' ] %}
+{% if grains['os_platform_type'].startswith('rhel5') %}
 
 # Even though `sshpass` may be installed on RHEL5, use `controller_role` with
 # modern OS instead.
@@ -41,7 +41,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 {% if grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] %}
 
@@ -229,7 +229,7 @@ package_sshpass:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 # Utility `sshpass` is currently not available on Cygwin.
 

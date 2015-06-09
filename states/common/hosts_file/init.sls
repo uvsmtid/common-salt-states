@@ -7,17 +7,17 @@
 # Set this `if`-guard agains Windows when the following issue
 # for `file.blockreplace` (not just `file.replace`) appears again
 # https://github.com/saltstack/salt/issues/11471
-# if grains['os'] not in [ 'Windows' ]
+# if not grains['os_platform_type'].startswith('win')
 
 managed_hosts_file:
     file.blockreplace:
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
         - name: '/etc/hosts'
 {% endif %}
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
         - name: 'C:\Windows\system32\drivers\etc\hosts'
 {% endif %}
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
         #{# DISABLED: `file.exists` does not support this (yet)
         - user: root
         - group: root

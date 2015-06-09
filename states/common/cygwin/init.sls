@@ -10,7 +10,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 {% endif %}
 # >>>
@@ -18,7 +18,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 # DISABLED: This is disabled because it requires a lengthy download.
 #           Providing local mirror for Cygwin costs (tested) about 15GB of

@@ -2,14 +2,14 @@
 
 include:
 # Install `wget` for Windows through installing Cygwin.
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
     - common.cygwin.package
 {% endif %}
     - common.dummy
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 wget_package:
     pkg.installed:
@@ -22,7 +22,7 @@ wget_package:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
 {% endif %}
 # >>>

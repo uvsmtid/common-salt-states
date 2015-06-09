@@ -4,7 +4,7 @@
 
 ###############################################################################
 # <<< The `sysctl.d` dir does not exists on RHEL5.
-{% if grains['os'] in [ 'RedHat', 'CentOS', 'Fedora' ] %}
+{% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
 
 sysctl_reload:
@@ -26,7 +26,7 @@ sysctl_reload:
 
 ###############################################################################
 # <<<
-{% if grains['os'] in [ 'Windows' ] %}
+{% if grains['os_platform_type'].startswith('win') %}
 
     # TODO: If needed, ensure Windows host can route IP packets.
 
