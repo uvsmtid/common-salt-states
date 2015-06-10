@@ -1,4 +1,3 @@
-
 # Branching #
 
 This repository follows branching model
@@ -17,7 +16,8 @@ Release tags are named as described in [versioning document][2].
 
     *   ~~`master`~~
 
-        This branch is not maintained.
+        This branch is not necessarily maintained
+        but it is reserved for its purpose (stable _"production ready_" code).
 
         The _"production ready"_ code is maintained on release branches.
 
@@ -95,4 +95,3 @@ Additional rules:
 
 [1]: http://nvie.com/posts/a-successful-git-branching-model/
 [2]: /docs/versioning.md
-
