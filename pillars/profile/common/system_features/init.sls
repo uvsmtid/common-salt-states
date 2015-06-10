@@ -5,12 +5,16 @@
 include:
     - {{ this_pillar }}.java_environments_configuration
     - {{ this_pillar }}.vagrant_configuration
-    - {{ this_pillar }}.hostname_resolution_config
+    - {{ this_pillar }}.hostname_resolution_config:
+        defaults:
+            profile_root: {{ profile_root }}
     - {{ this_pillar }}.maven_installation_configuration
     - {{ this_pillar }}.maven_repository_manager_configuration
     - {{ this_pillar }}.postgresql_environment_setup
     - {{ this_pillar }}.bash_prompt_info_config
-    - {{ this_pillar }}.external_http_proxy
+    - {{ this_pillar }}.external_http_proxy:
+        defaults:
+            profile_root: {{ profile_root }}
     - {{ this_pillar }}.offline_yum_repo
     - {{ this_pillar }}.allow_package_installation_through_yum
     - {{ this_pillar }}.configure_jenkins

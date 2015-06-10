@@ -19,17 +19,21 @@
 #   https://github.com/saltstack/salt/issues/8875#issuecomment-89441029
 
 {% set verify_pillar_file = False %}
-{% if this_pillar is not defined %}
-# If `this_pillar` is undefined, (this) dir `profile` loaded through top file
+{% if profile_root is not defined %}
+# If `profile_root` is undefined, (this) dir `profile` loaded through top file
 # to profide config data for this system.
-# In this case set `this_pillar` as `profile`.
+# In this case set `profile_root` as `profile`.
+# Similar logic applies for `this_pillar` variable.
+{% set profile_root = 'profile' %}
 {% set this_pillar = 'profile' %}
 # In addition to that use `project_name` and `profile_name` to ensure
 # there is a matching pillar file.
 {% set verify_pillar_file = True %}
 {% else %}
-# If `this_pillar` defined, `profile` is loaded as part of
-# target bootstrap environment (or other similar purposes).
+# If `profile_root` defined, `profile` is loaded as part of
+# target bootstrap environment (or other similar purposes) where
+# `profile_root` is supposed to point to required root already.
+# Similar logic applies for `this_pillar` variable.
 {% endif %}
 
 include:
@@ -51,10 +55,12 @@ include:
     - {{ this_pillar }}.common:
         defaults:
             this_pillar: {{ this_pillar }}.common
+            profile_root: {{ profile_root }}
 
     - {{ this_pillar }}.bootstrap:
         defaults:
             this_pillar: {{ this_pillar }}.bootstrap
+            profile_root: {{ profile_root }}
 
 {% if 'project_name' == project_name %}
 

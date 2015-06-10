@@ -13,6 +13,7 @@ include:
     - 'bootstrap.profiles.{{ profile_name }}':
         defaults:
             this_pillar: bootstrap.profiles.{{ profile_name }}
+            profile_root: bootstrap.profiles.{{ profile_name }}
         key: '{{ project_name }}.{{ profile_name }}'
 
 {% endfor %}

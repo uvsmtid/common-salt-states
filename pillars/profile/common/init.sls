@@ -30,11 +30,14 @@ include:
         'system_features'
         ,
         'system_orchestrate_stages'
+        ,
+        'system_properties'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
         defaults:
             this_pillar: {{ this_pillar }}.{{ sub_item }}
+            profile_root: {{ profile_root }}
 
 {% endfor %}
 

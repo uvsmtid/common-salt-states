@@ -1,0 +1,44 @@
+
+###############################################################################
+#
+# These variables are fed into Jinja templates of pillars -
+# they simply parameterize pillars.
+# See also:
+# https://github.com/saltstack/salt/issues/6955#issuecomment-110793057
+#
+# USECASE 1: Initial Salt master setup
+#
+# TODO
+#
+# USECASE 2: frequently changed conditions affecting multiple pillars
+#
+# In this case properties are simply set of parameters which are supposed
+# to be changed more frequently than other content in pillar files.
+# For example, if Salt configures laptop which is often switched between
+# proxied and direct Internet networking, properties provide single variable
+# (see `use)internet_http_proxy` below) which affects all relevant pillars
+# to reconfigure system for required networking conditions.
+#
+
+use_internet_http_proxy: False
+
+is_generic_profile: True
+project_name: common
+profile_name: develop
+master_minion_id: master_minion_id
+default_username: username
+current_task_branch: develop
+load_bootstrap_target_envs:
+    develop: ~
+
+repo_path_states: '/home/username/Works/common-salt-states.git'
+repo_path_pillars: '/home/username/Works/common-salt-states.git'
+repo_path_bootstrap_target_pillars: '/home/username/common-salt-states.git'
+
+projects_states_repo_paths:
+    []
+
+###############################################################################
+# EOF
+###############################################################################
+
