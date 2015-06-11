@@ -100,6 +100,36 @@ system_resources:
         item_content_hash: md5=5331dd9f233228bca6486f51e21bf6ac
         plugin_name: git-client
 
+    # Jenkins: Parameterized Trigger Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Trigger+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/download/plugins/parameterized-trigger/2.26/parameterized-trigger.hpi
+    jenkins_parameterized-trigger_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: parameterized-trigger.v2.26.hpi
+        item_content_hash: md5=c88936fb6d5885d3aef93439ead9ae76
+        plugin_name: parameterized-trigger
+
+    # Jenkins: jQuery Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/jQuery+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/download/plugins/jquery/1.11.2-0/jquery.hpi
+    jenkins_jquery_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: jquery.v1.11.2-0.hpi
+        item_content_hash: md5=9da63f0ce212e1e8b44a68252739dbaa
+        plugin_name: jquery
+
     # Jenkins: Build Pipeline Plugin
     # Downloadable from:
     #   https://wiki.jenkins-ci.org/display/JENKINS/Build+Pipeline+Plugin
