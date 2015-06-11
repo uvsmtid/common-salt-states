@@ -21,6 +21,8 @@ include:
 
 # Git plugin and its dependencies.
 {% for registered_content_item_id in [
+        'jenkins_parameterized-trigger_plugin',
+        'jenkins_jquery_plugin',
         'jenkins_build-pipeline-plugin_plugin',
     ]
 %}

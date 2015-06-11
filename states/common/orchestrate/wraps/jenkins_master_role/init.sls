@@ -7,6 +7,7 @@ include:
     - common.jenkins.master
     - common.jenkins.maven
     - common.jenkins.git
+    - common.jenkins.layout
 
     - common.jenkins.cygwin
 
