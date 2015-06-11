@@ -46,8 +46,22 @@
         exit 0
         {% endif %}
 
-        echo TODO: Get latest sources on Salt master.
-        echo The idea is to get updates to be able to update system config.
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        # NOTE: We assume that repository is available
+        #       locally on Jenkins slave.
+
+        # We assume that remote `origin` has to be pre-configured.
+        # TODO: Use automation to use configured remote and probably branch.
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        cd {{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "$CURRENT_BRANCH" != "HEAD"
+        git pull --ff-only origin $CURRENT_BRANCH
+        {% endfor %}
 
       </command>
     </hudson.tasks.Shell>
