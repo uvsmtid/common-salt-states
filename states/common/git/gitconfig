@@ -48,6 +48,12 @@
     # Merge two branches into one (avoid fast-forward), allow review
     bbmerge = merge --no-ff --no-commit
 
+    # Pull merging using fast-forward only
+    ffpull = pull --ff-only
+
+    # Pull mergint two branches into one (avoid fast-forward), allow review
+    bbpull = pull --no-ff --no-commit
+
     # Shod diff of staged changes
     sdiff = diff --staged
 
