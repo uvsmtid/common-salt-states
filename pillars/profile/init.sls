@@ -24,12 +24,12 @@
 # to profide config data for this system.
 # In this case set `this_pillar` as `profile`.
 {% set this_pillar = 'profile' %}
-{% else %}
-# If `this_pillar` defined, `profile` is loaded as part of
-# target boostrap environment (or other similar purposes).
-# In this case, use `project_name` and `profile_name` to ensure
+# In addition to that use `project_name` and `profile_name` to ensure
 # there is a matching pillar file.
 {% set verify_pillar_file = True %}
+{% else %}
+# If `this_pillar` defined, `profile` is loaded as part of
+# target bootstrap environment (or other similar purposes).
 {% endif %}
 
 include:
@@ -61,7 +61,7 @@ include:
     # Load `project_name`-specific pillars.
     - {{ this_pillar }}.{{ project_name }}:
         defaults:
-            this_pillar: {{ this_pillar }}.project_name
+            this_pillar: {{ this_pillar }}.{{ project_name }}
 
 {% endif %}
 
