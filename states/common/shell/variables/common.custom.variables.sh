@@ -5,8 +5,14 @@ export EDITOR="vim"
 
 {% if pillar['system_features']['assign_DISPLAY_environment_variable'] %}
 
-# Use role name (which should be part of DNS or any host resolution method):
+# Use role's host (which should be part of DNS or any host resolution method).
+# If current minion is among assigned hosts for `primary_console_role`,
+# use only `:0.0`.
+{% if grains['id'] in pillar['system_host_roles']['primary_console_role']['assigned_hosts'] %}
+{% set x_display_server = '' %}
+{% else %}
 {% set x_display_server = pillar['system_host_roles']['primary_console_role']['hostname'] %}
+{% endif %}
 
 if [ -n "$DISPLAY" ]
 then
@@ -25,7 +31,12 @@ else
     if [ -t 1 ]
     then
         echo -n "Setting: DISPLAY=$DISPLAY " 1>&2
-        echo "If \`{{ x_display_server }}\` is not resolvable, set IP address in \`/etc/hosts\`." 1>&2
+
+        # Display hint only if `x_display_server` contains any hostname.
+        if [ -n '{{ x_display_server }}' ]
+        then
+            echo "If \`{{ x_display_server }}\` is not resolvable, set IP address in \`/etc/hosts\`." 1>&2
+        fi
     fi
 fi
 
