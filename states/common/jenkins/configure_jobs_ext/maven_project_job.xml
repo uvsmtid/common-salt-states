@@ -125,6 +125,10 @@
   {% set component_pom_path = job_config['job_config_data']['component_pom_path'] %}
   <rootPOM>{{ component_pom_path }}</rootPOM>
 
+  <!--
+    TODO: Maven goals may be provided from configuration.
+  -->
+  <goals>clean install</goals>
 
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
