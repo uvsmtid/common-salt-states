@@ -36,6 +36,8 @@ else
         if [ -n '{{ x_display_server }}' ]
         then
             echo "If \`{{ x_display_server }}\` is not resolvable, set IP address in \`/etc/hosts\`." 1>&2
+        else
+            echo "Using local graphical environment." 1>&2
         fi
     fi
 fi
