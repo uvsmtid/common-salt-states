@@ -49,10 +49,22 @@
         # TODO: This script assumes that Salt master and Jenkins master
         #       are the same host.
 
-        # Run highstate on Salt master minion only.
+        # Run jobs configuration state on Salt master minion only.
         sudo salt-call \
             --out json \
             state.sls common.jenkins.configure_jobs \
+            test=False | tee salt.output.json
+
+        # Capture errors from Salt.
+        # At the moment salt does not return exit/error code.
+        # See: https://github.com/saltstack/salt/issues/18510
+        /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
+            salt.output.json
+
+        # Run views configuration state on Salt master minion only.
+        sudo salt-call \
+            --out json \
+            state.sls common.jenkins.configure_views \
             test=False | tee salt.output.json
 
         # Capture errors from Salt.

@@ -14,6 +14,7 @@ include:
     - common.jenkins.node_configuration
 
     - common.jenkins.configure_jobs
+    - common.jenkins.configure_views
 
     - common.jenkins.download_jenkins_cli_tool
 
