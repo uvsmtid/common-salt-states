@@ -13,6 +13,7 @@ system_features:
 
         rewrite_jenkins_configuration_for_nodes: True
         rewrite_jenkins_configuration_for_jobs: True
+        rewrite_jenkins_configuration_for_views: True
 
         # TODO: Jenkins does not support credentials management via CLI yet.
         #       Find a way to preconfigure keys to connect to the nodes.
@@ -234,6 +235,38 @@ system_features:
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+        #######################################################################
+        #
+        view_configs:
+
+            infra:
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
+
+                    job_list:
+                        - update_salt_master_sources
+                        - restart_master_salt_services
+                        - configure_jenkins_jobs
+                        - build_bootstrap_package
+                        - configure_vagrant
+                        - destroy_vagrant_hosts
+                        - remove_salt_minion_keys
+                        - instantiate_vagrant_hosts
+                        - run_salt_orchestrate
+                        - run_salt_highstate
+
+            infra-pipeline:
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: update_salt_master_sources
 
 ###############################################################################
 # EOF
