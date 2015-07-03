@@ -47,14 +47,14 @@ system_features:
         # of repository which is later looked up under `source_repositories`
         # to find location of initial control scripts under
         # `salt_master_local_path`.
-        control_scripts_repo_name: 'ci-job-control'
+        control_scripts_repo_name: ~
 
         # Sub-directory relative to sources of repository specified
         # in `control_scripts_repo_name` to find parent directory for
         # control scripts.
         #
         # After moving control scripts into their separate
-        # repository `ci-job-control`, the path degenerates into empty string.
+        # repository `control_scripts_repo_name`, the path degenerates into empty string.
         control_scripts_dir_path: ''
 
         # Name of the directory for the initially deployed control scripts.
@@ -85,7 +85,7 @@ system_features:
 
             '{{ project_name }}-salt-pillars': git
 
-            '{{ project_name }}-salt-pillars-target': git
+            '{{ project_name }}-salt-pillars.bootstrap-target': git
 
             # Other repositories.
 
@@ -122,7 +122,7 @@ system_features:
 
             '{{ project_name }}-salt-pillars': '/environment.sources/{{ project_name }}-salt-pillars.git'
 
-            '{{ project_name }}-salt-pillars-target': '/environment.sources/{{ project_name }}-salt-pillars-target.git'
+            '{{ project_name }}-salt-pillars.bootstrap-target': '/environment.sources/{{ project_name }}-salt-pillars.bootstrap-target.git'
 
             # Other repositories.
 
@@ -210,11 +210,11 @@ system_features:
                     branch_name: '{{ profile_name }}'
                 {% endif %}
 
-            '{{ project_name }}-salt-pillars-target':
+            '{{ project_name }}-salt-pillars.bootstrap-target':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars-target.git'
+                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.bootstrap-target.git'
 
                 {% if is_generic_profile %}
                     branch_name: '{{ current_task_branch }}'
