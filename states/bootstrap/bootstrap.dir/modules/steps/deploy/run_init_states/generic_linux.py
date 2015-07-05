@@ -23,6 +23,25 @@ def do(action_context):
             '--local',
         ]
 
+    # Run `saltutil.sync_all` which is required to
+    # get custom grains at least.
+    # We don't try to analyse output.
+    # If something is not synced yet, next `state.sls` should fail.
+    process_output = call_subprocess(
+        command_args = [
+            'salt-call',
+            '--out',
+            'json',
+            '--log-level',
+            'debug',
+        ] + extra_args + [
+            'saltutil.sync_all',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
     for state_name in [
         'common.source_symlinks',
         'common.resource_symlinks',
