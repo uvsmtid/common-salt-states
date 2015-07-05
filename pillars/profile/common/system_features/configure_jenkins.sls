@@ -55,9 +55,32 @@ system_features:
         #
 
             ###################################################################
-            # The `common` pipeline
+            # Set of trigger-jobs which are not supposed to be doing much.
+            # They are only used to trigger downstram jobs.
 
-            {% set job_id = 'update_salt_master_sources' %}
+            # NOTE: At the moment this job simply refers to another
+            #       `update_salt_master_sources` job without actually
+            #       executing it (see `skip_script_execution`).
+            {% set job_id = 'trigger_on_demand' %}
+            {{ job_id }}:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                trigger_after_jobs: ~
+
+                skip_script_execution: True
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/update_salt_master_sources.xml'
+
+            # NOTE: At the moment this job simply tries to do what
+            #       `update_salt_master_sources` does but it skips
+            #       any updates (see `skip_script_execution`) and does it
+            #       on a timely basis.
+            {% set job_id = 'trigger_on_timer' %}
             {{ job_id }}:
                 enabled: True
 
@@ -67,6 +90,43 @@ system_features:
                 timer_spec: 'H */2 * * *'
 
                 trigger_after_jobs: ~
+
+                skip_script_execution: True
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/update_salt_master_sources.xml'
+
+            # TODO: At the moment this job simply tries to do what
+            #       `update_salt_master_sources` does but it does trigger
+            #       pipeline even if there is no changes.
+            {% set job_id = 'trigger_on_changes' %}
+            {{ job_id }}:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                trigger_after_jobs: ~
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/update_salt_master_sources.xml'
+
+            ###################################################################
+            # The `infra` pipeline
+
+            {% set job_id = 'update_salt_master_sources' %}
+            {{ job_id }}:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                trigger_after_jobs:
+                    - trigger_on_demand
+                    - trigger_on_timer
+                    - trigger_on_changes
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -148,7 +208,7 @@ system_features:
                 trigger_after_jobs:
                     - configure_vagrant
 
-                skip_script_execution: True
+                skip_script_execution: False
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -238,6 +298,7 @@ system_features:
 
         #######################################################################
         #
+
         view_configs:
 
             infra:
@@ -267,6 +328,18 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
                     first_job_name: update_salt_master_sources
+
+            triggers:
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
+
+                    job_list:
+                        - trigger_on_demand
+                        - trigger_on_timer
+                        - trigger_on_changes
 
 ###############################################################################
 # EOF
