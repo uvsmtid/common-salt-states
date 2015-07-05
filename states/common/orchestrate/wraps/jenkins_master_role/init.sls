@@ -5,11 +5,13 @@
 include:
 
     - common.jenkins.master
+
+    # Plugin for Jenkins:
     - common.jenkins.maven
     - common.jenkins.git
     - common.jenkins.layout
-
     - common.jenkins.cygwin
+    - common.jenkins.infra
 
     - common.jenkins.node_configuration
 

@@ -175,6 +175,21 @@ system_resources:
         item_content_hash: md5=9574c07bf6bfd02a57b451145c870f0e
         plugin_name: scm-api
 
+    # Jenkins: EnvInject Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/EnvInject+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/latest/envinject.hpi
+    jenkins_envinject_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: envinject.v1.91.3.hpi
+        item_content_hash: md5=723f9998ce3f7404e3e77f62e5670eb3
+        plugin_name: envinject
+
     # Nexus maven repository manager (community edition).
     # Downloadable from:
     #   http://www.sonatype.org/nexus/go/
