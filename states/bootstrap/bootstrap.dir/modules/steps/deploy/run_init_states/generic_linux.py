@@ -60,7 +60,13 @@ def do(action_context):
                 'debug',
             ] + extra_args + [
                 'state.sls',
-                state_name,
+                # NOTE:
+                # Execute dummy state to satisfy minimum successful count = 1.
+                # This is because at least `common.source_symlinks` in case of
+                # online minion results in 0 states being executed.
+                # We don't want to reduce minimum count to 0 because this
+                # does not test state execution.
+                state_name + ',common.dummy',
                 'test=False',
                 # Specify dinamically `bootstrap_mode` pillar key.
                 'pillar={ \'bootstrap_mode\': \'' + action_context.run_use_case + '\' }',
