@@ -1,4 +1,10 @@
 
+# This file was originally used to set specific environment variables
+# for Vagrant. However, there were only `http_proxy` and `https_proxy`
+# variables here. It turned out they are generic and used by many
+# other tools (including `wget` and `dnf` - replacement of `yum`).
+# So, they were moved to `common.custom.variables.sh` instead.
+#
 # Note that, unfortunately,  similar settings in Vagrantfile
 # do not work (with trailing slash or without):
 #   config.proxy.http     = "http://username:password@example.com:8000"
@@ -7,13 +13,5 @@
 # NOTE: You will still have to use `--insecure` option to download box:
 #         vagrant box add uvsmtid/centos-7.0-minimal --insecure
 
-{% set proxy_config = pillar['system_features']['external_http_proxy'] %}
-{% if proxy_config['feature_enabled'] %}
-
-# Proxy settings:
-# TODO: Use `secret_id` from `system_secrets` for `password_value`.
-export http_proxy='{{ proxy_config['proxy_url_schema'] }}{{ proxy_config['proxy_username'] }}:{{ proxy_config['proxy_password'] }}@{{ proxy_config['proxy_url_hostname'] }}:{{ proxy_config['proxy_url_port'] }}/'
-export https_proxy="${http_proxy}"
-
-{% endif %}
+# Add Vagrant-specific environment variables here.
 
