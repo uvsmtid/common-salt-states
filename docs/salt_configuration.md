@@ -1,4 +1,3 @@
-
 # Configure Salt #
 
 The following staps configure [framework][2] for multiple projects.
@@ -32,7 +31,7 @@ so that Salt can access them.
         ```
         /srv/states/${project_name} -> /home/${default_username}/Works/${project_name}-salt-states.git/states/${project_name}
 
-        sudo ln -sfn /home/${default_username}/Works/${default_username}-salt-states.git/states/${default_username} /srv/states/states/${default_username}
+        sudo ln -sfn /home/${default_username}/Works/${project_name}-salt-states.git/states/${project_name} /srv/states/${project_name}
         ```
 
         Note that `project_name` link is created under `states` directory
@@ -48,7 +47,7 @@ so that Salt can access them.
         ```
         # /srv/pillars -> /home/${default_username}/Works/${project_name}-salt-pillars.git/pillars
 
-        sudo ln -sfn /home/${default_username}/Works/${default_username}-salt-pillars.git/pillars /srv/pillars
+        sudo ln -sfn /home/${default_username}/Works/${project_name}-salt-pillars.git/pillars /srv/pillars
         ```
 
         There is only one active profile and it is defined by contents of
@@ -146,4 +145,3 @@ See [Salt runtime][14] document.
 [11]: /docs/configs/common/this_system_keys/master_minion_id/readme.md
 [12]: /docs/configs/common/this_system_keys/default_username/readme.md
 [14]: /docs/salt_runtime.md
-
