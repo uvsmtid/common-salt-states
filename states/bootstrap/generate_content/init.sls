@@ -56,6 +56,10 @@ pretty_yaml2json_script:
 {% set requisite_config_file_id = 'target_env_conf_file_' + project_name + '_' + profile_name + '_' + selected_host_name %}
 {% set requisite_config_file_path = target_contents_dir + '/conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
 
+cleanup_{{ target_contents_dir }}_{{ selected_host_name }}:
+    file.absent:
+        - name: '{{ target_contents_dir }}/{{ selected_host_name }}'
+
 {{ requisite_config_file_id }}:
     file.managed:
         - name: '{{ requisite_config_file_path }}'
