@@ -1,6 +1,5 @@
 # Custom tmux configuration
 
-
 ###############################################################################
 # <<<
 {% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
@@ -9,6 +8,8 @@ tmux:
     pkg.installed:
         - name: tmux
         - aggregate: True
+
+{% if pillar['system_features']['tmux_custom_configuration']['feature_enabled'] %}
 
 /etc/tmux.conf:
   file.managed:
@@ -20,6 +21,7 @@ tmux:
     - require:
         - pkg: tmux
 
+{% endif %}
 
 {% endif %}
 # >>>
