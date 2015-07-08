@@ -107,12 +107,12 @@ finally:
 #   (properties are supposed to ged rid of the need for `pillar_opts`).
 
 # Make sure `states` symlink points to `states` repository.
-assert(os.path.isabs(props['key_repo_paths']['states']))
+assert(os.path.isabs(props['repo_path_states']))
 command_args = [
     'ln',
     '-snf',
     os.path.join(
-        props['key_repo_paths']['states'],
+        props['repo_path_states'],
         'states',
     ),
     '/srv/states',
@@ -122,12 +122,12 @@ call_subprocess(
 )
 
 # Make sure `pillars` symlink points to `pillars` repository.
-assert(os.path.isabs(props['key_repo_paths']['pillars']))
+assert(os.path.isabs(props['repo_path_pillars']))
 command_args = [
     'ln',
     '-snf',
     os.path.join(
-        props['key_repo_paths']['pillars'],
+        props['repo_path_pillars'],
         'pillars',
     ),
     '/srv/pillars',
@@ -161,14 +161,14 @@ for project_name in props['projects_states_repo_paths'].keys():
 # NOTE: It is assumed that single repository contains branches with
 #       pillars for all profiles.
 profile_names = [ props['profile_name'] ] + props['load_bootstrap_target_envs'].keys()
-bootstrap_target_pillar_repo_path = props['key_repo_paths']['bootstrap_target_pillar']
-assert(os.path.isabs(bootstrap_target_pillar_repo_path))
+bootstrap_target_pillars_repo_path = props['repo_path_bootstrap_target_pillars']
+assert(os.path.isabs(bootstrap_target_pillars_repo_path))
 for profile_name in profile_names:
     command_args = [
         'ln',
         '-snf',
         os.path.join(
-            bootstrap_target_pillar_repo_path,
+            bootstrap_target_pillars_repo_path,
             'pillars',
             'profile',
         ),
