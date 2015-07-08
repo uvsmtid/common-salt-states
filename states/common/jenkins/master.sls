@@ -73,6 +73,13 @@ jenkins_credentials_configuration_file:
         - require:
             - pkg: jenkins_rpm_package
 
+jenkins_configuration_file:
+    file.managed:
+        - name: /etc/sysconfig/jenkins
+        - source: salt://common/jenkins/jenkins.conf
+        - template: jinja
+        - makedirs: False
+
 {% if False %} # Disabled
 # The following state does not work at the moment due to a bug:
 #   https://github.com/saltstack/salt/issues/11900
@@ -83,6 +90,8 @@ activate_jenkins_service:
         - enable: True
         - require:
             - pkg: jenkins_rpm_package
+            - file: jenkins_credentials_configuration_file
+            - file: jenkins_configuration_file
 
 {% else %} # Disabled
 
@@ -95,6 +104,7 @@ jenkins_service_enable:
         - require:
             - pkg: jenkins_rpm_package
             - file: jenkins_credentials_configuration_file
+            - file: jenkins_configuration_file
 
 # NOTE: This state should not be _restarted_, it should be _started_ because
 #       it is assumed that it is actually started already. Otherwise,

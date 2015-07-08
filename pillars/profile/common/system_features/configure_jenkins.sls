@@ -9,6 +9,8 @@ system_features:
 
         feature_enabled: True
 
+        jenkins_http_port: 8080
+
         jenkins_root_dir: '/var/lib/jenkins'
 
         rewrite_jenkins_configuration_for_nodes: True
