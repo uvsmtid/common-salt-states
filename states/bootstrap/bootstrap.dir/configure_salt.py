@@ -1,24 +1,17 @@
 #!/usr/bin/env python
-
-# See: docs/bootstrap/readme.md
+# See: TODO: docs
 
 import os
 import sys
 import imp
+import yaml
 import logging
 
 # Required arguments:
 # * Automatic argument - path to script as appeared in the command line.
 start_path = sys.argv[0]
-# * Action to run (i.e. `build`, `deploy`, etc.).
-run_action = sys.argv[1]
-# * Use case for action (i.e. `offline-minion-installer`).
-run_use_case = sys.argv[2]
-# * Target environment - path to configuration file as:
-#   ```
-#   path/to/conf/project_name/profile_name/host_id.py`
-#   ```
-target_env_conf = sys.argv[3]
+# * Path to pillars profile properties file.
+properties_file_path = sys.argv[1]
 # * The last argument is optional (used for convenience of development) -
 #   path to `bootstrap.dir` with generated content (to keep this content
 #   outside of source directory).
@@ -78,56 +71,59 @@ sys.path.append(
     modules_dir,
 )
 
+###############################################################################
+
 # Import modules related to `bootstrap` after extending
 # list of import directories.
 import utils.set_log
+from utils.exec_command import call_subprocess
 
 # Set log level.
 utils.set_log.setLoggingLevel('debug')
 
-# Check if bootstrap supports this `run_use_case`.
-if run_use_case not in [
-    'initial-online-node',
-    'offline-minion-installer',
-]:
-    raise Exception("Unknown use case: " + str(run_use_case))
+logging.info('properties_file_path = ' + properties_file_path)
 
-# Compose path to configuration module.
-# NOTE: Even though configuration is also a module, it is still content
-#       and looked up in the `content_dir`.
-conf_module_path = os.path.join(
-    content_dir,
-    target_env_conf,
-)
-logging.info('conf_module_path = ' + conf_module_path)
+# Load properties.
+props_file = None
+props = None
+try:
+    props_file = open(properties_file_path, 'r')
+except:
+    try:
+        props_file.close()
+    except:
+        pass
+    raise
+try:
+    props = yaml.load(props_file)
+finally:
+    props_file.close()
 
-# Load config module.
-conf_m = imp.load_source('conf_m', conf_module_path)
-
-# Compose path to platform implementation module.
-impl_module_path = os.path.join(
-    modules_dir,
-    'platforms',
-    conf_m.target_platform + '.py',
-)
-logging.info('impl_module_path = ' + impl_module_path)
-
-# Load implementation module.
-impl_m = imp.load_source('impl_m', impl_module_path)
-logging.debug('impl_m = ' + str(impl_m))
-
-# Create instance.
-impl_i = impl_m.get_instance(
-    run_dir,
-    script_dir,
-    content_dir,
-    modules_dir,
-    conf_m,
-    run_action,
-    run_use_case,
-    target_env_conf,
+# Make sure `states` symlink points to `states` repository.
+command_args = [
+    'ln',
+    '-snf',
+    os.path.join(
+        props['key_repo_paths']['states'],
+        'states',
+    ),
+    '/srv/states',
+]
+call_subprocess(
+    command_args,
 )
 
-# Run action.
-impl_i.do_action()
+# Make sure `pillars` symlink points to `pillars` repository.
+command_args = [
+    'ln',
+    '-snf',
+    os.path.join(
+        props['key_repo_paths']['pillars'],
+        'pillars',
+    ),
+    '/srv/pillars',
+]
+call_subprocess(
+    command_args,
+)
 
