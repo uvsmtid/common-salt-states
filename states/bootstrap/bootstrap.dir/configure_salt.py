@@ -100,6 +100,7 @@ finally:
     props_file.close()
 
 # Make sure `states` symlink points to `states` repository.
+assert(os.path.isabs(props['key_repo_paths']['states']))
 command_args = [
     'ln',
     '-snf',
@@ -114,6 +115,7 @@ call_subprocess(
 )
 
 # Make sure `pillars` symlink points to `pillars` repository.
+assert(os.path.isabs(props['key_repo_paths']['pillars']))
 command_args = [
     'ln',
     '-snf',
@@ -126,4 +128,29 @@ command_args = [
 call_subprocess(
     command_args,
 )
+
+# Make sure `states` contains symlinks to all project states repos.
+for project_name in props['projects_states_repo_paths'].keys():
+    project_repo_path = props['projects_states_repo_paths'][project_name]
+    assert(os.path.isabs(project_repo_path))
+    command_args = [
+        'ln',
+        '-snf',
+        os.path.join(
+            project_repo_path,
+            'states',
+            project_name,
+        ),
+        os.path.join(
+            '/srv/states',
+            project_name,
+        ),
+    ]
+    call_subprocess(
+        command_args,
+    )
+
+###############################################################################
+# EOF
+###############################################################################
 
