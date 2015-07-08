@@ -99,6 +99,13 @@ try:
 finally:
     props_file.close()
 
+# TODO: Based on properties:
+# * Set `file_roots` in `/etc/salt/master` (or `minion`).
+# * Set `pillar_roots` in `/etc/salt/master` (or `minion`).
+# * Set `auto_accept` in `/etc/salt/master`.
+# * Set `pillar_opts` if it is still actual
+#   (properties are supposed to ged rid of the need for `pillar_opts`).
+
 # Make sure `states` symlink points to `states` repository.
 assert(os.path.isabs(props['key_repo_paths']['states']))
 command_args = [
@@ -144,6 +151,30 @@ for project_name in props['projects_states_repo_paths'].keys():
         os.path.join(
             '/srv/states',
             project_name,
+        ),
+    ]
+    call_subprocess(
+        command_args,
+    )
+
+# Make sure `pillars` contains symlinks to all bootstrap profiles.
+# NOTE: It is assumed that single repository contains branches with
+#       pillars for all profiles.
+profile_names = [ props['profile_name'] ] + props['load_bootstrap_target_envs'].keys()
+bootstrap_target_pillar_repo_path = props['key_repo_paths']['bootstrap_target_pillar']
+assert(os.path.isabs(bootstrap_target_pillar_repo_path))
+for profile_name in profile_names:
+    command_args = [
+        'ln',
+        '-snf',
+        os.path.join(
+            bootstrap_target_pillar_repo_path,
+            'pillars',
+            'profile',
+        ),
+        os.path.join(
+            '/srv/pillars/bootstrap/profiles',
+            profile_name,
         ),
     ]
     call_subprocess(
