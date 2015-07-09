@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import os
-import os.path
+# See: docs/bootstrap/readme.md
 
+import os
 import sys
 import imp
 import logging
@@ -23,7 +23,7 @@ target_env_conf = sys.argv[3]
 #   path to `bootstrap.dir` with generated content (to keep this content
 #   outside of source directory).
 #   For "production" environment, `content_dir` is usually the same
-#   with `modules_dir` and contains everything everything:
+#   with `modules_dir` and contains everything:
 #   script sources, configuration, resources, etc.
 content_dir = None
 if len(sys.argv) > 4:
