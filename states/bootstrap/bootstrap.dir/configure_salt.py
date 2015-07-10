@@ -181,6 +181,28 @@ for profile_name in profile_names:
         command_args,
     )
 
+# Remove old symlinks to `sources` and `resources`.
+command_args = [
+    'rm',
+    '-rf',
+    '/srv/sources',
+    '/srv/resources',
+]
+call_subprocess(
+    command_args,
+)
+
+# Configure symlinks to `sources` and `resources`.
+# NOTE: The state are expected to do nothing on hosts with unrelated role.
+command_args = [
+    'salt-call',
+    'state.sls',
+    'common.source_symlinks' + ',' + 'common.resource_symlinks',
+]
+call_subprocess(
+    command_args,
+)
+
 ###############################################################################
 # EOF
 ###############################################################################
