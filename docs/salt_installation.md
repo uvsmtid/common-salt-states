@@ -147,7 +147,7 @@ If you run both Salt master and Salt minion on the same host
 (as this document expects), install both:
 
 ```
-yum install salt-master salt-mininon
+yum install salt-master salt-minion
 ```
 
 ### Simplest configuration ###
@@ -161,7 +161,7 @@ just add `salt` into your hosts file `/etc/hosts` pointing to
 local IP address:
 
 ```
-salt 127.0.0.1
+127.0.0.1 salt
 ```
 
 Minion is identified by its minion id.
