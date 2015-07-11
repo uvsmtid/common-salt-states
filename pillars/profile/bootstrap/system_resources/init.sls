@@ -3,9 +3,21 @@
 #
 
 include:
-    - {{ this_pillar }}.yum
-    - {{ this_pillar }}.salt
-    - {{ this_pillar }}.dependencies
+
+{% for sub_item in [
+        'yum'
+        ,
+        'salt'
+        ,
+        'dependencies'
+    ]
+%}
+    - {{ this_pillar }}.{{ sub_item }}:
+        defaults:
+            this_pillar: {{ this_pillar }}.{{ sub_item }}
+            profile_root: {{ profile_root }}
+
+{% endfor %}
 
 ###############################################################################
 # EOF

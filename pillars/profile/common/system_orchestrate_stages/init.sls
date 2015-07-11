@@ -3,7 +3,17 @@
 #
 
 include:
-    - {{ this_pillar }}.stages
+
+{% for sub_item in [
+        'stages'
+    ]
+%}
+    - {{ this_pillar }}.{{ sub_item }}:
+        defaults:
+            this_pillar: {{ this_pillar }}.{{ sub_item }}
+            profile_root: {{ profile_root }}
+
+{% endfor %}
 
 ###############################################################################
 # EOF

@@ -4,12 +4,24 @@
 
 include:
 
-    - {{ this_pillar }}.primary_net
+{% for sub_item in [
+        'primary_net'
+        ,
+        'internal_net'
+        ,
+        'secondary_internal_net'
+        ,
+        'external_net'
+        ,
+        'secondary_external_net'
+    ]
+%}
+    - {{ this_pillar }}.{{ sub_item }}:
+        defaults:
+            this_pillar: {{ this_pillar }}.{{ sub_item }}
+            profile_root: {{ profile_root }}
 
-    - {{ this_pillar }}.internal_net
-    - {{ this_pillar }}.secondary_internal_net
-    - {{ this_pillar }}.external_net
-    - {{ this_pillar }}.secondary_external_net
+{% endfor %}
 
 ###############################################################################
 # EOF

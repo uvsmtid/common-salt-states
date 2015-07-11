@@ -3,8 +3,19 @@
 #
 
 include:
-    - {{ this_pillar }}.main
-    - {{ this_pillar }}.ssh_keys
+
+{% for sub_item in [
+        'main'
+        ,
+        'ssh_keys'
+    ]
+%}
+    - {{ this_pillar }}.{{ sub_item }}:
+        defaults:
+            this_pillar: {{ this_pillar }}.{{ sub_item }}
+            profile_root: {{ profile_root }}
+
+{% endfor %}
 
 ###############################################################################
 # EOF

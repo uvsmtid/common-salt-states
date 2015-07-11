@@ -3,10 +3,21 @@
 #
 
 include:
-    - {{ this_pillar }}.master_minion_id
 
-    - {{ this_pillar }}.rhel5_minion
-    - {{ this_pillar }}.rhel7_minion
+{% for sub_item in [
+        'master_minion_id'
+        ,
+        'rhel5_minion'
+        ,
+        'rhel7_minion'
+    ]
+%}
+    - {{ this_pillar }}.{{ sub_item }}:
+        defaults:
+            this_pillar: {{ this_pillar }}.{{ sub_item }}
+            profile_root: {{ profile_root }}
+
+{% endfor %}
 
 ###############################################################################
 # EOF
