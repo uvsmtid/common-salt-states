@@ -252,8 +252,6 @@ def main():
             command_args,
         )
 
-    sys.exit(0)
-
     ###########################################################################
     # Modify Salt configuration file.
 
