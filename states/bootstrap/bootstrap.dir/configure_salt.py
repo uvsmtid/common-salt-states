@@ -287,6 +287,10 @@ def main():
     ###########################################################################
     # Restart both Salt master and Salt minion.
 
+    # NOTE: Use `rhel5` implementation as it works for `systemd`-based too.
+    from steps.deploy.activate_salt_master.rhel5 import ensure_salt_master_activation
+
+    ensure_salt_master_activation('salt-master')
 
     ###########################################################################
     # Run initial configuration for Salt master.

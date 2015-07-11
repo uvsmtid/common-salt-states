@@ -11,11 +11,7 @@ from utils.set_network import ping_host
 
 ###############################################################################
 #
-
-def do(action_context):
-
-    if not action_context.conf_m.activate_salt_master['is_salt_master']:
-        return
+def disable_firewall():
 
     # Disable and stop firewall.
     # TODO: Find a better way to deal with it.
@@ -24,14 +20,34 @@ def do(action_context):
     disable_service('iptables')
     stop_service('iptables')
 
+###############################################################################
+#
+def ensure_salt_master_activation(service_name):
+
+    # Disable any running service - ignore errors.
+    stop_service(service_name, raise_on_error = False)
+
     # Enable and start Salt master.
-    enable_service(action_context.conf_m.activate_salt_master['service_name'])
-    start_service(action_context.conf_m.activate_salt_master['service_name'])
+    enable_service(service_name)
+    start_service(service_name)
 
     # Just a 5 sec delay introduced through `ping` to let service start.
     ping_host(
         'salt',
         5,
+    )
+
+###############################################################################
+#
+
+def do(action_context):
+
+    if not action_context.conf_m.activate_salt_master['is_salt_master']:
+        return
+
+    disable_firewall()
+    ensure_salt_master_activation(
+        action_context.conf_m.activate_salt_master['service_name'],
     )
 
 ###############################################################################

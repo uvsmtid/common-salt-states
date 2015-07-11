@@ -8,6 +8,7 @@ from utils.exec_command import call_subprocess
 
 def enable_service_systemd(
     service_name,
+    raise_on_error = True,
 ):
 
     call_subprocess(
@@ -16,7 +17,7 @@ def enable_service_systemd(
             'enable',
             service_name,
         ],
-        raise_on_error = True,
+        raise_on_error = raise_on_error,
         capture_stdout = False,
         capture_stderr = False,
     )
@@ -26,6 +27,7 @@ def enable_service_systemd(
 
 def disable_service_systemd(
     service_name,
+    raise_on_error = True,
 ):
 
     call_subprocess(
@@ -34,7 +36,7 @@ def disable_service_systemd(
             'disable',
             service_name,
         ],
-        raise_on_error = True,
+        raise_on_error = raise_on_error,
         capture_stdout = False,
         capture_stderr = False,
     )
@@ -44,6 +46,7 @@ def disable_service_systemd(
 
 def start_service_systemd(
     service_name,
+    raise_on_error = True,
 ):
 
     call_subprocess(
@@ -52,7 +55,7 @@ def start_service_systemd(
             'start',
             service_name,
         ],
-        raise_on_error = True,
+        raise_on_error = raise_on_error,
         capture_stdout = False,
         capture_stderr = False,
     )
@@ -62,6 +65,7 @@ def start_service_systemd(
 
 def stop_service_systemd(
     service_name,
+    raise_on_error = True,
 ):
 
     call_subprocess(
@@ -70,7 +74,7 @@ def stop_service_systemd(
             'stop',
             service_name,
         ],
-        raise_on_error = True,
+        raise_on_error = raise_on_error,
         capture_stdout = False,
         capture_stderr = False,
     )
@@ -80,6 +84,7 @@ def stop_service_systemd(
 
 def enable_service_initd(
     service_name,
+    raise_on_error = True,
 ):
 
     call_subprocess(
@@ -88,7 +93,7 @@ def enable_service_initd(
             service_name,
             'on',
         ],
-        raise_on_error = True,
+        raise_on_error = raise_on_error,
         capture_stdout = False,
         capture_stderr = False,
     )
@@ -98,6 +103,7 @@ def enable_service_initd(
 
 def disable_service_initd(
     service_name,
+    raise_on_error = True,
 ):
 
     call_subprocess(
@@ -106,7 +112,7 @@ def disable_service_initd(
             service_name,
             'off',
         ],
-        raise_on_error = True,
+        raise_on_error = raise_on_error,
         capture_stdout = False,
         capture_stderr = False,
     )
@@ -116,6 +122,7 @@ def disable_service_initd(
 
 def start_service_initd(
     service_name,
+    raise_on_error = True,
 ):
 
     call_subprocess(
@@ -124,7 +131,7 @@ def start_service_initd(
             service_name,
             'start',
         ],
-        raise_on_error = True,
+        raise_on_error = raise_on_error,
         capture_stdout = False,
         capture_stderr = False,
     )
@@ -134,6 +141,7 @@ def start_service_initd(
 
 def stop_service_initd(
     service_name,
+    raise_on_error = True,
 ):
 
     call_subprocess(
@@ -142,7 +150,7 @@ def stop_service_initd(
             service_name,
             'stop',
         ],
-        raise_on_error = True,
+        raise_on_error = raise_on_error,
         capture_stdout = False,
         capture_stderr = False,
     )
