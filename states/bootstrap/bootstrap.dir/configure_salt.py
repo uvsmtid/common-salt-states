@@ -266,6 +266,27 @@ def main():
     finally:
         salt_master_conf_stream.close()
 
+    ###########################################################################
+    # Restart both Salt master and Salt minion.
+
+
+    ###########################################################################
+    # Run initial configuration for Salt master.
+
+    # Because we only care about Salt master and master can only be Linux.
+    from steps.deploy.run_init_states.generic_linux import run_states
+
+    state_names = [
+        'common.source_symlinks',
+        'common.resource_symlinks',
+    ]
+
+    run_states(
+        state_names = state_names,
+        salt_extra_args = [],
+        cmd_extra_args = [],
+    )
+
 ###############################################################################
 #
 if __name__ == '__main__':

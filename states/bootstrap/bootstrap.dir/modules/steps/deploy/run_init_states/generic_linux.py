@@ -8,20 +8,7 @@ from utils.check_salt_output import process_string
 
 ###############################################################################
 #
-def do(action_context):
-
-    # Explanation per use case:
-    # * `initial-online-node` - it is assumed that Salt master is already
-    #    accessible and `--local` is not required.
-    # * `offline-minion-installer` - run with `--local` because it is
-    #   standalone minon.
-    extra_args = []
-    if action_context.run_use_case in [
-        'offline-minion-installer'
-    ]:
-        extra_args = [
-            '--local',
-        ]
+def run_states(state_names, salt_extra_args, cmd_extra_args):
 
     # Run `saltutil.sync_all` which is required to
     # get custom grains at least.
@@ -34,7 +21,7 @@ def do(action_context):
             'json',
             '--log-level',
             'debug',
-        ] + extra_args + [
+        ] + salt_extra_args + [
             'saltutil.sync_all',
         ],
         raise_on_error = True,
@@ -42,10 +29,7 @@ def do(action_context):
         capture_stderr = False,
     )
 
-    for state_name in [
-        'common.source_symlinks',
-        'common.resource_symlinks',
-    ]:
+    for state_name in state_names:
 
         # The commands are run per minion - that's why `salt-call` is
         # used instead of `salt`.
@@ -58,7 +42,7 @@ def do(action_context):
                 'json',
                 '--log-level',
                 'debug',
-            ] + extra_args + [
+            ] + salt_extra_args + [
                 'state.sls',
                 # NOTE:
                 # Execute dummy state to satisfy minimum successful count = 1.
@@ -66,11 +50,9 @@ def do(action_context):
                 # online minion results in 0 states being executed.
                 # We don't want to reduce minimum count to 0 because this
                 # does not test state execution.
-                state_name + ',common.dummy',
+                str(state_name) + ',common.dummy',
                 'test=False',
-                # Specify dinamically `bootstrap_mode` pillar key.
-                'pillar={ \'bootstrap_mode\': \'' + action_context.run_use_case + '\' }',
-            ],
+            ] + cmd_extra_args,
             raise_on_error = True,
             capture_stdout = True,
             capture_stderr = False,
@@ -85,6 +67,37 @@ def do(action_context):
         if not process_string(process_output["stdout"]):
             logging.critical("some Salt states failed")
             raise RuntimeError
+
+###############################################################################
+#
+def do(action_context):
+
+    # Explanation per use case:
+    # * `initial-online-node` - it is assumed that Salt master is already
+    #    accessible and `--local` is not required.
+    # * `offline-minion-installer` - run with `--local` because it is
+    #   standalone minon.
+    salt_extra_args = []
+    if action_context.run_use_case in [
+        'offline-minion-installer'
+    ]:
+        salt_extra_args = [
+            '--local',
+        ]
+
+    # Specify dinamically `bootstrap_mode` pillar key.
+    cmd_extra_args = [
+        'pillar={ \'bootstrap_mode\': \'' + action_context.run_use_case + '\' }',
+    ]
+
+    run_states(
+        state_names = [
+            'common.source_symlinks',
+            'common.resource_symlinks',
+        ],
+        salt_extra_args = salt_extra_args,
+        cmd_extra_args = cmd_extra_args,
+    )
 
 ###############################################################################
 # EOF
