@@ -77,7 +77,7 @@ system_features:
             # Pillars for bootstrap environments.
 
             {{ project_name }}.{{ profile_name }}_bootstrap_profiles:
-                repo_name: '{{ project_name }}-salt-pillars'
+                repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
                 abs_link_base_path: '/srv/pillars/bootstrap/profiles/{{ profile_name }}'
                 rel_target_path: 'pillars'
 

@@ -32,8 +32,8 @@ load_bootstrap_target_envs:
     develop: ~
 
 repo_path_states: '/home/username/Works/common-salt-states.git'
-repo_path_pillars: '/home/username/Works/common-salt-states.git'
-repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-states.git'
+repo_path_pillars: '/home/username/Works/common-salt-pillars.git'
+repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-pillars.bootstrap-target.git'
 
 projects_states_repo_paths:
     {}
