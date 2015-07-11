@@ -1,5 +1,9 @@
 #
 
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
 {% macro configure_deploy_step_function(
         source_env_pillar
         ,
@@ -25,8 +29,8 @@
     )
 %}
 
-{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
-{% set current_task_branch = salt['config.get']('this_system_keys:current_task_branch') %}
+{% set is_generic_profile = props['is_generic_profile'] %}
+{% set current_task_branch = props['current_task_branch'] %}
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
 

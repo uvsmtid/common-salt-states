@@ -1,13 +1,14 @@
+
 ###############################################################################
-# Salt top file for states.
+#
 
-base:
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
 
-    '*':
+system_properties:
 
-        # This state file is supposed to be a symlink to `main.sls`
-        # in the root of `states` directory for specific project.
-        - main
+    {{ props }}
 
 ###############################################################################
 # EOF

@@ -2,7 +2,11 @@
 ###############################################################################
 #
 
-{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set master_minion_id = props['master_minion_id'] %}
 
 system_hosts:
 

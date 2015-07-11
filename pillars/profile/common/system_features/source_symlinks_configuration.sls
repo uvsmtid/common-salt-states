@@ -2,9 +2,13 @@
 ###############################################################################
 #
 
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
-{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set project_name = props['project_name'] %}
+{% set master_minion_id = props['master_minion_id'] %}
+{% set profile_name = props['profile_name'] %}
 
 system_features:
 
@@ -73,7 +77,7 @@ system_features:
             # Pillars for bootstrap environments.
 
             {{ project_name }}.{{ profile_name }}_bootstrap_profiles:
-                repo_name: '{{ project_name }}-salt-pillars'
+                repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
                 abs_link_base_path: '/srv/pillars/bootstrap/profiles/{{ profile_name }}'
                 rel_target_path: 'pillars'
 

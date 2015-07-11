@@ -12,6 +12,10 @@ include:
 {% set bootstrap_files_dir = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
 # Note that `load_bootstrap_target_envs` is only available when Salt
 # configuration (for either master or minion) contains necessary configuration.
 # In addition to that, the limit on which target environments are generated
@@ -19,8 +23,8 @@ include:
 # See:
 #   * docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
 #   * docs/pillars/{# project_name #}/system_features/source_bootstrap_configuration/enable_bootstrap_target_envs/readme.md
-{% set load_bootstrap_target_envs = salt['config.get']('this_system_keys:load_bootstrap_target_envs') %}
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
+{% set load_bootstrap_target_envs = props['load_bootstrap_target_envs'] %}
+{% set project_name = props['project_name'] %}
 
 # Download file for pretty conversion.
 pretty_yaml2json_script:

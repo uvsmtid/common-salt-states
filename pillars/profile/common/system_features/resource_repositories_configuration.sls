@@ -2,8 +2,12 @@
 ###############################################################################
 #
 
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
-{% set default_username = salt['config.get']('this_system_keys:default_username') %}
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set project_name = props['project_name'] %}
+{% set default_username = props['default_username'] %}
 
 system_features:
 

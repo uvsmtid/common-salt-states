@@ -2,7 +2,11 @@
 ###############################################################################
 #
 
-{% set default_username = salt['config.get']('this_system_keys:default_username') %}
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set default_username = props['default_username'] %}
 
 system_hosts:
 

@@ -8,7 +8,7 @@ export EDITOR="vim"
 ###############################################################################
 
 # Set variable to indicate which pillar profile is used.
-{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
+{% set is_generic_profile = pillar['system_properties']['is_generic_profile'] %}
 {% if is_generic_profile %}
 export SALT_PROFILE_NAME="-"
 {% else %}

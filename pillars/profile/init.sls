@@ -1,15 +1,6 @@
 
 ###############################################################################
-# Master configuration file should contain similar data structure:
-#     this_system_keys:
-#         project_name: project_name
-#         profile_name: profile_name
 #
-# See also:
-#   https://github.com/saltstack/salt/issues/12916
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
-{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
 
 # Setting key `this_pillar` allows current file loading other
 # pillars files relatively while letting them know their relative location
@@ -19,18 +10,30 @@
 #   https://github.com/saltstack/salt/issues/8875#issuecomment-89441029
 
 {% set verify_pillar_file = False %}
-{% if this_pillar is not defined %}
-# If `this_pillar` is undefined, (this) dir `profile` loaded through top file
+{% if profile_root is not defined %}
+# If `profile_root` is undefined, (this) dir `profile` loaded through top file
 # to profide config data for this system.
-# In this case set `this_pillar` as `profile`.
+# In this case set `profile_root` as `profile`.
+# Similar logic applies for `this_pillar` variable.
+{% set profile_root = 'profile' %}
 {% set this_pillar = 'profile' %}
 # In addition to that use `project_name` and `profile_name` to ensure
 # there is a matching pillar file.
 {% set verify_pillar_file = True %}
 {% else %}
-# If `this_pillar` defined, `profile` is loaded as part of
-# target bootstrap environment (or other similar purposes).
+# If `profile_root` defined, `profile` is loaded as part of
+# target bootstrap environment (or other similar purposes) where
+# `profile_root` is supposed to point to required root already.
+# Similar logic applies for `this_pillar` variable.
 {% endif %}
+
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set project_name = props['project_name'] %}
+{% set profile_name = props['profile_name'] %}
+{% set is_generic_profile = props['is_generic_profile'] %}
 
 include:
 
@@ -51,10 +54,12 @@ include:
     - {{ this_pillar }}.common:
         defaults:
             this_pillar: {{ this_pillar }}.common
+            profile_root: {{ profile_root }}
 
     - {{ this_pillar }}.bootstrap:
         defaults:
             this_pillar: {{ this_pillar }}.bootstrap
+            profile_root: {{ profile_root }}
 
 {% if 'project_name' == project_name %}
 
@@ -62,6 +67,7 @@ include:
     - {{ this_pillar }}.{{ project_name }}:
         defaults:
             this_pillar: {{ this_pillar }}.{{ project_name }}
+            profile_root: {{ profile_root }}
 
 {% endif %}
 

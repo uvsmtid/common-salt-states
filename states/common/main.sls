@@ -1,14 +1,7 @@
-# Salt top states file
+# Salt main states file
 
-# Master configuration file should contain similar data structure:
-#     this_system_keys:
-#         project_name: project_name
-#         profile_name: profile_name
-#
-# See also:
-#   https://github.com/saltstack/salt/issues/12916
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
+{% set project_name = pillar['system_properties']['project_name'] %}
+{% set profile_name = pillar['system_properties']['profile_name'] %}
 
 include:
 

@@ -9,13 +9,13 @@
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_URI_scheme_abs_links_base_dir_path_from_pillar with context %}
 
-{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
-{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
-{% set default_username = salt['config.get']('this_system_keys:default_username') %}
-{% set current_task_branch = salt['config.get']('this_system_keys:current_task_branch') %}
-{% set load_bootstrap_target_envs = salt['config.get']('this_system_keys:load_bootstrap_target_envs') %}
+{% set is_generic_profile = pillar['system_properties']['is_generic_profile'] %}
+{% set project_name = pillar['system_properties']['project_name'] %}
+{% set profile_name = pillar['system_properties']['profile_name'] %}
+{% set master_minion_id = pillar['system_properties']['master_minion_id'] %}
+{% set default_username = pillar['system_properties']['default_username'] %}
+{% set current_task_branch = pillar['system_properties']['current_task_branch'] %}
+{% set load_bootstrap_target_envs = pillar['system_properties']['load_bootstrap_target_envs'] %}
 
 /etc/salt/master:
     file.managed:

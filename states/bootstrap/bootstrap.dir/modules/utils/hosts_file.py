@@ -21,6 +21,7 @@ import shutil
 import tempfile
 import optparse
 import tempfile
+import filecmp
 from datetime import datetime
 
 default_src_path = None
@@ -35,16 +36,38 @@ def print_err(err_message):
 ###############################################################################
 # Create backup for the source file
 
-def do_backup(dst_path):
+def do_backup(dst_path, dst_dir_path = None):
+
+    # If destination backup directory is not specified, use temporay one.
+    # NOTE: Another default option could be basedir of `dst_path`.
+    if not dst_dir_path:
+        dst_dir_path = tempfile.gettempdir()
+
+    assert(os.path.isdir(dst_dir_path))
 
     # Name destination backup file
-    backup_dst_path = os.path.join (
-        tempfile.gettempdir(),
+    backup_dst_path = os.path.join(
+        dst_dir_path,
         os.path.basename(dst_path) + ".backup." + datetime.now().strftime("%Y-%m-%dT%H-%M-%S"),
     )
+
+    # Check if `*.backup.last` exists and has the same checksum.
+    # If yes & yes, backup is not required.
+    last_backup_dst_path = os.path.join(
+        dst_dir_path,
+        os.path.basename(dst_path) + ".backup." + "last"
+    )
+    if os.path.exists(last_backup_dst_path):
+        if filecmp.cmp(dst_path, last_backup_dst_path, shallow = False):
+            print_err("Skip backup - file \"" + last_backup_dst_path + "\" is the same")
+            return
+
     # Copy file
     print_err("Backing up \"" + dst_path + "\" host to \"" + backup_dst_path + "\"")
     shutil.copyfile(dst_path, backup_dst_path)
+
+    # Create last backup.
+    shutil.copyfile(backup_dst_path, last_backup_dst_path)
 
 ###############################################################################
 # Map each host name into its IP address
