@@ -32,8 +32,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "public_network", ip: "{{ pillar['system_hosts'][hypervisor_host_id]['hosts_networks'][sys_net_name]['ip'] }}"
 {% endif %}
 
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
+{% set project_name = pillar['system_properties']['project_name'] %}
+{% set profile_name = pillar['system_properties']['profile_name'] %}
 
 {% set bootstrap_dir_basename = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 

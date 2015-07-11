@@ -2,12 +2,16 @@
 ###############################################################################
 #
 
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
-{% set master_minion_id = salt['config.get']('this_system_keys:master_minion_id') %}
-{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
-{% set default_username = salt['config.get']('this_system_keys:default_username') %}
-{% set current_task_branch = salt['config.get']('this_system_keys:current_task_branch') %}
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set project_name = props['project_name'] %}
+{% set profile_name = props['profile_name'] %}
+{% set master_minion_id = props['master_minion_id'] %}
+{% set is_generic_profile = props['is_generic_profile'] %}
+{% set default_username = props['default_username'] %}
+{% set current_task_branch = props['current_task_branch'] %}
 
 system_features:
 

@@ -2,9 +2,14 @@
 ###############################################################################
 #
 
-{% set load_bootstrap_target_envs = salt['config.get']('this_system_keys:load_bootstrap_target_envs') %}
+# Import properties.
+# NOTE: Loading bootstrap profiles is never recursive.
+#       Use absolute path to current profile to get properties.
+{% set properties_path = 'profile/properties.yaml' %}
+{% import_yaml properties_path as props %}
 
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
+{% set load_bootstrap_target_envs = props['load_bootstrap_target_envs'] %}
+{% set project_name = props['project_name'] %}
 
 include:
 

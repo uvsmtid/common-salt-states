@@ -1,15 +1,6 @@
 
 ###############################################################################
-# Master configuration file should contain similar data structure:
-#     this_system_keys:
-#         project_name: project_name
-#         profile_name: profile_name
 #
-# See also:
-#   https://github.com/saltstack/salt/issues/12916
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
-{% set is_generic_profile = salt['config.get']('this_system_keys:is_generic_profile') %}
 
 # Setting key `this_pillar` allows current file loading other
 # pillars files relatively while letting them know their relative location
@@ -35,6 +26,14 @@
 # `profile_root` is supposed to point to required root already.
 # Similar logic applies for `this_pillar` variable.
 {% endif %}
+
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set project_name = props['project_name'] %}
+{% set profile_name = props['profile_name'] %}
+{% set is_generic_profile = props['is_generic_profile'] %}
 
 include:
 
@@ -68,6 +67,7 @@ include:
     - {{ this_pillar }}.{{ project_name }}:
         defaults:
             this_pillar: {{ this_pillar }}.{{ project_name }}
+            profile_root: {{ profile_root }}
 
 {% endif %}
 

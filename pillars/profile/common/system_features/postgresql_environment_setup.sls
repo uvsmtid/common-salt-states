@@ -2,7 +2,11 @@
 ###############################################################################
 #
 
-{% set project_name = salt['config.get']('this_system_keys:project_name') %}
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set project_name = props['project_name'] %}
 
 # TODO: Move PostgreSQL installation into `common`.
 

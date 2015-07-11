@@ -2,7 +2,11 @@
 ###############################################################################
 #
 
-{% set profile_name = salt['config.get']('this_system_keys:profile_name') %}
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set profile_name = props['profile_name'] %}
 
 system_features:
 
