@@ -207,6 +207,24 @@ def main():
         )
 
     ###########################################################################
+    # Make sure `main.sls` is a symlink to `main.sls`
+    # under `states` directory of required project.
+
+    command_args = [
+        'ln',
+        '-snf',
+        os.path.join(
+            props['project_name'],
+            'main.sls',
+        ),
+        '/srv/states/main.sls',
+    ]
+    call_subprocess(
+        command_args,
+    )
+
+
+    ###########################################################################
     # Modify Salt configuration file.
 
     from utils.hosts_file import do_backup
