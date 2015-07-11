@@ -223,6 +223,24 @@ def main():
         command_args,
     )
 
+    ###########################################################################
+    # Create aliases symlinks which map non-existing paths to existing ones.
+
+    for symlink_name in props['symlinks_map'].keys():
+        symlink_target = props['symlinks_map'][symlink_name]
+        assert(symlink_name)
+        assert(symlink_target)
+        command_args = [
+            'ln',
+            '-snf',
+            symlink_target,
+            symlink_name,
+        ]
+        call_subprocess(
+            command_args,
+        )
+
+    sys.exit(0)
 
     ###########################################################################
     # Modify Salt configuration file.

@@ -35,6 +35,10 @@ repo_path_states: '/home/username/Works/common-salt-states.git'
 repo_path_pillars: '/home/username/Works/common-salt-pillars.git'
 repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-pillars.bootstrap-target.git'
 
+symlinks_map:
+    '/home/username/Works/common-salt-pillars.git': '/home/username/Works/common-salt-states.git'
+    '/home/username/Works/common-salt-pillars.bootstrap-target.git': '/home/username/Works/common-salt-states.git'
+
 projects_states_repo_paths:
     {}
 
