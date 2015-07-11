@@ -30,8 +30,6 @@ include:
         'system_features'
         ,
         'system_orchestrate_stages'
-        ,
-        'system_properties'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

@@ -1,7 +1,7 @@
 # Salt main states file
 
-{% set project_name = pillar['system_properties']['project_name'] %}
-{% set profile_name = pillar['system_properties']['profile_name'] %}
+{% set project_name = pillar['project_name'] %}
+{% set profile_name = pillar['profile_name'] %}
 
 include:
 

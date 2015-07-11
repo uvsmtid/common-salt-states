@@ -22,6 +22,8 @@
 
 use_internet_http_proxy: False
 
+offline_mode: False
+
 is_generic_profile: True
 project_name: common
 profile_name: develop
