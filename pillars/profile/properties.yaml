@@ -33,10 +33,10 @@ load_bootstrap_target_envs:
 
 repo_path_states: '/home/username/Works/common-salt-states.git'
 repo_path_pillars: '/home/username/Works/common-salt-states.git'
-repo_path_bootstrap_target_pillars: '/home/username/common-salt-states.git'
+repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-states.git'
 
 projects_states_repo_paths:
-    []
+    {}
 
 ###############################################################################
 # EOF

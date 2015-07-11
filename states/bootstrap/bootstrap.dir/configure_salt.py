@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+# This script automatically configures Salt master or minion to be used
+# with `common-salt-states` repository.
 # See: TODO: docs
 
 import os
@@ -6,6 +9,11 @@ import sys
 import imp
 import yaml
 import logging
+
+salt_master_conf_path = '/etc/salt/master'
+
+###############################################################################
+# Get input arguments and context.
 
 # Required arguments:
 # * Automatic argument - path to script as appeared in the command line.
@@ -31,6 +39,9 @@ sys.stderr.write("debug: script_dir = " + str(script_dir) + "\n") # before log l
 # Remember `run_dir`:
 run_dir = os.getcwd()
 sys.stderr.write("debug: run_dir = " + str(run_dir) + "\n") # before log level is set
+
+###############################################################################
+# Init modules.
 
 # Redefine `content_dir` as absolute path.
 if content_dir:
@@ -72,6 +83,7 @@ sys.path.append(
 )
 
 ###############################################################################
+# Load properties file.
 
 # Import modules related to `bootstrap` after extending
 # list of import directories.
@@ -106,7 +118,9 @@ finally:
 # * Set `pillar_opts` if it is still actual
 #   (properties are supposed to ged rid of the need for `pillar_opts`).
 
+###############################################################################
 # Make sure `states` symlink points to `states` repository.
+
 assert(os.path.isabs(props['repo_path_states']))
 command_args = [
     'ln',
@@ -121,7 +135,9 @@ call_subprocess(
     command_args,
 )
 
+###############################################################################
 # Make sure `pillars` symlink points to `pillars` repository.
+
 assert(os.path.isabs(props['repo_path_pillars']))
 command_args = [
     'ln',
@@ -136,7 +152,9 @@ call_subprocess(
     command_args,
 )
 
+###############################################################################
 # Make sure `states` contains symlinks to all project states repos.
+
 for project_name in props['projects_states_repo_paths'].keys():
     project_repo_path = props['projects_states_repo_paths'][project_name]
     assert(os.path.isabs(project_repo_path))
@@ -157,9 +175,11 @@ for project_name in props['projects_states_repo_paths'].keys():
         command_args,
     )
 
+###############################################################################
 # Make sure `pillars` contains symlinks to all bootstrap profiles.
 # NOTE: It is assumed that single repository contains branches with
 #       pillars for all profiles.
+
 profile_names = [ props['profile_name'] ] + props['load_bootstrap_target_envs'].keys()
 bootstrap_target_pillars_repo_path = props['repo_path_bootstrap_target_pillars']
 assert(os.path.isabs(bootstrap_target_pillars_repo_path))
@@ -182,6 +202,31 @@ for profile_name in profile_names:
     )
 
 ###############################################################################
-# EOF
+# Load Salt configuration file.
+
+def main():
+
+    salt_master_conf = None
+    salt_master_conf_stream = None
+    try:
+        salt_master_conf_stream = open(salt_master_conf_path)
+        salt_master_conf = yaml.load(salt_master_conf_stream)
+    finally:
+        salt_master_conf_stream.close()
+
+    yaml.dump(
+        salt_master_conf,
+        sys.stdout,
+        default_flow_style = False,
+        indent = 4,
+    )
+
+###############################################################################
+#
+if __name__ == '__main__':
+    main()
+
+###############################################################################
+# END
 ###############################################################################
 
