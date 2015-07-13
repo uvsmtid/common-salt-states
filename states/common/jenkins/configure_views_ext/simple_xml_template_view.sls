@@ -13,6 +13,7 @@
 
 {% endmacro %}
 
+{% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
 
 {% macro view_config_function(view_name, view_config) %}
 
@@ -38,8 +39,8 @@
 # Make sure view configuration does not exist:
 add_{{ view_name }}_view_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.view.config.{{ view_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ create-view {{ view_name }}"
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ get-view {{ view_name }}"
+        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.view.config.{{ view_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-view {{ view_name }}"
+        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-view {{ view_name }}"
         - require:
             - cmd: download_jenkins_cli_jar
             - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.view.config.{{ view_name }}.xml'
@@ -48,9 +49,9 @@ add_{{ view_name }}_view_configuration_to_jenkins:
 # The update won't happen (it will be the same) if view has just been created.
 update_{{ view_name }}_view_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.view.config.{{ view_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ update-view {{ view_name }}"
+        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.view.config.{{ view_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-view {{ view_name }}"
 {% if not pillar['system_features']['configure_jenkins']['rewrite_jenkins_configuration_for_views'] %}
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ get-view {{ view_name }}"
+        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-view {{ view_name }}"
 {% endif %}
         - require:
             - cmd: download_jenkins_cli_jar

@@ -15,6 +15,8 @@
 include:
     - common.jenkins.download_jenkins_cli_tool
 
+{% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
+
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 
 {% for slave_name in pillar['system_host_roles']['jenkins_slave_role']['assigned_hosts'] %}
@@ -54,8 +56,8 @@ include:
 # Make sure node configuration does not exist:
 add_{{ slave_name }}_node_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ create-node {{ slave_name }}"
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ get-node {{ slave_name }}"
+        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-node {{ slave_name }}"
+        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-node {{ slave_name }}"
         - require:
             - cmd: download_jenkins_cli_jar
             - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml'
@@ -64,9 +66,9 @@ add_{{ slave_name }}_node_configuration_to_jenkins:
 # The update won't happen (it will be the same) if node has just been created.
 update_{{ slave_name }}_node_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ update-node {{ slave_name }}"
+        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-node {{ slave_name }}"
 {% if not pillar['system_features']['configure_jenkins']['rewrite_jenkins_configuration_for_nodes'] %}
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ get-node {{ slave_name }}"
+        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-node {{ slave_name }}"
 {% endif %}
         - require:
             - cmd: download_jenkins_cli_jar
@@ -77,7 +79,7 @@ update_{{ slave_name }}_node_configuration_to_jenkins:
 {% if pillar['system_features']['configure_jenkins']['make_sure_nodes_are_connected'] %}
 reconnect_{{ slave_name }}_node_with_jenkins:
     cmd.run:
-        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ connect-node {{ slave_name }} -f'
+        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ connect-node {{ slave_name }} -f'
         - require:
             - cmd: download_jenkins_cli_jar
             - cmd: add_{{ slave_name }}_node_configuration_to_jenkins

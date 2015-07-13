@@ -4,6 +4,8 @@
 
 {% if pillar['system_resources'][registered_content_item_id]['enable_installation'] %}
 
+{% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
+
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_registered_content_item_URI with context %}
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
@@ -20,8 +22,8 @@
 
 install_jenkins_{{ registered_content_item_id }}:
     cmd.run:
-        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ install-plugin {{ config_temp_dir }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }} -restart'
-        - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ list-plugins {{ plugin_name }} | grep {{ plugin_name }}'
+        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ install-plugin {{ config_temp_dir }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }} -restart'
+        - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ list-plugins {{ plugin_name }} | grep {{ plugin_name }}'
         - require:
 
             # Prerequisite provided by the calling state:

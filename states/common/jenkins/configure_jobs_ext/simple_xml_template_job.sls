@@ -13,6 +13,7 @@
 
 {% endmacro %}
 
+{% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
 
 {% macro job_config_function(job_name, job_config) %}
 
@@ -49,8 +50,8 @@
 # Make sure job configuration does not exist:
 add_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ create-job {{ job_name }}"
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ get-job {{ job_name }}"
+        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-job {{ job_name }}"
+        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
         - require:
             - cmd: download_jenkins_cli_jar
             - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml'
@@ -59,9 +60,9 @@ add_{{ job_name }}_job_configuration_to_jenkins:
 # The update won't happen (it will be the same) if job has just been created.
 update_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ update-job {{ job_name }}"
+        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-job {{ job_name }}"
 {% if not pillar['system_features']['configure_jenkins']['rewrite_jenkins_configuration_for_jobs'] %}
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:8080/ get-job {{ job_name }}"
+        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
 {% endif %}
         - require:
             - cmd: download_jenkins_cli_jar
