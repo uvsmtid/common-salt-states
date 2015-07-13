@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Compare two pillars from bootstrap profiles.
+# Save two pillars from bootstrap profiles into files for comparision.
 
 import os
 import sys
@@ -141,6 +141,15 @@ def main():
             call_subprocess(
                 command_args,
                 cwd = props['repo_path_bootstrap_target_pillars'],
+            )
+
+            # Make sure pillars are updated.
+            command_args = [
+                'salt-call',
+                'saltutil.refresh_pillar',
+            ]
+            call_subprocess(
+                command_args,
             )
 
             # Run Salt's `pillar.items` and captrue its output.
