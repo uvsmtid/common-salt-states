@@ -94,9 +94,6 @@ def main():
         modules_dir,
     )
 
-    ###########################################################################
-    # Load properties file.
-
     # Import modules related to `bootstrap` after extending
     # list of import directories.
     import utils.set_log
@@ -104,6 +101,9 @@ def main():
 
     # Set log level.
     utils.set_log.setLoggingLevel('debug')
+
+    ###########################################################################
+    # Load properties file.
 
     logging.info('properties_file_path = ' + properties_file_path)
 
