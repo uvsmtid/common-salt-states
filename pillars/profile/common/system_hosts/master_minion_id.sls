@@ -28,6 +28,9 @@ system_hosts:
         os_platform: fc21
 
         hostname: {{ master_minion_id }}
+        # The master minion host is defined in `primary_net` which is not
+        # controlled by Vagrant and does not disappear when
+        # virtual hosts are destroyed.
         resolved_in: primary_net
         consider_online_for_remote_connections: True
         host_networks:

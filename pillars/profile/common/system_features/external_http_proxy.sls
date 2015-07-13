@@ -2,13 +2,18 @@
 ###############################################################################
 #
 
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
 system_features:
 
     # HTTP proxy.
     # This configuration can be used for: YUM, Cygwin installer, browsers, etc.
     external_http_proxy:
+
         # If not enabled, no proxy configuration is enforced.
-        feature_enabled: False
+        feature_enabled: {{ props['use_internet_http_proxy'] }}
 
         auto_config_url: http://proxy.example.com/autoconf/proxy.pac
 

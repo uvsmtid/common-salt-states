@@ -39,7 +39,11 @@ system_features:
         external_dns_server: 8.8.8.8
 
         # See: docs/pillars/common/system_features/hostname_resolution_config/resolvable_hostname/readme.md
+        {% if props['use_internet_http_proxy'] %}
+        resolvable_hostname: proxy.example.com
+        {% else %}
         resolvable_hostname: google.com
+        {% endif %}
 
         # Networks to be served by DHCP server.
         dchp_networks:
