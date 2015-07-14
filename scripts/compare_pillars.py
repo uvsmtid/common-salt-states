@@ -127,9 +127,9 @@ def main():
     initial_branch = process_output['stdout'].strip()
     assert(initial_branch != 'HEAD')
 
+    pillar_path_to_content = {}
     try:
         # Collect profile pillars data in separate files.
-        pillar_path_to_content = {}
         for profile_name in [ profile_name_left, profile_name_right ]:
 
             # Check out branch with required pillar.
@@ -169,7 +169,7 @@ def main():
 
             # Save profile pillars in memory.
             project_name = pillars['local']['project_name']
-            pillar_name_path = profile_name + '.yaml'
+            pillar_name_path = 'profile.' + profile_name + '.yaml'
             pillar_path_to_content[ pillar_name_path ] = pillars['local']['bootstrap_target_envs'][ project_name + '.' + profile_name ]
 
             # Save pillars in a named file.
@@ -199,6 +199,13 @@ def main():
             command_args,
             cwd = props['repo_path_bootstrap_target_pillars'],
         )
+
+    logging.info('-------')
+    logging.info('SUCCESS')
+    logging.info('-------')
+    logging.info('Compare your files by one of the diff tool:')
+    for diff_tool in [ 'meld', 'colordiff', 'diff' ]:
+        logging.info(' - ' + diff_tool.ljust(10) + ' ' + ' '.join(pillar_path_to_content.keys()))
 
 ###############################################################################
 #
