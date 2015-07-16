@@ -47,15 +47,26 @@ system_features:
             # Salt resources.
 
             common-salt-resources:
-                export_enabled: True
-                export_method: clone
+                # NOTE: Disable export because resource items
+                #       are downloaded one by one.
+                export_enabled: False
+                # NOTE: When export enabled, in order to
+                #       cut size of resources repository,
+                #       using `checkout-index` method.
+                export_method: checkout-index
                 export_format: dir
                 branch_name: '{{ current_task_branch }}'
 
             {% if project_name != 'common' %}
             {{ project_name }}-salt-resources:
-                export_enabled: True
-                export_method: clone
+                # NOTE: Disable export because resource items
+                #       are downloaded one by one.
+                export_enabled: False
+                # NOTE: When export enabled, in order to
+                #       cut size of resources repository,
+                #       get only checked out data (without history)
+                #       using `checkout-index` method.
+                export_method: checkout-index
                 export_format: dir
                 branch_name: '{{ current_task_branch }}'
             {% endif %}
