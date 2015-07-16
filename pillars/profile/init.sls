@@ -56,12 +56,6 @@ include:
             this_pillar: {{ this_pillar }}.common
             profile_root: {{ profile_root }}
 
-    # Load properities in the root of pillar profile tree.
-    - {{ this_pillar }}.properties:
-        defaults:
-            this_pillar: {{ this_pillar }}.properties
-            profile_root: {{ profile_root }}
-
     # Load bootstrap target pillar profiles.
     - {{ this_pillar }}.bootstrap:
         defaults:
@@ -77,6 +71,11 @@ include:
             profile_root: {{ profile_root }}
 
 {% endif %}
+    # Load properities in the root of pillar profile tree.
+    - {{ this_pillar }}.common.properties:
+        defaults:
+            this_pillar: {{ this_pillar }}.common.properties
+            profile_root: {{ profile_root }}
 
 ###############################################################################
 # EOF
