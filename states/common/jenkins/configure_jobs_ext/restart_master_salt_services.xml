@@ -46,6 +46,15 @@
         exit 0
         {% endif %}
 
+        # Use script for Salt configuration:
+        sudo /srv/states/bootstrap/bootstrap.dir/configure_salt.py /srv/pillars/profile/properties.yaml
+
+        # NOTE: The bottom part is old way which is already implemented
+        #       in the top part inside `configure_salt.py` script.
+        # TODO: Clean up the bottom part after
+        #       script things looks good long enough.
+        exit 0
+
         # This script relies on `systemd` commands.
 
         # Update Salt config
