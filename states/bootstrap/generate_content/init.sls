@@ -12,9 +12,8 @@ include:
 {% set bootstrap_files_dir = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
-# Import properties.
-{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
-{% import_yaml properties_path as props %}
+# Define properties (they are loaded as values to the root of pillars):
+{% set props = pillar %}
 
 # Note that `load_bootstrap_target_envs` is only available when Salt
 # configuration (for either master or minion) contains necessary configuration.

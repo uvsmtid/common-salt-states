@@ -1,8 +1,7 @@
 #
 
-# Import properties.
-{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
-{% import_yaml properties_path as props %}
+# Define properties (they are loaded as values to the root of pillars):
+{% set props = pillar %}
 
 {% macro configure_deploy_step_function(
         source_env_pillar
