@@ -272,6 +272,11 @@ def main():
     finally:
         salt_master_conf_stream.close()
 
+    # If file is empty (or only with comments), parser will give None.
+    # Change it to dict.
+    if salt_master_conf is None:
+        salt_master_conf = {}
+
     # Create necessary keys, if not available.
     if 'file_roots' not in salt_master_conf:
         salt_master_conf['file_roots'] = {}
