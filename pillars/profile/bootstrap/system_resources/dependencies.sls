@@ -4,26 +4,6 @@
 
 system_resources:
 
-    # TODO: Rely on official Salt YUM repository for RHEL5 to get it
-    #       as part of dependencies for `salt-*` packages.
-    # This is required to install Salt on CentOS 5.5
-    # (EPEL package is discontinued).
-    #
-    # How to download (update)?
-    # Downloaded on Vagrant virtual box 'uvsmtid/centos-5.5-minimal':
-    #   sudo yum install yum-downloadonly
-    #   sudo yum install --downloadonly --downloaddir=python26-distribute.rpms/ python26-distribute
-    # TODO: CentOS 5.5 minimal DOES have `tar` (and gzip`/`gunzip`),
-    #       but this is `zip`.
-    python26-distribute_downloaded_rpms_with_dependencies_0.6.10-4.el5.x86_64:
-        resource_repository: common-resources
-        bootstrap_use_cases: True
-        enable_content_validation: True
-        enable_installation: True
-        item_parent_dir_path: bootstrap/dependencies
-        item_base_name: python26-distribute-0.6.10-4.el5.x86_64.rpms.zip
-        item_content_hash: md5=8406a25dbd3bacdf87b52acaec096c8e
-
     ###########################################################################
     # PyYAML
     # The library is required to allow bootstrap script to load YAML data.
