@@ -34,11 +34,20 @@ include:
 
 {% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
 
-# Use single host (control host) to push the same single public key everywhere.
+# Use single host (control host) to ping all required hosts (not just minions).
 ping_all_online_hosts_for_remote_connections:
     salt.state:
         - tgt: '{{ controller_role_host }}'
         - sls: common.network.ping_hosts
+        - require:
+            {{ stage_flag_file_prerequisites(flag_name) }}
+
+# Make sure all registered minions are contactable.
+# This will only contact minions via Salt native communication.
+ping_all_minions_to_ensure_availability:
+    salt.function:
+        - name: test.ping
+        - tgt: '*'
         - require:
             {{ stage_flag_file_prerequisites(flag_name) }}
 
