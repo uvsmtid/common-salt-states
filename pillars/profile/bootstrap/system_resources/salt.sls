@@ -4,9 +4,13 @@
 
 system_resources:
 
+    ###########################################################################
+    # Salt for Fedora 21 = platform `fc21`
+
+    # TODO: There is own vagrant image: 'uvsmtid/fedora-21-server-minimal'.
     # Downloaded on Vagrant virtual box 'hansode/fedora-21-server-x86_64':
     #   sudo yum install --downloadonly --downloaddir=salt-minion.rpms/ salt-minion
-    # Is there `zip` or `tar` on Fedora 21 minimal?.
+    # There are neither `zip` nor `tar` command on minimal F21.
     salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64:
         resource_repository: common-resources
         bootstrap_use_cases: True
@@ -18,9 +22,10 @@ system_resources:
         #item_base_name: salt-minion-2014.7.1-1.fc21.x86_64.rpms.zip
         #item_content_hash: md5=79e34d62ab3634fe53d778e1ab068d11
 
+    # TODO: There is own vagrant image: 'uvsmtid/fedora-21-server-minimal'.
     # Downloaded on Vagrant virtual box 'hansode/fedora-21-server-x86_64':
     #   sudo yum install --downloadonly --downloaddir=salt-master.rpms/ salt-master
-    # Is there `zip` or `tar` on Fedora 21 minimal?.
+    # There are neither `zip` nor `tar` command on minimal F21.
     salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64:
         resource_repository: common-resources
         bootstrap_use_cases: True
@@ -32,6 +37,12 @@ system_resources:
         #item_base_name: salt-master-2014.7.1-1.fc21.x86_64.rpms.zip
         #item_content_hash: md5=a3dca277ba62d72eec31ee709cce0acd
 
+    ###########################################################################
+    # Salt for CentOS 7 = platform `rhel7`
+
+    # TODO: Provide only `salt-minion` package.
+    # NOTE: It has the same dependencies with `salt-master`.
+    #
     # Downloaded on Vagrant virtual box 'uvsmtid/centos-7.0-minimal':
     #   sudo yum install --downloadonly --downloaddir=salt-minion.rpms/ salt-minion
     # Note that CentOS 7.0 minimal does not have `zip`/`unzip`,
@@ -45,6 +56,9 @@ system_resources:
         item_base_name: salt-minion-2014.7.1-1.el7.x86_64.rpms.tar
         item_content_hash: md5=4781e6b4e73bf9b15da27396631946cf
 
+    # TODO: Provide only `salt-master` package.
+    # NOTE: It has the same dependencies with `salt-minion`.
+    #
     # Downloaded on Vagrant virtual box 'uvsmtid/centos-7.0-minimal':
     #   sudo yum install --downloadonly --downloaddir=salt-master.rpms/ salt-master
     # Note that CentOS 7.0 minimal does not have `zip`/`unzip`,
@@ -58,33 +72,62 @@ system_resources:
         item_base_name: salt-master-2014.7.1-1.el7.x86_64.rpms.tar
         item_content_hash: md5=84593d8c077b10253c062ff3b95ecbe1
 
+    ###########################################################################
+    # Salt for CentOS 5 = platform `rhel5`
+
+    # Common dependencies for both `salt-minion` and `salt-master`
+    # NOTE: After downloading with dependencies `salt*` pacakges,
+    #       the following command shows that all dependencies are the same:
+    #         for DIR in salt-master.rpms salt-minion.rpms salt.rpms ; do (cd $DIR ; md5sum * | sort ; cd -) > $DIR.sort.list.txt ; done
+    # NOTE: Download requires enabling official Salt repo for RHEL5:
+    #         https://copr.fedoraproject.org/coprs/saltstack/salt-el5/
     # Downloaded on Vagrant virtual box 'uvsmtid/centos-5.5-minimal':
     #   sudo yum install yum-downloadonly
-    #   sudo yum install --downloadonly --downloaddir=salt-minion.rpms/ salt-minion
-    # TODO: CentOS 5.5 minimal DOES have `tar` (and gzip`/`gunzip`),
-    #       but this is `zip`.
-    salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.el5.x86_64:
+    #   sudo yum install --downloadonly --downloaddir=salt.rpms/ salt
+    #   cd salt.rpms/
+    #   tar -cvf ../salt.rpms-VERSION.tar *
+    salt_downloaded_rpms_with_dependencies_2015.5.3-4.el5.x86_64.tar:
         resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: bootstrap/salt
-        item_base_name: salt-minion-2014.7.1-1.el5.x86_64.rpms.zip
-        item_content_hash: md5=fa1d8b766d48cd35964df123afde7813
+        item_base_name: salt-2015.5.3-4.el5.x86_64.tar
+        item_content_hash: md5=4b2f53abd0b54fcda7545badb0207e66
 
+    # NOTE: `salt-master` has the same dependencies with `salt-minion`.
+    #
+    # NOTE: Download requires enabling official Salt repo for RHEL5:
+    #         https://copr.fedoraproject.org/coprs/saltstack/salt-el5/
     # Downloaded on Vagrant virtual box 'uvsmtid/centos-5.5-minimal':
     #   sudo yum install yum-downloadonly
     #   sudo yum install --downloadonly --downloaddir=salt-master.rpms/ salt-master
-    # TODO: CentOS 5.5 minimal DOES have `tar` (and gzip`/`gunzip`),
-    #       but this is `zip`.
-    salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.el5.x86_64:
+    #   # See downloading `salt` package only - compare the same dependencies.
+    salt-master-2015.5.3-4.noarch.el5.rpm:
         resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: bootstrap/salt
-        item_base_name: salt-master-2014.7.1-1.el5.x86_64.rpms.zip
-        item_content_hash: md5=76dbefa4c6703a5bfd4f78ea9571c42e
+        item_base_name: salt-master-2015.5.3-4.noarch.el5.rpm
+        item_content_hash: md5=490caab1f2ca831075ef15154ce12562
+
+    # NOTE: `salt-minion` has the same dependencies with `salt-master`.
+    #
+    # NOTE: Download requires enabling official Salt repo for RHEL5:
+    #         https://copr.fedoraproject.org/coprs/saltstack/salt-el5/
+    # Downloaded on Vagrant virtual box 'uvsmtid/centos-5.5-minimal':
+    #   sudo yum install yum-downloadonly
+    #   sudo yum install --downloadonly --downloaddir=salt-minion.rpms/ salt-minion
+    #   # See downloading `salt` package only - compare the same dependencies.
+    salt-minion-2015.5.3-4.noarch.el5.rpm:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: bootstrap/salt
+        item_base_name: salt-minion-2015.5.3-4.noarch.el5.rpm
+        item_content_hash: md5=1a88c3d858d82733acb3a667de467041
 
 ###############################################################################
 # EOF

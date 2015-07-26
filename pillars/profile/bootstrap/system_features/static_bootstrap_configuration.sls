@@ -45,12 +45,12 @@ system_features:
                             source_type: tar
                             resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
                     rhel5:
+                        salt:
+                            source_type: tar
+                            resource_id: salt_downloaded_rpms_with_dependencies_2015.5.3-4.el5.x86_64.tar
                         salt-master:
-                            source_type: zip
-                            resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.el5.x86_64
-                        python26-distribute:
-                            source_type: zip
-                            resource_id: python26-distribute_downloaded_rpms_with_dependencies_0.6.10-4.el5.x86_64
+                            source_type: rpm
+                            resource_id: salt-master-2015.5.3-4.noarch.el5.rpm
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.09-10.el5.x86_64.rpms.tar
@@ -78,12 +78,12 @@ system_features:
                             source_type: tar
                             resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
                     rhel5:
+                        salt:
+                            source_type: tar
+                            resource_id: salt_downloaded_rpms_with_dependencies_2015.5.3-4.el5.x86_64.tar
                         salt-minion:
-                            source_type: zip
-                            resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.el5.x86_64
-                        python26-distribute:
-                            source_type: zip
-                            resource_id: python26-distribute_downloaded_rpms_with_dependencies_0.6.10-4.el5.x86_64
+                            source_type: rpm
+                            resource_id: salt-minion-2015.5.3-4.noarch.el5.rpm
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.09-10.el5.x86_64.rpms.tar
