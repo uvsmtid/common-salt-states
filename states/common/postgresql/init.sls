@@ -13,6 +13,7 @@ postgresql_server_package:
 init_postgresql_data:
     cmd.run:
         - name: 'postgresql-setup --initdb'
+        - unless: 'ls /var/lib/pgsql/data/pg_hba.conf'
         - require:
             - pkg: postgresql_server_package
 
