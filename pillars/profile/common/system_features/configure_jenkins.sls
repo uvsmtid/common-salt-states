@@ -9,7 +9,10 @@ system_features:
 
         feature_enabled: True
 
-        jenkins_http_port: 8080
+        # Both of these port conflict with Maven integration tests
+        # using Jboss when set to defaults (8080 and 8009).
+        jenkins_http_port: 8088
+        jenkins_ajp_port: 8089
 
         jenkins_root_dir: '/var/lib/jenkins'
 
