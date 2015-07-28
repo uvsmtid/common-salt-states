@@ -52,6 +52,7 @@ system_features:
                 export_enabled: False
                 # NOTE: When export enabled, in order to
                 #       cut size of resources repository,
+                #       get only checked out data (without history)
                 #       using `checkout-index` method.
                 export_method: checkout-index
                 export_format: dir
