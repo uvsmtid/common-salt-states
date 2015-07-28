@@ -2,7 +2,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os_platform_type'].startswith('fc') %}
+{% if grains['os_platform_type'].startswith('fc') or grains['os_platform_type'].startswith('rhel7') %}
 
 
 postgresql_server_package:
