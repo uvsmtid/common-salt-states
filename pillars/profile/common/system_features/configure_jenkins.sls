@@ -55,8 +55,8 @@ system_features:
         #       timer_spec:
         #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/timer_spec/readme.md
         #
-        #       trigger_after_jobs:
-        #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_after_jobs/readme.md
+        #       trigger_jobs:
+        #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_jobs/readme.md
         #
 
             ###################################################################
