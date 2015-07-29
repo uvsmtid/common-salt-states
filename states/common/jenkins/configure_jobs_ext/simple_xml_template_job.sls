@@ -29,6 +29,8 @@
 {% set assigned_slave_host = pillar['system_host_roles'][restricted_to_role]['assigned_hosts'][0] %}
 {% set assigned_slave_host_config = pillar['system_hosts'][assigned_slave_host] %}
 {% set os_type = pillar['system_platforms'][assigned_slave_host_config['os_platform']]['os_type'] %}
+{% set host_config = pillar['system_hosts'][ grains['id'] ] %}
+{% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
 
 {% set URI_prefix = pillar['system_features']['deploy_central_control_directory']['URI_prefix'] %}
 
@@ -43,6 +45,7 @@
 
             job_name: "{{ job_name }}"
             os_type: "{{ os_type }}"
+            jenkins_dir_path: '{{ account_conf['posix_user_home_dir'] }}/jenkins'
             job_description: ""
             job_assigned_host: "{{ assigned_slave_host }}"
             control_url: '{{ URI_prefix }}/{{ pillar['system_features']['deploy_central_control_directory']['control_dir_url_path'] }}'
