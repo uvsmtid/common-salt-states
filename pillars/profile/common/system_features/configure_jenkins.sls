@@ -55,8 +55,8 @@ system_features:
         #       timer_spec:
         #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/timer_spec/readme.md
         #
-        #       trigger_after_jobs:
-        #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_after_jobs/readme.md
+        #       trigger_jobs:
+        #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_jobs/readme.md
         #
 
             ###################################################################
@@ -73,7 +73,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                trigger_after_jobs: ~
+                trigger_jobs:
+                    - update_salt_master_sources
 
                 skip_script_execution: True
 
@@ -94,7 +95,8 @@ system_features:
 
                 timer_spec: 'H */2 * * *'
 
-                trigger_after_jobs: ~
+                trigger_jobs:
+                    - update_salt_master_sources
 
                 skip_script_execution: True
 
@@ -112,7 +114,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                trigger_after_jobs: ~
+                trigger_jobs:
+                    - update_salt_master_sources
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -128,10 +131,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                trigger_after_jobs:
-                    - trigger_on_demand
-                    - trigger_on_timer
-                    - trigger_on_changes
+                trigger_jobs:
+                    - restart_master_salt_services
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -146,8 +147,8 @@ system_features:
 
                 timer_spec: ~
 
-                trigger_after_jobs:
-                    - update_salt_master_sources
+                trigger_jobs:
+                    - configure_jenkins_jobs
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -162,8 +163,8 @@ system_features:
 
                 timer_spec: ~
 
-                trigger_after_jobs:
-                    - restart_master_salt_services
+                trigger_jobs:
+                    - build_bootstrap_package
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -178,8 +179,8 @@ system_features:
 
                 timer_spec: ~
 
-                trigger_after_jobs:
-                    - configure_jenkins_jobs
+                trigger_jobs:
+                    - configure_vagrant
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -194,8 +195,8 @@ system_features:
 
                 timer_spec: ~
 
-                trigger_after_jobs:
-                    - build_bootstrap_package
+                trigger_jobs:
+                    - destroy_vagrant_hosts
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -210,8 +211,8 @@ system_features:
 
                 timer_spec: ~
 
-                trigger_after_jobs:
-                    - configure_vagrant
+                trigger_jobs:
+                    - remove_salt_minion_keys
 
                 skip_script_execution: False
 
@@ -228,8 +229,8 @@ system_features:
 
                 timer_spec: ~
 
-                trigger_after_jobs:
-                    - destroy_vagrant_hosts
+                trigger_jobs:
+                    - instantiate_vagrant_hosts
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -244,8 +245,8 @@ system_features:
 
                 timer_spec: ~
 
-                trigger_after_jobs:
-                    - remove_salt_minion_keys
+                trigger_jobs:
+                    - run_salt_orchestrate
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -260,8 +261,8 @@ system_features:
 
                 timer_spec: ~
 
-                trigger_after_jobs:
-                    - instantiate_vagrant_hosts
+                trigger_jobs:
+                    - run_salt_highstate
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -280,22 +281,7 @@ system_features:
                 timer_spec: ~
                 #}#
 
-                trigger_after_jobs:
-                    - run_salt_orchestrate
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
-
-            {% set job_id = 'maven_build_all' %}
-            {{ job_id }}:
-                enabled: True
-
-                restrict_to_system_role:
-                    - controller_role
-
-                trigger_after_jobs:
-                    - run_salt_highstate
+                trigger_jobs: ~
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
