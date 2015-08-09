@@ -8,6 +8,8 @@
 
 {% set master_minion_id = props['master_minion_id'] %}
 
+{% if master_minion_id in props['enabled_minion_hosts'] %}
+
 system_hosts:
 
     {{ master_minion_id }}:
@@ -35,7 +37,7 @@ system_hosts:
         consider_online_for_remote_connections: True
         host_networks:
 
-            # Network available without virtualization.
+            # Network available before creation of virtualized hosts.
             primary_net:
                 ip: 192.168.1.1
 
@@ -49,6 +51,8 @@ system_hosts:
                 ip: 192.168.62.1
 
         primary_user: master_minion_user
+
+{% endif %}
 
 ###############################################################################
 # EOF

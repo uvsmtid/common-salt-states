@@ -44,6 +44,15 @@ symlinks_map:
 projects_states_repo_paths:
     {}
 
+# List of minions to be managed.
+# NOTE: In order for this list to be effective, there are two conditions:
+#       - Pillar with minion configuration should actually use this
+#         list to enable/disable this minion.
+#       - List of accepted minions configured by `salt-key` command should
+#         be re-configured accordingly so that `*` actually means this list.
+enabled_minion_hosts:
+    - master_minion_id
+
 ###############################################################################
 # EOF
 ###############################################################################

@@ -8,6 +8,8 @@
 
 {% set default_username = props['default_username'] %}
 
+{% if 'rhel5_minion' in props['enabled_minion_hosts'] %}
+
 system_hosts:
 
     rhel5_minion:
@@ -41,6 +43,8 @@ system_hosts:
                 ip: 192.168.62.10
 
         primary_user: default_user
+
+{% endif %}
 
 ###############################################################################
 # EOF

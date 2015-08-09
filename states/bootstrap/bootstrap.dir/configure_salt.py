@@ -318,6 +318,18 @@ def main():
         salt_master_conf_stream.close()
 
     ###########################################################################
+    # Remove all minion keys.
+
+    command_args = [
+        'salt-key',
+        '-y',
+        '--delete-all',
+    ]
+    call_subprocess(
+        command_args,
+    )
+
+    ###########################################################################
     # Restart both Salt master and Salt minion.
 
     # NOTE: Use `rhel5` implementation as it works for `systemd`-based too.
@@ -341,6 +353,12 @@ def main():
         salt_extra_args = [],
         cmd_extra_args = [],
     )
+
+    ###########################################################################
+    # NOTE: There is no code to add minion keys because
+    #       it is considered that status of the minion is beyond control
+    #       at the moment. Conventionally, this list should match the list
+    #       defined in `enabled_minion_hosts` property.
 
 ###############################################################################
 #
