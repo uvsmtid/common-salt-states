@@ -340,10 +340,9 @@ system_features:
             {% endfor %}
 
             ###################################################################
-            # Release job
+            # Build release
 
-            {% if False %}
-            {% set job_id = 'finalize_release' %}
+            {% set job_id = 'build_release' %}
             {{ job_id }}:
                 enabled: True
 
@@ -351,14 +350,18 @@ system_features:
                     - controller_role
 
                 trigger_jobs:
-                    {% for maven_repo_name in maven_repo_names %}
-                    - {{ maven_job_name_prefix }}.{{ maven_repo_name }}
-                    {% endfor %}
+                    - restart_master_salt_services
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
-            {% endif %}
+
+            ###################################################################
+            # TODO: Add additional jobs for release pipeline?
+            # - Merge build branches?
+            # - Save dynamic build descriptor?
+            # - Upload artifacts somewhere?
+            # - Create tags and push them to upstream?
 
         #######################################################################
         #
@@ -415,6 +418,15 @@ system_features:
 
                     first_job_name: maven_build_all
 
+            release-pipeline:
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: build_release
+
             triggers:
                 enabled: True
 
@@ -426,6 +438,7 @@ system_features:
                         - trigger_on_demand
                         - trigger_on_timer
                         - trigger_on_changes
+                        - build_release
 
 ###############################################################################
 # EOF
