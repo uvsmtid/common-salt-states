@@ -13,6 +13,10 @@
 {% set default_username = props['default_username'] %}
 {% set current_task_branch = props['current_task_branch'] %}
 
+# Import `maven_repo_names`.
+{% set maven_repo_names_path = profile_root.replace('.', '/') + '/common/system_features/maven_repo_names.yaml' %}
+{% import_yaml maven_repo_names_path as maven_repo_names %}
+
 system_features:
 
     target_bootstrap_configuration:
@@ -100,6 +104,18 @@ system_features:
                 # Pillars repository considered as "target" in the "source" environment
                 # becomes "source" configuration in the "target" environment.
                 target_repo_name: {{ project_name }}-salt-pillars
+
+            # Maven component repositories.
+
+            {% for maven_repo_name in maven_repo_names %}
+
+            {{ maven_repo_name }}:
+                export_enabled: False
+                export_method: git-archive
+                export_format: tar
+                branch_name: ~
+
+            {% endfor %}
 
             # Other repositories.
 

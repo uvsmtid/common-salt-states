@@ -2,6 +2,12 @@
 ###############################################################################
 #
 
+# Import `maven_repo_names`.
+{% set maven_repo_names_path = profile_root.replace('.', '/') + '/common/system_features/maven_repo_names.yaml' %}
+{% import_yaml maven_repo_names_path as maven_repo_names %}
+
+{% set maven_job_name_prefix = 'maven.top.pom.build' %}
+
 system_features:
 
     # Jenkins configuration
@@ -281,11 +287,78 @@ system_features:
                 timer_spec: ~
                 #}#
 
-                trigger_jobs: ~
+                trigger_jobs:
+                    - maven_build_all
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+            {% set job_id = 'maven_build_all' %}
+            {{ job_id }}:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                trigger_jobs:
+                    {% for maven_repo_name in maven_repo_names %}
+                    - {{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                    {% endfor %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+            ###################################################################
+            # Build jobs per repo
+
+            {% for maven_repo_name in maven_repo_names %}
+
+            {{ maven_job_name_prefix }}.{{ maven_repo_name }}:
+                enabled: True
+
+                restrict_to_system_role:
+                    - jenkins_slave_role
+
+                trigger_jobs: ~
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/maven_project_job.xml'
+                    repository_name: {{ maven_repo_name }}
+
+                # Some repositories do not have `pom.xml` in default location.
+                # Note that at the moment all repo's roots
+                # were supplied with pom.xml.
+                {% if not maven_repo_name %}
+                    {{ FAIL_here }}
+                {% else %}
+                    component_pom_path: 'pom.xml'
+                {% endif %}
+
+            {% endfor %}
+
+            ###################################################################
+            # Release job
+
+            {% if False %}
+            {% set job_id = 'finalize_release' %}
+            {{ job_id }}:
+                enabled: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                trigger_jobs:
+                    {% for maven_repo_name in maven_repo_names %}
+                    - {{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                    {% endfor %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+            {% endif %}
 
         #######################################################################
         #
@@ -311,6 +384,19 @@ system_features:
                         - run_salt_orchestrate
                         - run_salt_highstate
 
+            maven:
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
+
+                    job_list:
+                        - maven_build_all
+                        {% for maven_repo_name in maven_repo_names %}
+                        - {{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                        {% endfor %}
+
             infra-pipeline:
                 enabled: True
 
@@ -319,6 +405,15 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
                     first_job_name: update_salt_master_sources
+
+            maven-pipeline:
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: maven_build_all
 
             triggers:
                 enabled: True

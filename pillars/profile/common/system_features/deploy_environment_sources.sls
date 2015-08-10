@@ -12,6 +12,10 @@
 {% set profile_name = props['profile_name'] %}
 {% set current_task_branch = props['current_task_branch'] %}
 
+# Import `maven_repo_names`.
+{% set maven_repo_names_path = profile_root.replace('.', '/') + '/common/system_features/maven_repo_names.yaml' %}
+{% import_yaml maven_repo_names_path as maven_repo_names %}
+
 system_features:
 
     # Deploy source code on all required minions.
@@ -91,6 +95,14 @@ system_features:
 
             '{{ project_name }}-salt-pillars.bootstrap-target': git
 
+            # Maven repositories.
+
+            {% for maven_repo_name in maven_repo_names %}
+
+            '{{ maven_repo_name }}': git
+
+            {% endfor %}
+
             # Other repositories.
 
             # ...
@@ -127,6 +139,14 @@ system_features:
             '{{ project_name }}-salt-pillars': '/environment.sources/{{ project_name }}-salt-pillars.git'
 
             '{{ project_name }}-salt-pillars.bootstrap-target': '/environment.sources/{{ project_name }}-salt-pillars.bootstrap-target.git'
+
+            # Maven repositories.
+
+            {% for maven_repo_name in maven_repo_names %}
+
+            '{{ maven_repo_name }}': '/environment.sources/observer.git/maven/{{ maven_repo_name }}.git'
+
+            {% endfor %}
 
             # Other repositories.
 
@@ -225,6 +245,20 @@ system_features:
                 {% else %}
                     branch_name: '{{ profile_name }}'
                 {% endif %}
+
+            # Maven component repositories.
+
+            {% for maven_repo_name in maven_repo_names %}
+
+            '{{ maven_repo_name }}':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/{{ maven_repo_name }}.git'
+
+                    branch_name: 'develop'
+
+            {% endfor %}
 
             # Other repositories.
 
