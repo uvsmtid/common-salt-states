@@ -13,7 +13,7 @@ include:
         ,
         'common_pillar_schema_version'
         ,
-        'release_descriptor'
+        'system_build_descriptor'
         ,
         'system_platforms'
         ,

@@ -342,7 +342,7 @@ system_features:
             ###################################################################
             # Build release
 
-            {% set job_id = 'build_release' %}
+            {% set job_id = 'init_dynamic_build_descriptor' %}
             {{ job_id }}:
                 enabled: True
 
@@ -425,7 +425,7 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: build_release
+                    first_job_name: init_dynamic_build_descriptor
 
             triggers:
                 enabled: True
@@ -438,7 +438,7 @@ system_features:
                         - trigger_on_demand
                         - trigger_on_timer
                         - trigger_on_changes
-                        - build_release
+                        - init_dynamic_build_descriptor
 
 ###############################################################################
 # EOF

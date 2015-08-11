@@ -69,7 +69,7 @@
   </properties>
 
   {% endif %}
-  
+
   <scm class="hudson.scm.NullSCM"/>
   <assignedNode>{{ job_assigned_host }}</assignedNode>
   <canRoam>false</canRoam>
@@ -99,9 +99,48 @@
         exit 0
         {% endif %}
 
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
+        # Get location of dynamic build descriptor (which is in pillar).
+        # TODO: The repo name with pillars is just an assumption:
+        #       {# project_name #}-salt-pillars
+        {% set project_name = pillar['project_name'] %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars']['git'] %}
+        DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/pillars/profile/dynamic_build_descriptor.yaml'
+        # Make sure file exists.
+        ls -lrt ${DYN_BUILD_DESC_PATH}
 
+        # Print environment variables.
+        env
+        # Write environment variables into dynamic build descriptor.
+        PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${PYTHON_SCRIPT}
+import os
+import sys
+import yaml
 
+# Load data from dynamic descriptor.
+with open(sys.argv[1], 'r') as yaml_file:
+    loaded_data = yaml.load(yaml_file)
+
+if loaded_data is None:
+    loaded_data = {}
+
+# Save environment variables as text with shell code.
+loaded_data['environ_text'] = sys.stdin.read()
+# Save environment variables as dict structure.
+loaded_data['environ'] = os.environ.copy()
+
+with open(sys.argv[1], 'w') as yaml_file:
+    yaml.dump(
+        loaded_data,
+        yaml_file,
+        default_flow_style = False,
+        indent = 4,
+    )
+
+HEREDOC_MARKER
+        env | python ${PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH}
 
         {% if False %}
 
