@@ -13,6 +13,8 @@ include:
         ,
         'common_pillar_schema_version'
         ,
+        'release_descriptor'
+        ,
         'system_platforms'
         ,
         'system_secrets'
