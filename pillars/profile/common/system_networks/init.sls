@@ -2,10 +2,18 @@
 ###############################################################################
 #
 
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set primary_network = props['primary_network'] %}
+
 include:
 
+
+# Include additional networks.
 {% for sub_item in [
-        'primary_net'
+        primary_network['network_name']
         ,
         'internal_net'
         ,

@@ -8,7 +8,7 @@
 
 {% set default_username = props['default_username'] %}
 
-{% if 'rhel7_minion' in props['enabled_minion_hosts'] %}
+{% if 'rhel7_minion' in props['enabled_minion_hosts'].keys() %}
 
 system_hosts:
 

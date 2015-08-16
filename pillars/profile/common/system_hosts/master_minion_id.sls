@@ -7,8 +7,9 @@
 {% import_yaml properties_path as props %}
 
 {% set master_minion_id = props['master_minion_id'] %}
+{% set primary_network = props['primary_network'] %}
 
-{% if master_minion_id in props['enabled_minion_hosts'] %}
+{% if master_minion_id in props['enabled_minion_hosts'].keys() %}
 
 system_hosts:
 
@@ -30,16 +31,16 @@ system_hosts:
         os_platform: fc21
 
         hostname: {{ master_minion_id }}
-        # The master minion host is defined in `primary_net` which is not
-        # controlled by Vagrant and does not disappear when
-        # virtual hosts are destroyed.
-        resolved_in: primary_net
+        # The master minion host is defined in `primary_network`
+        # which is not controlled by Salt (directly or indirectly, e.g.
+        # through configuration of some virtualized networks) and
+        # exist to contact minions before running any Salt states.
+        resolved_in: {{ primary_network['network_name'] }}
         consider_online_for_remote_connections: True
         host_networks:
 
-            # Network available before creation of virtualized hosts.
-            primary_net:
-                ip: 192.168.1.1
+            {{ primary_network['network_name'] }}:
+                ip: {{ props['enabled_minion_hosts'][master_minion_id] }}
 
             internal_net:
                 ip: 192.168.51.1

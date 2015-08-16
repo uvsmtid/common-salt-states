@@ -2,6 +2,12 @@
 ###############################################################################
 #
 
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set primary_network = props['primary_network'] %}
+
 system_networks:
 
     # TODO: Add docs.
@@ -11,19 +17,20 @@ system_networks:
     #
     # It is important to resolve master hostname on this network
     # (otherwise it won't be reachible until virtual networks are created).
-    primary_net:
+    {{ primary_network['network_name'] }}:
 
-        subnet: 192.168.1.0
+        # AKA "network address":
+        subnet: {{ primary_network['network_ip_subnet'] }}
 
         # WARNING: netmask and prefix should be consistent
         #          (they define the same thing).
-        netmask: 255.255.255.0
-        netprefix: 24
+        netmask: {{ primary_network['network_ip_netmask'] }}
+        netprefix: {{ primary_network['network_ip_netprefix'] }}
 
-        broadcast: 192.168.1.255
+        broadcast: {{ primary_network['network_ip_broadcast'] }}
 
         # Default route.
-        gateway: 192.168.1.254
+        gateway: {{ primary_network['network_ip_gateway'] }}
 
 ###############################################################################
 # EOF
