@@ -356,6 +356,41 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
+                build_parameters:
+                    BUILD_TYPE:
+                        parameter_description: |
+                            Build types affect versioning and tagging.
+                        parameter_type: choice
+                        parameter_value:
+                            - SNAPSHOT
+                            - INCREMENTAL_RELEASE
+                            - SEMANTIC_RELEASE
+                    BUILD_SUFFIX:
+                        parameter_description: ~
+                        parameter_type: string
+                        parameter_value: 'default'
+                    TARGET_PROFILE:
+                        parameter_description: |
+                            Specify target profile for bootstrap package.
+                        parameter_type: choice
+                        parameter_value:
+                            - develop
+                    MAVEN_SKIP_TESTS:
+                        parameter_description: |
+                            TODO: Skip tests.
+                        parameter_type: boolean
+                        parameter_value: False
+                    GIT_AUTHOR_EMAIL:
+                        parameter_description: |
+                            Specify author email for Git commits.
+                        parameter_type: string
+                        parameter_value: ''
+                    BUILD_NOTES:
+                        parameter_description: |
+                            Any notes describing the build.
+                        parameter_type: text
+                        parameter_value: ''
+
             ###################################################################
             # TODO: Add additional jobs for release pipeline?
             # - Merge build branches?

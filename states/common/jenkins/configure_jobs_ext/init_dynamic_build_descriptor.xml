@@ -7,17 +7,56 @@
   <properties>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
+
+        {% for param_name in job_config['build_parameters'].keys() %}
+
+        {% set param_config = job_config['build_parameters'][param_name] %}
+        {% set param_type = param_config['parameter_type'] %}
+
+        {% if not param_type %}
+
+        {% elif param_type == 'boolean' %}
+
+        <hudson.model.BooleanParameterDefinition>
+          <name>{{ param_name }}</name>
+          <description>{{ param_config['parameter_description'] }}</description>
+          <defaultValue>{{ param_config['parameter_value'] }}</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+
+        {% elif param_type == 'choice' %}
+
         <hudson.model.ChoiceParameterDefinition>
-          <name>BUILD_TYPE</name>
-          <description></description>
+          <name>{{ param_name }}</name>
+          <description>{{ param_config['parameter_description'] }}</description>
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
-              <string>SNAPSHOT</string>
-              <string>INCREMENTAL_RELEASE</string>
-              <string>SEMANTIC_RELEASE</string>
+              {% for param_value in param_config['parameter_value'] %}
+              <string>{{ param_value }}</string>
+              {% endfor %}
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
+
+        {% elif param_type == 'string' %}
+
+        <hudson.model.StringParameterDefinition>
+          <name>{{ param_name }}</name>
+          <description>{{ param_config['parameter_description'] }}</description>
+          <defaultValue>{{ param_config['parameter_value'] }}</defaultValue>
+        </hudson.model.StringParameterDefinition>
+
+        {% elif param_type == 'text' %}
+
+        <hudson.model.TextParameterDefinition>
+          <name>{{ param_name }}</name>
+          <description>{{ param_config['parameter_description'] }}</description>
+          <defaultValue>{{ param_config['parameter_value'] }}</defaultValue>
+        </hudson.model.TextParameterDefinition>
+
+        {% endif %}
+
+        {% endfor %}
+
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
