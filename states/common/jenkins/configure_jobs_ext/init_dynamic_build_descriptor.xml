@@ -181,6 +181,12 @@ with open(sys.argv[1], 'w') as yaml_file:
 HEREDOC_MARKER
         env | python ${PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH}
 
+        # Write parameters to the file used by subsequent jobs.
+        echo >> {{ jenkins_dir_path }}/build.properties
+        {% for param_name in job_config['build_parameters'].keys() %}
+        echo "{{ param_name }}=${{ param_name }}" >> {{ jenkins_dir_path }}/build.properties
+        {% endfor %}
+
         {% if False %}
 
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
