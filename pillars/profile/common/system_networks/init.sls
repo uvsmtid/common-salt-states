@@ -10,8 +10,6 @@
 
 include:
 
-
-# Include additional networks.
 {% for sub_item in [
         primary_network['network_name']
         ,
