@@ -33,6 +33,8 @@
         exit 0
         {% endif %}
 
+        #######################################################################
+
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         # NOTE: We assume that repository is available
@@ -40,6 +42,9 @@
 
         # We assume that remote `origin` has to be pre-configured.
         # TODO: Use automation to use configured remote and probably branch.
+
+        #######################################################################
+        # Branch all repositories based on dynamic build descriptor.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -49,9 +54,6 @@
         test "$CURRENT_BRANCH" != "HEAD"
         # git pull --ff-only origin $CURRENT_BRANCH
         {% endfor %}
-
-        # Print environment variables.
-        env
 
       </command>
     </hudson.tasks.Shell>
