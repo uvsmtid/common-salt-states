@@ -110,7 +110,28 @@ HEREDOC_MARKER
         {% endfor %}
 
         #######################################################################
+        # TODO: Take special care to restore local files back to the conditions
+        #       they were at the begining of the build pipeline
+        #       (taking into account all local changes).
+        #
+
+        {% if False %} # DISABLED until it can run for parent first and for pillar last.
+
+        # This step restores all local changes committed at the beginning.
+        git checkout "${RESTORE_COMMIT_ID}"
+
+        # This step resets HEAD to the commit before the beginning
+        # while leaving all local files as they are at restore point.
+        git reset "${INITIAL_BRANCH}"
+
+        # This step simply checks out branch (moves away from detached HEAD).
+        git checkout "${INITIAL_BRANCH}"
+
+        {% endif %}
+
+        #######################################################################
         # Remove all build branches.
+        #
         # TODO: This better be done after promotion (which causes tagging).
 
         if [ "${REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION}" == "true" ]

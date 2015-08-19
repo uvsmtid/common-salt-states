@@ -50,6 +50,51 @@
         ls -lrt ${DYN_BUILD_DESC_PATH}
 
         #######################################################################
+        # In-place Python script which captures stdin data under
+        # specified key in destination dict.
+
+        KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
+import os
+import sys
+import yaml
+
+# Load data from dynamic descriptor.
+with open(sys.argv[1], 'r') as yaml_file:
+    loaded_data = yaml.load(yaml_file)
+
+# If file was empty, its data is None, but we need a dict.
+if loaded_data is None:
+    loaded_data = {}
+
+# Parse specification of the key provided on command line.
+# The format should be 'parent-key:child-key:...:sub-key'
+key_spec = sys.argv[2]
+key_list = key_spec.split(':')
+last_sub_key = key_list[-1]
+curr_value = loaded_data
+# Walk down to the last dictionary where 'last_sub_key' is.
+for curr_key in key_list[:-1]:
+    if curr_key not in curr_value:
+        curr_value[curr_key] = {}
+    curr_value = curr_value[curr_key]
+    assert(isinstance(curr_value, dict))
+
+# Assign content of STDIN to the specified key.
+curr_value[last_sub_key] = sys.stdin.read().strip()
+
+# Save dynamic build descriptor.
+with open(sys.argv[1], 'w') as yaml_file:
+    yaml.dump(
+        loaded_data,
+        yaml_file,
+        default_flow_style = False,
+        indent = 4,
+    )
+
+HEREDOC_MARKER
+
+        #######################################################################
         # In-place Python script which returns data under
         # specified key in destination dict on stdout.
 
@@ -108,6 +153,54 @@ HEREDOC_MARKER
         cd -
 
         {% endfor %}
+
+        #######################################################################
+        # Create restore point - initial commits of all local modifications.
+        #
+        # This restore point will be used to recover all local modifications
+        # after switching back to initial branches even if build branches
+        # are supposed to be deleted.
+        #
+        # TODO: Consider using Copy Artifact plugin to get dynamic build
+        #       descriptor from initial job instead of storing it inside
+        #       repository as modified file. This is to make restore
+        #       point before any automatic changes (like dynamic build
+        #       descriptor) done to local content.
+        #
+        # Run for parent repo first and for pillar repo last.
+
+        {% if False %} # DISABLED until it can run for parent first and for pillar last.
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}"
+
+        cd "${REPO_PATH}"
+        git add --all
+        git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: restore point commit'
+        RESTORE_POINT_COMMIT="$(git rev-parse --verify HEAD)"
+        cd -
+
+        echo "$RESTORE_POINT_COMMIT" | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}"
+
+        {% endfor %}
+
+        {% endif %}
+
+        #######################################################################
+        # Commit dynamic build descriptor.
+
+        # TODO
 
         #######################################################################
 
