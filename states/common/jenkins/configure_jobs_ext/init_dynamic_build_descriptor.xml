@@ -154,6 +154,13 @@
         # Make sure file exists.
         ls -lrt ${DYN_BUILD_DESC_PATH}
 
+        # Now, do not touch this file right now.
+        # Let the job detect changes first (avoiding changes caused by itself).
+        # Instead, use temporary file and overwrite exiting by the contents
+        # of the temporary at the end of the job.
+        ORIG_DYN_BUILD_DESC_PATH="${DYN_BUILD_DESC_PATH}"
+        DYN_BUILD_DESC_PATH="$(mktemp)"
+
         #######################################################################
         # Write environment variables into dynamic build descriptor.
 
@@ -298,13 +305,23 @@ HEREDOC_MARKER
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
         CURRENT_COMMIT_ID_SHORT="$(git rev-parse --short --verify HEAD)"
         BUILD_BRANCH_NAME="${CURRENT_BRANCH}-${CURRENT_COMMIT_ID_SHORT}-${BUILD_TITLE}"
+        UNTRACKED_ITEMS="$(git ls-files --other --exclude-standard --directory | wc -l)"
+        MODIFIED_ITEMS="$((git diff --name-only --cached ; git diff --name-only) | sort -u | wc -l)"
         cd -
 
         echo "$CURRENT_BRANCH"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
         echo "$CURRENT_COMMIT_ID" | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
         echo "$BUILD_BRANCH_NAME" | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}"
+        echo "$UNTRACKED_ITEMS"   | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}"
+        echo "$MODIFIED_ITEMS"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}"
 
         {% endfor %}
+
+        #######################################################################
+        # Save dynamic build descriptor into original path.
+        # At this point all initial conditions of repositories has already
+        # been captured and these changes will not count.
+        cp "${DYN_BUILD_DESC_PATH}" "${ORIG_DYN_BUILD_DESC_PATH}"
 
       </command>
     </hudson.tasks.Shell>

@@ -8,7 +8,9 @@
 #
 # USECASE 1: Initial Salt master setup
 #
-# TODO
+# See `states/bootstrap/bootstrap.dir/configure_salt.py` script.
+# This script is able to configure Salt with single master minion
+# using ONLY this property file as parameter.
 #
 # USECASE 2: frequently changed conditions affecting multiple pillars
 #
