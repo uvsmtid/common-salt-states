@@ -144,10 +144,12 @@
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         # Get location of dynamic build descriptor (which is in pillar).
-        # TODO: The repo name with pillars is just an assumption:
-        #       {# project_name #}-salt-pillars
         {% set project_name = pillar['project_name'] %}
+        {% if pillar['is_generic_profile'] %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-states']['git'] %}
+        {% else %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars']['git'] %}
+        {% endif %}
         DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/pillars/profile/dynamic_build_descriptor.yaml'
         # Make sure file exists.
         ls -lrt ${DYN_BUILD_DESC_PATH}
