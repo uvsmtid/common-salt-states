@@ -33,25 +33,115 @@
         exit 0
         {% endif %}
 
+        #######################################################################
+        # Locate dynamic build descriptor.
+
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        # Get location of dynamic build descriptor (which is in pillar).
+        {% set project_name = pillar['project_name'] %}
+        {% if pillar['is_generic_profile'] %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-states']['git'] %}
+        {% else %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars']['git'] %}
+        {% endif %}
+        DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/pillars/profile/dynamic_build_descriptor.yaml'
+        # Make sure file exists.
+        ls -lrt ${DYN_BUILD_DESC_PATH}
+
+        #######################################################################
+        # In-place Python script which returns data under
+        # specified key in destination dict on stdout.
+
+        KEY_GETTER_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_GETTER_PYTHON_SCRIPT}
+import os
+import sys
+import yaml
+
+# Load data from dynamic descriptor.
+with open(sys.argv[1], 'r') as yaml_file:
+    loaded_data = yaml.load(yaml_file)
+
+# If file was empty, its data is None, but we need a dict.
+if loaded_data is None:
+    loaded_data = {}
+
+# Parse specification of the key provided on command line.
+# The format should be 'parent-key:child-key:...:sub-key'
+key_spec = sys.argv[2]
+key_list = key_spec.split(':')
+last_sub_key = key_list[-1]
+curr_value = loaded_data
+# Walk down to the last dictionary where 'last_sub_key' is.
+for curr_key in key_list[:-1]:
+    curr_value = curr_value[curr_key]
+    assert(isinstance(curr_value, dict))
+
+# Print content of the specified key to STDOUT.
+print curr_value[last_sub_key]
+
+HEREDOC_MARKER
+
+        #######################################################################
+        # Switch back to initial branches.
 
         # NOTE: We assume that repository is available
         #       locally on Jenkins slave.
 
-        # We assume that remote `origin` has to be pre-configured.
-        # TODO: Use automation to use configured remote and probably branch.
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}"
+
+        cd "${REPO_PATH}"
+        git checkout "${INITIAL_BRANCH}"
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
+        # Remove all build branches.
+        # TODO: This better be done after promotion (which causes tagging).
+
+        if [ "${REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION}" == "true" ]
+        then
+
+        # Wait for a minute...
+        sleep 60
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
-        cd {{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
         # HEAD value means that repository is at detached head.
-        test "$CURRENT_BRANCH" != "HEAD"
-        # git pull --ff-only origin $CURRENT_BRANCH
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}"
+
+        cd "${REPO_PATH}"
+        # Note that we ignore exit code (the command may fail and only logs may show why).
+        set +e
+        git branch -D "${BUILD_BRANCH_NAME}"
+        set -e
+        cd -
+
         {% endfor %}
 
-        # Print environment variables.
-        env
+        fi
 
       </command>
     </hudson.tasks.Shell>
