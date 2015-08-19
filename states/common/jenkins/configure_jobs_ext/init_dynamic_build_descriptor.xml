@@ -275,6 +275,7 @@ HEREDOC_MARKER
         # - current branch names
         # - current commit ids
         # - build branch names
+        # - status of local changes
 
         # NOTE: We assume that repository is available
         #       locally on Jenkins slave.
