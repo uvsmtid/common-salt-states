@@ -138,6 +138,9 @@
         exit 0
         {% endif %}
 
+        #######################################################################
+        # Locate dynamic build descriptor.
+
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         # Get location of dynamic build descriptor (which is in pillar).
@@ -149,11 +152,15 @@
         # Make sure file exists.
         ls -lrt ${DYN_BUILD_DESC_PATH}
 
+        #######################################################################
+        # Write environment variables into dynamic build descriptor.
+
         # Print environment variables.
         env
-        # Write environment variables into dynamic build descriptor.
-        PYTHON_SCRIPT=$(mktemp)
-        cat &lt;&lt;HEREDOC_MARKER &gt; ${PYTHON_SCRIPT}
+
+        # In-place Python script. Write it into a file to be executed later.
+        ENV_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${ENV_PYTHON_SCRIPT}
 import os
 import sys
 import yaml
@@ -162,14 +169,17 @@ import yaml
 with open(sys.argv[1], 'r') as yaml_file:
     loaded_data = yaml.load(yaml_file)
 
+# If file was empty, its data is None, but we need a dict.
 if loaded_data is None:
     loaded_data = {}
 
-# Save environment variables as text with shell code.
+# Capture environment variables in two formats:
+# - Save environment variables as text with shell code.
 loaded_data['environ_text'] = sys.stdin.read()
-# Save environment variables as dict structure.
+# - Save environment variables as dict structure.
 loaded_data['environ'] = os.environ.copy()
 
+# Save dynamic build descriptor.
 with open(sys.argv[1], 'w') as yaml_file:
     yaml.dump(
         loaded_data,
@@ -179,17 +189,65 @@ with open(sys.argv[1], 'w') as yaml_file:
     )
 
 HEREDOC_MARKER
-        env | python ${PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH}
 
+        # Write output of env command into dynamic build descriptor.
+        env | python ${ENV_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH}
+
+        #######################################################################
         # Write parameters to the file used by subsequent jobs.
+
         echo >> {{ jenkins_dir_path }}/build.properties
         {% for param_name in job_config['build_parameters'].keys() %}
         echo "{{ param_name }}=${{ param_name }}" >> {{ jenkins_dir_path }}/build.properties
         {% endfor %}
 
-        {% if False %}
+        #######################################################################
+        # In-place Python script which captures stdin data under
+        # specified key in destination dict.
 
-        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+        KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
+import os
+import sys
+import yaml
+
+# Load data from dynamic descriptor.
+with open(sys.argv[1], 'r') as yaml_file:
+    loaded_data = yaml.load(yaml_file)
+
+# If file was empty, its data is None, but we need a dict.
+if loaded_data is None:
+    loaded_data = {}
+
+# Parse specification of the key provided on command line.
+# The format should be 'parent-key:child-key:...:sub-key'
+key_spec = sys.argv[2]
+key_list = key_spec.split(':')
+last_sub_key = key_list[-1]
+curr_value = loaded_data
+# Walk down to the last dictionary where 'last_sub_key' is.
+for curr_key in key_list[:-1]:
+    if curr_key not in curr_value:
+        curr_value[curr_key] = {}
+    curr_value = curr_value[curr_key]
+    assert(isinstance(curr_value, dict))
+
+# Assign content of STDIN to the specified key.
+curr_value[last_sub_key] = sys.stdin.read().strip()
+
+# Save dynamic build descriptor.
+with open(sys.argv[1], 'w') as yaml_file:
+    yaml.dump(
+        loaded_data,
+        yaml_file,
+        default_flow_style = False,
+        indent = 4,
+    )
+
+HEREDOC_MARKER
+
+        #######################################################################
+        # Capture current branch names and commit ids into dynamic build descriptor.
 
         # NOTE: We assume that repository is available
         #       locally on Jenkins slave.
@@ -203,10 +261,10 @@ HEREDOC_MARKER
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
         # HEAD value means that repository is at detached head.
         test "$CURRENT_BRANCH" != "HEAD"
-        git pull --ff-only origin $CURRENT_BRANCH
+        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+        echo "$CURRENT_BRANCH"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
+        echo "$CURRENT_COMMIT_ID" | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
         {% endfor %}
-
-        {% endif %}
 
       </command>
     </hudson.tasks.Shell>
