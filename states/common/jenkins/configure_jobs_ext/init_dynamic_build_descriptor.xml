@@ -247,7 +247,11 @@ with open(sys.argv[1], 'w') as yaml_file:
 HEREDOC_MARKER
 
         #######################################################################
-        # Capture current branch names and commit ids into dynamic build descriptor.
+        # Capture into dynamic build descriptor:
+        # - build timestamp
+        # - current branch names
+        # - current commit ids
+        # - build branch names
 
         # NOTE: We assume that repository is available
         #       locally on Jenkins slave.
@@ -255,15 +259,25 @@ HEREDOC_MARKER
         # We assume that remote `origin` has to be pre-configured.
         # TODO: Use automation to use configured remote and probably branch.
 
+        BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
+        SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
+        BUILD_TITLE="${BUILD_VERSION_NUMBER}-${BUILD_NUMBER}-${BUILD_TIMESTAMP}-${SOURCE_PROFILE_NAME}-${TARGET_PROFILE_NAME}-${BUILD_TYPE}-${BUILD_LABEL}"
+
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
         cd {{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
         # HEAD value means that repository is at detached head.
         test "$CURRENT_BRANCH" != "HEAD"
+
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+        CURRENT_COMMIT_ID_SHORT="$(git rev-parse --short --verify HEAD)"
+        BUILD_BRANCH_NAME="${CURRENT_BRANCH}-${CURRENT_COMMIT_ID_SHORT}-${BUILD_TITLE}"
+
         echo "$CURRENT_BRANCH"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
         echo "$CURRENT_COMMIT_ID" | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
+        echo "$BUILD_BRANCH_NAME" | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}"
+
         {% endfor %}
 
       </command>
