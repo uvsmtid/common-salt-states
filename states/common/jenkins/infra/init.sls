@@ -1,4 +1,5 @@
 # Additional `infra`-related plugins for Jenkins.
+# TODO: Move them to `pipeline`.
 
 # Import generic template for Jenkins plugin installation.
 {% from 'common/jenkins/install_plugin.sls' import jenkins_plugin_installation_macros with context %}
@@ -27,8 +28,10 @@ include:
     ]
 %}
 
+{% set unique_suffix = 'infra' %}
+
 # This SLS id is used by template.
-'{{ registered_content_item_id }}_jenkins_plugin_installation_prerequisite':
+'{{ registered_content_item_id }}_jenkins_plugin_installation_prerequisite_{{ unique_suffix }}':
     cmd.run:
         - name: "echo dummy:{{ registered_content_item_id }}"
         - require:
@@ -37,7 +40,7 @@ include:
             - sls: common.jenkins.maven
 
 # Call generic template.
-{{ jenkins_plugin_installation_macros(registered_content_item_id) }}
+{{ jenkins_plugin_installation_macros(registered_content_item_id, unique_suffix) }}
 
 {% endfor %}
 
