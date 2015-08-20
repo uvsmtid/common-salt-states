@@ -69,6 +69,9 @@
         # In-place Python script which returns data under
         # specified key in destination dict on stdout.
 
+        # TODO: Put repeated in-place Python script into a file instead
+        #       of copying and pasting them.
+
         KEY_GETTER_PYTHON_SCRIPT=$(mktemp)
         cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_GETTER_PYTHON_SCRIPT}
 import os

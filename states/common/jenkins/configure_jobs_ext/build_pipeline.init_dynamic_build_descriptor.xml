@@ -167,6 +167,9 @@
         # Print environment variables.
         env
 
+        # TODO: Put repeated in-place Python script into a file instead
+        #       of copying and pasting them.
+
         # In-place Python script. Write it into a file to be executed later.
         ENV_PYTHON_SCRIPT=$(mktemp)
         cat &lt;&lt;HEREDOC_MARKER &gt; ${ENV_PYTHON_SCRIPT}
@@ -234,6 +237,9 @@ HEREDOC_MARKER
         #######################################################################
         # In-place Python script which captures stdin data under
         # specified key in destination dict.
+
+        # TODO: Put repeated in-place Python script into a file instead
+        #       of copying and pasting them.
 
         KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
         cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
@@ -306,7 +312,7 @@ HEREDOC_MARKER
         CURRENT_COMMIT_ID_SHORT="$(git rev-parse --short --verify HEAD)"
         BUILD_BRANCH_NAME="${CURRENT_BRANCH}-${CURRENT_COMMIT_ID_SHORT}-${BUILD_TITLE}"
         UNTRACKED_ITEMS="$(git ls-files --other --exclude-standard --directory | wc -l)"
-        MODIFIED_ITEMS="$((git diff --name-only --cached ; git diff --name-only) | sort -u | wc -l)"
+        MODIFIED_ITEMS="$((git diff --name-only --cached --ignore-submodules=dirty ; git diff --name-only --ignore-submodules=dirty) | sort -u | wc -l)"
         cd -
 
         echo "$CURRENT_BRANCH"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
