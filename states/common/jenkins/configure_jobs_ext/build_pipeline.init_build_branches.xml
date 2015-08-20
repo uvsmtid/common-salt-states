@@ -23,6 +23,22 @@
   </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
+
+    <!--
+        Copy fingerprinted and archived artifact just for the sake
+        of reliably linking this job to the initial one in the pipeline.
+    -->
+    <hudson.plugins.copyartifact.CopyArtifact plugin="copyartifact@1.35.2">
+      <project>build_pipeline.init_dynamic_build_descriptor</project>
+      <filter>dynamic_build_descriptor.yaml</filter>
+      <target></target>
+      <excludes></excludes>
+      <selector class="hudson.plugins.copyartifact.TriggeredBuildSelector">
+        <upstreamFilterStrategy>UseGlobalSetting</upstreamFilterStrategy>
+      </selector>
+      <doNotFingerprintArtifacts>false</doNotFingerprintArtifacts>
+    </hudson.plugins.copyartifact.CopyArtifact>
+
     <hudson.tasks.Shell>
       <command>
 
@@ -48,6 +64,21 @@
         DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/pillars/profile/dynamic_build_descriptor.yaml'
         # Make sure file exists.
         ls -lrt ${DYN_BUILD_DESC_PATH}
+
+        # In case of `init_build_branches` job, dynamic build descriptor
+        # artifact copied from the `init_dynamic_build_descriptor` job
+        # is the only way to get it (because generated
+        # dynamic build descriptor hasn't been stored in the repository
+        # directory yet). Repository directories stay intact until
+        # this job since the start of the pipeline to produce true
+        # recovery checkpoint (rather than already modified one with
+        # generated files).
+
+        # Therefore, at the moment the dynamic build descriptor
+        # is simply a copy from `init_dynamic_build_descriptor` job
+        # inside workspace.
+        ORIG_DYN_BUILD_DESC_PATH="${DYN_BUILD_DESC_PATH}"
+        DYN_BUILD_DESC_PATH="dynamic_build_descriptor.yaml"
 
         #######################################################################
         # In-place Python script which captures stdin data under
@@ -161,15 +192,13 @@ HEREDOC_MARKER
         # after switching back to initial branches even if build branches
         # are supposed to be deleted.
         #
-        # TODO: Consider using Copy Artifact plugin to get dynamic build
-        #       descriptor from initial job instead of storing it inside
-        #       repository as modified file. This is to make restore
-        #       point before any automatic changes (like dynamic build
-        #       descriptor) done to local content.
-        #
-        # Run for parent repo first and for pillar repo last.
+        # Sequence:
+        # - Save parent repo first
+        #   (as commits in childs will not make original restore point).
+        # - Save all other repos (children).
 
-        {% if False %} # DISABLED until it can run for parent first and for pillar last.
+        # TODO:
+        {% if False %} # DISABLED until it can run for parent first.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -198,9 +227,14 @@ HEREDOC_MARKER
         {% endif %}
 
         #######################################################################
-        # Commit dynamic build descriptor.
+        # Commit two version of dynamic build descriptor
+        #
+        # - Version 1 is pristine copy from `init_dynamic_build_descriptor`.
+        # - Version 2 is updates with restore points.
 
         # TODO
+        # At the moment simply save it into repository.
+        cp "${DYN_BUILD_DESC_PATH}" "${ORIG_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
 

@@ -318,16 +318,30 @@ HEREDOC_MARKER
         {% endfor %}
 
         #######################################################################
-        # Save dynamic build descriptor into original path.
-        # At this point all initial conditions of repositories has already
-        # been captured and these changes will not count.
-        cp "${DYN_BUILD_DESC_PATH}" "${ORIG_DYN_BUILD_DESC_PATH}"
+        # Save dynamic build descriptor into workspace.
+        #
+        # We don't save it under repository yet as this would make additonal
+        # local modifications. Instead, this file is saved in the workspace
+        # to be copied by `init_build_branches` job (which eventually
+        # saves it under build branch).
+        cp "${DYN_BUILD_DESC_PATH}" dynamic_build_descriptor.yaml
 
       </command>
     </hudson.tasks.Shell>
   </builders>
 
   <publishers>
+
+    <!--
+        Archive and Fingerprint biuld descriptor.
+    -->
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>dynamic_build_descriptor.yaml</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>true</onlyIfSuccessful>
+      <fingerprint>true</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+    </hudson.tasks.ArtifactArchiver>
 
     {% if 'trigger_jobs' in job_config and job_config['trigger_jobs'] %}
     <hudson.plugins.parameterizedtrigger.BuildTrigger plugin="parameterized-trigger@2.26">
