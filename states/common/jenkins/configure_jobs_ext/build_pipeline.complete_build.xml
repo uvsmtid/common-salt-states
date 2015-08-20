@@ -65,6 +65,12 @@
         # Make sure file exists.
         ls -lrt ${DYN_BUILD_DESC_PATH}
 
+        # We need to save this descriptor because we will switch back to
+        # the initial branches.
+        ORIG_DYN_BUILD_DESC_PATH="${DYN_BUILD_DESC_PATH}"
+        DYN_BUILD_DESC_PATH="$(mktemp)"
+        cp "${ORIG_DYN_BUILD_DESC_PATH}" "${DYN_BUILD_DESC_PATH}"
+
         #######################################################################
         # In-place Python script which returns data under
         # specified key in destination dict on stdout.
@@ -120,7 +126,7 @@ HEREDOC_MARKER
 
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
         BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
 
         cd "${REPO_PATH}"
         git checkout "${INITIAL_BRANCH}"
@@ -172,14 +178,15 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
         BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}"
+        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
 
         # Fail the job if there were any local changes at the start of pipeline.
         # This is because these changes might be something important,
         # and deleting the branch where they were stored deletes them as well.
-        UNTRACKED_ITEMS="$(python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}")"
-        MODIFIED_ITEMS="$(python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}")"
+        UNTRACKED_ITEMS="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}")"
+        MODIFIED_ITEMS="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}")"
         if false
         then
             echo NOOP
