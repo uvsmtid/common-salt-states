@@ -156,6 +156,9 @@ HEREDOC_MARKER
         # Wait for a minute...
         sleep 60
 
+        # Whether to fail the job or not.
+        FAIL_JOB="false"
+
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
@@ -169,14 +172,37 @@ HEREDOC_MARKER
         BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}"
 
-        cd "${REPO_PATH}"
-        # Note that we ignore exit code (the command may fail and only logs may show why).
-        set +e
-        git branch -D "${BUILD_BRANCH_NAME}"
-        set -e
-        cd -
+        # Fail the job if there were any local changes at the start of pipeline.
+        # This is because these changes might be something important,
+        # and deleting the branch where they were stored deletes them as well.
+        UNTRACKED_ITEMS="$(python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}")"
+        MODIFIED_ITEMS="$(python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}")"
+        if false
+        then
+            echo NOOP
+        elif [ "${UNTRACKED_ITEMS}" != "0" ]
+        then
+            FAIL_JOB="true"
+            echo "ERROR: there were untracked files in {{ repo_name }}: ${UNTRACKED_ITEMS}"
+        elif [ "${MODIFIED_ITEMS}" != "0" ]
+        then
+            FAIL_JOB="true"
+            echo "ERROR: there were modified files in {{ repo_name }}: ${MODIFIED_ITEMS}"
+        else
+            cd "${REPO_PATH}"
+            # Note that we ignore exit code (the command may fail and only logs may show why).
+            set +e
+            git branch -D "${BUILD_BRANCH_NAME}"
+            set -e
+            cd -
+        fi
 
         {% endfor %}
+
+        if [ "${FAIL_JOB}" == "true" ]
+        then
+            exit 1
+        fi
 
         fi
 

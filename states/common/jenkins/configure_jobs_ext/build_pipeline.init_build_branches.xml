@@ -197,10 +197,19 @@ HEREDOC_MARKER
         #   (as commits in childs will not make original restore point).
         # - Save all other repos (children).
 
-        # TODO:
-        {% if False %} # DISABLED until it can run for parent first.
+        # Save the 1st version of dynamic build descriptor.
+        DYN_BUILD_DESC_V1_PATH="${DYN_BUILD_DESC_PATH}.v1"
+        cp "${DYN_BUILD_DESC_PATH}" "${DYN_BUILD_DESC_V1_PATH}"
 
-        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% if pillar['parent_repo_name'] %}
+        # Parent repo is defined and it is the first.
+        {% set repo_list = [ pillar['parent_repo_name'] ] + pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% else %}
+        # This profile does not define parent repo.
+        {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% endif %}
+
+        {% for repo_name in repo_list %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
@@ -212,7 +221,7 @@ HEREDOC_MARKER
 
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
         BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
 
         cd "${REPO_PATH}"
         git add --all
@@ -224,7 +233,9 @@ HEREDOC_MARKER
 
         {% endfor %}
 
-        {% endif %}
+        # Save the 2nd version of dynamic build descriptor.
+        DYN_BUILD_DESC_V2_PATH="${DYN_BUILD_DESC_PATH}.v2"
+        cp "${DYN_BUILD_DESC_PATH}" "${DYN_BUILD_DESC_V2_PATH}"
 
         #######################################################################
         # Commit two version of dynamic build descriptor
@@ -232,9 +243,39 @@ HEREDOC_MARKER
         # - Version 1 is pristine copy from `init_dynamic_build_descriptor`.
         # - Version 2 is updates with restore points.
 
-        # TODO
+        {% set project_name = pillar['project_name'] %}
+
+        {% if pillar['is_generic_profile'] %}
+        {% set repo_name = project_name + '-salt-states' %}
+        {% else %}
+        {% set repo_name = project_name + '-salt-pillars' %}
+        {% endif %}
+
         # At the moment simply save it into repository.
+        for DYN_BUILD_DESC_PATH in "${DYN_BUILD_DESC_V1_PATH}" "${DYN_BUILD_DESC_V2_PATH}"
+        do
+
         cp "${DYN_BUILD_DESC_PATH}" "${ORIG_DYN_BUILD_DESC_PATH}"
+
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
+
+        cd "${REPO_PATH}"
+        git add --all
+        git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: dynamic build descriptor'
+        cd -
+
+        done
 
         #######################################################################
 
