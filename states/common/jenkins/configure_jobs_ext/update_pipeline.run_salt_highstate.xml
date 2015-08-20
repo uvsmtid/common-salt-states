@@ -33,9 +33,22 @@
         exit 0
         {% endif %}
 
+        # Run `highstate` separately (not as part of `orchestrate` runner)
+        # as there is no known way to ask `orchestrate` to run it
+        # with test=False.
+        # See: https://github.com/saltstack/salt/issues/24209
+        sudo salt \
+            --out json \
+            '*' \
+            -l debug \
+            state.highstate \
+            test=False | tee salt.output.json
 
-        # NOTE: This job does nothing.
-        #       It is used as a trigger (dependency) for other Maven jobs.
+        # Capture errors from Salt.
+        # At the moment salt does not return exit/error code.
+        # See: https://github.com/saltstack/salt/issues/18510
+        /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
+            salt.output.json
 
       </command>
     </hudson.tasks.Shell>

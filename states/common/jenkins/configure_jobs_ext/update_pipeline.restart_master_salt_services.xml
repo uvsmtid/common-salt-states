@@ -36,40 +36,6 @@
         # Use script for Salt configuration:
         sudo /srv/states/bootstrap/bootstrap.dir/configure_salt.py /srv/pillars/profile/properties.yaml
 
-        # NOTE: The bottom part is old way which is already implemented
-        #       in the top part inside `configure_salt.py` script.
-        # TODO: Clean up the bottom part after
-        #       script things looks good long enough.
-        exit 0
-
-        # This script relies on `systemd` commands.
-
-        # Update Salt config
-        for SLS in common.salt.master.update_config common.salt.minion.update_config
-        do
-            sudo salt-call \
-                --out json \
-                state.sls $SLS \
-                test=False | tee salt.output.json
-
-            # Capture errors from Salt.
-            # At the moment salt does not return exit/error code.
-            # See: https://github.com/saltstack/salt/issues/18510
-            /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
-                salt.output.json
-
-        done
-
-        # Start Salt services with new config.
-
-        sudo systemctl restart salt-master
-        # Pause for 5 sec.
-        ping -c 5 salt
-
-        sudo systemctl restart salt-minion
-        # Pause for 5 sec.
-        ping -c 5 salt
-
       </command>
     </hudson.tasks.Shell>
   </builders>

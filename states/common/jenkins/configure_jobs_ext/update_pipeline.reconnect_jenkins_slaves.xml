@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>{{ job_description }}</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>{{ job_assigned_host }}</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+
+    {% if 'timer_spec' in job_config %}
+    {% if job_config['timer_spec'] %}
+    <hudson.triggers.TimerTrigger>
+      <spec>{{ job_config['timer_spec'] }}</spec>
+    </hudson.triggers.TimerTrigger>
+    {% endif %}
+    {% endif %}
+
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>
+
+        set -e
+        set -u
+
+        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+        exit 0
+        {% endif %}
+
+        # TODO: Use Jenkins'es CLI `disconnect-node` and `connect-node`
+        #       commands to reconnect to all notes (except local Jenkins
+        #       master available by default).
+        #       The command must be run on Jenkins master (otherwise it is
+        #       not clear how successful completion guarateed due to
+        #       disconnection with remote Jenkins slaves).
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+
+  <publishers>
+
+    {% if 'trigger_jobs' in job_config and job_config['trigger_jobs'] %}
+    <hudson.plugins.parameterizedtrigger.BuildTrigger plugin="parameterized-trigger@2.26">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+          <configs>
+            <hudson.plugins.parameterizedtrigger.FileBuildParameters>
+              <propertiesFile>{{ jenkins_dir_path }}/build.properties</propertiesFile>
+              <failTriggerOnMissing>false</failTriggerOnMissing>
+              <useMatrixChild>false</useMatrixChild>
+              <onlyExactRuns>false</onlyExactRuns>
+            </hudson.plugins.parameterizedtrigger.FileBuildParameters>
+          </configs>
+          <projects>{{ job_config['trigger_jobs']|join(',') }}</projects>
+          <condition>SUCCESS</condition>
+          <triggerWithNoParameters>true</triggerWithNoParameters>
+        </hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+      </configs>
+    </hudson.plugins.parameterizedtrigger.BuildTrigger>
+    {% endif %}
+
+  </publishers>
+
+  <buildWrappers/>
+</project>
