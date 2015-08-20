@@ -225,7 +225,8 @@ HEREDOC_MARKER
 
         cd "${REPO_PATH}"
         git add --all
-        git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: restore point commit'
+        # Commit only if there are changes.
+        git diff-index --exit-code HEAD || git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: restore point commit'
         RESTORE_POINT_COMMIT="$(git rev-parse --verify HEAD)"
         cd -
 
@@ -272,6 +273,9 @@ HEREDOC_MARKER
 
         cd "${REPO_PATH}"
         git add --all
+        # Note that we don't check whether there are changes to commit.
+        # There must be changes - each version of
+        # dynamic build descriptor should be different.
         git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: dynamic build descriptor'
         cd -
 
