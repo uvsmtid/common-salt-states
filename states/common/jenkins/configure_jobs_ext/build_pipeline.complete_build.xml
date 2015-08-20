@@ -135,15 +135,28 @@ HEREDOC_MARKER
         {% endfor %}
 
         #######################################################################
-        # TODO: Take special care to restore local files back to the conditions
-        #       they were at the begining of the build pipeline
-        #       (taking into account all local changes).
+        # Restore uncommitted local content to the conditions
+        # they were at the begining of the build pipeline
         #
 
-        {% if False %} # DISABLED until it can run for parent first and for pillar last.
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+
+        cd "${REPO_PATH}"
 
         # This step restores all local changes committed at the beginning.
-        git checkout "${RESTORE_COMMIT_ID}"
+        git checkout "${RESTORE_POINT_COMMIT}"
 
         # This step resets HEAD to the commit before the beginning
         # while leaving all local files as they are at restore point.
@@ -152,7 +165,9 @@ HEREDOC_MARKER
         # This step simply checks out branch (moves away from detached HEAD).
         git checkout "${INITIAL_BRANCH}"
 
-        {% endif %}
+        cd -
+
+        {% endfor %}
 
         #######################################################################
         # Remove all build branches.
@@ -161,12 +176,6 @@ HEREDOC_MARKER
 
         if [ "${REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION}" == "true" ]
         then
-
-        # Wait for a minute...
-        sleep 60
-
-        # Whether to fail the job or not.
-        FAIL_JOB="false"
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -182,37 +191,14 @@ HEREDOC_MARKER
         BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
 
-        # Fail the job if there were any local changes at the start of pipeline.
-        # This is because these changes might be something important,
-        # and deleting the branch where they were stored deletes them as well.
-        UNTRACKED_ITEMS="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}")"
-        MODIFIED_ITEMS="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}")"
-        if false
-        then
-            echo NOOP
-        elif [ "${UNTRACKED_ITEMS}" != "0" ]
-        then
-            FAIL_JOB="true"
-            echo "ERROR: there were untracked files in {{ repo_name }}: ${UNTRACKED_ITEMS}"
-        elif [ "${MODIFIED_ITEMS}" != "0" ]
-        then
-            FAIL_JOB="true"
-            echo "ERROR: there were modified files in {{ repo_name }}: ${MODIFIED_ITEMS}"
-        else
-            cd "${REPO_PATH}"
-            # Note that we ignore exit code (the command may fail and only logs may show why).
-            set +e
-            git branch -D "${BUILD_BRANCH_NAME}"
-            set -e
-            cd -
-        fi
+        cd "${REPO_PATH}"
+        # Note that we ignore exit code (the command may fail and only logs may show why).
+        set +e
+        git branch -D "${BUILD_BRANCH_NAME}"
+        set -e
+        cd -
 
         {% endfor %}
-
-        if [ "${FAIL_JOB}" == "true" ]
-        then
-            exit 1
-        fi
 
         fi
 
