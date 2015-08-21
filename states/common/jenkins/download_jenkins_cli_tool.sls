@@ -15,6 +15,8 @@
 include:
     - common.wget
 
+{% from 'common/jenkins/wait_for_online_master.sls' import wait_for_online_jenkins_master_macro with context %}
+
 {% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
 
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
@@ -22,19 +24,17 @@ include:
 '{{ pillar['posix_config_temp_dir'] }}/jenkins':
     file.directory:
         - makedirs: True
+        - sls: common.wget
 
-# Download jenkins-cli.jar:
+# Download jenkins-cli.jar.
+{{ wait_for_online_jenkins_master_macro('download_jenkins_cli_jar') }}
+
 download_jenkins_cli_jar:
     cmd.run:
-        # TODO: Port number may also need to be parameterized.
-        - name: 'wget http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/jnlpJars/jenkins-cli.jar -O {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar'
-        - env:
-            # Disable proxy settings for `jenkins_master_hostname`.
-            - http_proxy: ~
-            - https_proxy: ~
+        - name: 'echo dummy successfully downloaded jenkins CLI utility'
         - require:
-            - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins'
-            - sls: common.wget
+            # State id "exported" by `wait_for_online_jenkins_master_macro`:
+            - cmd: wait_for_online_jenkins_master_download_jenkins_cli_jar
 
 {% endif %}
 # >>>

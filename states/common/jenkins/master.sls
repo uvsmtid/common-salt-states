@@ -106,14 +106,11 @@ jenkins_service_enable:
             - file: jenkins_credentials_configuration_file
             - file: jenkins_configuration_file
 
-# NOTE: This state should not be _restarted_, it should be _started_ because
-#       it is assumed that it is actually started already. Otherwise,
-#       CLI script won't be downloaded (Jenkins service is not ready to
-#       provide download). If restart is required, use either orchestration
-#       or stop it manually before applying this state.
-jenkins_service_start:
+# NOTE: In order to wait for end of Jenkins restart, see/use:
+#       states/common/jenkins/download_jenkins_cli_tool.sls
+jenkins_service_restart:
     cmd.run:
-        - name: "systemctl start jenkins"
+        - name: "systemctl restart jenkins"
         - require:
             - cmd: jenkins_service_enable
 

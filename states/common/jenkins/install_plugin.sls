@@ -1,5 +1,7 @@
 # Macro for installing Jenkins plugin.
 
+{% from 'common/jenkins/wait_for_online_master.sls' import wait_for_online_jenkins_master_macro with context %}
+
 {% macro jenkins_plugin_installation_macros(registered_content_item_id, unique_suffix) %}
 
 {% if pillar['system_resources'][registered_content_item_id]['enable_installation'] %}
@@ -31,6 +33,17 @@ install_jenkins_{{ registered_content_item_id }}_{{ unique_suffix }}:
             - cmd: '{{ registered_content_item_id }}_jenkins_plugin_installation_prerequisite_{{ unique_suffix }}'
 
             - file: '{{ config_temp_dir }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }}_{{ unique_suffix }}'
+
+# Wait until Jenkins master restarts.
+{% set unique_item_id = registered_content_item_id + unique_suffix %}
+{{ wait_for_online_jenkins_master_macro(unique_item_id) }}
+
+# Run a command with dependency on completion of waiting for Jenkins master.
+dummy_jenkins_plugin_installation_complete_{{ unique_item_id }}:
+    cmd.run:
+        - name: 'echo jenkins plugin installation complete: {{ registered_content_item_id }}'
+        - require:
+            - cmd: wait_for_online_jenkins_master_{{ unique_item_id }}
 
 {% endif %}
 
