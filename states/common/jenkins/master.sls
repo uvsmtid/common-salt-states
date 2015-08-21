@@ -108,9 +108,12 @@ jenkins_service_enable:
 
 # NOTE: In order to wait for end of Jenkins restart, see/use:
 #       states/common/jenkins/download_jenkins_cli_tool.sls
-jenkins_service_restart:
+# NOTE: We do not restart Jenkins because this state may be part
+#       of the `highstate` ruy by Jenkins job. Instead, we only
+#       require Jenkins to be started.
+jenkins_service_start:
     cmd.run:
-        - name: "systemctl restart jenkins"
+        - name: "systemctl start jenkins"
         - require:
             - cmd: jenkins_service_enable
 
