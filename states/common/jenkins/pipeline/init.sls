@@ -27,6 +27,7 @@ include:
         'jenkins_maven-plugin_plugin',
         'jenkins_promoted-builds_plugin',
         'jenkins_copyartifact_plugin',
+        'jenkins_join_plugin',
     ]
 %}
 
