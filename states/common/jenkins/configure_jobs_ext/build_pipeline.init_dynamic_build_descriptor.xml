@@ -1,140 +1,17 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
-  <actions/>
-  <description>{{ job_description }}</description>
-  <keepDependencies>false</keepDependencies>
 
-  <properties>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
 
-        {% for param_name in job_config['build_parameters'].keys() %}
-
-        {% set param_config = job_config['build_parameters'][param_name] %}
-        {% set param_type = param_config['parameter_type'] %}
-
-        {% if not param_type %}
-
-        {% elif param_type == 'boolean' %}
-
-        <hudson.model.BooleanParameterDefinition>
-          <name>{{ param_name }}</name>
-          <description>{{ param_config['parameter_description'] }}</description>
-          <defaultValue>{{ param_config['parameter_value'] }}</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
-
-        {% elif param_type == 'choice' %}
-
-        <hudson.model.ChoiceParameterDefinition>
-          <name>{{ param_name }}</name>
-          <description>{{ param_config['parameter_description'] }}</description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              {% for param_value in param_config['parameter_value'] %}
-              <string>{{ param_value }}</string>
-              {% endfor %}
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
-
-        {% elif param_type == 'string' %}
-
-        <hudson.model.StringParameterDefinition>
-          <name>{{ param_name }}</name>
-          <description>{{ param_config['parameter_description'] }}</description>
-          <defaultValue>{{ param_config['parameter_value'] }}</defaultValue>
-        </hudson.model.StringParameterDefinition>
-
-        {% elif param_type == 'text' %}
-
-        <hudson.model.TextParameterDefinition>
-          <name>{{ param_name }}</name>
-          <description>{{ param_config['parameter_description'] }}</description>
-          <defaultValue>{{ param_config['parameter_value'] }}</defaultValue>
-        </hudson.model.TextParameterDefinition>
-
-        {% endif %}
-
-        {% endfor %}
-
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
-
-    <hudson.plugins.promoted__builds.JobPropertyImpl plugin="promoted-builds@2.21">
-      <activeProcessNames>
-        <string>{{ job_config['use_promotions']|join(', ') }}</string>
-      </activeProcessNames>
-    </hudson.plugins.promoted__builds.JobPropertyImpl>
-
-  </properties>
-
-  {#
-    Examples of other parameters.
-  #}
-  {% if False %}
-  <properties>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <hudson.model.BooleanParameterDefinition>
-          <name>BOOLEAN</name>
-          <description></description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
-        <hudson.model.ChoiceParameterDefinition>
-          <name>CHOICE</name>
-          <description></description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              <string>A</string>
-              <string>B</string>
-              <string>C</string>
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
-        <hudson.model.FileParameterDefinition>
-          <name>FILE_PARAMETER</name>
-          <description></description>
-        </hudson.model.FileParameterDefinition>
-        <hudson.model.PasswordParameterDefinition>
-          <name>PASSWORD_PARAMETER</name>
-          <description></description>
-          <defaultValue>Y/ZTS27PlsnmKDKqz2Cn1g==</defaultValue>
-        </hudson.model.PasswordParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>STRING_PARAMETER</name>
-          <description></description>
-          <defaultValue></defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.TextParameterDefinition>
-          <name>TEXT_PARAMETER</name>
-          <description></description>
-          <defaultValue></defaultValue>
-        </hudson.model.TextParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
-  </properties>
-
-  {% endif %}
-
-  <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>{{ job_assigned_host }}</assignedNode>
-  <canRoam>false</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers>
-
-    {% if 'timer_spec' in job_config %}
-    {% if job_config['timer_spec'] %}
-    <hudson.triggers.TimerTrigger>
-      <spec>{{ job_config['timer_spec'] }}</spec>
-    </hudson.triggers.TimerTrigger>
-    {% endif %}
-    {% endif %}
-
-  </triggers>
-  <concurrentBuild>false</concurrentBuild>
   <builders>
+
+    {#
+    DISABLE copying artifacts because it is the very first job in the pipeline.
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+    #}
+
     <hudson.tasks.Shell>
       <command>
 
@@ -215,9 +92,9 @@ HEREDOC_MARKER
         #######################################################################
         # Write parameters to the file used by subsequent jobs.
 
-        echo >> {{ jenkins_dir_path }}/build.properties
+        echo >> {{ job_environ['jenkins_dir_path'] }}/build.properties
         {% for param_name in job_config['build_parameters'].keys() %}
-        echo "{{ param_name }}=${{ param_name }}" >> {{ jenkins_dir_path }}/build.properties
+        echo "{{ param_name }}=${{ param_name }}" >> {{ job_environ['jenkins_dir_path'] }}/build.properties
         {% endfor %}
 
         #######################################################################
@@ -346,7 +223,8 @@ HEREDOC_MARKER
   <publishers>
 
     <!--
-        Archive and Fingerprint biuld descriptor.
+        Archive and Fingerprint initial dynamic build descriptor.
+        This is only needed to trace jobs of the same pipeline execution.
     -->
     <hudson.tasks.ArtifactArchiver>
       <artifacts>dynamic_build_descriptor.yaml</artifacts>
@@ -357,8 +235,11 @@ HEREDOC_MARKER
     </hudson.tasks.ArtifactArchiver>
 
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
-    {{ parameterized_job_triggers_macro(job_config, jenkins_dir_path) }}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
 
   </publishers>
+
   <buildWrappers/>
+
 </project>
+

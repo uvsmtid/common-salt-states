@@ -1,43 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
-  <actions/>
-  <description>{{ job_description }}</description>
-  <keepDependencies>false</keepDependencies>
-  <properties/>
-  <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>{{ job_assigned_host }}</assignedNode>
-  <canRoam>false</canRoam>
-  <disabled>false</disabled>
-  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
-  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers>
 
-    {% if 'timer_spec' in job_config %}
-    {% if job_config['timer_spec'] %}
-    <hudson.triggers.TimerTrigger>
-      <spec>{{ job_config['timer_spec'] }}</spec>
-    </hudson.triggers.TimerTrigger>
-    {% endif %}
-    {% endif %}
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
 
-  </triggers>
-  <concurrentBuild>false</concurrentBuild>
   <builders>
 
-    <!--
-        Copy fingerprinted and archived artifact just for the sake
-        of reliably linking this job to the initial one in the pipeline.
-    -->
-    <hudson.plugins.copyartifact.CopyArtifact plugin="copyartifact@1.35.2">
-      <project>build_pipeline.init_dynamic_build_descriptor</project>
-      <filter>dynamic_build_descriptor.yaml</filter>
-      <target></target>
-      <excludes></excludes>
-      <selector class="hudson.plugins.copyartifact.TriggeredBuildSelector">
-        <upstreamFilterStrategy>UseGlobalSetting</upstreamFilterStrategy>
-      </selector>
-      <doNotFingerprintArtifacts>false</doNotFingerprintArtifacts>
-    </hudson.plugins.copyartifact.CopyArtifact>
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
 
     <hudson.tasks.Shell>
       <command>
@@ -211,8 +181,11 @@ HEREDOC_MARKER
   <publishers>
 
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
-    {{ parameterized_job_triggers_macro(job_config, jenkins_dir_path) }}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
 
   </publishers>
+
   <buildWrappers/>
+
 </project>
+
