@@ -93,8 +93,6 @@ update_{{ job_name }}_job_configuration_to_jenkins:
 {% for promotion_id in job_config['use_promotions'] %} # use_promotions
 
 # Detach parent job from promotion.
-# Example:
-#   curl -v -X POST 'http://localhost:8088/job/build_pipeline.init_dynamic_build_descriptor/promotion/process/manual-promotion/doDelete'
 detach_{{ promotion_id }}_on_{{ job_name }}:
     cmd.run:
         - name: "curl -v -X POST http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/job/{{ job_name }}/promotion/process/{{ promotion_id }}/doDelete"
@@ -107,8 +105,6 @@ detach_{{ promotion_id }}_on_{{ job_name }}:
             - cmd: update_{{ job_name }}_job_configuration_to_jenkins
 
 # Attach promotion to parent job using updated configuration.
-# Example:
-#   curl -v -X POST --data-binary '@/observer.config_temp_dir/jenkins/jenkins.job.config.build_pipeline.promotion.manual-promotion.xml' -H 'Content-Type: application/xml' 'http://localhost:8088/job/build_pipeline.init_dynamic_build_descriptor/promotion/createProcess?name=manual-promotion'
 attach_{{ promotion_id }}_on_{{ job_name }}:
     cmd.run:
         - name: "curl -v -X POST --data-binary '@{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ promotion_id }}.xml' -H 'Content-Type: application/xml' 'http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/job/{{ job_name }}/promotion/createProcess?name={{ promotion_id }}'"

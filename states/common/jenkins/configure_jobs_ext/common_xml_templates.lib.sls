@@ -12,7 +12,7 @@
         <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
           <configs>
             <hudson.plugins.parameterizedtrigger.FileBuildParameters>
-              <propertiesFile>{{ job_environ['jenkins_dir_path'] }}/build.properties</propertiesFile>
+              <propertiesFile>{{ job_environ['jenkins_dir_path'] }}/build.pipeline/build.properties</propertiesFile>
               <failTriggerOnMissing>false</failTriggerOnMissing>
               <useMatrixChild>false</useMatrixChild>
               <onlyExactRuns>false</onlyExactRuns>
@@ -226,12 +226,14 @@
 ###############################################################################
 {% macro copy_artifacts(job_config, job_environ) %}
 
+{% if not 'is_standalone' in job_config or not job_config['is_standalone'] %}
+
     <!--
         Copy fingerprinted and archived artifact just for the sake
         of reliably linking this job to the initial one in the pipeline.
     -->
     <hudson.plugins.copyartifact.CopyArtifact plugin="copyartifact@1.35.2">
-      <project>build_pipeline.init_dynamic_build_descriptor</project>
+      <project>build_pipeline.start_new_build</project>
       <filter>dynamic_build_descriptor.yaml</filter>
       <target></target>
       <excludes></excludes>
@@ -240,6 +242,8 @@
       </selector>
       <doNotFingerprintArtifacts>false</doNotFingerprintArtifacts>
     </hudson.plugins.copyartifact.CopyArtifact>
+
+{% endif %}
 
 {% endmacro %}
 
@@ -344,6 +348,73 @@ with open(sys.argv[1], 'w') as yaml_file:
         default_flow_style = False,
         indent = 4,
     )
+
+{% endmacro %}
+
+###############################################################################
+{% macro locate_dynamic_build_descriptor(job_config, job_environ) %}
+
+{% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+# Location of dynamic build descriptor in pillar repository.
+# The purpose of this file is peristence.
+# This is the location where the latest dynamic build descriptor
+# is checked in at the end of each job.
+{% set project_name = pillar['project_name'] %}
+{% if pillar['is_generic_profile'] %}
+{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-states']['git'] %}
+{% else %}
+{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars']['git'] %}
+{% endif %}
+REPO_DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/pillars/profile/dynamic_build_descriptor.yaml'
+# Make sure it exists
+ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
+
+# Location of the job dynamic build descriptor.
+# The purpose of this file is to let next job continue
+# the relay of updating dynamic build descriptor.
+JOB_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build.pipeline/{{ job_environ['job_name'] }}.dynamic_build_descriptor.yaml'
+
+# Location of the latest dynamic build descriptor.
+# The purpose of this file is to have working copy of
+# dynamic build descriptor for this job.
+LATEST_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build.pipeline/latest.dynamic_build_descriptor.yaml'
+mkdir -p "$(dirname "${LATEST_DYN_BUILD_DESC_PATH}")"
+touch "${LATEST_DYN_BUILD_DESC_PATH}"
+
+# Location of the dynamic build descriptor of the previous build.
+# The purpose of this file is to indicate what was the build descriptor
+# in the previous build (to recover conditions if pipeline failed).
+RECOVERY_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build.pipeline/recovery.dynamic_build_descriptor.yaml'
+
+# Let job continue from the latest.
+cp "${LATEST_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
+
+{% endmacro %}
+
+# init_build_branches ---------------------------------------------------------
+
+# In case of `init_build_branches` job, dynamic build descriptor
+# artifact copied from the `describe_repositories_state` job
+# is the only way to get it (because generated
+# dynamic build descriptor hasn't been stored in the repository
+# directory yet). Repository directories stay intact until
+# this job from the start of the pipeline to produce true
+# recovery checkpoint (rather than already modified one with
+# generated files).
+
+# Therefore, at the moment the dynamic build descriptor
+# is simply a copy from `describe_repositories_state` job
+# inside workspace.
+ORIG_DYN_BUILD_DESC_PATH="${DYN_BUILD_DESC_PATH}"
+DYN_BUILD_DESC_PATH="dynamic_build_descriptor.yaml"
+
+###############################################################################
+{% macro update_dynamic_build_descriptor(job_config, job_environ) %}
+
+# Update the latest dynamic build desciptor by
+# the one generated for this during job.
+cp "${JOB_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
 
 {% endmacro %}
 

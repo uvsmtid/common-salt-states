@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
+
+  <builders>
+
+    {#
+    DISABLE copying artifacts because it is the very first job in the pipeline.
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+    #}
+
+    <hudson.tasks.Shell>
+      <command>
+
+        set -e
+        set -u
+
+        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+        exit 0
+        {% endif %}
+
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
+
+        #######################################################################
+        # Locate dynamic build descriptor.
+
+        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # Write environment variables into dynamic build descriptor.
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import store_environment_python_script with context %}
+
+        # Print environment variables.
+        env
+
+        # In-place Python script. Write it into a file to be executed later.
+        ENV_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${ENV_PYTHON_SCRIPT}
+{{ store_environment_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
+
+        # Write output of env command into dynamic build descriptor.
+        env | python ${ENV_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH}
+
+        #######################################################################
+        # Write parameters to the file used by subsequent jobs.
+
+        BUILD_PROPS_PATH='{{ job_environ['jenkins_dir_path'] }}/build.pipeline/build.properties'
+        mkdir -p "$(dirname "$BUILD_PROPS_PATH")"
+        echo >> "$BUILD_PROPS_PATH"
+        {% for param_name in job_config['build_parameters'].keys() %}
+        echo "{{ param_name }}=${{ param_name }}" >> "$BUILD_PROPS_PATH"
+        {% endfor %}
+
+        #######################################################################
+        # TODO: Move it to build verification job.
+        # Make sure target bootstrap profile pillars repo is on required branch.
+
+        # Get location of target bootstrap profile pillars repo.
+        {% set project_name = pillar['project_name'] %}
+        {% if pillar['is_generic_profile'] %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-states']['git'] %}
+        {% else %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars.bootstrap-target']['git'] %}
+        {% endif %}
+
+        TARGET_BOOTSTRAP_PROFILE_PILLARS_REPO_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}'
+        cd "${TARGET_BOOTSTRAP_PROFILE_PILLARS_REPO_PATH}"
+        {% if not pillar['is_generic_profile'] %}
+        git checkout ${TARGET_PROFILE_NAME}
+        {% endif %}
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        cd -
+
+        test "$CURRENT_BRANCH" == "${TARGET_PROFILE_NAME}"
+
+        #######################################################################
+        # Update dynamic build descriptor.
+
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+
+        # Copy initial dynamic build descriptor
+        # for as artifact for copying and fingerprinting.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" dynamic_build_descriptor.yaml
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+
+  <publishers>
+
+    <!--
+        Archive and Fingerprint initial dynamic build descriptor.
+        This is only needed to trace jobs of the same pipeline execution.
+    -->
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>dynamic_build_descriptor.yaml</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>true</onlyIfSuccessful>
+      <fingerprint>true</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+    </hudson.tasks.ArtifactArchiver>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+  </publishers>
+
+  <buildWrappers/>
+
+</project>
+

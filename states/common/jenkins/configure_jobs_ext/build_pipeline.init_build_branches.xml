@@ -19,46 +19,22 @@
         exit 0
         {% endif %}
 
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
+
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
 
         #######################################################################
         # Locate dynamic build descriptor.
 
-        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
-
-        # Get location of dynamic build descriptor (which is in pillar).
-        {% set project_name = pillar['project_name'] %}
-        {% if pillar['is_generic_profile'] %}
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-states']['git'] %}
-        {% else %}
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars']['git'] %}
-        {% endif %}
-        DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/pillars/profile/dynamic_build_descriptor.yaml'
-        # Make sure file exists.
-        ls -lrt ${DYN_BUILD_DESC_PATH}
-
-        # In case of `init_build_branches` job, dynamic build descriptor
-        # artifact copied from the `init_dynamic_build_descriptor` job
-        # is the only way to get it (because generated
-        # dynamic build descriptor hasn't been stored in the repository
-        # directory yet). Repository directories stay intact until
-        # this job since the start of the pipeline to produce true
-        # recovery checkpoint (rather than already modified one with
-        # generated files).
-
-        # Therefore, at the moment the dynamic build descriptor
-        # is simply a copy from `init_dynamic_build_descriptor` job
-        # inside workspace.
-        ORIG_DYN_BUILD_DESC_PATH="${DYN_BUILD_DESC_PATH}"
-        DYN_BUILD_DESC_PATH="dynamic_build_descriptor.yaml"
+        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
 
         #######################################################################
         # In-place Python script which captures stdin data under
         # specified key in destination dict.
-
-        # TODO: Put repeated in-place Python script into a file instead
-        #       of copying and pasting them.
 
         KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
         cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
@@ -68,9 +44,6 @@ HEREDOC_MARKER
         #######################################################################
         # In-place Python script which returns data under
         # specified key in destination dict on stdout.
-
-        # TODO: Put repeated in-place Python script into a file instead
-        #       of copying and pasting them.
 
         KEY_GETTER_PYTHON_SCRIPT=$(mktemp)
         cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_GETTER_PYTHON_SCRIPT}
@@ -93,8 +66,8 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
 
         cd "${REPO_PATH}"
@@ -115,10 +88,6 @@ HEREDOC_MARKER
         #   (as commits in childs will not make original restore point).
         # - Save all other repos (children).
 
-        # Save the 1st version of dynamic build descriptor.
-        DYN_BUILD_DESC_V1_PATH="${DYN_BUILD_DESC_PATH}.v1"
-        cp "${DYN_BUILD_DESC_PATH}" "${DYN_BUILD_DESC_V1_PATH}"
-
         {% if pillar['parent_repo_name'] %}
         # Parent repo is defined and it is the first.
         {% set repo_list = [ pillar['parent_repo_name'] ] + pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
@@ -137,8 +106,8 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
 
         cd "${REPO_PATH}"
@@ -152,19 +121,16 @@ HEREDOC_MARKER
         RESTORE_POINT_COMMIT="$(git rev-parse --verify HEAD)"
         cd -
 
-        echo "$RESTORE_POINT_COMMIT" | python ${KEY_SETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}"
+        echo "$RESTORE_POINT_COMMIT" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}"
 
         {% endfor %}
 
-        # Save the 2nd version of dynamic build descriptor.
-        DYN_BUILD_DESC_V2_PATH="${DYN_BUILD_DESC_PATH}.v2"
-        cp "${DYN_BUILD_DESC_PATH}" "${DYN_BUILD_DESC_V2_PATH}"
-
         #######################################################################
-        # Commit two version of dynamic build descriptor
+        # Commit versions of dynamic build descriptor
         #
-        # - Version 1 is pristine copy from `init_dynamic_build_descriptor`.
-        # - Version 2 is updates with restore points.
+        # - Version 1 `start_new_build`.
+        # - Version 2 `describe_repositories_state`.
+        # - Version 3 `init_build_branches`.
 
         {% set project_name = pillar['project_name'] %}
 
@@ -174,11 +140,11 @@ HEREDOC_MARKER
         {% set repo_name = project_name + '-salt-pillars' %}
         {% endif %}
 
-        # At the moment simply save it into repository.
-        for DYN_BUILD_DESC_PATH in "${DYN_BUILD_DESC_V1_PATH}" "${DYN_BUILD_DESC_V2_PATH}"
-        do
+        JENKINS_DIR_PATH="{{ job_environ['jenkins_dir_path'] }}"
 
-        cp "${DYN_BUILD_DESC_PATH}" "${ORIG_DYN_BUILD_DESC_PATH}"
+        # At the moment simply save it into repository.
+        for VER_NAME in start_new_build describe_repositories_state init_build_branches
+        do
 
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
@@ -189,20 +155,32 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
 
         cd "${REPO_PATH}"
+        VER_DYN_BUILD_DESC_PATH="{{ job_environ['jenkins_dir_path'] }}/build.pipeline/build_pipeline.${VER_NAME}.dynamic_build_descriptor.yaml"
+        cp "${VER_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
         git add --all
         git status
         # Note that we don't check whether there are changes to commit.
         # There must be changes - each version of
         # dynamic build descriptor should be different.
-        git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: dynamic build descriptor'
+        git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: dynamic build descriptor at "${VER_NAME}"'
         cd -
 
         done
+
+        #######################################################################
+        # Update dynamic build descriptor.
+
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        # One of the purposes of this job is to set recovery
+        # dynamic build descriptor so that changes made to repositories
+        # can be reverted to their state before this job.
+        cp "${LATEST_DYN_BUILD_DESC_PATH}" "${RECOVERY_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
 
