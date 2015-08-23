@@ -408,23 +408,6 @@ cp "${LATEST_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
 
 {% endmacro %}
 
-# init_build_branches ---------------------------------------------------------
-
-# In case of `init_build_branches` job, dynamic build descriptor
-# artifact copied from the `describe_repositories_state` job
-# is the only way to get it (because generated
-# dynamic build descriptor hasn't been stored in the repository
-# directory yet). Repository directories stay intact until
-# this job from the start of the pipeline to produce true
-# recovery checkpoint (rather than already modified one with
-# generated files).
-
-# Therefore, at the moment the dynamic build descriptor
-# is simply a copy from `describe_repositories_state` job
-# inside workspace.
-ORIG_DYN_BUILD_DESC_PATH="${DYN_BUILD_DESC_PATH}"
-DYN_BUILD_DESC_PATH="dynamic_build_descriptor.yaml"
-
 ###############################################################################
 {% macro update_dynamic_build_descriptor(job_config, job_environ) %}
 

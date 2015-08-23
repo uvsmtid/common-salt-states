@@ -166,6 +166,10 @@ HEREDOC_MARKER
         # Remove it to inidcate that everything is reset.
         rm "${RECOVERY_DYN_BUILD_DESC_PATH}"
 
+        # Remove latest dynamic build descriptor because after this
+        # job there is no latest anymore.
+        rm "${LATEST_DYN_BUILD_DESC_PATH}"
+
         #######################################################################
 
       </command>
