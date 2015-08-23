@@ -171,7 +171,7 @@ HEREDOC_MARKER
         # Note that we don't check whether there are changes to commit.
         # There must be changes - each version of
         # dynamic build descriptor should be different.
-        git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: dynamic build descriptor at "${VER_NAME}"'
+        git commit --author "${GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${VER_NAME}"
         cd -
 
         done
