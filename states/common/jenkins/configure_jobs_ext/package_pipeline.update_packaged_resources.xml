@@ -22,6 +22,7 @@
         # TODO: Update (overwrite default via dynamic build descriptor)
         #       resources in registered content and commit them (if required)
         #       so that bootstrap package can use the newly built artifacts.
+        # NOTE: Normally this is done in project-specific jobs (not common).
 
       </command>
     </hudson.tasks.Shell>

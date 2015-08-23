@@ -32,6 +32,9 @@
 
   <publishers>
 
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import join_downstream_jobs_macro with context %}
+    {{ join_downstream_jobs_macro(job_config, job_environ) }}
+
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
     {{ parameterized_job_triggers_macro(job_config, job_environ) }}
 

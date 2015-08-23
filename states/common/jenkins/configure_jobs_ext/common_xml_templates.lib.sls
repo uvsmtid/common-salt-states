@@ -31,6 +31,22 @@
 {% endmacro %}
 
 ###############################################################################
+
+{% macro join_downstream_jobs_macro(job_config, job_environ) %}
+
+{% if 'trigger_jobs_on_downstream_join' in job_config %}
+
+    <join.JoinTrigger plugin="join@1.16">
+      <joinProjects>{{ job_config['trigger_jobs_on_downstream_join']|join(',') }}</joinProjects>
+      <joinPublishers/>
+      <evenIfDownstreamUnstable>true</evenIfDownstreamUnstable>
+    </join.JoinTrigger>
+
+{% endif %}
+
+{% endmacro %}
+
+###############################################################################
 {% macro job_scm_configuration(job_config, job_environ) %}
   <!--
       Git configuration.

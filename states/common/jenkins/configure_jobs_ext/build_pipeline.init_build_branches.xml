@@ -83,6 +83,10 @@ HEREDOC_MARKER
         # after switching back to initial branches even if build branches
         # are supposed to be deleted.
         #
+        # TODO: This script section is very similar (or the same) with what
+        #       has to be done when any changes need to be checked in during
+        #       the build pipeline. Factor out for reuse.
+        #
         # Sequence:
         # - Save parent repo first
         #   (as commits in childs will not make original restore point).
