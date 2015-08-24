@@ -26,6 +26,16 @@
 
     </hudson.plugins.promoted__builds.conditions.DownstreamPassCondition>
 
+    {% elif job_config['condition_type'] == 'manual_approval' %}
+
+    <hudson.plugins.promoted__builds.conditions.ManualCondition>
+
+      <users></users>
+
+      <parameterDefinitions/>
+
+    </hudson.plugins.promoted__builds.conditions.ManualCondition>
+
     {% endif %}
 
   </conditions>
