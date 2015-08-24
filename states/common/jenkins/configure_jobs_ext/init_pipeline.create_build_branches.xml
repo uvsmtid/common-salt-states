@@ -134,7 +134,7 @@ HEREDOC_MARKER
         #
         # - Version 1 `start_new_build`.
         # - Version 2 `describe_repositories_state`.
-        # - Version 3 `init_build_branches`.
+        # - Version 3 `create_build_branches`.
 
         {% set project_name = pillar['project_name'] %}
 
@@ -147,7 +147,7 @@ HEREDOC_MARKER
         JENKINS_DIR_PATH="{{ job_environ['jenkins_dir_path'] }}"
 
         # At the moment simply save it into repository.
-        for VER_NAME in start_new_build describe_repositories_state init_build_branches
+        for VER_NAME in start_new_build describe_repositories_state create_build_branches
         do
 
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -164,7 +164,7 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
 
         cd "${REPO_PATH}"
-        VER_DYN_BUILD_DESC_PATH="{{ job_environ['jenkins_dir_path'] }}/build.pipeline/build_pipeline.${VER_NAME}.dynamic_build_descriptor.yaml"
+        VER_DYN_BUILD_DESC_PATH="{{ job_environ['jenkins_dir_path'] }}/build_pipeline/init_pipeline.${VER_NAME}.dynamic_build_descriptor.yaml"
         cp "${VER_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
         git add --all
         git status

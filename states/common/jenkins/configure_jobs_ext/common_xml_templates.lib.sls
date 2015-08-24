@@ -12,7 +12,7 @@
         <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
           <configs>
             <hudson.plugins.parameterizedtrigger.FileBuildParameters>
-              <propertiesFile>{{ job_environ['jenkins_dir_path'] }}/build.pipeline/build.properties</propertiesFile>
+              <propertiesFile>{{ job_environ['jenkins_dir_path'] }}/build_pipeline/build.properties</propertiesFile>
               <failTriggerOnMissing>false</failTriggerOnMissing>
               <useMatrixChild>false</useMatrixChild>
               <onlyExactRuns>false</onlyExactRuns>
@@ -251,7 +251,7 @@
         of reliably linking this job to the initial one in the pipeline.
     -->
     <hudson.plugins.copyartifact.CopyArtifact plugin="copyartifact@1.35.2">
-      <project>build_pipeline.start_new_build</project>
+      <project>init_pipeline.start_new_build</project>
       <filter>dynamic_build_descriptor.yaml</filter>
       <target></target>
       <excludes></excludes>
@@ -391,19 +391,19 @@ ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
 # Location of the job dynamic build descriptor.
 # The purpose of this file is to let next job continue
 # the relay of updating dynamic build descriptor.
-JOB_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build.pipeline/{{ job_environ['job_name'] }}.dynamic_build_descriptor.yaml'
+JOB_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/{{ job_environ['job_name'] }}.dynamic_build_descriptor.yaml'
 
 # Location of the latest dynamic build descriptor.
 # The purpose of this file is to have working copy of
 # dynamic build descriptor for this job.
-LATEST_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build.pipeline/latest.dynamic_build_descriptor.yaml'
+LATEST_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/latest.dynamic_build_descriptor.yaml'
 mkdir -p "$(dirname "${LATEST_DYN_BUILD_DESC_PATH}")"
 touch "${LATEST_DYN_BUILD_DESC_PATH}"
 
 # Location of the dynamic build descriptor of the previous build.
 # The purpose of this file is to indicate what was the build descriptor
 # in the previous build (to recover conditions if pipeline failed).
-RECOVERY_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build.pipeline/recovery.dynamic_build_descriptor.yaml'
+RECOVERY_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/recovery.dynamic_build_descriptor.yaml'
 
 # Let job continue from the latest.
 cp "${LATEST_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
