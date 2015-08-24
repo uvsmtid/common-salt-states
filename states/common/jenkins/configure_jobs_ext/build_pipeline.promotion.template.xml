@@ -33,17 +33,8 @@
   <icon>{{ job_config['promotion_icon'] }}</icon>
   <buildSteps>
 
-    <hudson.tasks.BuildTrigger>
-
-      <childProjects>{{ job_config['trigger_jobs']|join(', ') }}</childProjects>
-
-      <threshold>
-        <name>SUCCESS</name>
-        <ordinal>0</ordinal>
-        <color>BLUE</color>
-        <completeBuild>true</completeBuild>
-      </threshold>
-    </hudson.tasks.BuildTrigger>
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
 
   </buildSteps>
 
