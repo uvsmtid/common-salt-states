@@ -201,7 +201,9 @@
 
     <hudson.plugins.promoted__builds.JobPropertyImpl plugin="promoted-builds@2.21">
       <activeProcessNames>
-        <string>{{ job_config['use_promotions']|join(', ') }}</string>
+        {% for promotion_name in job_config['use_promotions'] %}
+        <string>{{ promotion_name }}</string>
+        {% endfor %}
       </activeProcessNames>
     </hudson.plugins.promoted__builds.JobPropertyImpl>
 
