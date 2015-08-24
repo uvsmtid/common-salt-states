@@ -71,17 +71,11 @@ HEREDOC_MARKER
 
         # Get location of target bootstrap profile pillars repo.
         {% set project_name = pillar['project_name'] %}
-        {% if pillar['is_generic_profile'] %}
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-states']['git'] %}
-        {% else %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars.bootstrap-target']['git'] %}
-        {% endif %}
 
         TARGET_BOOTSTRAP_PROFILE_PILLARS_REPO_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}'
         cd "${TARGET_BOOTSTRAP_PROFILE_PILLARS_REPO_PATH}"
-        {% if not pillar['is_generic_profile'] %}
         git checkout ${TARGET_PROFILE_NAME}
-        {% endif %}
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
         cd -
 
