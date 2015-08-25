@@ -8,6 +8,7 @@
 
 {% set project_name = props['project_name'] %}
 {% set master_minion_id = props['master_minion_id'] %}
+{% set is_generic_profile = props['is_generic_profile'] %}
 {% set profile_name = props['profile_name'] %}
 
 system_features:
@@ -61,7 +62,14 @@ system_features:
                 rel_target_path: 'states'
 
             salt_pillars_roots:
+                # Note that pillars for generic profile are taken
+                # from `states` repository under its `pillars` directory
+                # with generic profile template.
+            {% if is_generic_profile %}
+                repo_name: '{{ project_name }}-salt-states'
+            {% else %}
                 repo_name: '{{ project_name }}-salt-pillars'
+            {% endif %}
                 abs_link_base_path: '/srv/pillars'
                 rel_target_path: 'pillars'
 

@@ -13,8 +13,9 @@
 {% set current_task_branch = props['current_task_branch'] %}
 
 # Import `maven_repo_names`.
-{% set maven_repo_names_path = profile_root.replace('.', '/') + '/common/system_features/maven_repo_names.yaml' %}
+{% set maven_repo_names_path = profile_root.replace('.', '/') + '/common/system_maven_artifacts/maven_repo_names.yaml' %}
 {% import_yaml maven_repo_names_path as maven_repo_names %}
+# TODO: Use `maven_repo_names` subkey in `maven_repo_names.yaml`.
 
 system_features:
 
@@ -73,6 +74,12 @@ system_features:
         #  - `git` for Git.
         source_repo_types:
 
+            # Main repository with submodules.
+
+            {% if props['parent_repo_name'] %}
+            {{ props['parent_repo_name'] }}: git
+            {% endif %}
+
             # Salt states.
 
             'common-salt-states': git
@@ -117,6 +124,12 @@ system_features:
             # Local path per Git repo:
             # - if absolute, it is single for all checkouts;
             # - if relative, it is single per job (control scripts).
+
+            # Main repository with submodules.
+
+            {% if props['parent_repo_name'] %}
+            '{{ props['parent_repo_name'] }}': '/environment.sources/{{ props['parent_repo_name'] }}'
+            {% endif %}
 
             # Salt states.
 
@@ -180,6 +193,20 @@ system_features:
         #     Specify path to branch relative to repository root URL.
         source_repositories:
 
+            # Main repository with submodules.
+
+            {% if props['parent_repo_name'] %}
+
+            '{{ props['parent_repo_name'] }}':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git'
+
+                    branch_name: 'develop'
+
+            {% endif %}
+
             # Salt states.
 
             'common-salt-states':
@@ -228,11 +255,7 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.git'
 
-                {% if is_generic_profile %}
-                    branch_name: '{{ current_task_branch }}'
-                {% else %}
                     branch_name: '{{ profile_name }}'
-                {% endif %}
 
             '{{ project_name }}-salt-pillars.bootstrap-target':
                 git:
@@ -240,11 +263,7 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.bootstrap-target.git'
 
-                {% if is_generic_profile %}
-                    branch_name: '{{ current_task_branch }}'
-                {% else %}
                     branch_name: '{{ profile_name }}'
-                {% endif %}
 
             # Maven component repositories.
 

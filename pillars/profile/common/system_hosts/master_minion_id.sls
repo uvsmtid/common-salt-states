@@ -9,6 +9,10 @@
 {% set master_minion_id = props['master_minion_id'] %}
 {% set primary_network = props['primary_network'] %}
 
+# Disable this host definition if it is defined somewhere else
+# (when Salt master is set up on a minion defined in another file).
+{% if props['is_master_minion_unique'] %}
+
 {% if master_minion_id in props['enabled_minion_hosts'].keys() %}
 
 system_hosts:
@@ -52,6 +56,8 @@ system_hosts:
                 ip: 192.168.62.1
 
         primary_user: master_minion_user
+
+{% endif %}
 
 {% endif %}
 

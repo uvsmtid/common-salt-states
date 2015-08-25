@@ -3,6 +3,10 @@
 #
 # These variables are fed into Jinja templates of pillars -
 # they simply parameterize pillars.
+#
+# In addition to parameterization of pillars, properties can also
+# be accessed themselves under root of `pillar` dict in state template files.
+#
 # See also:
 # https://github.com/saltstack/salt/issues/6955#issuecomment-110793057
 #
@@ -26,25 +30,49 @@ use_internet_http_proxy: False
 
 offline_mode: False
 
+# Use generic profile (saved in project's `states` repository).
+# NOTE: This is only for convenience of development when both states
+#       and pillars (example of them or template) are changed in the same
+#       repository.
+#       Normally profile is not generic and this value is set to `False` .
 is_generic_profile: True
+
 project_name: common
+# Profile name specifies default branch name for configuration
+# repositories (e.g. pillars).
 profile_name: develop
 master_minion_id: master_minion_id
+# Is master minion id independent of any other minion id defined in pillars?
+is_master_minion_unique: True
 default_username: username
+# Current task branch specifies default branch name for non-configuration
+# repositories (e.g. states or other source code).
 current_task_branch: develop
 load_bootstrap_target_envs:
     develop: ~
 
+# Map between absolute path of symlink to absolut path of its target.
+# This is used for initial setup of various symbolic links.
 symlinks_map:
     '/home/username/Works/common-salt-pillars.git': '/home/username/Works/common-salt-states.git'
     '/home/username/Works/common-salt-pillars.bootstrap-target.git': '/home/username/Works/common-salt-states.git'
 
+# The following values specify absolute locations of important repositories.
+# One way these paths are used is to set up symlinks from locations
+# known by Salt (in `/srv` directory) to the required data in repositories.
 repo_path_states: '/home/username/Works/common-salt-states.git'
+# Note that in case of generic profile project's `states` repository is
+# used instead of `pillars` one:
 repo_path_pillars: '/home/username/Works/common-salt-pillars.git'
 repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-pillars.bootstrap-target.git'
 
+# Additional symlinks from common states repo to project states repos.
 projects_states_repo_paths:
     {}
+
+# If set, it specifies repository which is considered parent
+# to all repositories (to track releases).
+parent_repo_name: ~
 
 # Primary network which is not controlled by Salt (directly or indirectly,
 # e.g. through configuration of some virtualized networks) and exist
