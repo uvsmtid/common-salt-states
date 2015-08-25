@@ -23,8 +23,16 @@
         # NOTE: This job does nothing.
         #       It is used as a trigger (dependency) for other Maven jobs.
 
-        # TODO: Run Maven multi-module reactor build which spans all artifacts
-        #       instead of this job.
+        # CURRENT STATUS:
+        #
+        # This job config template is not used.
+        # In the existing porjects, the "bulid all" job uses parent
+        # `pom.xml` spanning all required Maven components in reactor build.
+        #
+        # In short, it can be done via `maven_pipeline.maven_project_job.xml`
+        # job template which is used by individual projects.
+        #
+        # TODO: Should this template be removed?
 
       </command>
     </hudson.tasks.Shell>

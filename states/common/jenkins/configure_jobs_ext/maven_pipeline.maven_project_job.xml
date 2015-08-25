@@ -31,14 +31,30 @@
   {% set component_pom_path = job_config['job_config_data']['component_pom_path'] %}
   <rootPOM>{{ repo_path }}/{{ component_pom_path }}</rootPOM>
 
+  {% if 'maven_args' in job_config %}
+  <goals>{{ job_config['maven_args']|e }}</goals>
+  {% else %}
   <goals>clean install</goals>
+  {% endif %}
 
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>false</ignoreUpstremChanges>
+
+  {% if 'MAVEN_OPTS' in job_config %}
+  <mavenOpts>{{ job_config['MAVEN_OPTS']|e }}</mavenOpts>
+  {% endif %}
+
+  {% if 'disable_archiving' in job_config %}
+  <archivingDisabled>true</archivingDisabled>
+  <siteArchivingDisabled>true</siteArchivingDisabled>
+  <fingerprintingDisabled>true</fingerprintingDisabled>
+  {% else %}
   <archivingDisabled>false</archivingDisabled>
   <siteArchivingDisabled>false</siteArchivingDisabled>
   <fingerprintingDisabled>false</fingerprintingDisabled>
+  {% endif %}
+
   <resolveDependencies>false</resolveDependencies>
   <processPlugins>false</processPlugins>
   <mavenValidationLevel>-1</mavenValidationLevel>
