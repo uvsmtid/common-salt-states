@@ -256,6 +256,11 @@
       <target></target>
       <excludes></excludes>
       <selector class="hudson.plugins.copyartifact.TriggeredBuildSelector">
+        <!--
+            Falling back to the latest allows rebuilding jobs
+            without restarting entire pipelined build.
+        -->
+        <fallbackToLastSuccessful>true</fallbackToLastSuccessful>
         <upstreamFilterStrategy>UseGlobalSetting</upstreamFilterStrategy>
       </selector>
       <doNotFingerprintArtifacts>false</doNotFingerprintArtifacts>
