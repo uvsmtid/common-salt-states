@@ -220,7 +220,11 @@
 
   </properties>
 
+  {% if 'force_jenkins_master' in job_config and job_config['force_jenkins_master'] %}
+  <assignedNode>master</assignedNode>
+  {% else %}
   <assignedNode>{{ job_environ['job_assigned_host'] }}</assignedNode>
+  {% endif %}
 
   <keepDependencies>true</keepDependencies>
 
