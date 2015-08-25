@@ -71,7 +71,21 @@ HEREDOC_MARKER
 
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
         BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
+
+        # Current branch and build branch are normally the same at this point.
+        # However, allow it to be different if current branch is
+        # switched back to initial branch (possibly manually,
+        # possibly by this job, or... it should not be a problem).
+        # The main point is to find build branch (i.g. to make sure that
+        # the build actually happend and restore uncommited files).
+        if [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}" ]
+        then
+            if [ "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}" ]
+            then
+                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH_NAME} != ${INITIAL_BRANCH}"
+                exit 1
+            fi
+        fi
 
         cd "${REPO_PATH}"
         git checkout "${INITIAL_BRANCH}"
@@ -95,8 +109,9 @@ HEREDOC_MARKER
         cd -
 
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+
+        RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}")"
 
         cd "${REPO_PATH}"
 
