@@ -117,6 +117,15 @@
 
   <description>{{ job_environ['job_description'] }}</description>
 
+  {% if 'discard_old_builds' in job_config %}
+  <logRotator class="hudson.tasks.LogRotator">
+    <daysToKeep>{{ job_config['discard_old_builds']['build_days'] }}</daysToKeep>
+    <numToKeep>{{ job_config['discard_old_builds']['build_num'] }}</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  {% endif %}
+
   <properties>
 
     <!-- build_parameters -->
@@ -213,7 +222,7 @@
 
   <assignedNode>{{ job_environ['job_assigned_host'] }}</assignedNode>
 
-  <keepDependencies>false</keepDependencies>
+  <keepDependencies>true</keepDependencies>
 
   <canRoam>false</canRoam>
 
