@@ -70,22 +70,6 @@ HEREDOC_MARKER
         {% endfor %}
 
         #######################################################################
-        # TODO: Move it to build verification job.
-        # Make sure target bootstrap profile pillars repo is on required branch.
-
-        # Get location of target bootstrap profile pillars repo.
-        {% set project_name = pillar['project_name'] %}
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars.bootstrap-target']['git'] %}
-
-        TARGET_BOOTSTRAP_PROFILE_PILLARS_REPO_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}'
-        cd "${TARGET_BOOTSTRAP_PROFILE_PILLARS_REPO_PATH}"
-        git checkout ${TARGET_PROFILE_NAME}
-        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-        cd -
-
-        test "$CURRENT_BRANCH" == "${TARGET_PROFILE_NAME}"
-
-        #######################################################################
         # Update dynamic build descriptor.
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
