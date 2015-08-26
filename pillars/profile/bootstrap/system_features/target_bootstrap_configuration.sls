@@ -136,14 +136,7 @@ system_features:
             # but rename them.
             {% set repo_name = project_name + '-salt-pillars.bootstrap-target' %}
             {{ repo_name }}:
-                {% if is_generic_profile %}
-                # If profile is generic, instead of pillars repository
-                # states repository is used. Therefore, wasting time and space
-                # on exporting this repository is unnecessary.
-                export_enabled: False
-                {% else %}
                 export_enabled: True
-                {% endif %}
                 export_method: clone
                 export_format: dir
                 # NOTE: Choice of the target pillar is special.

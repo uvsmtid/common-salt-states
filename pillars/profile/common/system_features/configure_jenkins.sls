@@ -252,11 +252,6 @@ system_features:
                             Note that SOURCE_PROFILE is determined automatically.
                         parameter_type: choice
                         parameter_value:
-                            {% if is_generic_profile %}
-                            - {{ current_task_branch }}
-                            {% else %}
-                            - {{ profile_name }}
-                            {% endif %}
                             {% for target_profile_name in props['load_bootstrap_target_envs'].keys() %}
                             - {{ target_profile_name }}
                             {% endfor %}
