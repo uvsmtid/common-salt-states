@@ -35,6 +35,10 @@
 
         {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
 
+        # This is the first job in the init_pipeline.
+        # Clean conents of the latest dyn build desc.
+        echo >> "${LATEST_DYN_BUILD_DESC_PATH}"
+
         #######################################################################
         # Write environment variables into dynamic build descriptor.
 

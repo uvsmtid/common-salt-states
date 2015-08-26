@@ -32,12 +32,19 @@
 
         {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
 
+        # IMPORTANT: We need to update dynamic bulid descriptor
+        #            for the next job in the pipeline now (as there is
+        #            no more updates of dyn build desc within current
+        #            pipeline) to pass the info generated in the jobs before.
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
         # Detect if recovery is needed from the previous build.
         if [ ! -f "${RECOVERY_DYN_BUILD_DESC_PATH}" ]
         then
             # No recovery dynamic build descriptor available from
             # the previous build - nothing to do.
             echo "No need to recover from the previous build".
+
             exit 0
         fi
 
@@ -180,10 +187,6 @@ HEREDOC_MARKER
         # of the recovery build descriptor.
         # Remove it to inidcate that everything is reset.
         rm "${RECOVERY_DYN_BUILD_DESC_PATH}"
-
-        # Remove latest dynamic build descriptor because after this
-        # job there is no latest anymore.
-        rm "${LATEST_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
 
