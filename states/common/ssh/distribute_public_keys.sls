@@ -60,6 +60,7 @@ package_sshpass:
         - user: {{ account_conf['username'] }}
         - group: {{ account_conf['primary_group'] }}
         - mode: 544
+        - makedirs: True
 
 # Loop through all defined hosts and execute `ssh-copy-id` to them.
 # Password is provided.
