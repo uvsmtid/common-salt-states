@@ -9,7 +9,7 @@ include:
     # Plugin for Jenkins:
     - common.jenkins.maven
     - common.jenkins.git
-    - common.jenkins.layout
+    - common.jenkins.pipeline
     - common.jenkins.cygwin
     - common.jenkins.infra
 

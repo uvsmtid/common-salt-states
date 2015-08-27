@@ -1,5 +1,7 @@
 # Configure Jenkins job based on XML configuration template.
 
+# See also:
+#  states/common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls
 
 {% macro job_config_include_item(job_name, job_config) %}
 
@@ -43,12 +45,13 @@
             # The value of `job_config` is not a string, it is data.
             job_config: {{ job_config|json }}
 
-            job_name: "{{ job_name }}"
-            os_type: "{{ os_type }}"
-            jenkins_dir_path: '{{ account_conf['posix_user_home_dir'] }}/jenkins'
-            job_description: ""
-            job_assigned_host: "{{ assigned_slave_host }}"
-            control_url: '{{ URI_prefix }}/{{ pillar['system_features']['deploy_central_control_directory']['control_dir_url_path'] }}'
+            job_environ:
+                job_name: "{{ job_name }}"
+                os_type: "{{ os_type }}"
+                jenkins_dir_path: '{{ account_conf['posix_user_home_dir'] }}/jenkins'
+                job_description: ""
+                job_assigned_host: "{{ assigned_slave_host }}"
+                control_url: '{{ URI_prefix }}/{{ pillar['system_features']['deploy_central_control_directory']['control_dir_url_path'] }}'
 
 # Make sure job configuration does not exist:
 add_{{ job_name }}_job_configuration_to_jenkins:

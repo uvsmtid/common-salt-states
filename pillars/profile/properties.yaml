@@ -3,12 +3,18 @@
 #
 # These variables are fed into Jinja templates of pillars -
 # they simply parameterize pillars.
+#
+# In addition to parameterization of pillars, properties can also
+# be accessed themselves under root of `pillar` dict in state template files.
+#
 # See also:
 # https://github.com/saltstack/salt/issues/6955#issuecomment-110793057
 #
 # USECASE 1: Initial Salt master setup
 #
-# TODO
+# See `states/bootstrap/bootstrap.dir/configure_salt.py` script.
+# This script is able to configure Salt with single master minion
+# using ONLY this property file as parameter.
 #
 # USECASE 2: frequently changed conditions affecting multiple pillars
 #
@@ -24,34 +30,76 @@ use_internet_http_proxy: False
 
 offline_mode: False
 
+# Use generic profile (saved in project's `states` repository).
+# NOTE: This is only for convenience of development when both states
+#       and pillars (example of them or template) are changed in the same
+#       repository.
+#       Normally profile is not generic and this value is set to `False` .
 is_generic_profile: True
+
 project_name: common
+# Profile name specifies default branch name for configuration
+# repositories (e.g. pillars).
 profile_name: develop
 master_minion_id: master_minion_id
+# Is master minion id independent of any other minion id defined in pillars?
+is_master_minion_unique: True
 default_username: username
+# Current task branch specifies default branch name for non-configuration
+# repositories (e.g. states or other source code).
 current_task_branch: develop
 load_bootstrap_target_envs:
     develop: ~
 
+# Map between absolute path of symlink to absolut path of its target.
+# This is used for initial setup of various symbolic links.
 symlinks_map:
     '/home/username/Works/common-salt-pillars.git': '/home/username/Works/common-salt-states.git'
     '/home/username/Works/common-salt-pillars.bootstrap-target.git': '/home/username/Works/common-salt-states.git'
 
+# The following values specify absolute locations of important repositories.
+# One way these paths are used is to set up symlinks from locations
+# known by Salt (in `/srv` directory) to the required data in repositories.
 repo_path_states: '/home/username/Works/common-salt-states.git'
+# Note that in case of generic profile project's `states` repository is
+# used instead of `pillars` one:
 repo_path_pillars: '/home/username/Works/common-salt-pillars.git'
 repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-pillars.bootstrap-target.git'
 
+# Additional symlinks from common states repo to project states repos.
 projects_states_repo_paths:
     {}
 
-# List of minions to be managed.
+# If set, it specifies repository which is considered parent
+# to all repositories (to track releases).
+parent_repo_name: ~
+
+# Primary network which is not controlled by Salt (directly or indirectly,
+# e.g. through configuration of some virtualized networks) and exist
+# to contact minions before running any Salt states.
+#
+# It is important to resolve master hostname on this network
+# (otherwise it won't be reachible until virtual networks are created).
+primary_network:
+    network_name: primary_net
+    network_ip_subnet: 192.168.40.0
+    # WARNING: netmask and prefix should be consistent
+    #          (they define the same thing).
+    network_ip_netmask: 255.255.255.0
+    network_ip_netprefix: 24
+    #
+    network_ip_broadcast: 192.168.40.255
+    # Default route.
+    network_ip_gateway: 192.168.40.1
+
+# Minions to be managed mapped into their IP addresses on primary network.
 # NOTE: In order for this list to be effective, there are two conditions:
 #       - Pillar with minion configuration should actually use this
 #         list to enable/disable this minion.
 #       - List of accepted minions configured by `salt-key` command should
 #         be re-configured accordingly so that `*` actually means this list.
 enabled_minion_hosts:
-    - master_minion_id
+    master_minion_id: 192.168.40.1
 
 ###############################################################################
 # EOF

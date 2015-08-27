@@ -1,4 +1,4 @@
-# Various views and layout plugins.
+# Various plugins for build pipeline.
 
 # Import generic template for Jenkins plugin installation.
 {% from 'common/jenkins/install_plugin.sls' import jenkins_plugin_installation_macros with context %}
@@ -24,11 +24,18 @@ include:
         'jenkins_parameterized-trigger_plugin',
         'jenkins_jquery_plugin',
         'jenkins_build-pipeline-plugin_plugin',
+        'jenkins_maven-plugin_plugin',
+        'jenkins_promoted-builds_plugin',
+        'jenkins_copyartifact_plugin',
+        'jenkins_join_plugin',
+        'jenkins_rebuild_plugin',
     ]
 %}
 
+{% set unique_suffix = 'pipeline' %}
+
 # This SLS id is used by template.
-'{{ registered_content_item_id }}_jenkins_plugin_installation_prerequisite':
+'{{ registered_content_item_id }}_jenkins_plugin_installation_prerequisite_{{ unique_suffix }}':
     cmd.run:
         - name: "echo dummy:{{ registered_content_item_id }}"
         - require:
@@ -36,7 +43,7 @@ include:
             - sls: common.jenkins.download_jenkins_cli_tool
 
 # Call generic template.
-{{ jenkins_plugin_installation_macros(registered_content_item_id) }}
+{{ jenkins_plugin_installation_macros(registered_content_item_id, unique_suffix) }}
 
 {% endfor %}
 

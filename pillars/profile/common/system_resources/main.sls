@@ -115,6 +115,51 @@ system_resources:
         item_content_hash: md5=c88936fb6d5885d3aef93439ead9ae76
         plugin_name: parameterized-trigger
 
+    # Jenkins: Copy Artifact Plugin
+    # Downloadable from:
+    #  https://wiki.jenkins-ci.org/display/JENKINS/Copy+Artifact+Plugin
+    # Direct link:
+    #  http://updates.jenkins-ci.org/download/plugins/copyartifact/1.35.2/copyartifact.hpi
+    jenkins_copyartifact_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: copyartifact.v1.35.2.hpi
+        item_content_hash: md5=aa1ad17560f526b16ae7fc2bfad955c5
+        plugin_name: copyartifact
+
+    # Jenkins: Promoted Builds Plugin
+    # Downloadable from:
+    #  https://wiki.jenkins-ci.org/display/JENKINS/Promoted+Builds+Plugin
+    # Direct link:
+    #  http://updates.jenkins-ci.org/download/plugins/promoted-builds/2.21/promoted-builds.hpi
+    jenkins_promoted-builds_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: promoted-builds.v2.21.hpi
+        item_content_hash: md5=514275e441a9e92c23ca56dddf131b6a
+        plugin_name: promoted-builds
+
+    # Jenkins: Join Plugin
+    # Downloadable from:
+    #  https://wiki.jenkins-ci.org/display/JENKINS/Join+Plugin
+    # Direct link:
+    #  http://updates.jenkins-ci.org/download/plugins/join/1.16/join.hpi
+    jenkins_join_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: join.v1.16.hpi
+        item_content_hash: md5=5b4dc12ceca80a8c6aa4f152c2ac265a
+        plugin_name: join
+
     # Jenkins: jQuery Plugin
     # Downloadable from:
     #   https://wiki.jenkins-ci.org/display/JENKINS/jQuery+Plugin

@@ -13,7 +13,7 @@
 {% macro filter_assigned_hosts_by_enabled_minion_hosts(assigned_minion_list) %}
             [
 {% for selected_minion_id in assigned_minion_list %}
-{% if selected_minion_id in props['enabled_minion_hosts'] %}
+{% if selected_minion_id in props['enabled_minion_hosts'].keys() %}
                 {{ selected_minion_id }}
 {% if not loop.last %}
                 ,

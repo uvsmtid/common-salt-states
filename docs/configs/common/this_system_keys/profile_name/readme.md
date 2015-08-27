@@ -7,7 +7,8 @@ See also [`master_minion_id`][2] which specifies host with Salt master
 managing current system.
 
 The value of `profile_name` filed is also used as default branch name
-for all repositories with pillars if [`is_generic_profile`][4] is not `True`.
+for repositories with pillars only (states repositories contain
+generic profiles but their branch is dictated by [`current_task_branch`][3]).
 
 See also [`current_task_branch`][3] which specifies default branch name
 for all other repositories (those without pillars).
@@ -15,5 +16,4 @@ for all other repositories (those without pillars).
 [1]: /docs/configs/common/this_system_keys/project_name/readme.md
 [2]: /docs/configs/common/this_system_keys/master_minion_id/readme.md
 [3]: /docs/configs/common/this_system_keys/current_task_branch/readme.md
-[4]: /docs/configs/common/this_system_keys/is_generic_profile/readme.md
 

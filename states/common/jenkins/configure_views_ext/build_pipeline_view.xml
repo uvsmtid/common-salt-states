@@ -9,9 +9,9 @@
     <firstJob>{{ first_job_name }}</firstJob>
     <firstJobLink>job/{{ first_job_name }}/</firstJobLink>
   </gridBuilder>
-  <noOfDisplayedBuilds>3</noOfDisplayedBuilds>
+  <noOfDisplayedBuilds>5</noOfDisplayedBuilds>
   <buildViewTitle></buildViewTitle>
-  <consoleOutputLinkStyle>Lightbox</consoleOutputLinkStyle>
+  <consoleOutputLinkStyle>New Window</consoleOutputLinkStyle>
   <cssUrl></cssUrl>
   <triggerOnlyLatestJob>false</triggerOnlyLatestJob>
   <alwaysAllowManualTrigger>false</alwaysAllowManualTrigger>

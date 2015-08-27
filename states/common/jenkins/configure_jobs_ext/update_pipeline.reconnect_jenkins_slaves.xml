@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
+
+  <builders>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+
+    <hudson.tasks.Shell>
+      <command>
+
+        set -e
+        set -u
+
+        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+        exit 0
+        {% endif %}
+
+        # Use Jenkins'es CLI `disconnect-node` and `connect-node`
+        # commands to reconnect to all notes (except local Jenkins
+        # master which is available by default).
+        # The command must be run on Jenkins master (otherwise it is
+        # not clear how successful completion guarateed due to
+        # disconnection with remote Jenkins slaves).
+
+        {% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
+        {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
+        {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+
+        # Download Jenkins CLI tool.
+        wget http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/jnlpJars/jenkins-cli.jar -O jenkins-cli.jar
+
+        # Disconnect and Connect all Jenkins Slaves.
+        {% for node_name in pillar['system_host_roles']['jenkins_slave_role']['assigned_hosts'] %}
+        {% set node_config = pillar['system_hosts'][node_name] %}
+
+        java -jar jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ disconnect-node  {{ node_name }}
+        java -jar jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ connect-node     {{ node_name }}
+        java -jar jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ wait-node-online {{ node_name }}
+
+        {% endfor %}
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+
+  <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+  </publishers>
+
+  <buildWrappers/>
+
+</project>
+

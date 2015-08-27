@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
+
+  <builders>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+
+    <hudson.tasks.Shell>
+      <command>
+
+        set -e
+        set -u
+
+        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+        exit 0
+        {% endif %}
+
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
+
+        #######################################################################
+        # Locate dynamic build descriptor.
+
+        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+
+        # IMPORTANT: We need to update dynamic bulid descriptor
+        #            for the next job in the pipeline now (as there is
+        #            no more updates of dyn build desc within current
+        #            pipeline) to pass the info generated in the jobs before.
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        # Detect if recovery is needed from the previous build.
+        if [ ! -f "${RECOVERY_DYN_BUILD_DESC_PATH}" ]
+        then
+            # No recovery dynamic build descriptor available from
+            # the previous build - nothing to do.
+            echo "No need to recover from the previous build".
+
+            exit 0
+        fi
+
+        # Save recovery build descriptor in the one used by the job.
+        cp "${RECOVERY_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
+
+        #######################################################################
+        # In-place Python script which returns data under
+        # specified key in destination dict on stdout.
+
+        KEY_GETTER_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_GETTER_PYTHON_SCRIPT}
+{{ key_getter_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
+
+        #######################################################################
+        # Switch back to initial branches.
+
+        # NOTE: We assume that repository is available
+        #       locally on Jenkins slave.
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+
+        # Current branch and build branch are normally the same at this point.
+        # However, allow it to be different if current branch is
+        # switched back to initial branch (possibly manually,
+        # possibly by this job, or... it should not be a problem).
+        # The main point is to find build branch (i.g. to make sure that
+        # the build actually happend and restore uncommited files).
+        if [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}" ]
+        then
+            if [ "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}" ]
+            then
+                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH_NAME} != ${INITIAL_BRANCH}"
+                exit 1
+            fi
+        fi
+
+        cd "${REPO_PATH}"
+        git checkout "${INITIAL_BRANCH}"
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
+        # Restore uncommitted local content to the conditions
+        # they were at the begining of the build pipeline
+        #
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+
+        RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}")"
+
+        cd "${REPO_PATH}"
+
+        # This step restores all local changes committed at the beginning.
+        git checkout "${RESTORE_POINT_COMMIT}"
+
+        # This step resets HEAD to the commit before the beginning
+        # while leaving all local files as they are at restore point.
+        git reset "${INITIAL_BRANCH}"
+
+        # This step simply checks out branch (moves away from detached HEAD).
+        git checkout "${INITIAL_BRANCH}"
+
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
+        # Remove all build branches.
+        #
+        # TODO: This better be done after promotion (which causes tagging).
+
+        # TODO: In order to use environment variable, it must be set in
+        #       properties file for this job.
+        #       If this job is run as a standalone one (not part of
+        #       pipeline build), the properties should be restored from
+        #       dynamic build descriptor (because this variable is only
+        #       set by user in the first job of the pipeline).
+        REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "environ:REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION")"
+        if [ "${REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION}" == "true" ]
+        then
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+
+        cd "${REPO_PATH}"
+        # Note that we ignore exit code (the command may fail and only logs may show why).
+        set +e
+        git branch -D "${BUILD_BRANCH_NAME}"
+        set -e
+        cd -
+
+        {% endfor %}
+
+        fi
+
+        #######################################################################
+        # Update dynamic build descriptor.
+
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        # The purpose of this job is to indicate to itself (or its clones)
+        # that all changes made to set up environment for the previous build
+        # are reverted. The indication of this is done by existence (or not)
+        # of the recovery build descriptor.
+        # Remove it to inidcate that everything is reset.
+        rm "${RECOVERY_DYN_BUILD_DESC_PATH}"
+
+        #######################################################################
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+
+  <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+  </publishers>
+
+  <buildWrappers/>
+
+</project>
+

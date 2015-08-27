@@ -12,7 +12,9 @@ postgresql_server_package:
 
 init_postgresql_data:
     cmd.run:
-        - name: 'postgresql-setup --initdb'
+        # The command which worked with postgresql-server-9.2.7-1.el7.x86_64
+        # on CentOS 7 (had to be changed from using `--initdb` instead).
+        - name: 'postgresql-setup initdb'
         - unless: 'ls /var/lib/pgsql/data/pg_hba.conf'
         - require:
             - pkg: postgresql_server_package

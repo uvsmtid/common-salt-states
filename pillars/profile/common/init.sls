@@ -13,6 +13,10 @@ include:
         ,
         'common_pillar_schema_version'
         ,
+        'system_build_descriptor'
+        ,
+        'system_maven_artifacts'
+        ,
         'system_platforms'
         ,
         'system_secrets'

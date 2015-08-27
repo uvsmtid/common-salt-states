@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<maven2-moduleset plugin="maven-plugin@2.7.1">
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
+
+  <!--
+      Maven Project configuration.
+  -->
+
+  <!--
+        Disable specification of `groupId` and `artifactId`.
+        At the moment it seems like unnecessary details because `pom.xml`
+        file contains them. And Jenkins works anyway.
+        #{#
+  -->
+  <rootModule>
+    {% set component_group_id = job_config['job_config_data']['component_group_id'] %}
+    <groupId>{{ component_group_id }}</groupId>
+    {% set component_artifact_id = job_config['job_config_data']['component_artifact_id'] %}
+    <artifactId>{{ component_artifact_id }}</artifactId>
+  </rootModule>
+  <!--
+        #}#
+  -->
+
+  {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+  {% set repo_name = job_config['job_config_data']['repository_name'] %}
+  {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+  {% set repo_path = get_system_host_primary_user_posix_home(repo_config['source_system_host']) + '/' + repo_config['origin_uri_ssh_path'] %}
+  {% set component_pom_path = job_config['job_config_data']['component_pom_path'] %}
+  <rootPOM>{{ repo_path }}/{{ component_pom_path }}</rootPOM>
+
+  {% if 'maven_args' in job_config %}
+  <goals>{{ job_config['maven_args']|e }}</goals>
+  {% else %}
+  <goals>clean install</goals>
+  {% endif %}
+
+  <aggregatorStyleBuild>true</aggregatorStyleBuild>
+  <incrementalBuild>false</incrementalBuild>
+  <ignoreUpstremChanges>false</ignoreUpstremChanges>
+
+  {% if 'MAVEN_OPTS' in job_config %}
+  <mavenOpts>{{ job_config['MAVEN_OPTS']|e }}</mavenOpts>
+  {% endif %}
+
+  {% if 'disable_archiving' in job_config %}
+  <archivingDisabled>true</archivingDisabled>
+  <siteArchivingDisabled>true</siteArchivingDisabled>
+  <fingerprintingDisabled>true</fingerprintingDisabled>
+  {% else %}
+  <archivingDisabled>false</archivingDisabled>
+  <siteArchivingDisabled>false</siteArchivingDisabled>
+  <fingerprintingDisabled>false</fingerprintingDisabled>
+  {% endif %}
+
+  <resolveDependencies>false</resolveDependencies>
+  <processPlugins>false</processPlugins>
+  <mavenValidationLevel>-1</mavenValidationLevel>
+  <runHeadless>false</runHeadless>
+  <disableTriggerDownstreamProjects>false</disableTriggerDownstreamProjects>
+  <blockTriggerWhenBuilding>true</blockTriggerWhenBuilding>
+  <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+  <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+
+  <reporters/>
+
+  <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+  </publishers>
+
+
+  <buildWrappers>
+
+    <!--
+         Maven Release configuration.
+    -->
+    <org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper plugin="m2release@0.14.0">
+      <scmUserEnvVar></scmUserEnvVar>
+      <scmPasswordEnvVar></scmPasswordEnvVar>
+      <releaseEnvVar>IS_M2RELEASEBUILD</releaseEnvVar>
+      <releaseGoals>-Dresume=false release:prepare release:perform</releaseGoals>
+      <dryRunGoals>-Dresume=false -DdryRun=true release:prepare</dryRunGoals>
+      <selectCustomScmCommentPrefix>false</selectCustomScmCommentPrefix>
+      <selectAppendHudsonUsername>false</selectAppendHudsonUsername>
+      <selectScmCredentials>false</selectScmCredentials>
+      <numberOfReleaseBuildsToKeep>1</numberOfReleaseBuildsToKeep>
+    </org.jvnet.hudson.plugins.m2release.M2ReleaseBuildWrapper>
+
+  </buildWrappers>
+
+  <prebuilders>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+
+  </prebuilders>
+
+  <postbuilders/>
+
+  <runPostStepsIfResult>
+    <name>FAILURE</name>
+    <ordinal>2</ordinal>
+    <color>RED</color>
+    <completeBuild>true</completeBuild>
+  </runPostStepsIfResult>
+
+</maven2-moduleset>
+

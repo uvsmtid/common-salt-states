@@ -6,9 +6,9 @@
 {% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
 {% import_yaml properties_path as props %}
 
-{% set default_username = props['default_username'] %}
+{% set primary_network = props['primary_network'] %}
 
-{% if 'rhel7_minion' in props['enabled_minion_hosts'] %}
+{% if 'rhel7_minion' in props['enabled_minion_hosts'].keys() %}
 
 system_hosts:
 
@@ -30,9 +30,13 @@ system_hosts:
         os_platform: rhel7
 
         hostname: rhel7-minion
-        resolved_in: internal_net
+        resolved_in: {{ primary_network['network_name'] }}
         consider_online_for_remote_connections: True
         host_networks:
+
+            {{ primary_network['network_name'] }}:
+                ip: {{ props['enabled_minion_hosts']['rhel7_minion'] }}
+
             internal_net:
                 ip: 192.168.51.20
             secondary_internal_net:

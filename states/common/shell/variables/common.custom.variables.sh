@@ -8,13 +8,8 @@ export EDITOR="vim"
 ###############################################################################
 
 # Set variable to indicate which pillar profile is used.
-{% set is_generic_profile = pillar['is_generic_profile'] %}
-{% if is_generic_profile %}
-export SALT_PROFILE_NAME="-"
-{% else %}
 {% set profile_name = pillar['profile_name'] %}
 export SALT_PROFILE_NAME="{{ profile_name }}"
-{% endif %}
 
 ###############################################################################
 

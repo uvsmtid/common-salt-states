@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.promoted__builds.PromotionProcess plugin="promoted-builds@2.21">
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+
+  <!-- NOTE: Maintains single active/running pipeline at a time. -->
+  <blockBuildWhenDownstreamBuilding>true</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>true</blockBuildWhenUpstreamBuilding>
+
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <conditions>
+
+    {% if not job_config['condition_type'] %}
+
+    {% elif job_config['condition_type'] == 'downstream_passed' %}
+
+    <hudson.plugins.promoted__builds.conditions.DownstreamPassCondition>
+
+      <jobs>{{ job_config['condition_job_list']|join(', ') }}</jobs>
+
+      <evenIfUnstable>{{ job_config['accept_unstable'] }}</evenIfUnstable>
+
+    </hudson.plugins.promoted__builds.conditions.DownstreamPassCondition>
+
+    {% elif job_config['condition_type'] == 'manual_approval' %}
+
+    <hudson.plugins.promoted__builds.conditions.ManualCondition>
+
+      <users></users>
+
+      <parameterDefinitions/>
+
+    </hudson.plugins.promoted__builds.conditions.ManualCondition>
+
+    {% endif %}
+
+  </conditions>
+
+  <icon>{{ job_config['promotion_icon'] }}</icon>
+  <buildSteps>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+  </buildSteps>
+
+</hudson.plugins.promoted__builds.PromotionProcess>
+

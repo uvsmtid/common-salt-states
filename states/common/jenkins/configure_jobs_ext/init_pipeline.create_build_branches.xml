@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
+
+  <builders>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+
+    <hudson.tasks.Shell>
+      <command>
+
+        set -e
+        set -u
+
+        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+        exit 0
+        {% endif %}
+
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
+
+        #######################################################################
+        # Locate dynamic build descriptor.
+
+        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # In-place Python script which captures stdin data under
+        # specified key in destination dict.
+
+        KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
+{{ key_setter_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
+
+        #######################################################################
+        # In-place Python script which returns data under
+        # specified key in destination dict on stdout.
+
+        KEY_GETTER_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_GETTER_PYTHON_SCRIPT}
+{{ key_getter_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
+
+        #######################################################################
+        # Branch all repositories based on dynamic build descriptor.
+
+        # NOTE: We assume that repository is available
+        #       locally on Jenkins slave.
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+
+        cd "${REPO_PATH}"
+        git checkout -b "${BUILD_BRANCH_NAME}" "${INITIAL_BRANCH}"
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
+        # Create restore point - initial commits of all local modifications.
+        #
+        # This restore point will be used to recover all local modifications
+        # after switching back to initial branches even if build branches
+        # are supposed to be deleted.
+        #
+        # TODO: This script section is very similar (or the same) with what
+        #       has to be done when any changes need to be checked in during
+        #       the build pipeline. Factor out for reuse.
+        #
+        # Sequence:
+        # - Save parent repo first
+        #   (as commits in childs will not make original restore point).
+        # - Save all other repos (children).
+
+        {% if pillar['parent_repo_name'] %}
+        # Parent repo is defined and it is the first.
+        {% set repo_list = [ pillar['parent_repo_name'] ] + pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% else %}
+        # This profile does not define parent repo.
+        {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% endif %}
+
+        {% for repo_name in repo_list %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
+
+        cd "${REPO_PATH}"
+        git add --all
+        git status
+        # Commit only if there are changes.
+        # Ignore dirty content in submodules because there is no way to
+        # commit them from top-level repo anyway (and all dirty content
+        # will be committed by children).
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: restore point commit'
+        RESTORE_POINT_COMMIT="$(git rev-parse --verify HEAD)"
+        cd -
+
+        echo "$RESTORE_POINT_COMMIT" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}"
+
+        {% endfor %}
+
+        #######################################################################
+        # Commit versions of dynamic build descriptor
+        #
+        # - Version 1 `start_new_build`.
+        # - Version 2 `describe_repositories_state`.
+        # - Version 3 `create_build_branches`.
+
+        {% set project_name = pillar['project_name'] %}
+
+        {% if pillar['is_generic_profile'] %}
+        {% set repo_name = project_name + '-salt-states' %}
+        {% else %}
+        {% set repo_name = project_name + '-salt-pillars' %}
+        {% endif %}
+
+        JENKINS_DIR_PATH="{{ job_environ['jenkins_dir_path'] }}"
+
+        # At the moment simply save it into repository.
+        for VER_NAME in start_new_build describe_repositories_state create_build_branches
+        do
+
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
+
+        cd "${REPO_PATH}"
+        VER_DYN_BUILD_DESC_PATH="{{ job_environ['jenkins_dir_path'] }}/build_pipeline/init_pipeline.${VER_NAME}.dynamic_build_descriptor.yaml"
+        cp "${VER_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
+        git add --all
+        git status
+        # Note that we don't check whether there are changes to commit.
+        # There must be changes - each version of
+        # dynamic build descriptor should be different.
+        git commit --author "${GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${VER_NAME}"
+        cd -
+
+        done
+
+        #######################################################################
+        # Update dynamic build descriptor.
+
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        # One of the purposes of this job is to set recovery
+        # dynamic build descriptor so that changes made to repositories
+        # can be reverted to their state before this job.
+        cp "${LATEST_DYN_BUILD_DESC_PATH}" "${RECOVERY_DYN_BUILD_DESC_PATH}"
+
+        #######################################################################
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+
+  <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+  </publishers>
+
+  <buildWrappers/>
+
+</project>
+
