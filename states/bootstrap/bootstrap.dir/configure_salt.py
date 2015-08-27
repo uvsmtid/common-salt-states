@@ -1,13 +1,22 @@
 #!/usr/bin/env python
 
-# This script automatically configures Salt master or minion to be used
-# with `common-salt-states` repository.
+# This script automatically configures Salt master
+# to be used with `common-salt-states` repository.
+#
+# It takes profile properties file from pillars which define the system
+# to configure (installed) Salt master automatically.
+#
 # See: TODO: docs
 #
 # Key points (differences from bootstrap):
 # * Configure Salt master only (no standalone masterless minions).
 # * Salt master is supposed to be already installed.
-# * Host with Salt master is supposed to be installed with Salt minion too.
+# * Host with Salt master is supposed to be installed and configured
+#   with Salt minion too.
+#   TODO: Implement Salt minion configuration in this script as well.
+#         Actually, this is a corner case because when Salt master
+#         is installed, it can generate bootstrap packages for their
+#         minions so that can be installed and configured automatically.
 
 import os
 import sys
