@@ -11,7 +11,7 @@
 
 # Disable this host definition if it is defined somewhere else
 # (when Salt master is set up on a minion defined in another file).
-{% if props['is_master_minion_unique'] %}
+{% if props['use_master_minion_template_host'] %}
 
 {% if master_minion_id in props['enabled_minion_hosts'].keys() %}
 
