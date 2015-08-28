@@ -32,7 +32,7 @@ system_hosts:
             memory_size: 2024
             cpus_number: 2
 
-        os_platform: fc21
+        os_platform: fc22
 
         hostname: {{ master_minion_id }}
         # The master minion host is defined in `primary_network`
