@@ -343,15 +343,26 @@ if loaded_data is None:
 # The format should be 'parent-key:child-key:...:sub-key'
 key_spec = sys.argv[2]
 key_list = key_spec.split(':')
-last_sub_key = key_list[-1]
-curr_value = loaded_data
-# Walk down to the last dictionary where 'last_sub_key' is.
-for curr_key in key_list[:-1]:
-    curr_value = curr_value[curr_key]
-    assert(isinstance(curr_value, dict))
 
-# Print content of the specified key to STDOUT.
-print curr_value[last_sub_key]
+# If key does not exists, use default (if provided).
+is_default_value_available = False
+default_value = None
+if len(sys.argv) >= 4:
+    is_default_value_available = True
+    default_value = sys.argv[3]
+
+# Walk down to the value.
+curr_value = loaded_data
+for curr_key in key_list:
+    if curr_key in curr_value:
+        curr_value = curr_value[curr_key]
+    else:
+        assert(is_default_value_available)
+        curr_value = default_value
+        break
+
+# Print content of the value to STDOUT.
+print curr_value
 
 {% endmacro %}
 
