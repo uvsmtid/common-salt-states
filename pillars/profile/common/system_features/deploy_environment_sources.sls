@@ -8,6 +8,7 @@
 
 {% set project_name = props['project_name'] %}
 {% set master_minion_id = props['master_minion_id'] %}
+{% set is_generic_profile = props['is_generic_profile'] %}
 {% set profile_name = props['profile_name'] %}
 {% set current_task_branch = props['current_task_branch'] %}
 
@@ -156,7 +157,7 @@ system_features:
 
             {% for maven_repo_name in maven_repo_names %}
 
-            '{{ maven_repo_name }}': '/environment.sources/observer.git/maven/{{ maven_repo_name }}.git'
+            '{{ maven_repo_name }}': '/environment.sources/{{ maven_repo_name }}.git'
 
             {% endfor %}
 

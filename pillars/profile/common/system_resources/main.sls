@@ -115,6 +115,21 @@ system_resources:
         item_content_hash: md5=c88936fb6d5885d3aef93439ead9ae76
         plugin_name: parameterized-trigger
 
+    # Jenkins: Rebuild Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Rebuild+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/download/plugins/rebuild/1.25/rebuild.hpi
+    jenkins_rebuild_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: rebuild.v1.25.hpi
+        item_content_hash: md5=103bc7fcf80864774438d7c9a63ca8f2
+        plugin_name: rebuild
+
     # Jenkins: Copy Artifact Plugin
     # Downloadable from:
     #  https://wiki.jenkins-ci.org/display/JENKINS/Copy+Artifact+Plugin

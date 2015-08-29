@@ -5,6 +5,7 @@
 include:
 
 {% for sub_item in [
+        'maven-demo'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

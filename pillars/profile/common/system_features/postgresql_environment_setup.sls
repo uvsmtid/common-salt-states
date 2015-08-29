@@ -24,13 +24,13 @@ system_features:
         # PostgreSQL original service name.
         postgresql_orig_service_name: 'postgresql-9.3'
 
-        # PostgreSQL service name for Observer server.
-        postgresql_observer_service_name: 'postgresql-{{ project_name }}'
+        # PostgreSQL service name for project_name server.
+        postgresql_project_name_service_name: 'postgresql-{{ project_name }}'
 
         # PostgreSQL database directory with data files.
         # Default is `/var/lib/pgsql/9.3/data`.
         # NOTE: Do not set it here.
-        #       It is computed based on `observer_version_*` and other
+        #       It is computed based on `project_name_version_*` and other
         #       parameters within state itself.
         postgresql_data_directory: ~
 

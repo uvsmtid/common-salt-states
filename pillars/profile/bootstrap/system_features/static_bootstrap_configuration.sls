@@ -11,6 +11,7 @@ system_features:
 
         os_platform_package_types:
             fc21: tar.gz
+            fc22: tar.gz
             rhel5: tar.gz
             rhel7: tar.gz
             win7: zip
@@ -44,6 +45,12 @@ system_features:
                         salt-master:
                             source_type: tar
                             resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
+                    fc22:
+                        salt-master:
+                            source_type: tar
+                            # NOTE: This RPM was created for `fc21` and simply reused here.
+                            # TODO: Generate new resource for `fc22`.
+                            resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
                     rhel5:
                         salt:
                             source_type: tar
@@ -76,6 +83,12 @@ system_features:
                     fc21:
                         salt-master:
                             source_type: tar
+                            resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
+                    fc22:
+                        salt-master:
+                            source_type: tar
+                            # NOTE: This RPM was created for `fc21` and simply reused here.
+                            # TODO: Generate new resource for `fc22`.
                             resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
                     rhel5:
                         salt:

@@ -77,6 +77,10 @@ system_features:
         #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_jobs/readme.md
         #
 
+            # If set to `-1`, keep forever.
+            {% set discard_build_days = 7 %}
+            {% set discard_build_num = 9 %}
+
             ###################################################################
             # Set of trigger-jobs which are not supposed to be doing much.
             # They are only used to trigger downstram jobs.
@@ -86,7 +90,12 @@ system_features:
             #       executing it (see `skip_script_execution`).
             {% set job_id = 'trigger_on_demand' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -109,7 +118,12 @@ system_features:
             #       on a timely basis.
             {% set job_id = 'trigger_on_timer' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -136,7 +150,12 @@ system_features:
             #       pipeline even if there is no changes.
             {% set job_id = 'trigger_on_changes' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -156,7 +175,12 @@ system_features:
 
             {% set job_id = 'auto_pipeline.update_salt_master_sources' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -180,6 +204,10 @@ system_features:
             {{ job_id }}:
 
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -206,7 +234,12 @@ system_features:
 
             {% set job_id = 'init_pipeline.start_new_build' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -224,37 +257,12 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
                 build_parameters:
-                    BUILD_TYPE:
-                        parameter_description: |
-                            Build types affect versioning and tagging.
-                            It is embedded into build title.
-                        parameter_type: choice
-                        parameter_value:
-                            - SNAPSHOT
-                            - INCREMENTAL_RELEASE
-                            - SEMANTIC_RELEASE
-                    BUILD_VERSION_NUMBER:
-                        parameter_description: |
-                            Version number should have format `X.Y.Z.N`.
-                            It is embedded into build title.
-                        parameter_type: string
-                        parameter_value: '_'
                     BUILD_LABEL:
                         parameter_description: |
                             Short meaningful string to differentiate this build.
                             It is embedded into build title.
                         parameter_type: string
                         parameter_value: '_'
-                    TARGET_PROFILE_NAME:
-                        parameter_description: |
-                            Specify target profile for bootstrap package.
-                            It is embedded into build title.
-                            Note that SOURCE_PROFILE is determined automatically.
-                        parameter_type: choice
-                        parameter_value:
-                            {% for target_profile_name in props['load_bootstrap_target_envs'].keys() %}
-                            - {{ target_profile_name }}
-                            {% endfor %}
                     MAVEN_SKIP_TESTS:
                         parameter_description: |
                             TODO: Skip tests.
@@ -272,7 +280,6 @@ system_features:
                             Any notes describing the build.
                         parameter_type: text
                         parameter_value: '_'
-
                     REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION:
                         parameter_description: |
                             This causes all build branches to be removed in the last job.
@@ -284,15 +291,18 @@ system_features:
                     - promotion.init_pipeline_passed
                     - promotion.update_pipeline_passed
                     - promotion.maven_pipeline_passed
-                    - promotion.package_pipeline_passed
                     - promotion.deploy_pipeline_passed
 
-                    - promotion.target_bootstrap_package_deployable
+                    - promotion.bootstrap_package_approved
 
             {% set job_id = 'init_pipeline.reset_previous_build' %}
             {{ job_id }}:
 
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -311,7 +321,12 @@ system_features:
 
             {% set job_id = 'init_pipeline.describe_repositories_state' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -332,6 +347,10 @@ system_features:
             {{ job_id }}:
 
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -356,6 +375,10 @@ system_features:
             {{ job_id }}:
 
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -459,34 +482,7 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - package_pipeline.update_packaged_resources
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
-
-            {% set job_id = 'promotion.package_pipeline_passed' %}
-            {{ job_id }}:
-
-                enabled: True
-
-                is_promotion: True
-
-                restrict_to_system_role:
-                    - controller_role
-
-                condition_job_list:
-                    - package_pipeline.build_bootstrap_package
-
-                condition_type: downstream_passed
-                accept_unstable: True
-                promotion_icon: star-orange
-
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            - deploy_pipeline.configure_vagrant
+                            - deploy_pipeline.register_generated_resources
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
@@ -505,7 +501,10 @@ system_features:
                 condition_job_list:
                     - deploy_pipeline.run_salt_highstate
 
-                {% if False %} # DISABLED: This is the last pipeline so far.
+                # This is the last automatic pipeline -
+                # `package_pipeline` and `release_pipeline` are
+                # manually triggered.
+                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -521,7 +520,7 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
-            {% set job_id = 'promotion.target_bootstrap_package_deployable' %}
+            {% set job_id = 'promotion.bootstrap_package_approved' %}
             {{ job_id }}:
 
                 enabled: True
@@ -532,7 +531,7 @@ system_features:
                     - controller_role
 
                 condition_type: manual_approval
-                promotion_icon: star-red
+                promotion_icon: star-red-e
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
@@ -545,7 +544,12 @@ system_features:
 
             {% set job_id = 'update_pipeline.restart_master_salt_services' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -564,7 +568,12 @@ system_features:
 
             {% set job_id = 'update_pipeline.configure_jenkins_jobs' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -583,7 +592,12 @@ system_features:
 
             {% set job_id = 'update_pipeline.run_salt_highstate' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -602,10 +616,22 @@ system_features:
 
             {% set job_id = 'update_pipeline.reconnect_jenkins_slaves' %}
             {{ job_id }}:
+
                 enabled: True
 
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                # NOTE: This job is special.
+                #       While all other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                #       This is required to be able to keep connection
+                #       while executing reconnection for Slaves.
+                force_jenkins_master: True
                 restrict_to_system_role:
-                    - controller_role
+                    - jenkins_master_role
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -629,7 +655,12 @@ system_features:
 
             {% set job_id = 'maven_pipeline.maven_build_all' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -637,29 +668,63 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
+                    build_always:
+                        # NOTE: Try to build individual Maven jobs
+                        #       to update their status as well.
+                        condition: ALWAYS
                         trigger_jobs:
                             {% for maven_repo_name in maven_repo_names %}
                             - maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
                             {% endfor %}
+
+                # Specific goals and options.
+                # Note that we run initial build - all repositories are
+                # rebuilt subsequently in individual jobs.
+                # What we need now is to build artefacts ONLY:
+                # - Build without running tests.
+                # - Make sure to build test jars as well
+                #   (some components depend on tests jars).
+                # - Skip integration tests.
+                #   It seems that without `-DskipTests`, integration tests
+                #   are still being run.
+                #   See also:
+                #       http://maven.apache.org/surefire/maven-failsafe-plugin/examples/skipping-test.html
+                maven_args: 'clean test-compile install -Dmaven.test.skip=true -DskipTests'
+
+                # Large multi-module reactor build often
+                # runs out of memory without overriding defaults.
+                # See also:
+                #   https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError
+                MAVEN_OPTS: '-Xmx2048m -XX:MaxPermSize=512m'
 
                 # Instead of join, use promotion to trigger next pipeline.
                 # Otherwise, the Build Pipeline View cannot handle join
                 # and draws duplicated chains after each job to be joined.
                 {% if False %}
                 trigger_jobs_on_downstream_join:
-                    - package_pipeline.update_packaged_resources
+                    - deploy_pipeline.register_generated_resources
                 {% endif %}
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+                    # NOTE: This job is simply a Maven build which uses
+                    # special `pom.xml` from parent repository which
+                    # spans all components by referencing them as modules.
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/maven_pipeline.maven_project_job.xml'
+                    repository_name: 'maven-demo'
+                    component_pom_path: 'pom.xml'
+
+                disable_archiving: True
 
             {% for maven_repo_name in maven_repo_names %}
 
             maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - jenkins_slave_role
@@ -680,6 +745,8 @@ system_features:
                     component_pom_path: 'pom.xml'
                 {% endif %}
 
+                disable_archiving: True
+
                 # This is the final job in the pipeline.
                 {% if False %}
                 parameterized_job_triggers:
@@ -692,60 +759,100 @@ system_features:
             {% endfor %}
 
             ###################################################################
-            # The `package_pipeline`
-
-            {% set skip_script_execution = False %}
-
-            {% set job_id = 'package_pipeline.update_packaged_resources' %}
-            {{ job_id }}:
-                enabled: True
-
-                restrict_to_system_role:
-                    - controller_role
-
-                skip_script_execution: {{ skip_script_execution }}
-
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            - package_pipeline.build_bootstrap_package
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    # NOTE: It is project-specific job configuration.
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
-
-            {% set job_id = 'package_pipeline.build_bootstrap_package' %}
-            {{ job_id }}:
-                enabled: True
-
-                restrict_to_system_role:
-                    - controller_role
-
-                skip_script_execution: {{ skip_script_execution }}
-
-                # This is the final job in the pipeline.
-                {% if False %}
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            []
-                {% endif %}
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
-
-            ###################################################################
             # The `deploy_pipeline`
 
             {% set skip_script_execution = False %}
 
+            {% set job_id = 'deploy_pipeline.register_generated_resources' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - deploy_pipeline.build_bootstrap_package
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: It is project-specific job configuration.
+                    {% if project_name == 'common' %}
+                    # This is a template.
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+                    {% else %}
+                    xml_config_template: '{{ project_name }}/jenkins/job_configurations/{{ job_id }}.xml'
+                    {% endif %}
+
+            {% set job_id = 'deploy_pipeline.transfer_dynamic_build_descriptor' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - deploy_pipeline.transfer_dynamic_build_descriptor
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: This job cloned from `package_pipeline`.
+                    {% set job_id = 'package_pipeline.transfer_dynamic_build_descriptor' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+            {% set job_id = 'deploy_pipeline.build_bootstrap_package' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - deploy_pipeline.configure_vagrant
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: This job cloned from `package_pipeline`.
+                    {% set job_id = 'package_pipeline.build_bootstrap_package' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
             {% set job_id = 'deploy_pipeline.configure_vagrant' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -764,7 +871,12 @@ system_features:
 
             {% set job_id = 'deploy_pipeline.destroy_vagrant_hosts' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -783,7 +895,12 @@ system_features:
 
             {% set job_id = 'deploy_pipeline.remove_salt_minion_keys' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -802,7 +919,12 @@ system_features:
 
             {% set job_id = 'deploy_pipeline.instantiate_vagrant_hosts' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -821,7 +943,12 @@ system_features:
 
             {% set job_id = 'deploy_pipeline.run_salt_orchestrate' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -840,7 +967,116 @@ system_features:
 
             {% set job_id = 'deploy_pipeline.run_salt_highstate' %}
             {{ job_id }}:
+
                 enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # This is the final job in the pipeline.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+            ###################################################################
+            # The `package_pipeline`
+
+            {% set skip_script_execution = False %}
+
+            {% set job_id = 'package_pipeline.create_new_package' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - package_pipeline.transfer_dynamic_build_descriptor
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+                build_parameters:
+                    TARGET_PROFILE_NAME:
+                        parameter_description: |
+                            Specify target profile for bootstrap package.
+                            It is embedded into build title.
+                            Note that SOURCE_PROFILE is determined automatically.
+                        parameter_type: choice
+                        parameter_value:
+                            {% for target_profile_name in props['load_bootstrap_target_envs'].keys() %}
+                            - {{ target_profile_name }}
+                            {% endfor %}
+                    GIT_AUTHOR_EMAIL:
+                        parameter_description: |
+                            Specify author email for Git commits.
+                            The value will be used with `--author` option for all Git commits made automatically.
+                            Substring can be used if it is uniquely identifies author within existing commits.
+                        parameter_type: string
+                        parameter_value: '_'
+                    BOOTSTRAP_PACKAGE_NOTES:
+                        parameter_description: |
+                            Any notes describing the build.
+                        parameter_type: text
+                        parameter_value: '_'
+
+            {% set job_id = 'package_pipeline.transfer_dynamic_build_descriptor' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - package_pipeline.build_bootstrap_package
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+            {% set job_id = 'package_pipeline.build_bootstrap_package' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
@@ -863,7 +1099,69 @@ system_features:
             ###################################################################
             # The `release_pipeline`
 
-            # TODO: Implement release pipeline.
+            {% set skip_script_execution = False %}
+
+            {% set job_id = 'release_pipeline.release_build' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # TODO: Implement.
+                #       This is the first and the final job at the moment.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+                build_parameters:
+                    RELEASE_TYPE:
+                        parameter_description: |
+                            Release types affect versioning and tagging.
+                            It is embedded into release title.
+                        parameter_type: choice
+                        parameter_value:
+                            - INCREMENTAL_RELEASE
+                            - SEMANTIC_RELEASE
+                    RELEASE_VERSION_NUMBER:
+                        parameter_description: |
+                            Version number should have format `X.Y.Z.N`.
+                            It is embedded into release title.
+                        parameter_type: string
+                        parameter_value: '_'
+                    RELEASE_LABEL:
+                        parameter_description: |
+                            Short meaningful string to differentiate this release.
+                            It is embedded into release title.
+                        parameter_type: string
+                        parameter_value: '_'
+                    GIT_AUTHOR_EMAIL:
+                        parameter_description: |
+                            Specify author email for Git commits.
+                            The value will be used with `--author` option for all Git commits made automatically.
+                            Substring can be used if it is uniquely identifies author within existing commits.
+                        parameter_type: string
+                        parameter_value: '_'
+                    RELEASE_NOTES:
+                        parameter_description: |
+                            Any notes describing the release.
+                        parameter_type: text
+                        parameter_value: '_'
 
         #######################################################################
         #
@@ -871,6 +1169,7 @@ system_features:
         view_configs:
 
             0.triggers:
+
                 enabled: True
 
                 view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
@@ -884,9 +1183,12 @@ system_features:
                         - auto_pipeline.update_salt_master_sources
                         - init_pipeline.clean_old_build
                         - init_pipeline.start_new_build
+                        - package_pipeline.create_new_package
+                        - release_pipeline.release_build
 
             {% if False %} # DISABLED: Not so useful list.
             maven:
+
                 enabled: True
 
                 view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
@@ -900,24 +1202,8 @@ system_features:
                         {% endfor %}
             {% endif %}
 
-            {% if False %} # DISABLED: Not so useful list.
-            deploy:
-                enabled: True
-
-                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
-                view_config_data:
-                    xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
-
-                    job_list:
-                        - deploy_pipeline.configure_vagrant
-                        - deploy_pipeline.destroy_vagrant_hosts
-                        - deploy_pipeline.remove_salt_minion_keys
-                        - deploy_pipeline.instantiate_vagrant_hosts
-                        - deploy_pipeline.run_salt_orchestrate
-                        - deploy_pipeline.run_salt_highstate
-            {% endif %}
-
             1.init_pipeline:
+
                 enabled: True
 
                 view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
@@ -927,6 +1213,7 @@ system_features:
                     first_job_name: init_pipeline.start_new_build
 
             2.update_pipeline:
+
                 enabled: True
 
                 view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
@@ -936,6 +1223,7 @@ system_features:
                     first_job_name: update_pipeline.restart_master_salt_services
 
             3.maven_pipeline:
+
                 enabled: True
 
                 view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
@@ -944,33 +1232,35 @@ system_features:
 
                     first_job_name: maven_pipeline.maven_build_all
 
-            4.package_pipeline:
+            4.deploy_pipeline:
+
                 enabled: True
 
                 view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: package_pipeline.update_packaged_resources
+                    first_job_name: deploy_pipeline.register_generated_resources
 
-            5.deploy_pipeline:
+            5.package_pipeline:
+
                 enabled: True
 
                 view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: deploy_pipeline.configure_vagrant
+                    first_job_name: package_pipeline.create_new_package
 
             6.release_pipeline:
+
                 enabled: True
 
                 view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    # TODO: Implement `release_pipeline`.
-                    first_job_name: init_pipeline.complete_build
+                    first_job_name: release_pipeline.release_build
 
 ###############################################################################
 # EOF
