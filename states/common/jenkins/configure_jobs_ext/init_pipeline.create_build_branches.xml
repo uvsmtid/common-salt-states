@@ -32,6 +32,12 @@
 
         {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
 
+        # At this point (before checking out build branches), we already
+        # know that recovery would require at least checking out initial
+        # branches back. The initial and build branches are already written
+        # in the dyn build desc - use it as initial recovery descriptor.
+        cp "${LATEST_DYN_BUILD_DESC_PATH}" "${RECOVERY_DYN_BUILD_DESC_PATH}"
+
         #######################################################################
         # In-place Python script which captures stdin data under
         # specified key in destination dict.
@@ -128,6 +134,16 @@ HEREDOC_MARKER
         echo "$RESTORE_POINT_COMMIT" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}"
 
         {% endfor %}
+
+        #######################################################################
+        # Update recovery descriptor.
+
+        # The next step generates new commits to repositories.
+        # It is important to save captured restore points now without
+        # waiting until end of the script because script may fail
+        # and no captured restore points will be available for recovery.
+        # Use current job dyn build desc as updated recovery descriptor.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${RECOVERY_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
         # Commit versions of dynamic build descriptor

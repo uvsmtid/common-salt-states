@@ -118,12 +118,17 @@ HEREDOC_MARKER
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
 
-        RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}")"
+        RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}" "NOT_AVAILABLE")"
 
         cd "${REPO_PATH}"
 
-        # This step restores all local changes committed at the beginning.
-        git checkout "${RESTORE_POINT_COMMIT}"
+        if [ "${RESTORE_POINT_COMMIT}" != "NOT_AVAILABLE" ]
+        then
+
+            # This step restores all local changes committed at the beginning.
+            git checkout "${RESTORE_POINT_COMMIT}"
+
+        fi
 
         # This step resets HEAD to the commit before the beginning
         # while leaving all local files as they are at restore point.
@@ -168,7 +173,7 @@ HEREDOC_MARKER
         cd "${REPO_PATH}"
         # Note that we ignore exit code (the command may fail and only logs may show why).
         set +e
-        git branch -D "${BUILD_BRANCH_NAME}"
+        git branch -vv -D "${BUILD_BRANCH_NAME}"
         set -e
         cd -
 
