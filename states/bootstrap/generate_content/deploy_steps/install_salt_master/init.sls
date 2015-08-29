@@ -28,7 +28,7 @@
     )
 %}
 
-{% set is_generic_profile = props['is_generic_profile'] %}
+{% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
 {% set current_task_branch = props['current_task_branch'] %}
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
@@ -74,7 +74,7 @@
         - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/master.conf'
         - source: '{{ deploy_step_config['salt_master_template'] }}'
         - context:
-            is_generic_profile: '{{ is_generic_profile }}'
+            use_pillars_from_states_repo: '{{ use_pillars_from_states_repo }}'
             project_name: '{{ project_name }}'
             profile_name: '{{ profile_name }}'
             auto_accept: '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['target_minion_auto_accept'] }}'

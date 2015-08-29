@@ -184,7 +184,7 @@ def main():
     # Note that in case of generic profile instead of `repo_path_pillars`
     # `states` repo of the project is used instead.
     repo_path_pillars = props['repo_path_pillars']
-    if props['is_generic_profile']:
+    if props['use_pillars_from_states_repo']:
         if props['project_name'] != 'common':
             repo_path_pillars = props['projects_states_repo_paths'][props['project_name']]
         else:

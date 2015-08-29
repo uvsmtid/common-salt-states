@@ -156,7 +156,7 @@ HEREDOC_MARKER
 
         {% set project_name = pillar['project_name'] %}
 
-        {% if pillar['is_generic_profile'] %}
+        {% if pillar['use_pillars_from_states_repo'] %}
         {% set repo_name = project_name + '-salt-states' %}
         {% else %}
         {% set repo_name = project_name + '-salt-pillars' %}

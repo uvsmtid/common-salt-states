@@ -8,7 +8,7 @@
 
 {% set project_name = props['project_name'] %}
 {% set master_minion_id = props['master_minion_id'] %}
-{% set is_generic_profile = props['is_generic_profile'] %}
+{% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
 {% set profile_name = props['profile_name'] %}
 {% set current_task_branch = props['current_task_branch'] %}
 

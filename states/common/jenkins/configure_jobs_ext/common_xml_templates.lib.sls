@@ -408,7 +408,7 @@ with open(sys.argv[1], 'w') as yaml_file:
 # This is the location where the latest dynamic build descriptor
 # is checked in at the end of each job.
 {% set project_name = pillar['project_name'] %}
-{% if pillar['is_generic_profile'] %}
+{% if pillar['use_pillars_from_states_repo'] %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-states']['git'] %}
 {% else %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars']['git'] %}
