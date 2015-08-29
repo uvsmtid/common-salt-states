@@ -26,20 +26,18 @@
         # not clear how successful completion guarateed due to
         # disconnection with remote Jenkins slaves).
 
-        {% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
-        {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-        {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
+        {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
 
-        # Download Jenkins CLI tool.
-        wget http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/jnlpJars/jenkins-cli.jar -O jenkins-cli.jar
+        eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
 
         # Disconnect and Connect all Jenkins Slaves.
         {% for node_name in pillar['system_host_roles']['jenkins_slave_role']['assigned_hosts'] %}
         {% set node_config = pillar['system_hosts'][node_name] %}
 
-        java -jar jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ disconnect-node  {{ node_name }}
-        java -jar jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ connect-node     {{ node_name }}
-        java -jar jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ wait-node-online {{ node_name }}
+        eval "${JENKINS_CLI_TOOL_INVOKE_STRING} disconnect-node  {{ node_name }}"
+        eval "${JENKINS_CLI_TOOL_INVOKE_STRING} connect-node     {{ node_name }}"
+        eval "${JENKINS_CLI_TOOL_INVOKE_STRING} wait-node-online {{ node_name }}"
 
         {% endfor %}
 

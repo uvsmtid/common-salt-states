@@ -19,6 +19,8 @@
         exit 0
         {% endif %}
 
+        JOB_STATUS='stable'
+
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
@@ -49,6 +51,15 @@
             # No recovery dynamic build descriptor available from
             # the previous build - nothing to do.
             echo "No need to recover from the previous build".
+
+            # This is not usual situation
+            # (unless it is the very first build).
+            {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
+            {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
+
+            # Set build unstable.
+            # See: http://stackoverflow.com/a/8822743/441652
+            eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
 
             exit 0
         fi
@@ -92,6 +103,10 @@ HEREDOC_MARKER
         # the build actually happend and restore uncommited files).
         if [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}" ]
         then
+
+            # This is already suspicious.
+            JOB_STATUS='unstable'
+
             if [ "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}" ]
             then
                 echo "${CURRENT_BRANCH} != ${BUILD_BRANCH_NAME} != ${INITIAL_BRANCH}"
@@ -107,8 +122,7 @@ HEREDOC_MARKER
 
         #######################################################################
         # Restore uncommitted local content to the conditions
-        # they were at the begining of the build pipeline
-        #
+        # they were at the begining of the build pipeline.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -127,11 +141,19 @@ HEREDOC_MARKER
 
         cd "${REPO_PATH}"
 
+        # The case of unavailable restore point may happen
+        # when previous `init_pipeline` failed even before preparation
+        # to making any changes.
         if [ "${RESTORE_POINT_COMMIT}" != "NOT_AVAILABLE" ]
         then
 
             # This step restores all local changes committed at the beginning.
             git checkout "${RESTORE_POINT_COMMIT}"
+
+        else
+
+            # This is rather unexpected, but not critical.
+            JOB_STATUS='unstable'
 
         fi
 
@@ -161,28 +183,37 @@ HEREDOC_MARKER
         if [ "${REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION}" == "true" ]
         then
 
-        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
-        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+            {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+            {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+            REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
-        cd "${REPO_PATH}"
-        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-        # HEAD value means that repository is at detached head.
-        test "${CURRENT_BRANCH}" != "HEAD"
-        cd -
+            cd "${REPO_PATH}"
+            CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+            # HEAD value means that repository is at detached head.
+            test "${CURRENT_BRANCH}" != "HEAD"
+            cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+            INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+            BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+            test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
 
-        cd "${REPO_PATH}"
-        # Note that we ignore exit code (the command may fail and only logs may show why).
-        set +e
-        git branch -vv -D "${BUILD_BRANCH_NAME}"
-        set -e
-        cd -
+            cd "${REPO_PATH}"
+            # We need to force the deletion because branches may contain
+            # unmerges changes - pipeline designed so that changes are saved.
+            # Even if forced command fails, let's continue and indicate
+            # cleanup as unstable - the old build branch leftover
+            # is not critical.
+            set +e
+            git branch -vv -D "${BUILD_BRANCH_NAME}"
+            RET_VAL="${?}"
+            set -e
+            if [ "${RET_VAL}" != "0" ]
+            then
+                JOB_STATUS='unstable'
+            fi
+            cd -
 
-        {% endfor %}
+            {% endfor %}
 
         fi
 
@@ -197,6 +228,21 @@ HEREDOC_MARKER
         # of the recovery build descriptor.
         # Remove it to inidcate that everything is reset.
         rm "${RECOVERY_DYN_BUILD_DESC_PATH}"
+
+        #######################################################################
+        # Report status of the execution.
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
+        {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
+
+        if [ "${JOB_STATUS}" == 'unstable' ]
+        then
+
+            # Set build unstable.
+            # See: http://stackoverflow.com/a/8822743/441652
+            eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
+
+        fi
 
         #######################################################################
 

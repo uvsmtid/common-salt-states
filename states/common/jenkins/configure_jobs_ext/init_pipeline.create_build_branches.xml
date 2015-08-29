@@ -19,6 +19,8 @@
         exit 0
         {% endif %}
 
+        JOB_STATUS='stable'
+
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
@@ -74,25 +76,11 @@ HEREDOC_MARKER
 
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
         BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        # It is useful to symlink some repositories, for example;
-        # - when bootstrap target pillars should be the same with pillars
-        # - when pillars are provided by states repository.
-        # If repository is a symlink to another one, just make sure
-        # thant it is on the build branch already (if not on the current one).
-        if [ "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}" ]
-        then
+        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
 
-            cd "${REPO_PATH}"
-            git checkout -b "${BUILD_BRANCH_NAME}" "${INITIAL_BRANCH}"
-            cd -
-
-        elif [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}" ]
-        then
-
-            echo "${CURRENT_BRANCH} != ${BUILD_BRANCH_NAME} != ${INITIAL_BRANCH}"
-            exit 1
-
-        fi
+        cd "${REPO_PATH}"
+        git checkout -b "${BUILD_BRANCH_NAME}" "${INITIAL_BRANCH}"
+        cd -
 
         {% endfor %}
 
@@ -215,6 +203,21 @@ HEREDOC_MARKER
         # dynamic build descriptor so that changes made to repositories
         # can be reverted to their state before this job.
         cp "${LATEST_DYN_BUILD_DESC_PATH}" "${RECOVERY_DYN_BUILD_DESC_PATH}"
+
+        #######################################################################
+        # Report status of the execution.
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
+        {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
+
+        if [ "${JOB_STATUS}" == 'unstable' ]
+        then
+
+            # Set build unstable.
+            # See: http://stackoverflow.com/a/8822743/441652
+            eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
+
+        fi
 
         #######################################################################
 

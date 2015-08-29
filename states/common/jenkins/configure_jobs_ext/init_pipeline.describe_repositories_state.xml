@@ -19,6 +19,8 @@
         exit 0
         {% endif %}
 
+        JOB_STATUS='stable'
+
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
@@ -83,6 +85,21 @@ HEREDOC_MARKER
         # Update dynamic build descriptor.
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # Report status of the execution.
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
+        {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
+
+        if [ "${JOB_STATUS}" == 'unstable' ]
+        then
+
+            # Set build unstable.
+            # See: http://stackoverflow.com/a/8822743/441652
+            eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
+
+        fi
 
         #######################################################################
 
