@@ -68,7 +68,8 @@ HEREDOC_MARKER
         SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
         export BUILD_TITLE="${BUILD_TIMESTAMP}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-SNAPSHOT-${BUILD_LABEL}"
 
-        echo "$BUILD_TITLE" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_title:${BUILD_TITLE}"
+        echo "$BUILD_TIMESTAMP" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_timestamp"
+        echo "$BUILD_TITLE"     | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_title"
 
         #######################################################################
         # Write environment variables into dynamic build descriptor.
@@ -87,17 +88,20 @@ HEREDOC_MARKER
 HEREDOC_MARKER
 
         # Write output of env command into dynamic build descriptor.
-        env | python ${ENV_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH}
+        env | python "${ENV_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
         # Write parameters to the file used by subsequent jobs.
+
+        # NOTE: The properties are pretty useless at the moment.
+        #       All information is exchanged through dyn build desc.
 
         # Locate and create clean properties file.
         BUILD_PROPS_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/build.properties'
         mkdir -p "$(dirname "$BUILD_PROPS_PATH")"
         echo > "$BUILD_PROPS_PATH"
 
-        # Write each build parameter (property) into the file.
+        # Write each build parameter into the properties file.
         {% for param_name in job_config['build_parameters'].keys() %}
         echo "{{ param_name }}=${{ param_name }}" >> "$BUILD_PROPS_PATH"
         # Even though build parameters are part of environment variables,

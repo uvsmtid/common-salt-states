@@ -268,6 +268,11 @@ system_features:
                             TODO: Skip tests.
                         parameter_type: boolean
                         parameter_value: False
+                    OBFUSCATE_JAVA_CODE:
+                        parameter_description: |
+                            TODO: Enable obfuscation.
+                        parameter_type: boolean
+                        parameter_value: False
                     GIT_AUTHOR_EMAIL:
                         parameter_description: |
                             Specify author email for Git commits.
@@ -284,8 +289,18 @@ system_features:
                         parameter_description: |
                             This causes all build branches to be removed in the last job.
                             TODO: Fail build if this is set for for `INCREMENTAL_RELEASE` or `SEMANTIC_RELEASE` build type without tagging.
+                            TODO: Build branches should be automatically removed if previous build was unsuccessful.
                         parameter_type: boolean
                         parameter_value: True
+                    USE_SOURCES_FROM_BUILD_TITLE:
+                        parameter_description: |
+                            Specify build title from existing history.
+                            If this parameter is specified, it restores sources to `restore_point_commit_ids` of the specified build title.
+                            This is just a mechanism to rebuild something as it was in the past.
+                            The build title can be found in dynamic build descriptor in the value of `build_title` key.
+                            TODO: Not implemented yet.
+                        parameter_type: string
+                        parameter_value: '_'
 
                 use_promotions:
                     - promotion.init_pipeline_passed
@@ -293,6 +308,8 @@ system_features:
                     - promotion.maven_pipeline_passed
                     - promotion.deploy_pipeline_passed
 
+                    - promotion.package_pipeline_passed
+                    - promotion.release_pipeline_passed
                     - promotion.bootstrap_package_approved
 
             {% set job_id = 'init_pipeline.reset_previous_build' %}
@@ -520,6 +537,68 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
+            {% set job_id = 'promotion.package_pipeline_passed' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                is_promotion: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                condition_job_list:
+                    - package_pipeline.build_bootstrap_package
+
+                condition_type: downstream_passed
+                accept_unstable: True
+                promotion_icon: star-silver-e
+
+                # The `package_pipeline` is manually triggered
+                # and does not trigger any other pipelines.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
+
+            {% set job_id = 'promotion.release_pipeline_passed' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                is_promotion: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                condition_job_list:
+                    - release_pipeline.release_build
+
+                condition_type: downstream_passed
+                accept_unstable: True
+                promotion_icon: star-red-e
+
+                # The `release_pipeline` is manually triggered
+                # and does not trigger any other pipelines.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
+
             {% set job_id = 'promotion.bootstrap_package_approved' %}
             {{ job_id }}:
 
@@ -531,7 +610,7 @@ system_features:
                     - controller_role
 
                 condition_type: manual_approval
-                promotion_icon: star-red-e
+                promotion_icon: star-orange-e
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
@@ -1044,6 +1123,12 @@ system_features:
                             Any notes describing the build.
                         parameter_type: text
                         parameter_value: '_'
+                    BUILD_TITLE:
+                        parameter_description: |
+                            TODO: Not implemented yet.
+                            The build title can be found in dynamic build descriptor in the value of `build_title` key.
+                        parameter_type: string
+                        parameter_value: '_'
 
             {% set job_id = 'package_pipeline.transfer_dynamic_build_descriptor' %}
             {{ job_id }}:
@@ -1161,6 +1246,12 @@ system_features:
                         parameter_description: |
                             Any notes describing the release.
                         parameter_type: text
+                        parameter_value: '_'
+                    BUILD_TITLE:
+                        parameter_description: |
+                            TODO: Not implemented yet.
+                            The build title can be found in dynamic build descriptor in the value of `build_title` key.
+                        parameter_type: string
                         parameter_value: '_'
 
         #######################################################################

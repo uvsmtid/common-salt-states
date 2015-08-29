@@ -381,6 +381,11 @@ with open(sys.argv[1], 'r') as yaml_file:
 if loaded_data is None:
     loaded_data = {}
 
+# Get key prefix to allow unique keys.
+key_prefix = ''
+if len(sys.argv) >= 3:
+    key_prefix = sys.argv[2]
+
 # Capture environment variables in two formats:
 # - Save environment variables as text with shell code.
 loaded_data['environ_text'] = sys.stdin.read()
