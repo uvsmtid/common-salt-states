@@ -53,9 +53,29 @@
         rm -f "initial.dynamic_build_descriptor.yaml"
 
         #######################################################################
+        # In-place Python script which captures stdin data under
+        # specified key in destination dict.
+
+        KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
+{{ key_setter_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
+
+        #######################################################################
+        # Set build title.
+
+        BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
+        SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
+        export BUILD_TITLE="${BUILD_TIMESTAMP}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-SNAPSHOT-${BUILD_LABEL}"
+
+        echo "$BUILD_TITLE" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_title:${BUILD_TITLE}"
+
+        #######################################################################
         # Write environment variables into dynamic build descriptor.
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import store_environment_python_script with context %}
+
+        # TODO: Filter sensitive environment variables.
 
         # Print environment variables.
         env
@@ -80,7 +100,13 @@ HEREDOC_MARKER
         # Write each build parameter (property) into the file.
         {% for param_name in job_config['build_parameters'].keys() %}
         echo "{{ param_name }}=${{ param_name }}" >> "$BUILD_PROPS_PATH"
+        # Even though build parameters are part of environment variables,
+        # save them into special section of dynamic build descriptor.
+        echo "${{ param_name }}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_parameters:{{ param_name }}"
         {% endfor %}
+
+        # In addition to that, store BUILD_TITLE.
+        echo "BUILD_TITLE=${BUILD_TITLE}" >> "$BUILD_PROPS_PATH"
 
         #######################################################################
         # Update dynamic build descriptor.

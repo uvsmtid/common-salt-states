@@ -54,10 +54,6 @@ HEREDOC_MARKER
         # NOTE: We assume that repository is available
         #       locally on Jenkins slave.
 
-        BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
-        SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
-        BUILD_TITLE="${BUILD_TIMESTAMP}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-SNAPSHOT-${BUILD_LABEL}"
-
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
