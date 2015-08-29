@@ -14,7 +14,8 @@
 #       for pillar files themselves due to "chicken and egg" problem).
 #       See: https://github.com/saltstack/salt/issues/6955#issuecomment-118001643
 
-{{ props }}
+# NOTE: Use `json` to make sure None does not become just a string `None`.
+{{ props|json }}
 
 ###############################################################################
 # EOF
