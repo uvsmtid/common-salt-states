@@ -265,7 +265,7 @@
     -->
     <hudson.plugins.copyartifact.CopyArtifact plugin="copyartifact@1.35.2">
       <project>init_pipeline.start_new_build</project>
-      <filter>dynamic_build_descriptor.yaml</filter>
+      <filter>initial.dynamic_build_descriptor.yaml</filter>
       <target></target>
       <excludes></excludes>
       <selector class="hudson.plugins.copyartifact.TriggeredBuildSelector">
@@ -388,7 +388,7 @@ with open(sys.argv[1], 'w') as yaml_file:
 {% endmacro %}
 
 ###############################################################################
-{% macro locate_dynamic_build_descriptor(job_config, job_environ) %}
+{% macro locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = True) %}
 
 {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
@@ -403,17 +403,29 @@ with open(sys.argv[1], 'w') as yaml_file:
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars']['git'] %}
 {% endif %}
 REPO_DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/pillars/profile/dynamic_build_descriptor.yaml'
-# Make sure it exists
+# Make sure it exists.
 ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
 
+# Location of the initial build descriptor used to set fingerprints
+# for all related jobs.
+INIT_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/initial.dynamic_build_descriptor.yaml'
+{% if check_init_dyn_build_desc %}
+# Make sure it exists.
+ls -lrt "${INIT_DYN_BUILD_DESC_PATH}"
+# The file should also match the one provided by Copy Artifact plugin.
+MD5SUM_LEFT="$(md5sum 'initial.dynamic_build_descriptor.yaml' | cut -d' ' -f1 )"
+MD5SUM_RIGH="$(md5sum "${INIT_DYN_BUILD_DESC_PATH}"   | cut -d' ' -f1 )"
+test "${MD5SUM_LEFT}" == "${MD5SUM_RIGH}"
+{% endif  %}
+
 # Location of the job dynamic build descriptor.
-# The purpose of this file is to let next job continue
-# the relay of updating dynamic build descriptor.
+# The purpose of this file is to have working copy of
+# dynamic build descriptor for this job.
 JOB_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/{{ job_environ['job_name'] }}.dynamic_build_descriptor.yaml'
 
 # Location of the latest dynamic build descriptor.
-# The purpose of this file is to have working copy of
-# dynamic build descriptor for this job.
+# The purpose of this file is to let next job continue
+# the relay of updating dynamic build descriptor.
 LATEST_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/latest.dynamic_build_descriptor.yaml'
 mkdir -p "$(dirname "${LATEST_DYN_BUILD_DESC_PATH}")"
 touch "${LATEST_DYN_BUILD_DESC_PATH}"

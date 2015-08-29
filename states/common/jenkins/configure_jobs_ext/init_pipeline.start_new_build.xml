@@ -40,7 +40,9 @@
         #######################################################################
         # Locate dynamic build descriptor.
 
-        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+        # NOTE: We don't check existance of initital dyn build desc
+        #       only for initial job in the entire pipeline.
+        {{ locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = False) }}
 
         # This is the first job in the init_pipeline.
         # Clean contents of the latest dyn build desc.
@@ -86,11 +88,12 @@ HEREDOC_MARKER
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
 
-        #######################################################################
+        # Save initial dynamic build descriptor to save it for verification.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${INIT_DYN_BUILD_DESC_PATH}"
 
-        # Copy initial dynamic build descriptor
-        # for as artifact for copying and fingerprinting.
-        cp "${JOB_DYN_BUILD_DESC_PATH}" dynamic_build_descriptor.yaml
+        # Present as initial dyn build desc as an artifact
+        # build by this first job (for fingerprinting).
+        cp "${INIT_DYN_BUILD_DESC_PATH}" "initial.dynamic_build_descriptor.yaml"
 
       </command>
     </hudson.tasks.Shell>
@@ -103,7 +106,7 @@ HEREDOC_MARKER
         This is only needed to trace jobs of the same pipeline execution.
     -->
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>dynamic_build_descriptor.yaml</artifacts>
+      <artifacts>initial.dynamic_build_descriptor.yaml</artifacts>
       <allowEmptyArchive>false</allowEmptyArchive>
       <onlyIfSuccessful>true</onlyIfSuccessful>
       <fingerprint>true</fingerprint>

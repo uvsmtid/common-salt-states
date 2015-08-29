@@ -75,11 +75,25 @@ HEREDOC_MARKER
 
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
         BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+        # It is useful to symlink some repositories, for example;
+        # - when bootstrap target pillars should be the same with pillars
+        # - when pillars are provided by states repository.
+        # If repository is a symlink to another one, just make sure
+        # thant it is on the build branch already (if not on the current one).
+        if [ "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}" ]
+        then
 
-        cd "${REPO_PATH}"
-        git checkout -b "${BUILD_BRANCH_NAME}" "${INITIAL_BRANCH}"
-        cd -
+            cd "${REPO_PATH}"
+            git checkout -b "${BUILD_BRANCH_NAME}" "${INITIAL_BRANCH}"
+            cd -
+
+        elif [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}" ]
+        then
+
+            echo "${CURRENT_BRANCH} != ${BUILD_BRANCH_NAME} != ${INITIAL_BRANCH}"
+            exit 1
+
+        fi
 
         {% endfor %}
 
@@ -154,7 +168,7 @@ HEREDOC_MARKER
         JENKINS_DIR_PATH="{{ job_environ['jenkins_dir_path'] }}"
 
         # At the moment simply save it into repository.
-        for VER_NAME in start_new_build describe_repositories_state create_build_branches
+        for JOB_NAME in start_new_build describe_repositories_state create_build_branches
         do
 
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -171,14 +185,14 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
 
         cd "${REPO_PATH}"
-        VER_DYN_BUILD_DESC_PATH="{{ job_environ['jenkins_dir_path'] }}/build_pipeline/init_pipeline.${VER_NAME}.dynamic_build_descriptor.yaml"
+        VER_DYN_BUILD_DESC_PATH="{{ job_environ['jenkins_dir_path'] }}/build_pipeline/init_pipeline.${JOB_NAME}.dynamic_build_descriptor.yaml"
         cp "${VER_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
         git add --all
         git status
         # Note that we don't check whether there are changes to commit.
         # There must be changes - each version of
         # dynamic build descriptor should be different.
-        git commit --author "${GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${VER_NAME}"
+        git commit --author "${GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
         cd -
 
         done
