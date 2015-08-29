@@ -50,7 +50,7 @@
         This is only needed to trace jobs of the same pipeline execution.
     -->
     <hudson.tasks.ArtifactArchiver>
-      <artifacts>dynamic_build_descriptor.yaml</artifacts>
+      <artifacts>initial.dynamic_build_descriptor.yaml</artifacts>
       <allowEmptyArchive>false</allowEmptyArchive>
       <onlyIfSuccessful>true</onlyIfSuccessful>
       <fingerprint>true</fingerprint>

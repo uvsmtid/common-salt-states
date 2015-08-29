@@ -37,7 +37,12 @@
         #######################################################################
         # Locate dynamic build descriptor.
 
-        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+        # NOTE: When we recover, we do not need to verify
+        #       initial dyn build desc. In fact, it cannot be verified
+        #       as this is either standalone (no initial dyn build desc)
+        #       or belongs to a new build (with different dyn build desc).
+
+        {{ locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = False) }}
 
         # IMPORTANT: We need to update dynamic bulid descriptor
         #            for the next job in the pipeline now (as there is
