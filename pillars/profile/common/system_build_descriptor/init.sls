@@ -16,6 +16,8 @@
 #
 # Note also that it renders it into JSON and on the same line. This allows
 # getting valid syntax for `None` or any other scalar, list and dict.
+
+# NOTE: Use `json` to make sure None does not become just a string `None`.
 dynamic_build_descriptor: {{ dynamic_build_descriptor|json }}
 
 ###############################################################################
