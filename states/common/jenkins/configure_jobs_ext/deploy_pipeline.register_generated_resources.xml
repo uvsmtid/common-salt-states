@@ -19,10 +19,130 @@
         exit 0
         {% endif %}
 
-        # TODO: Update (overwrite default via dynamic build descriptor)
-        #       resources in registered content and commit them (if required)
-        #       so that bootstrap package can use the newly built artifacts.
-        # NOTE: Normally this is done in project-specific jobs (not common).
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
+
+        #######################################################################
+        # Locate dynamic build descriptor.
+
+        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # In-place Python script which captures stdin data under
+        # specified key in destination dict.
+
+        KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
+{{ key_setter_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
+
+        #######################################################################
+        # In-place Python script which returns data under
+        # specified key in destination dict on stdout.
+
+        KEY_GETTER_PYTHON_SCRIPT=$(mktemp)
+        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_GETTER_PYTHON_SCRIPT}
+{{ key_getter_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
+
+        #######################################################################
+        # Function to update resource definition.
+
+        # Make sure dynamic build descriptor repository file exists.
+        ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
+
+        function update_resource_with_its_definition {
+            ARTIFACT_SRC_PATH="${1}"
+            DST_REPO_PATH="${2}"
+            DST_SUBDIR_PATH="${3}"
+            RESOURCE_ID="${4}"
+
+            ARTIFACT_BASENAME="$(basename "${ARTIFACT_SRC_PATH}")"
+
+            # Make sure destination directory exits.
+            mkdir -p "${DST_REPO_PATH}/${DST_SUBDIR_PATH}"
+
+            ARTIFACT_DST_PATH="${DST_REPO_PATH}/${DST_SUBDIR_PATH}/${ARTIFACT_BASENAME}"
+
+            cp "${ARTIFACT_SRC_PATH}" "${ARTIFACT_DST_PATH}"
+
+            ARTIFACT_MD5_HASH="$(md5sum "${ARTIFACT_SRC_PATH}" | cut -f1 -d' ')"
+            # Double make sure that hashes of SRC and DST match:
+            md5sum "${ARTIFACT_DST_PATH}" | grep "${ARTIFACT_MD5_HASH}"
+
+            echo "${DST_SUBDIR_PATH}"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "${RESOURCE_ID}:item_parent_dir_path"
+            echo "${ARTIFACT_BASENAME}"     | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "${RESOURCE_ID}:item_base_name"
+            echo "md5=${ARTIFACT_MD5_HASH}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "${RESOURCE_ID}:item_content_hash"
+        }
+
+        #######################################################################
+        # Update artifacts in resources repos
+        # and record resource definition info into dynamic build descriptor.
+
+        # TODO:
+
+        #######################################################################
+        # Save dynamic build descriptor to repository before committing it.
+
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
+
+        #######################################################################
+        # Commit all changes made to repositories.
+        #
+        # TODO: This script is very similar with creating restore point
+        #       in `create_build_branches` and may be factored out for reuse.
+        #
+        # Sequence:
+        # - Save all other repos (children).
+        # - Save parent repo first
+        #   (as commits in childs will change what parent should contain).
+
+        {% if pillar['parent_repo_name'] %}
+        # Parent repo is defined and it is the first.
+        # TODO: This `repo_list` makes this parent repo committed twice.
+        #       Try to leave only its last occurrence in the list.
+        {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() + [ pillar['parent_repo_name'] ] %}
+        {% else %}
+        # This profile does not define parent repo.
+        {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% endif %}
+
+        {% for repo_name in repo_list %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
+
+        cd "${REPO_PATH}"
+        git add --all
+        git status
+        # Commit only if there are changes.
+        # Ignore dirty content in submodules because there is no way to
+        # commit them from top-level repo anyway (and all dirty content
+        # will be committed by children).
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: {{ job_environ['job_name'] }}'
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
+        # Update dynamic build descriptor.
+
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
 
       </command>
     </hudson.tasks.Shell>
