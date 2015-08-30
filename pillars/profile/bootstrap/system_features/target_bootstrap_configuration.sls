@@ -179,6 +179,36 @@ system_features:
                 # becomes "source" configuration in the "target" environment.
                 target_repo_name: {{ project_name }}-salt-pillars
 
+            # Repository with build history.
+
+            {% set repo_name = project_name + '-build-history' %}
+            {{ repo_name }}:
+                # NOTE: Disable export, it is not used.
+                export_enabled: False
+                # NOTE: When export enabled, in order to
+                #       cut size of resources repository,
+                #       get only checked out data (without history)
+                #       using `checkout-index` method.
+                export_method: checkout-index
+                export_format: dir
+                # NOTE: Quick fix for build-history which deal with released
+                #       dyn build desc (when normal branches should be used
+                #       and not ugly long build branches).
+                #       We only need to use build branches
+                #       during build pipeline.
+                {% if 'released' in dynamic_build_descriptor and dynamic_build_descriptor['released'] %}
+                branch_name: '{{ profile_name }}'
+                {% else %}
+
+                {% if 'environ' in dynamic_build_descriptor and 'TARGET_PROFILE_NAME' in dynamic_build_descriptor['environ'] %}
+                {% set branch_name = dynamic_build_descriptor['environ']['TARGET_PROFILE_NAME'] %}
+                branch_name: '{{ branch_name }}'
+                {% else %}
+                branch_name: '{{ profile_name }}'
+                {% endif %}
+
+                {% endif %}
+
             # Maven component repositories.
 
             {% for maven_repo_name in maven_repo_names %}

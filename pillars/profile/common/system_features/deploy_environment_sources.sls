@@ -102,6 +102,10 @@ system_features:
 
             '{{ project_name }}-salt-pillars.bootstrap-target': git
 
+            # Repository with build history.
+
+            '{{ project_name }}-build-history': git
+
             # Maven repositories.
 
             {% for maven_repo_name in maven_repo_names %}
@@ -152,6 +156,10 @@ system_features:
             '{{ project_name }}-salt-pillars': '/environment.sources/{{ project_name }}-salt-pillars.git'
 
             '{{ project_name }}-salt-pillars.bootstrap-target': '/environment.sources/{{ project_name }}-salt-pillars.bootstrap-target.git'
+
+            # Repository with build history.
+
+            '{{ project_name }}-build-history': '/environment.sources/{{ project_name }}-build-history.git'
 
             # Maven repositories.
 
@@ -264,6 +272,15 @@ system_features:
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.bootstrap-target.git'
 
                     branch_name: '{{ profile_name }}'
+
+            # Repository with build history.
+
+            '{{ project_name }}-build-history':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/{{ project_name }}-build-history.git'
+                    branch_name: '{{ current_task_branch }}'
 
             # Maven component repositories.
 
