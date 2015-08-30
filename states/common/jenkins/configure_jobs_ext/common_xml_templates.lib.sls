@@ -110,6 +110,94 @@
 {% endmacro %}
 
 ###############################################################################
+# TODO: Example of Multipe SCM Plugin configuration with Git
+#       future implementation.
+#       NOTE:
+#       *   Checkout all repos in a single job.
+#       *   Disabling processing of submodules.
+#           Parent is checked out and handled independently of children.
+#       *   Parameterized branch name.
+#       *   LIMITIATION: At the moment Git does not allow checking out
+#           into absolute path.
+#           See: https://issues.jenkins-ci.org/browse/JENKINS-30210
+#{#
+  <scm class="org.jenkinsci.plugins.multiplescms.MultiSCM" plugin="multiple-scms@0.5">
+    <scms>
+      <hudson.plugins.git.GitSCM plugin="git@2.3.4">
+        <configVersion>2</configVersion>
+        <userRemoteConfigs>
+          <hudson.plugins.git.UserRemoteConfig>
+            <url>uvsmtid@projector:Works/observer.git/salt/common-salt-states.git</url>
+            <credentialsId>uvsmtid@projector_credentials</credentialsId>
+          </hudson.plugins.git.UserRemoteConfig>
+        </userRemoteConfigs>
+        <branches>
+          <hudson.plugins.git.BranchSpec>
+            <name>refs/heads/${GIT_REMOTE_BRANCH_NAME}</name>
+          </hudson.plugins.git.BranchSpec>
+        </branches>
+        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+        <submoduleCfg class="list"/>
+        <extensions>
+          <hudson.plugins.git.extensions.impl.ScmName>
+            <name>common-salt-states</name>
+          </hudson.plugins.git.extensions.impl.ScmName>
+          <hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
+            <relativeTargetDir>/home/uvsmtid/jenkins/deleteme.common-salt-states.git</relativeTargetDir>
+          </hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
+        </extensions>
+      </hudson.plugins.git.GitSCM>
+      <hudson.plugins.git.GitSCM plugin="git@2.3.4">
+        <configVersion>2</configVersion>
+        <userRemoteConfigs>
+          <hudson.plugins.git.UserRemoteConfig>
+            <url>uvsmtid@projector:Works/observer.git/salt/observer-salt-pillars.git</url>
+            <credentialsId>uvsmtid@projector_credentials</credentialsId>
+          </hudson.plugins.git.UserRemoteConfig>
+        </userRemoteConfigs>
+        <branches>
+          <hudson.plugins.git.BranchSpec>
+            <name>refs/heads/${GIT_REMOTE_BRANCH_NAME}</name>
+          </hudson.plugins.git.BranchSpec>
+        </branches>
+        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+        <submoduleCfg class="list"/>
+        <extensions>
+          <hudson.plugins.git.extensions.impl.ScmName>
+            <name>observer-salt-pillars</name>
+          </hudson.plugins.git.extensions.impl.ScmName>
+        </extensions>
+      </hudson.plugins.git.GitSCM>
+      <hudson.plugins.git.GitSCM plugin="git@2.3.4">
+        <configVersion>2</configVersion>
+        <userRemoteConfigs>
+          <hudson.plugins.git.UserRemoteConfig>
+            <url>uvsmtid@projector:Works/observer.git</url>
+            <credentialsId>uvsmtid@projector_credentials</credentialsId>
+          </hudson.plugins.git.UserRemoteConfig>
+        </userRemoteConfigs>
+        <branches>
+          <hudson.plugins.git.BranchSpec>
+            <name>refs/heads/${GIT_REMOTE_BRANCH_NAME}</name>
+          </hudson.plugins.git.BranchSpec>
+        </branches>
+        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+        <submoduleCfg class="list"/>
+        <extensions>
+          <hudson.plugins.git.extensions.impl.ScmName>
+            <name>observer</name>
+          </hudson.plugins.git.extensions.impl.ScmName>
+          <hudson.plugins.git.extensions.impl.SubmoduleOption>
+            <disableSubmodules>true</disableSubmodules>
+            <recursiveSubmodules>false</recursiveSubmodules>
+            <trackingSubmodules>false</trackingSubmodules>
+          </hudson.plugins.git.extensions.impl.SubmoduleOption>
+        </extensions>
+      </hudson.plugins.git.GitSCM>
+    </scms>
+  </scm>
+#}#
+###############################################################################
 {% macro common_job_configuration(job_config, job_environ) %}
 
   <actions>
