@@ -19,6 +19,13 @@
         exit 0
         {% endif %}
 
+        {% if 'skip_if_true' in job_config %}
+        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
+        then
+            exit 0
+        fi
+        {% endif %}
+
         # Remove old minion keys (keys before hosts are re-instantiated).
         {% for selected_minion_id in pillar['system_hosts'].keys() %}
         {% if not selected_minion_id in pillar['system_host_roles']['controller_role']['assigned_hosts'] %}
