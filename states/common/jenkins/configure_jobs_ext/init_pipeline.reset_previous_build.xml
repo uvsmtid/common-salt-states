@@ -93,7 +93,7 @@ HEREDOC_MARKER
         cd -
 
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
 
         # Current branch and build branch are normally the same at this point.
         # However, allow it to be different if current branch is
@@ -101,7 +101,7 @@ HEREDOC_MARKER
         # possibly by this job, or... it should not be a problem).
         # The main point is to find build branch (i.g. to make sure that
         # the build actually happend and restore uncommited files).
-        if [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}" ]
+        if [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH}" ]
         then
 
             # This is already suspicious.
@@ -109,7 +109,7 @@ HEREDOC_MARKER
 
             if [ "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}" ]
             then
-                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH_NAME} != ${INITIAL_BRANCH}"
+                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH} != ${INITIAL_BRANCH}"
                 exit 1
             fi
         fi
@@ -135,6 +135,7 @@ HEREDOC_MARKER
         cd -
 
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        INITIAL_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
 
         RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}" "NOT_AVAILABLE")"
@@ -159,10 +160,23 @@ HEREDOC_MARKER
 
         # This step resets HEAD to the commit before the beginning
         # while leaving all local files as they are at restore point.
-        git reset "${INITIAL_BRANCH}"
-
-        # This step simply checks out branch (moves away from detached HEAD).
-        git checkout "${INITIAL_BRANCH}"
+        # It also moves away from detached HEAD.
+        # NOTE: If there are changes which conflict with the checkout
+        #       the step will fail.
+        # NOTE: In order for this step to fail, there must be new
+        #       local changes done AFTER the `INITIAL_BRANCH` and
+        #       `INITIAL_COMMIT_ID` were recorded. Any local modification
+        #       at the start of the pipeline (BEFORE `INITIAL_BRANCH` and
+        #       `INITIAL_COMMIT_ID` were recorded) should not cause
+        #       problems as they didn't cause problems of moving
+        #       the `INITIAL_BRANCH` forward (by new commits done during
+        #       pipeline execution, if any).
+        # TODO: Actually, this requires rethought.
+        #       Because checkout is forced (`-B`), it may "forget"
+        #       valuable commits in unknown conditions. There should
+        #       be a way to reset branch into specific commit
+        #       making shure nothing is lost.
+        git checkout -B "${INITIAL_BRANCH}" "${INITIAL_COMMIT_ID}"
 
         cd -
 
@@ -194,7 +208,7 @@ HEREDOC_MARKER
             cd -
 
             INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-            BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+            BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
             test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
 
             cd "${REPO_PATH}"
@@ -204,7 +218,7 @@ HEREDOC_MARKER
             # cleanup as unstable - the old build branch leftover
             # is not critical.
             set +e
-            git branch -vv -D "${BUILD_BRANCH_NAME}"
+            git branch -vv -D "${BUILD_BRANCH}"
             RET_VAL="${?}"
             set -e
             if [ "${RET_VAL}" != "0" ]

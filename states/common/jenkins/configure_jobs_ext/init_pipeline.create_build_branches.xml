@@ -61,9 +61,6 @@ HEREDOC_MARKER
         #######################################################################
         # Branch all repositories based on dynamic build descriptor.
 
-        # NOTE: We assume that repository is available
-        #       locally on Jenkins slave.
-
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
@@ -74,12 +71,12 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+        REQUIRED_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_branches:{{ repo_name }}")"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${REQUIRED_BRANCH}"
 
         cd "${REPO_PATH}"
-        git checkout -b "${BUILD_BRANCH_NAME}" "${INITIAL_BRANCH}"
+        git checkout -b "${BUILD_BRANCH}" "${REQUIRED_BRANCH}"
         cd -
 
         {% endfor %}
@@ -118,9 +115,8 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
         cd "${REPO_PATH}"
         git add --all
@@ -150,9 +146,10 @@ HEREDOC_MARKER
         #######################################################################
         # Commit versions of dynamic build descriptor
         #
-        # - Version 1 `start_new_build`.
-        # - Version 2 `describe_repositories_state`.
-        # - Version 3 `create_build_branches`.
+        # - Version 1 `init_pipeline.start_new_build`.
+        # - Version 2 `init_pipeline.describe_repositories_state`.
+        # - Version 3 `init_pipeline.checkout_repositories`.
+        # - Version 4 `init_pipeline.create_build_branches`.
 
         {% set project_name = pillar['project_name'] %}
 
@@ -177,9 +174,8 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH_NAME}"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
         cd "${REPO_PATH}"
         VER_DYN_BUILD_DESC_PATH="{{ job_environ['jenkins_dir_path'] }}/build_pipeline/init_pipeline.${JOB_NAME}.dynamic_build_descriptor.yaml"

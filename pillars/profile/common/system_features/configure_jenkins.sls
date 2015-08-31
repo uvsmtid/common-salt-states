@@ -82,101 +82,18 @@ system_features:
             {% set discard_build_num = 9 %}
 
             ###################################################################
-            # Set of trigger-jobs which are not supposed to be doing much.
-            # They are only used to trigger downstram jobs.
-
-            # NOTE: At the moment this job simply refers to another
-            #       `auto_pipeline.update_salt_master_sources` job without actually
-            #       executing it (see `skip_script_execution`).
-            {% set job_id = 'trigger_on_demand' %}
-            {{ job_id }}:
-
-                enabled: True
-
-                discard_old_builds:
-                    build_days: {{ discard_build_days }}
-                    build_num: {{ discard_build_num }}
-
-                restrict_to_system_role:
-                    - controller_role
-
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            - auto_pipeline.update_salt_master_sources
-
-                skip_script_execution: True
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/auto_pipeline.update_salt_master_sources.xml'
-
-            # NOTE: At the moment this job simply tries to do what
-            #       `auto_pipeline.update_salt_master_sources` does but it skips
-            #       any updates (see `skip_script_execution`) and does it
-            #       on a timely basis.
-            {% set job_id = 'trigger_on_timer' %}
-            {{ job_id }}:
-
-                enabled: True
-
-                discard_old_builds:
-                    build_days: {{ discard_build_days }}
-                    build_num: {{ discard_build_num }}
-
-                restrict_to_system_role:
-                    - controller_role
-
-                # Disable timer trigger.
-                #{#
-                timer_spec: 'H */2 * * *'
-                #}#
-
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            - auto_pipeline.update_salt_master_sources
-
-                skip_script_execution: True
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/auto_pipeline.update_salt_master_sources.xml'
-
-            # TODO: At the moment this job simply tries to do what
-            #       `auto_pipeline.update_salt_master_sources` does but it does trigger
-            #       pipeline even if there is no changes.
-            {% set job_id = 'trigger_on_changes' %}
-            {{ job_id }}:
-
-                enabled: True
-
-                discard_old_builds:
-                    build_days: {{ discard_build_days }}
-                    build_num: {{ discard_build_num }}
-
-                restrict_to_system_role:
-                    - controller_role
-
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            - auto_pipeline.update_salt_master_sources
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/auto_pipeline.update_salt_master_sources.xml'
+            # The trigger is not supposed to be doing much.
+            # Instead, it can be configured to start downstream job
+            # on timer or on change (or on demand as always available).
 
             ###################################################################
-            # The `auto_pipeline`
+            # The `init_pipeline`
 
-            {% set job_id = 'auto_pipeline.update_salt_master_sources' %}
+            # TODO: At the moment this job is disabled.
+            {% set job_id = 'init_pipeline.automatic_trigger' %}
             {{ job_id }}:
 
-                enabled: True
+                enabled: False
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -194,9 +111,6 @@ system_features:
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
-
-            ###################################################################
-            # The `init_pipeline`
 
             {% set skip_script_execution = False %}
 
@@ -285,6 +199,12 @@ system_features:
                             Any notes describing the build.
                         parameter_type: text
                         parameter_value: '_'
+                    UPDATE_REPOSITORIES:
+                        parameter_description: |
+                            This update branches from upstream repositories.
+                            NOTE: If `USE_SOURCES_FROM_BUILD_TITLE` is set, this option is ignored.
+                        parameter_type: boolean
+                        parameter_value: True
                     REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION:
                         parameter_description: |
                             This causes all build branches to be removed in the last job.
@@ -292,13 +212,15 @@ system_features:
                             TODO: Build branches should be automatically removed if previous build was unsuccessful.
                         parameter_type: boolean
                         parameter_value: True
-                    USE_SOURCES_FROM_BUILD_TITLE:
+                    USE_INITIAL_SOURCES_FROM_BUILD_TITLE:
                         parameter_description: |
                             Specify build title from existing history.
-                            If this parameter is specified, it restores sources to `restore_point_commit_ids` of the specified build title.
+                            If this parameter is specified, then `init_pipeline.checkout_repositories` job:
+                            - restores HEADs to `initial_commit_ids` of that build title;
+                            - restores branch names to `initial_branches` of that build title.
+                            NOTE: The new build will have its own build title.
                             This is just a mechanism to rebuild something as it was in the past.
                             The build title can be found in dynamic build descriptor in the value of `build_title` key.
-                            TODO: Not implemented yet.
                         parameter_type: string
                         parameter_value: '_'
 
@@ -354,9 +276,33 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - init_pipeline.create_build_branches
+                            - init_pipeline.checkout_repositories
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
+
+            {% set job_id = 'init_pipeline.checkout_repositories' %}
+            {{ job_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - init_pipeline.create_build_branches
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
@@ -1268,10 +1214,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
 
                     job_list:
-                        - trigger_on_demand
-                        - trigger_on_timer
-                        - trigger_on_changes
-                        - auto_pipeline.update_salt_master_sources
+                        - init_pipeline.automatic_trigger
                         - init_pipeline.clean_old_build
                         - init_pipeline.start_new_build
                         - package_pipeline.create_new_package

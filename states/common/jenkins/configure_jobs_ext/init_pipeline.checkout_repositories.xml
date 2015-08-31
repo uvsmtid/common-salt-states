@@ -34,6 +34,12 @@
 
         {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
 
+        # At this point (before checking out required commits), we already
+        # know that recovery would require at least checking out initial
+        # commits and branches back. The initial commits and branches are
+        # already written in the dyn build desc - use it as initial recovery descriptor.
+        cp "${LATEST_DYN_BUILD_DESC_PATH}" "${RECOVERY_DYN_BUILD_DESC_PATH}"
+
         #######################################################################
         # In-place Python script which captures stdin data under
         # specified key in destination dict.
@@ -53,14 +59,41 @@ HEREDOC_MARKER
 HEREDOC_MARKER
 
         #######################################################################
-        # Capture into dynamic build descriptor:
-        # - current branch names
-        # - current commit ids
-        # - build branch names
-        # - status of local changes
+        # NOTE: The next series of steps may fail due to local changes.
+        #       It is required behaviour - do not go futher with such local changes.
+        #       In this case, recovery procedure simply has to check out
+        #       everything back (whether it was successful, failed or yet untouched).
 
-        # NOTE: We assume that repository is available
-        #       locally on Jenkins slave.
+        #######################################################################
+        # Checkout required branches at specific commmit ids.
+        # This step requires both:
+        # * list of names for the branches per repository in `required_branches`;
+        # * list of commit ids these branches have to be set to in `required_commit_ids`;
+        # otherwise required conditions cannot be reproduced.
+        # 
+        # In cases when this is not a rebuild, release or package, the step
+        # is pretty dummy - it simply checks out repositories at the
+        # same state they currently are.
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        REQUIRED_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_branches:{{ repo_name }}")"
+        REQUIRED_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_commit_ids:{{ repo_name }}")"
+
+        cd "${REPO_PATH}"
+        git checkout -B "${REQUIRED_BRANCH}" "${REQUIRED_COMMIT_ID}"
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
+        # Update all current branches, if requiested.
+        # And record the new commits.
+
+        # We assume that remote `origin` has to be pre-configured.
+        # TODO: Use automation to use configured remote and probably branch.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -70,33 +103,12 @@ HEREDOC_MARKER
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
         # HEAD value means that repository is at detached head.
         test "$CURRENT_BRANCH" != "HEAD"
+        git pull --ff-only origin $CURRENT_BRANCH
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
-        CURRENT_COMMIT_ID_SHORT="$(git rev-parse --short --verify HEAD)"
-        BUILD_BRANCH="${CURRENT_BRANCH}-${CURRENT_COMMIT_ID_SHORT}-${BUILD_TITLE}"
-        UNTRACKED_ITEMS="$(git ls-files --other --exclude-standard --directory | wc -l)"
-        MODIFIED_ITEMS="$((git diff --name-only --cached --ignore-submodules=dirty ; git diff --name-only --ignore-submodules=dirty) | sort -u | wc -l)"
         cd -
 
-        if [ "${USE_INITIAL_SOURCES_FROM_BUILD_TITLE}" != "_" ]
-        then
-            echo "preserve existing initial branch and commit id"
-            # The values must be set for this step to succeed.
-            REQUIRED_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-            REQUIRED_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}")"
-        else
-            # Trivial case.
-            REQUIRED_BRANCH="${CURRENT_BRANCH}"
-            REQUIRED_COMMIT_ID="${CURRENT_COMMIT_ID}"
-        fi
-
-        echo "$CURRENT_BRANCH"     | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
-        echo "$CURRENT_COMMIT_ID"  | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
-        echo "$REQUIRED_BRANCH"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_branches:{{ repo_name }}"
-        echo "$REQUIRED_COMMIT_ID" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_commit_ids:{{ repo_name }}"
-        echo "$BUILD_BRANCH"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}"
-        echo "$UNTRACKED_ITEMS"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}"
-        echo "$MODIFIED_ITEMS"     | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}"
-
+        # NOTE: We do not need to update branch names as they stay the same.
+        echo "$CURRENT_COMMIT_ID" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "updated_commit_ids:{{ repo_name }}"
 
         {% endfor %}
 
@@ -104,6 +116,11 @@ HEREDOC_MARKER
         # Update dynamic build descriptor.
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        # One of the purposes of this job is to set recovery
+        # dynamic build descriptor so that changes made to repositories
+        # can be reverted to their state before this job.
+        cp "${LATEST_DYN_BUILD_DESC_PATH}" "${RECOVERY_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
         # Report status of the execution.
