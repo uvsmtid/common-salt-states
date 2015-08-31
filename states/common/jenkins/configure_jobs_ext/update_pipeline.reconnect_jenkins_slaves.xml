@@ -29,8 +29,6 @@
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
         {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
 
-        eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
-
         # Disconnect and Connect all Jenkins Slaves.
         {% for node_name in pillar['system_host_roles']['jenkins_slave_role']['assigned_hosts'] %}
         {% set node_config = pillar['system_hosts'][node_name] %}
