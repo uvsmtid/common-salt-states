@@ -19,6 +19,13 @@
         exit 0
         {% endif %}
 
+        {% if 'skip_if_true' in job_config %}
+        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
+        then
+            exit 0
+        fi
+        {% endif %}
+
         # TODO: Update (overwrite default via dynamic build descriptor)
         #       resources in registered content and commit them (if required)
         #       so that bootstrap package can use the newly built artifacts.

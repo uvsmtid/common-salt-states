@@ -19,6 +19,12 @@
         exit 0
         {% endif %}
 
+        {% if 'skip_if_true' in job_config %}
+        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
+        then
+            exit 0
+        fi
+        {% endif %}
 
         # NOTE: This job does nothing.
         #       It is used as a trigger (dependency) for other Maven jobs.
