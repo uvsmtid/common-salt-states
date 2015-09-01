@@ -565,6 +565,45 @@ wget http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/jnlpJars/jenki
 {% endmacro %}
 
 ###############################################################################
+{% macro common_build_script_header(job_config, job_environ) %}
+
+set -e
+set -u
+
+env
+
+{% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+exit 0
+{% endif %}
+
+{% if 'skip_if_true' in job_config %}
+if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
+then
+    exit 0
+fi
+{% endif %}
+
+JOB_STATUS='stable'
+
+{% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
+{{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
+
+{% endmacro %}
+
+###############################################################################
+{% macro common_build_script_footer(job_config, job_environ) %}
+
+# Report status of the execution.
+if [ "${JOB_STATUS}" == 'unstable' ]
+then
+    # Set build unstable.
+    # See: http://stackoverflow.com/a/8822743/441652
+    eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
+fi
+
+{% endmacro %}
+
+###############################################################################
 # EOF
 ###############################################################################
 
