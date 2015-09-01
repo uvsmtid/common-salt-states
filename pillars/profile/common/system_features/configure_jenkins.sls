@@ -1142,6 +1142,7 @@ system_features:
                             {% for target_profile_name in props['load_bootstrap_target_envs'].keys() %}
                             - {{ target_profile_name }}
                             {% endfor %}
+                            - {{ profile_name }}
                     GIT_AUTHOR_EMAIL:
                         parameter_description: |
                             Specify author email for Git commits.

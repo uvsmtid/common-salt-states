@@ -55,6 +55,9 @@ default_username: username
 #       (except source and target pillars) use it by template default
 #       which is coarse-grained approach.
 current_task_branch: develop
+
+# Specify dict of target profile names (mapped into any value).
+# TODO: Add link to docs.
 load_bootstrap_target_envs:
     develop: ~
 
