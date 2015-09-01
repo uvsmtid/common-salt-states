@@ -102,6 +102,12 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                # NOTE: This job is initial and not a parameterized.
+                #       This environment variable won't be available.
+                {% if False %}
+                skip_if_true: SKIP_INIT_PIPELINE
+                {% endif %}
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -125,6 +131,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_INIT_PIPELINE
 
                 is_standalone: True
 
@@ -157,6 +165,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_INIT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -224,6 +234,37 @@ system_features:
                         parameter_type: string
                         parameter_value: '_'
 
+                    SKIP_INIT_PIPELINE:
+                        parameter_description: |
+                            TODO: Quick and dirty impl to skip pipeline.
+                        parameter_type: boolean
+                        parameter_value: False
+                    SKIP_UPDATE_PIPELINE:
+                        parameter_description: |
+                            TODO: Quick and dirty impl to skip pipeline.
+                        parameter_type: boolean
+                        parameter_value: False
+                    SKIP_MAVEN_PIPELINE:
+                        parameter_description: |
+                            TODO: Quick and dirty impl to skip pipeline.
+                        parameter_type: boolean
+                        parameter_value: False
+                    SKIP_DEPLOY_PIPELINE:
+                        parameter_description: |
+                            TODO: Quick and dirty impl to skip pipeline.
+                        parameter_type: boolean
+                        parameter_value: False
+                    SKIP_PACKAGE_PIPELINE:
+                        parameter_description: |
+                            TODO: Quick and dirty impl to skip pipeline.
+                        parameter_type: boolean
+                        parameter_value: True
+                    SKIP_RELEASE_PIPELINE:
+                        parameter_description: |
+                            TODO: Quick and dirty impl to skip pipeline.
+                        parameter_type: boolean
+                        parameter_value: True
+
                 use_promotions:
                     - promotion.init_pipeline_passed
                     - promotion.update_pipeline_passed
@@ -245,6 +286,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_INIT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -270,6 +313,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_INIT_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -294,6 +339,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_INIT_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -317,6 +364,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_INIT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -345,6 +394,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_INIT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -579,6 +630,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_UPDATE_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -603,6 +656,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_UPDATE_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -626,6 +681,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_UPDATE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -658,6 +715,8 @@ system_features:
                 restrict_to_system_role:
                     - jenkins_master_role
 
+                skip_if_true: SKIP_UPDATE_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 # This is the final job in the pipeline.
@@ -689,6 +748,9 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                # TODO: At the moment Maven jobs cannot be scipped.
+                skip_if_true: SKIP_MAVEN_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -754,6 +816,9 @@ system_features:
                 restrict_to_system_role:
                     - jenkins_slave_role
 
+                # TODO: At the moment Maven jobs cannot be scipped.
+                skip_if_true: SKIP_MAVEN_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
@@ -800,6 +865,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -830,6 +897,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -855,6 +924,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -882,6 +953,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -905,6 +978,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -930,6 +1005,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -953,6 +1030,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -978,6 +1057,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -1001,6 +1082,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -1033,6 +1116,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_PACKAGE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -1088,6 +1173,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                skip_if_true: SKIP_PACKAGE_PIPELINE
+
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -1111,6 +1198,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_PACKAGE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -1143,6 +1232,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                skip_if_true: SKIP_RELEASE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 

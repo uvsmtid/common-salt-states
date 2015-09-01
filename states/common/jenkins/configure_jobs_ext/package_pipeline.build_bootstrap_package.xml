@@ -19,6 +19,13 @@
         exit 0
         {% endif %}
 
+        {% if 'skip_if_true' in job_config %}
+        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
+        then
+            exit 0
+        fi
+        {% endif %}
+
         sudo salt-call \
             --out json \
             state.sls bootstrap.generate_content \

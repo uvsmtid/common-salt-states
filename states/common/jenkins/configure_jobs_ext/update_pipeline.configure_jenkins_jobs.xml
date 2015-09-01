@@ -19,6 +19,13 @@
         exit 0
         {% endif %}
 
+        {% if 'skip_if_true' in job_config %}
+        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
+        then
+            exit 0
+        fi
+        {% endif %}
+
         # TODO: This script assumes that Salt master and Jenkins master
         #       are the same host.
 

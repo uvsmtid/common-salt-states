@@ -19,6 +19,15 @@
         exit 0
         {% endif %}
 
+        {% if 'skip_if_true' in job_config %}
+        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
+        then
+            exit 0
+        fi
+        {% endif %}
+
+        JOB_STATUS='stable'
+
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
@@ -84,7 +93,10 @@ HEREDOC_MARKER
         # Update artifacts in resources repos
         # and record resource definition info into dynamic build descriptor.
 
-        # TODO:
+        # TODO: Update (overwrite default via dynamic build descriptor)
+        #       resources in registered content and commit them (if required)
+        #       so that bootstrap package can use the newly built artifacts.
+        # NOTE: Normally this is done in project-specific jobs (not common).
 
         #######################################################################
         # Save dynamic build descriptor to repository before committing it.
