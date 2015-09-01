@@ -12,19 +12,20 @@
     <hudson.tasks.Shell>
       <command>
 
-        set -e
-        set -u
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
-        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
-        exit 0
-        {% endif %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
 
-        {% if 'skip_if_true' in job_config %}
-        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
-        then
-            exit 0
-        fi
-        {% endif %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
+
+        #######################################################################
 
         {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         {% set user_home_dir = account_conf['posix_user_home_dir'] %}
@@ -32,6 +33,13 @@
         {% set vagrant_dir = user_home_dir + '/' + vagrant_files_dir %}
         cd "{{ vagrant_dir }}"
         vagrant destroy
+
+        #######################################################################
+        # Script footer
+
+        {{ common_build_script_footer(job_config, job_environ) }}
+
+        #######################################################################
 
       </command>
     </hudson.tasks.Shell>

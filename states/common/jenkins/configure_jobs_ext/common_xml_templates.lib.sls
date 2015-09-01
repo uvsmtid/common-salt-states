@@ -588,6 +588,24 @@ JOB_STATUS='stable'
 {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
 {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
 
+#######################################################################
+# In-place Python script which captures stdin data under
+# specified key in destination dict.
+
+KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
+cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
+{{ key_setter_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
+
+#######################################################################
+# In-place Python script which returns data under
+# specified key in destination dict on stdout.
+
+KEY_GETTER_PYTHON_SCRIPT=$(mktemp)
+cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_GETTER_PYTHON_SCRIPT}
+{{ key_getter_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
+
 {% endmacro %}
 
 ###############################################################################

@@ -16,29 +16,18 @@
     <hudson.tasks.Shell>
       <command>
 
-        set -e
-        set -u
-
-        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
-        exit 0
-        {% endif %}
-
-        {% if 'skip_if_true' in job_config %}
-        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
-        then
-            exit 0
-        fi
-        {% endif %}
-
-        JOB_STATUS='stable'
-
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
 
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
 
         #######################################################################
         # Locate dynamic build descriptor.
@@ -75,19 +64,9 @@
         cp "${INIT_DYN_BUILD_DESC_PATH}" "initial.dynamic_build_descriptor.yaml"
 
         #######################################################################
-        # Report status of the execution.
+        # Script footer
 
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
-        {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
-
-        if [ "${JOB_STATUS}" == 'unstable' ]
-        then
-
-            # Set build unstable.
-            # See: http://stackoverflow.com/a/8822743/441652
-            eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
-
-        fi
+        {{ common_build_script_footer(job_config, job_environ) }}
 
         #######################################################################
 

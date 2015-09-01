@@ -20,9 +20,6 @@
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
 
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
-
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
 
@@ -52,15 +49,6 @@
         rm -f "initial.dynamic_build_descriptor.yaml"
 
         #######################################################################
-        # In-place Python script which captures stdin data under
-        # specified key in destination dict.
-
-        KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
-        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
-        {{ key_setter_python_script(job_config, job_environ) }}
-        HEREDOC_MARKER
-
-        #######################################################################
         # Set build title.
 
         BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
@@ -77,14 +65,11 @@
 
         # TODO: Filter sensitive environment variables.
 
-        # Print environment variables.
-        env
-
         # In-place Python script. Write it into a file to be executed later.
         ENV_PYTHON_SCRIPT=$(mktemp)
-        cat &lt;&lt;HEREDOC_MARKER &gt; ${ENV_PYTHON_SCRIPT}
-        {{ store_environment_python_script(job_config, job_environ) }}
-        HEREDOC_MARKER
+cat &lt;&lt;HEREDOC_MARKER &gt; ${ENV_PYTHON_SCRIPT}
+{{ store_environment_python_script(job_config, job_environ) }}
+HEREDOC_MARKER
 
         # Write output of env command into dynamic build descriptor.
         env | python "${ENV_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}"
@@ -127,6 +112,8 @@
         # Script footer
 
         {{ common_build_script_footer(job_config, job_environ) }}
+
+        #######################################################################
 
       </command>
     </hudson.tasks.Shell>
