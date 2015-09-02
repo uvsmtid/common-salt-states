@@ -78,6 +78,23 @@
         {% endfor %}
 
         #######################################################################
+        # Verify:
+        # All repositories are actually different directories
+        # (no symlinks from one repository to another).
+        # This is required as switching to build branches and restoring
+        # them will unnecessarily complicate the procedure reducing trust.
+
+        DIR_FS_ID_LIST_FILE="$(mktemp)"
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+        stat "${REPO_PATH}/." | grep '^Device:' >> "${DIR_FS_ID_LIST_FILE}"
+        {% endfor %}
+
+        # If there is at least one duplicated line, `grep` will fail.
+        cat "${DIR_FS_ID_LIST_FILE}" | sort | uniq -d | grep -v '.'
+
+        #######################################################################
         # Update dynamic build descriptor.
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
