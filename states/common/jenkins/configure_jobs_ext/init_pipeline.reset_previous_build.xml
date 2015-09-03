@@ -48,11 +48,6 @@
             # the previous build - nothing to do.
             echo "No need to recover from the previous build".
 
-            # This is not usual situation
-            # (unless it is the very first build).
-            {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
-            {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
-
             # Set build unstable.
             # See: http://stackoverflow.com/a/8822743/441652
             eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
