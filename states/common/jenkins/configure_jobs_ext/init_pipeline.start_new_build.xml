@@ -97,6 +97,24 @@ HEREDOC_MARKER
         echo "BUILD_TITLE=${BUILD_TITLE}" >> "$BUILD_PROPS_PATH"
 
         #######################################################################
+        # Check that specified author is able to commit in every repository.
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        TEMP_FILE_NAME="${SALT_PROFILE_NAME}-$(date "+%Y-%m-%dT%H-%M-%S.%N")"
+        touch "${TEMP_FILE_NAME}"
+        git add "${TEMP_FILE_NAME}"
+        git commit --dry-run --author="${GIT_AUTHOR_EMAIL}"
+        git reset "${TEMP_FILE_NAME}"
+        rm "${TEMP_FILE_NAME}"
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
         # Update dynamic build descriptor.
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
