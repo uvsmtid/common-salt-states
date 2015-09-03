@@ -617,6 +617,10 @@ then
     # Set build unstable.
     # See: http://stackoverflow.com/a/8822743/441652
     eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
+elif [ "${JOB_STATUS}" != 'stable' ]
+then
+    # If not stable or unstable, fail the job.
+    exit 1
 fi
 
 {% endmacro %}

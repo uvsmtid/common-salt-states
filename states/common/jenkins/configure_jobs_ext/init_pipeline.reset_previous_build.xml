@@ -74,8 +74,9 @@
         then
             git stash
 
-            # Set unstable job status to highlight stashed changes.
-            JOB_STATUS='unstable'
+            # Set job status to failed (but don't fail now, restore first)
+            # in order to highlight stashed changes.
+            JOB_STATUS='failed'
         fi
 
         cd -
@@ -165,23 +166,15 @@
 
         # This step resets HEAD to the commit before the beginning
         # while leaving all local files as they are at restore point.
-        # It also moves away from detached HEAD.
-        # NOTE: If there are changes which conflict with the checkout
-        #       the step will fail.
-        # NOTE: In order for this step to fail, there must be new
-        #       local changes done AFTER the `INITIAL_BRANCH` and
-        #       `INITIAL_COMMIT_ID` were recorded. Any local modification
-        #       at the start of the pipeline (BEFORE `INITIAL_BRANCH` and
-        #       `INITIAL_COMMIT_ID` were recorded) should not cause
-        #       problems as they didn't cause problems of moving
-        #       the `INITIAL_BRANCH` forward (by new commits done during
-        #       pipeline execution, if any).
-        # TODO: Actually, this requires rethought.
-        #       Because checkout is forced (`-B`), it may "forget"
-        #       valuable commits in unknown conditions. There should
-        #       be a way to reset branch into specific commit
-        #       making shure nothing is lost.
-        git checkout -B "${INITIAL_BRANCH}" "${INITIAL_COMMIT_ID}"
+        # We cannot simply checkout the branch as this would also set
+        # local files into initial commits instead of restore point.
+        git reset "${INITIAL_COMMIT_ID}"
+
+        # This step moves away from detached HEAD to specified branch.
+        # All modifications to local files produced by checking out
+        # restore point and resetting to initial commit are
+        # left untouched ("rebased" on top of initial branch).
+        git checkout "${INITIAL_BRANCH}"
 
         cd -
 
