@@ -231,11 +231,26 @@ def main():
     ###########################################################################
     # Make sure `pillars` contains symlinks to all bootstrap profiles.
     # NOTE: It is assumed that single repository contains branches with
-    #       pillars for all profiles.
+    #       pillars for all bootstrap target profiles.
+    # NOTE: None of the `pillars` repositories is considered
+    #       when generic profile from `states` repository is used.
 
-    profile_names = [ props['profile_name'] ] + props['load_bootstrap_target_envs'].keys()
-    bootstrap_target_pillars_repo_path = props['repo_path_bootstrap_target_pillars']
+    if props['use_pillars_from_states_repo']:
+        # Special (testing) case using single generic profile pillars
+        # in states repository.
+        # Only single profile is supported - the current one.
+        profile_names = [ props['profile_name'] ]
+        # Pillars repository for bootstrap target profiles
+        # is not supported. Instead states repository is used again to
+        # provide single target profile - the current one.
+        bootstrap_target_pillars_repo_path = props['repo_path_states']
+    else:
+        # Normal pillars within separate pillars repositories.
+        profile_names = [ props['profile_name'] ] + props['load_bootstrap_target_envs'].keys()
+        bootstrap_target_pillars_repo_path = props['repo_path_bootstrap_target_pillars']
+
     assert(os.path.isabs(bootstrap_target_pillars_repo_path))
+
     for profile_name in profile_names:
         command_args = [
             'ln',

@@ -64,7 +64,7 @@ system_features:
             salt_pillars_roots:
                 # Note that pillars for generic profile are taken
                 # from `states` repository under its `pillars` directory
-                # with generic profile template.
+                # with generic profile template in it.
             {% if use_pillars_from_states_repo %}
                 repo_name: '{{ project_name }}-salt-states'
             {% else %}
@@ -84,10 +84,18 @@ system_features:
 
             # Pillars for bootstrap environments.
 
+            # NOTE: None of the `pillars` repositories is considered
+            #       when generic profile from `states` repository is used.
+            {% if use_pillars_from_states_repo %}
+
+            {% else %}
+
             {{ project_name }}.{{ profile_name }}_bootstrap_profiles:
                 repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
                 abs_link_base_path: '/srv/pillars/bootstrap/profiles/{{ profile_name }}'
                 rel_target_path: 'pillars'
+
+            {% endif %} # use_pillars_from_states_repo
 
             # NOTE: In order to access the following paths from Salt master,
             #       Salt master should be configured to use additional path

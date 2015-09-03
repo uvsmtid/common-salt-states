@@ -37,6 +37,15 @@
         # DISABLED
         {% if False %}
 
+        # NOTE: None of the `pillars` repositories is considered
+        #       when generic profile from `states` repository is used.
+        #       The verification is only applicable for normal source
+        #       environment where pillars are stored in the separate
+        #       pillars repository.
+        {% if pillar['use_pillars_from_states_repo'] %}
+
+        {% else %}
+
         #######################################################################
         # TODO: Move it to build verification job.
         # Make sure target bootstrap profile pillars repo is on required branch.
@@ -53,7 +62,9 @@
 
         test "$CURRENT_BRANCH" == "${TARGET_PROFILE_NAME}"
 
-        {% endif %}
+        {% endif %} # use_pillars_from_states_repo
+
+        {% endif %} # DISABLED
 
         #######################################################################
         # Script footer

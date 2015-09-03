@@ -98,9 +98,17 @@ system_features:
 
             # Salt pillars.
 
+            # NOTE: None of the `pillars` repositories is considered
+            #       when generic profile from `states` repository is used.
+            {% if use_pillars_from_states_repo %}
+
+            {% else %}
+
             '{{ project_name }}-salt-pillars': git
 
             '{{ project_name }}-salt-pillars.bootstrap-target': git
+
+            {% endif %} # use_pillars_from_states_repo
 
             # Repository with build history.
 
@@ -153,9 +161,17 @@ system_features:
 
             # Salt pillars.
 
+            # NOTE: None of the `pillars` repositories is considered
+            #       when generic profile from `states` repository is used.
+            {% if use_pillars_from_states_repo %}
+
+            {% else %}
+
             '{{ project_name }}-salt-pillars': '/environment.sources/{{ project_name }}-salt-pillars.git'
 
             '{{ project_name }}-salt-pillars.bootstrap-target': '/environment.sources/{{ project_name }}-salt-pillars.bootstrap-target.git'
+
+            {% endif %} # use_pillars_from_states_repo
 
             # Repository with build history.
 
@@ -257,6 +273,12 @@ system_features:
 
             # Salt pillars.
 
+            # NOTE: None of the `pillars` repositories is considered
+            #       when generic profile from `states` repository is used.
+            {% if use_pillars_from_states_repo %}
+
+            {% else %}
+
             '{{ project_name }}-salt-pillars':
                 git:
                     source_system_host: '{{ master_minion_id }}'
@@ -272,6 +294,8 @@ system_features:
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.bootstrap-target.git'
 
                     branch_name: '{{ profile_name }}'
+
+            {% endif %} # use_pillars_from_states_repo
 
             # Repository with build history.
 

@@ -33,8 +33,10 @@ offline_mode: False
 # Use generic profile (saved in project's `states` repository).
 # NOTE: This is only for convenience of development when both states
 #       and pillars (template pillars) are changed in the same
-#       states repository.
-#       Normally profile is not generic and this value is set to `False` .
+#       `states` repository.
+# NOTE: None of the `pillars` repositories is considered
+#       when generic profile from `states` repository is used.
+#       Normally profile is not generic, and this value is set to `False`.
 use_pillars_from_states_repo: True
 
 project_name: common

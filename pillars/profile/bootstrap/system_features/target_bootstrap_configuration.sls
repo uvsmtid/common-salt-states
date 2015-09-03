@@ -51,7 +51,7 @@ system_features:
 
         # The very initial sources (symlinks) to make Salt operational.
         # NOTE: These are only `states` and `pillars`. Even though there can
-        #       be more than one repo for `states, only the common one
+        #       be more than one repo for `states`, only the `common` one
         #       is specified (which bootstraps the rest).
         bootstrap_sources:
             states: common-salt-states
@@ -134,6 +134,12 @@ system_features:
 
             # Salt pillars.
 
+            # NOTE: None of the `pillars` repositories is considered
+            #       when generic profile from `states` repository is used.
+            {% if use_pillars_from_states_repo %}
+
+            {% else %}
+
             {% set repo_name = project_name + '-salt-pillars' %}
             {{ repo_name }}:
                 # This repo is replaced by "target" pillar repository.
@@ -178,6 +184,8 @@ system_features:
                 # Pillars repository considered as "target" in the "source" environment
                 # becomes "source" configuration in the "target" environment.
                 target_repo_name: {{ project_name }}-salt-pillars
+
+            {% endif %} # use_pillars_from_states_repo
 
             # Repository with build history.
 
