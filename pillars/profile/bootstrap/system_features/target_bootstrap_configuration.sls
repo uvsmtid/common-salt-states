@@ -26,11 +26,22 @@
 # This is in-plave macro for common logic to set repo branch name.
 # The indentation has to be preserved for proper YAML rendering.
 {% macro set_repo_branch_name(repo_name, default_branch) %}
+                # NOTE: Quick fix for pillars which deal with released
+                #       dyn build desc (when normal branches should be used
+                #       and not ugly long build branches).
+                #       We only need to use build branches
+                #       during build pipeline.
+                {% if 'released' in dynamic_build_descriptor and dynamic_build_descriptor['released'] %}
+                branch_name: '{{ default_branch }}'
+                {% else %}
+
                 {% if 'build_branches' in dynamic_build_descriptor %}
                 {% set branch_name = dynamic_build_descriptor['build_branches'][repo_name] %}
                 branch_name: '{{ branch_name }}'
                 {% else %}
                 branch_name: '{{ default_branch }}'
+                {% endif %}
+
                 {% endif %}
 {% endmacro %}
 
@@ -66,7 +77,8 @@ system_features:
             {% if props['parent_repo_name'] %}
             {% set repo_name = props['parent_repo_name'] %}
             {{ repo_name }}:
-                export_enabled: True
+                # NOTE: We don't need to export root repository.
+                export_enabled: False
                 export_method: clone
                 export_format: dir
                 {{ set_repo_branch_name(repo_name, current_task_branch) }}
@@ -145,11 +157,22 @@ system_features:
                 # with corresponding profile. The following logic
                 # makes sure that the target pillar is influenced
                 # by the selection.
-                {% if 'environ' in dynamic_build_descriptor %}
+                # NOTE: Quick fix for pillars which deal with released
+                #       dyn build desc (when normal branches should be used
+                #       and not ugly long build branches).
+                #       We only need to use build branches
+                #       during build pipeline.
+                {% if 'released' in dynamic_build_descriptor and dynamic_build_descriptor['released'] %}
+                branch_name: '{{ profile_name }}'
+                {% else %}
+
+                {% if 'environ' in dynamic_build_descriptor and 'TARGET_PROFILE_NAME' in dynamic_build_descriptor['environ'] %}
                 {% set branch_name = dynamic_build_descriptor['environ']['TARGET_PROFILE_NAME'] %}
                 branch_name: '{{ branch_name }}'
                 {% else %}
                 branch_name: '{{ profile_name }}'
+                {% endif %}
+
                 {% endif %}
                 # This is required.
                 # Pillars repository considered as "target" in the "source" environment

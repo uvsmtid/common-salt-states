@@ -1,4 +1,3 @@
-
 ## Initial Salt setup ##
 
 All steps are applicable to any OS, however, examples are given for
@@ -32,7 +31,10 @@ There are two ways:
 
 ### Common network problems ###
 
-If you are behind a proxy, configure proxy for YUM:
+If you are behind a proxy, configure proxy for YUM.
+
+NOTE: On the latest Fedora (confirmed for F22),
+file `/etc/dnf/dnf.conf` has to be used instead.
 
 ```
 vi /etc/yum.conf
@@ -243,4 +245,3 @@ salt '*' test.ping
 [12]: /docs/configs/common/this_system_keys/default_username/readme.md
 [13]: /pillars
 [14]: /docs/salt_runtime.md
-
