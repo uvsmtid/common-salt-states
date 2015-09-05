@@ -11,6 +11,8 @@
 # Key points (differences from bootstrap):
 # * Configure Salt master only (no standalone masterless minions).
 # * Salt master is supposed to be already installed.
+# * All repositories are expected in paths provided directly by
+#   pillars (instead of paths into bootstrap package).
 # * Host with Salt master is supposed to be installed and configured
 #   with Salt minion too.
 #   TODO: Implement Salt minion configuration in this script as well.
@@ -134,6 +136,7 @@ def main():
 
     ###########################################################################
     # Remove old symlinks to `sources` and `resources`.
+
     command_args = [
         'rm',
         '-rf',
@@ -360,17 +363,18 @@ def main():
     # Run initial configuration for Salt master.
 
     # Because we only care about Salt master and master can only be Linux.
-    from steps.deploy.run_init_states.generic_linux import run_states
+    from steps.deploy.run_init_states.generic_linux import run_init_states
 
-    state_names = [
-        'common.source_symlinks',
-        'common.resource_symlinks',
-    ]
-
-    run_states(
-        state_names = state_names,
+    run_init_states(
+        # TODO: Use better value for use case than None.
+        #       At the moment `run_use_case` is expected to specify
+        #       bootstrap use case or None for this script.
+        #       However, how isn't it a use case as well (more meaningful
+        #       than None)?
+        run_use_case = None,
         salt_extra_args = [],
         cmd_extra_args = [],
+        extra_state_names = [],
     )
 
     ###########################################################################
