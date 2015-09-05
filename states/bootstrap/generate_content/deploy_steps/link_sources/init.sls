@@ -48,6 +48,27 @@
                 # Salt based on config from these initial states and pillars.
                 'salt_states_sources': '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['bootstrap_sources']['states'] }}',
                 'salt_pillars_sources': '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['bootstrap_sources']['pillars'] }}',
+
+                # Provide repository settings which are normally
+                # specified in properties but later loaded in pillars.
+                # TODO: Try to load properties under sub-key instead of root of pillars.
+                #       This way it would require passing sub-key only (with all properties)
+                #       instead of listing every requried field in properties.
+                # TODO: Unify field names of different entities
+                #       in pillars/properties/config so that they are searchible
+                #       by the same key.
+                # NOTE: The instantiated file has Python syntax.
+                #       Each field has to carefully choose quotes depending
+                #       on it's data type:
+                #       - dicts go without quotes
+                #       - strings go witht quotes
+                #       Lucily default renderring syntax in Jinja
+                #       for None and booleans match Python one.
+                'projects_states_repo_abs_paths': {{ target_env_pillar['projects_states_repo_paths'] }},
+                'bootstrap_target_pillars_repo_abs_path': '{{ target_env_pillar['repo_path_bootstrap_target_pillars'] }}',
+                'use_pillars_from_states_repo': {{ target_env_pillar['use_pillars_from_states_repo'] }},
+                'load_bootstrap_target_envs': {{ target_env_pillar['load_bootstrap_target_envs'] }},
+
                 # Configure each extracted respository.
                 'repos': {
             # NOTE: We put all repos in configuration but generate empty
