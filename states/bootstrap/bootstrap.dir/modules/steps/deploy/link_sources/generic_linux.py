@@ -79,6 +79,13 @@ def do(action_context):
         states_destination_dir = action_context.conf_m.link_sources['repos'][states_src]['online_destination_dir']
         pillars_destination_dir = action_context.conf_m.link_sources['repos'][pillars_src]['online_destination_dir']
 
+    # TODO: Handle generic profile and `use_pillars_from_states_repo`.
+
+    # TODO: Create symlinks to all target bootstrap profiles
+    #       (to the same `bootstrap-target` repo).
+
+    # TODO: Create symlink form `main.sls` to project-specific `main.sls`.
+
     symlink_to_dst_dir_map = {
         'states': states_destination_dir,
         'pillars': pillars_destination_dir,
