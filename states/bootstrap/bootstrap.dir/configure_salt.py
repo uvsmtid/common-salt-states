@@ -357,14 +357,11 @@ def main():
     ###########################################################################
     # Remove all minion keys.
 
-    command_args = [
-        'salt-key',
-        '-y',
-        '--delete-all',
-    ]
-    call_subprocess(
-        command_args,
-    )
+    # NOTE: We don't install Salt master,
+    #       but we use common function to delete all minion keys.
+    from utils.install_salt import delete_all_minion_keys_on_master
+
+    delete_all_minion_keys_on_master()
 
     ###########################################################################
     # Restart both Salt master and Salt minion.
