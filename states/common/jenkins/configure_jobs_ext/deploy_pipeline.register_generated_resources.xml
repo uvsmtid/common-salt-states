@@ -34,6 +34,8 @@
         # Function to update resource definition.
 
         # Make sure dynamic build descriptor repository file exists.
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
+        {{ locate_repository_dynamic_build_descriptor(job_config, job_environ) }}
         ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
 
         function update_resource_with_its_definition {

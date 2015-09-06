@@ -492,20 +492,27 @@ with open(sys.argv[1], 'w') as yaml_file:
 {% endmacro %}
 
 ###############################################################################
-{% macro locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = True) %}
+{% macro locate_repository_dynamic_build_descriptor(job_config, job_environ, check_repo_dyn_build_desc = True) %}
 
 {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
-# Location of dynamic build descriptor in pillar repository.
+# Location of dynamic build descriptor in `build_history_role` repository.
 # The purpose of this file is peristence.
 # This is the location where the latest dynamic build descriptor
 # is checked in at the end of each job.
 {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 {% set repo_id = get_repository_id_by_role('build_history_role') %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
-REPO_DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/dynamic_build_descriptor.yaml'
+REPO_DYN_BUILD_DESC_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/${BUILD_TITLE}/dynamic_build_descriptor.yaml"
+{% if check_repo_dyn_build_desc %}
 # Make sure it exists.
 ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
+{% endif %}
+
+{% endmacro %}
+
+###############################################################################
+{% macro locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = True) %}
 
 # Location of the initial build descriptor used to set fingerprints
 # for all related jobs.

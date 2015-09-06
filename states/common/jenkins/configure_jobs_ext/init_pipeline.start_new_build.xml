@@ -29,6 +29,24 @@
         {{ common_build_script_header(job_config, job_environ) }}
 
         #######################################################################
+        # Set build title.
+
+        BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
+        SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
+        export BUILD_TITLE="${BUILD_TIMESTAMP}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-SNAPSHOT-${BUILD_LABEL}"
+
+        #######################################################################
+        # Initialize repository build descriptor.
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
+        {{ locate_repository_dynamic_build_descriptor(job_config, job_environ, check_repo_dyn_build_desc = False) }}
+        # Do not branch or check in anything -
+        # it will be done for all repos later.
+        # Initialize with empty dict for dyn build desc.
+        mkdir -p "$(dirname "${REPO_DYN_BUILD_DESC_PATH}")"
+        echo "{}" > "${REPO_DYN_BUILD_DESC_PATH}"
+
+        #######################################################################
         # Locate dynamic build descriptor.
 
         # NOTE: We don't check existance of initital dyn build desc
@@ -49,11 +67,7 @@
         rm -f "initial.dynamic_build_descriptor.yaml"
 
         #######################################################################
-        # Set build title.
-
-        BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
-        SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
-        export BUILD_TITLE="${BUILD_TIMESTAMP}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-SNAPSHOT-${BUILD_LABEL}"
+        # Save build title into build descriptor.
 
         echo "$BUILD_TIMESTAMP" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_timestamp"
         echo "$BUILD_TITLE"     | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_title"
