@@ -93,7 +93,7 @@ system_features:
             {{ project_name }}.{{ profile_name }}_bootstrap_profiles:
                 repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
                 abs_link_base_path: '/srv/pillars/bootstrap/profiles/{{ profile_name }}'
-                rel_target_path: 'pillars'
+                rel_target_path: 'pillars/profile'
 
             {% endif %} # use_pillars_from_states_repo
 

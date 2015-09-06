@@ -11,6 +11,8 @@
 # Key points (differences from bootstrap):
 # * Configure Salt master only (no standalone masterless minions).
 # * Salt master is supposed to be already installed.
+# * All repositories are expected in paths provided directly by
+#   pillars (instead of paths into bootstrap package).
 # * Host with Salt master is supposed to be installed and configured
 #   with Salt minion too.
 #   TODO: Implement Salt minion configuration in this script as well.
@@ -134,6 +136,7 @@ def main():
 
     ###########################################################################
     # Remove old symlinks to `sources` and `resources`.
+
     command_args = [
         'rm',
         '-rf',
@@ -162,132 +165,35 @@ def main():
         )
 
     ###########################################################################
-    # Make sure `states` symlink points to `states` repository.
+    # Configure links for `states` and `pillars` repositories.
 
-    assert(os.path.isabs(props['repo_path_states']))
-    command_args = [
-        'ln',
-        '-snf',
-        os.path.join(
-            props['repo_path_states'],
-            'states',
-        ),
-        '/srv/states',
-    ]
-    call_subprocess(
-        command_args,
-    )
+    from steps.deploy.link_sources.generic_linux import set_salt_states_and_pillars_symlinks
 
-    ###########################################################################
-    # Make sure `pillars` symlink points to `pillars` repository.
-
-    # Note that in case of generic profile instead of `repo_path_pillars`
-    # `states` repo of the project is used instead.
-    repo_path_pillars = props['repo_path_pillars']
-    if props['use_pillars_from_states_repo']:
-        if props['project_name'] != 'common':
-            repo_path_pillars = props['projects_states_repo_paths'][props['project_name']]
-        else:
-            # common
-            repo_path_pillars = props['repo_path_states']
-
-    assert(repo_path_pillars)
-    command_args = [
-        'ln',
-        '-snf',
-        os.path.join(
-            repo_path_pillars,
-            'pillars',
-        ),
-        '/srv/pillars',
-    ]
-    call_subprocess(
-        command_args,
-    )
-
-    ###########################################################################
-    # Make sure `states` contains symlinks to all project states repos.
-
-    for project_name in props['projects_states_repo_paths'].keys():
-        project_repo_path = props['projects_states_repo_paths'][project_name]
-        assert(os.path.isabs(project_repo_path))
-        command_args = [
-            'ln',
-            '-snf',
-            os.path.join(
-                project_repo_path,
-                'states',
-                project_name,
-            ),
-            os.path.join(
-                '/srv/states',
-                project_name,
-            ),
-        ]
-        call_subprocess(
-            command_args,
-        )
-
-    ###########################################################################
-    # Make sure `pillars` contains symlinks to all bootstrap profiles.
-    # NOTE: It is assumed that single repository contains branches with
-    #       pillars for all bootstrap target profiles.
-    # NOTE: None of the `pillars` repositories is considered
-    #       when generic profile from `states` repository is used.
-
-    if props['use_pillars_from_states_repo']:
-        # Special (testing) case using single generic profile pillars
-        # in states repository.
-        # Only single profile is supported - the current one.
-        profile_names = [ props['profile_name'] ]
-        # Pillars repository for bootstrap target profiles
-        # is not supported. Instead states repository is used again to
-        # provide single target profile - the current one.
-        bootstrap_target_pillars_repo_path = props['repo_path_states']
-    else:
-        # Normal pillars within separate pillars repositories.
-        profile_names = [ props['profile_name'] ] + props['load_bootstrap_target_envs'].keys()
-        bootstrap_target_pillars_repo_path = props['repo_path_bootstrap_target_pillars']
-
-    assert(os.path.isabs(bootstrap_target_pillars_repo_path))
-
-    for profile_name in profile_names:
-        command_args = [
-            'ln',
-            '-snf',
-            os.path.join(
-                bootstrap_target_pillars_repo_path,
-                'pillars',
-                'profile',
-            ),
-            os.path.join(
-                '/srv/pillars/bootstrap/profiles',
-                profile_name,
-            ),
-        ]
-        call_subprocess(
-            command_args,
-        )
-
-    ###########################################################################
-    # Make sure `main.sls` is a symlink to `main.sls`
-    # under `states` directory of required project.
-
-    command_args = [
-        'ln',
-        '-snf',
-        os.path.join(
-            props['project_name'],
-            'main.sls',
-        ),
-        '/srv/states/main.sls',
-    ]
-    call_subprocess(
-        command_args,
+    # TODO: Make function args correspond keys from properties
+    #       so that the same entities are searched by the same key.
+    set_salt_states_and_pillars_symlinks(
+        # TODO: Use better value for use case than None.
+        #       At the moment `run_use_case` is expected to specify
+        #       bootstrap use case or None for this script.
+        #       However, how isn't it a use case as well (more meaningful
+        #       than None)?
+        run_use_case = None,
+        states_repo_abs_path = props['repo_path_states'],
+        pillars_repo_abs_path = props['repo_path_pillars'],
+        projects_states_repo_abs_paths = props['projects_states_repo_paths'],
+        bootstrap_target_pillars_repo_abs_path = props['repo_path_bootstrap_target_pillars'],
+        use_pillars_from_states_repo = props['use_pillars_from_states_repo'],
+        load_bootstrap_target_envs = props['load_bootstrap_target_envs'],
+        project_name = props['project_name'],
+        profile_name = props['profile_name'],
     )
 
     ###########################################################################
     # Modify Salt configuration file.
+    # TODO: Make it common function with bootstrap.
+    #       Perhaps, it is even possible to run Jinja template engine
+    #       on current configuration template providing necessary
+    #       context variables like `pillar`.
 
     from utils.hosts_file import do_backup
 
@@ -354,14 +260,11 @@ def main():
     ###########################################################################
     # Remove all minion keys.
 
-    command_args = [
-        'salt-key',
-        '-y',
-        '--delete-all',
-    ]
-    call_subprocess(
-        command_args,
-    )
+    # NOTE: We don't install Salt master,
+    #       but we use common function to delete all minion keys.
+    from utils.install_salt import delete_all_minion_keys_on_master
+
+    delete_all_minion_keys_on_master()
 
     ###########################################################################
     # Restart both Salt master and Salt minion.
@@ -375,17 +278,18 @@ def main():
     # Run initial configuration for Salt master.
 
     # Because we only care about Salt master and master can only be Linux.
-    from steps.deploy.run_init_states.generic_linux import run_states
+    from steps.deploy.run_init_states.generic_linux import run_init_states
 
-    state_names = [
-        'common.source_symlinks',
-        'common.resource_symlinks',
-    ]
-
-    run_states(
-        state_names = state_names,
+    run_init_states(
+        # TODO: Use better value for use case than None.
+        #       At the moment `run_use_case` is expected to specify
+        #       bootstrap use case or None for this script.
+        #       However, how isn't it a use case as well (more meaningful
+        #       than None)?
+        run_use_case = None,
         salt_extra_args = [],
         cmd_extra_args = [],
+        extra_state_names = [],
     )
 
     ###########################################################################
