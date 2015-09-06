@@ -69,6 +69,10 @@ system_features:
         # Name of the directory for the initially deployed control scripts.
         control_scripts_dir_basename: 'control'
 
+        repository_roles:
+            build_history_role:
+                - '{{ project_name }}-build-history'
+
         # Specify type per repository:
         #  - `svn` for Subversion.
         #  - `git` for Git.

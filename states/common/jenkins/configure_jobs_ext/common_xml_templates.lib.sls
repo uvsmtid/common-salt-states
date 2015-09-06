@@ -500,13 +500,10 @@ with open(sys.argv[1], 'w') as yaml_file:
 # The purpose of this file is peristence.
 # This is the location where the latest dynamic build descriptor
 # is checked in at the end of each job.
-{% set project_name = pillar['project_name'] %}
-{% if pillar['use_pillars_from_states_repo'] %}
-{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-states']['git'] %}
-{% else %}
-{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars']['git'] %}
-{% endif %}
-REPO_DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/pillars/profile/dynamic_build_descriptor.yaml'
+{% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+{% set repo_id = get_repository_id_by_role('build_history_role') %}
+{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
+REPO_DYN_BUILD_DESC_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/dynamic_build_descriptor.yaml'
 # Make sure it exists.
 ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
 

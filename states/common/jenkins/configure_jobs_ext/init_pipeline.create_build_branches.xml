@@ -131,11 +131,9 @@
 
         {% set project_name = pillar['project_name'] %}
 
-        {% if pillar['use_pillars_from_states_repo'] %}
-        {% set repo_name = project_name + '-salt-states' %}
-        {% else %}
-        {% set repo_name = project_name + '-salt-pillars' %}
-        {% endif %}
+        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+        {% set repo_id = get_repository_id_by_role('build_history_role') %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
 
         JENKINS_DIR_PATH="{{ job_environ['jenkins_dir_path'] }}"
 
@@ -143,7 +141,7 @@
         for JOB_NAME in start_new_build describe_repositories_state create_build_branches
         do
 
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
@@ -152,7 +150,7 @@
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_id }}")"
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
         cd "${REPO_PATH}"
