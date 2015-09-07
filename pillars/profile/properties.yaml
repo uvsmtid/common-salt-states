@@ -57,6 +57,16 @@ symlinks_map:
     '/home/username/Works/common-salt-pillars.git': '/home/username/Works/common-salt-states.git'
     '/home/username/Works/common-salt-pillars.bootstrap-target.git': '/home/username/Works/common-salt-states.git'
 
+# TODO: Make absolute paths to repositories relative to primary user's path.
+#       This is to be able to make paths consistent
+#       when `offline-minion-installer` especially with different
+#       primary user per minion.
+# TODO: While this file with properties is YAML (and not Jinja template)
+#       consider making values (not keys) parameterized by the values
+#       from this properties themselves. NOTE: It should work with
+#       both standard Python YAML loader and Jinja template (or should be
+#       refactored to achieve this).
+
 # The following values specify absolute locations of important repositories.
 # One way these paths are used is to set up symlinks from locations
 # known by Salt (in `/srv` directory) to the required data in repositories.
@@ -74,12 +84,15 @@ projects_states_repo_paths:
 # to all repositories (to track releases).
 parent_repo_name: ~
 
-# Primary network which is not controlled by Salt (directly or indirectly,
+# Primary network which is NOT controlled by Salt (directly or indirectly,
 # e.g. through configuration of some virtualized networks) and exist
 # to contact minions before running any Salt states.
 #
 # It is important to resolve master hostname on this network
 # (otherwise it won't be reachible until virtual networks are created).
+# In case of minion, it does not matter whether they have any interface
+# with assigned IP within the primary network as long as they can reach
+# master from any of the networks they are in.
 primary_network:
     network_name: primary_net
     network_ip_subnet: 192.168.40.0
