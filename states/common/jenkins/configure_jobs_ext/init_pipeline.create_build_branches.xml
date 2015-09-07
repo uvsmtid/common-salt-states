@@ -109,6 +109,7 @@
         {% else %}
 
         cd "${REPO_PATH}"
+        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
         git add --all
         git status
         # Commit only if there are changes.

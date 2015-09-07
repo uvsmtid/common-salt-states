@@ -70,6 +70,8 @@
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
+        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
+        git add --all
         if ! git diff-index --ignore-submodules=dirty --exit-code HEAD
         then
             git stash

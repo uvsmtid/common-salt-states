@@ -43,6 +43,8 @@
 
         # Make sure `build_history_role` is clean.
         cd "${REPO_DYN_BUILD_DESC_REPO_PATH}"
+        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
+        git add --all
         git diff-index --ignore-submodules=dirty --exit-code HEAD
         cd -
 
