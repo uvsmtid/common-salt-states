@@ -70,33 +70,59 @@ def run_states(state_names, salt_extra_args, cmd_extra_args):
 
 ###############################################################################
 #
-def do(action_context):
+def run_init_states(
+    # TODO: Use better value for use case than None.
+    #       At the moment `run_use_case` is expected to specify
+    #       bootstrap use case or None for this script.
+    #       However, how isn't it a use case as well (more meaningful
+    #       than None)?
+    run_use_case,
+    salt_extra_args,
+    cmd_extra_args,
+    extra_state_names,
+):
 
     # Explanation per use case:
     # * `initial-online-node` - it is assumed that Salt master is already
     #    accessible and `--local` is not required.
     # * `offline-minion-installer` - run with `--local` because it is
     #   standalone minon.
-    salt_extra_args = []
-    if action_context.run_use_case in [
+    if run_use_case in [
         'offline-minion-installer'
     ]:
-        salt_extra_args = [
+        salt_extra_args = salt_extra_args + [
             '--local',
         ]
 
-    # Specify dinamically `bootstrap_mode` pillar key.
-    cmd_extra_args = [
-        'pillar={ \'bootstrap_mode\': \'' + action_context.run_use_case + '\' }',
-    ]
+    # NOTE: When `run_use_case` is not specified, the function is used
+    #       to run states oustide of bootstrap process.
+    #       In that case, providing `bootstrap_mode` should not be done
+    #       as mere existence of `bootstrap_mode` key in pillars triggers
+    #       use of repositories from bootstrap packages.
+    if run_use_case is not None:
+        # Specify dinamically `bootstrap_mode` pillar key.
+        cmd_extra_args = cmd_extra_args + [
+            'pillar={ \'bootstrap_mode\': \'' + run_use_case + '\' }',
+        ]
 
     run_states(
         state_names = [
             'common.source_symlinks',
             'common.resource_symlinks',
-        ],
+        ] + extra_state_names,
         salt_extra_args = salt_extra_args,
         cmd_extra_args = cmd_extra_args,
+    )
+
+###############################################################################
+#
+def do(action_context):
+
+    run_init_states(
+        action_context.run_use_case,
+        salt_extra_args = [],
+        cmd_extra_args = [],
+        extra_state_names = [],
     )
 
 ###############################################################################
