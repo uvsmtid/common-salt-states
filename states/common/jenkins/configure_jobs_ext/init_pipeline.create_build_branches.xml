@@ -79,6 +79,8 @@
         #   (as commits in childs will not make original restore point).
         # - Save all other repos (children).
 
+        # TODO: Use repository roles instead of `parent_repo_name`.
+        # TODO: Create macros to provide commit order everything then parent.
         {% if pillar['parent_repo_name'] %}
         # Parent repo is defined and it is the first.
         {% set repo_list = [ pillar['parent_repo_name'] ] + pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
@@ -100,6 +102,12 @@
         BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: Do not create restore point in `build_history_role` purposefully.
+
+        {% else %}
+
         cd "${REPO_PATH}"
         git add --all
         git status
@@ -112,6 +120,8 @@
         cd -
 
         echo "$RESTORE_POINT_COMMIT" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}"
+
+        {% endif %}
 
         {% endfor %}
 

@@ -129,6 +129,7 @@
         #######################################################################
         # Restore uncommitted local content to the conditions
         # they were at the begining of the build pipeline.
+        # NOTE: This does not apply to repos of `build_history_role`.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -143,6 +144,18 @@
         INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
         INITIAL_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: Build branches in `build_history_role` repository should not
+        #       be recovered - they are meant to contain the build history
+        #       as it was captured. The `build_history_role` repository
+        #       should only be switched to its original branch.
+        # NOTE: There is also nothing to be recovered.
+        #       The `build_history_role` repository is required to be
+        #       clean at the start of the pipeline.
+
+        {% else %}
 
         RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}" "NOT_AVAILABLE")"
 
@@ -178,15 +191,18 @@
 
         cd -
 
+        {% endif %}
+
         {% endfor %}
 
         #######################################################################
         # Remove all build branches.
-        #
+        # NOTE: This does not apply to repos of `build_history_role`.
+
         # TODO: This better be done after promotion (which causes tagging).
 
-        # TODO: In order to use environment variable, it must be set in
-        #       properties file for this job.
+        # TODO: In order to use `REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION`
+        #       env var, it must be set in properties file for this job.
         #       If this job is run as a standalone one (not part of
         #       pipeline build), the properties should be restored from
         #       dynamic build descriptor (because this variable is only
@@ -209,6 +225,17 @@
             BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
             test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
 
+            {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+            # NOTE: Build branches in `build_history_role` repository should not
+            #       be removed. In fact, build branches should be removed
+            #       everywhere unconditionally except `build_history_role`
+            #       repository. There is even a need for a job which
+            #       restores build branches as they were from
+            #       `build_history_role` repository.
+
+            {% else %}
+
             cd "${REPO_PATH}"
             # We need to force the deletion because branches may contain
             # unmerges changes - pipeline designed so that changes are saved.
@@ -224,6 +251,8 @@
                 JOB_STATUS='unstable'
             fi
             cd -
+
+            {% endif %}
 
             {% endfor %}
 

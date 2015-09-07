@@ -503,7 +503,8 @@ with open(sys.argv[1], 'w') as yaml_file:
 {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 {% set repo_id = get_repository_id_by_role('build_history_role') %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
-REPO_DYN_BUILD_DESC_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}/${BUILD_TITLE}/dynamic_build_descriptor.yaml"
+export REPO_DYN_BUILD_DESC_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+export REPO_DYN_BUILD_DESC_PATH="${REPO_DYN_BUILD_DESC_REPO_PATH}/${BUILD_TITLE}/dynamic_build_descriptor.yaml"
 {% if check_repo_dyn_build_desc %}
 # Make sure it exists.
 ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"

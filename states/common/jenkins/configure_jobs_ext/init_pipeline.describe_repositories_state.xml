@@ -82,7 +82,8 @@
         # All repositories are actually different directories
         # (no symlinks from one repository to another).
         # This is required as switching to build branches and restoring
-        # them will unnecessarily complicate the procedure reducing trust.
+        # them will unnecessarily complicate the procedure reducing
+        # overall trust in it.
 
         DIR_FS_ID_LIST_FILE="$(mktemp)"
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
