@@ -74,8 +74,23 @@
         # info from the previous jobs.
         cp "${REPO_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
 
+        # Remove any parent dyn build desc as it is not yet identified.
+        rm -f "${PARENT_DYN_BUILD_DESC_PATH}"
+
         # There must be no sign of produced artifact at the start.
         rm -f "initial.dynamic_build_descriptor.yaml"
+
+        #######################################################################
+        # Restore parent build descriptor.
+
+        if [ "${PARENT_BUILD_TITLE}" != '_' ]
+        then
+            # Export dynamic build descriptor from specified build title.
+            # See:
+            #    http://stackoverflow.com/a/5324532/441652
+            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}/dynamic_build_descriptor.yaml" | tar -x 'dynamic_build_descriptor.yaml'
+            mv 'dynamic_build_descriptor.yaml' "${PARENT_DYN_BUILD_DESC_PATH}"
+        fi
 
         #######################################################################
         # Write environment variables into dynamic build descriptor.

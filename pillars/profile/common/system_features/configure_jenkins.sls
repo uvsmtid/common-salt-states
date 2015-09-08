@@ -176,7 +176,7 @@ system_features:
                         trigger_jobs:
                             - init_pipeline.reset_previous_build
 
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
@@ -222,14 +222,14 @@ system_features:
                             TODO: Build branches should be automatically removed if previous build was unsuccessful.
                         parameter_type: boolean
                         parameter_value: True
-                    USE_INITIAL_SOURCES_FROM_BUILD_TITLE:
+                    PARENT_BUILD_TITLE:
                         parameter_description: |
                             Specify build title from existing history.
-                            If this parameter is specified, then `init_pipeline.checkout_repositories` job:
-                            - restores HEADs to `initial_commit_ids` of that build title;
-                            - restores branch names to `initial_branches` of that build title.
-                            NOTE: The new build will have its own build title.
-                            This is just a mechanism to rebuild something as it was in the past.
+                            If this parameter is specified, then `init_pipeline.create_build_branches` job
+                            sets HEADs of newly created build branches to `latest_commit_ids` from that build title;.
+                            NOTE: The new build will have its own build title (and build branch names).
+                            This is just a mechanism to reuse state of the build from the past
+                            (for example, for release, packaging, or re-building).
                             The build title can be found in dynamic build descriptor in the value of `build_title` key.
                         parameter_type: string
                         parameter_value: '_'
@@ -302,32 +302,6 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
             {% set job_id = 'init_pipeline.describe_repositories_state' %}
-            {{ job_id }}:
-
-                enabled: True
-
-                discard_old_builds:
-                    build_days: {{ discard_build_days }}
-                    build_num: {{ discard_build_num }}
-
-                restrict_to_system_role:
-                    - controller_role
-
-                skip_if_true: SKIP_INIT_PIPELINE
-
-                skip_script_execution: {{ skip_script_execution }}
-
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            - init_pipeline.checkout_repositories
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
-
-            {% set job_id = 'init_pipeline.checkout_repositories' %}
             {{ job_id }}:
 
                 enabled: True
@@ -1127,7 +1101,7 @@ system_features:
                         trigger_jobs:
                             - package_pipeline.transfer_dynamic_build_descriptor
 
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 
@@ -1248,7 +1222,7 @@ system_features:
                             []
                 {% endif %}
 
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_id }}.xml'
 

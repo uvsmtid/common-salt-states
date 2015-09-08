@@ -45,35 +45,62 @@
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
+
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
         # HEAD value means that repository is at detached head.
         test "$CURRENT_BRANCH" != "HEAD"
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
-        CURRENT_COMMIT_ID_SHORT="$(git rev-parse --short --verify HEAD)"
-        BUILD_BRANCH="${CURRENT_BRANCH}-${CURRENT_COMMIT_ID_SHORT}-${BUILD_TITLE}"
+        CURRENT_SHORT_COMMIT_ID="$(git rev-parse --short --verify HEAD)"
+
+        if [ "${PARENT_BUILD_TITLE}" != "_" ]
+        then
+            INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+            INITIAL_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}")"
+            INITIAL_SHORT_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "initial_short_commit_ids:{{ repo_name }}")"
+        else
+            INITIAL_BRANCH="${CURRENT_BRANCH}"
+            INITIAL_COMMIT_ID="${CURRENT_COMMIT_ID}"
+            INITIAL_SHORT_COMMIT_ID="${CURRENT_SHORT_COMMIT_ID}"
+        fi
+
+        RECOVERY_BRANCH="${CURRENT_BRANCH}"
+        RECOVERY_COMMIT_ID="${CURRENT_COMMIT_ID}"
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+        # NOTE: Do not use `INITIAL_BRANCH` and `INITIAL_SHORT_COMMIT_ID` in
+        #       the branch name of `build_history_role`. Otherwise, it is
+        #       difficult to find parent build descriptor by build title.
+        BUILD_BRANCH="${BUILD_TITLE}"
+        {% else %}
+        BUILD_BRANCH="${INITIAL_BRANCH}-${INITIAL_SHORT_COMMIT_ID}-${BUILD_TITLE}"
+        {% endif %}
+
         UNTRACKED_ITEMS="$(git ls-files --other --exclude-standard --directory | wc -l)"
         MODIFIED_ITEMS="$((git diff --name-only --cached --ignore-submodules=dirty ; git diff --name-only --ignore-submodules=dirty) | sort -u | wc -l)"
-        cd -
 
-        if [ "${USE_INITIAL_SOURCES_FROM_BUILD_TITLE}" != "_" ]
+        if [ "${PARENT_BUILD_TITLE}" != "_" ]
         then
-            echo "preserve existing initial branch and commit id"
-            # The values must be set for this step to succeed.
-            REQUIRED_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-            REQUIRED_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}")"
+            # Check parent dynamic build descriptor for the latest commit ids.
+            REQUIRED_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "latest_branches:{{ repo_name }}")"
+            REQUIRED_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}")"
         else
             # Trivial case.
             REQUIRED_BRANCH="${CURRENT_BRANCH}"
             REQUIRED_COMMIT_ID="${CURRENT_COMMIT_ID}"
         fi
 
-        echo "$CURRENT_BRANCH"     | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
-        echo "$CURRENT_COMMIT_ID"  | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
-        echo "$REQUIRED_BRANCH"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_branches:{{ repo_name }}"
-        echo "$REQUIRED_COMMIT_ID" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_commit_ids:{{ repo_name }}"
-        echo "$BUILD_BRANCH"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}"
-        echo "$UNTRACKED_ITEMS"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}"
-        echo "$MODIFIED_ITEMS"     | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}"
+        echo "$RECOVERY_BRANCH"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}"
+        echo "$RECOVERY_COMMIT_ID"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_commit_ids:{{ repo_name }}"
+        echo "$INITIAL_BRANCH"           | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
+        echo "$INITIAL_COMMIT_ID"        | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
+        echo "$INITIAL_SHORT_COMMIT_ID"  | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_short_commit_ids:{{ repo_name }}"
+        echo "$REQUIRED_BRANCH"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_branches:{{ repo_name }}"
+        echo "$REQUIRED_COMMIT_ID"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_commit_ids:{{ repo_name }}"
+        echo "$BUILD_BRANCH"             | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}"
+        echo "$UNTRACKED_ITEMS"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}"
+        echo "$MODIFIED_ITEMS"           | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}"
+
+        cd -
 
         {% endfor %}
 

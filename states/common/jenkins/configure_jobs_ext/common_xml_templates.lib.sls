@@ -544,6 +544,9 @@ touch "${LATEST_DYN_BUILD_DESC_PATH}"
 # in the previous build (to recover conditions if pipeline failed).
 RECOVERY_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/recovery.dynamic_build_descriptor.yaml'
 
+# Location of the parent build descriptor.
+PARENT_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/parent.dynamic_build_descriptor.yaml'
+
 # Let job continue from the latest.
 cp "${LATEST_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
 

@@ -29,8 +29,8 @@
         # Locate dynamic build descriptor.
 
         # NOTE: When we recover, we do not need to verify
-        #       initial dyn build desc. In fact, it cannot be verified
-        #       as this is either standalone (no initial dyn build desc)
+        #       recovery dyn build desc. In fact, it cannot be verified
+        #       as this is either standalone (no recovery dyn build desc)
         #       or belongs to a new build (with different dyn build desc).
 
         {{ locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = False) }}
@@ -78,6 +78,7 @@
 
             # Set job status to failed (but don't fail now, restore first)
             # in order to highlight stashed changes.
+            # TODO: Check previous value of `JOB_STATUS` - it may get overwritten.
             JOB_STATUS='failed'
         fi
 
@@ -85,7 +86,7 @@
         {% endfor %}
 
         #######################################################################
-        # Switch back to initial branches.
+        # Switch back to recovery branches.
 
         # NOTE: We assume that repository is available
         #       locally on Jenkins slave.
@@ -100,12 +101,12 @@
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
         BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
 
         # Current branch and build branch are normally the same at this point.
         # However, allow it to be different if current branch is
-        # switched back to initial branch (possibly manually,
+        # switched back to recovery branch (possibly manually,
         # possibly by this job, or... it should not be a problem).
         # The main point is to find build branch (i.g. to make sure that
         # the build actually happend and restore uncommited files).
@@ -115,15 +116,15 @@
             # This is already suspicious.
             JOB_STATUS='unstable'
 
-            if [ "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}" ]
+            if [ "${CURRENT_BRANCH}" != "${RECOVERY_BRANCH}" ]
             then
-                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH} != ${INITIAL_BRANCH}"
+                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH} != ${RECOVERY_BRANCH}"
                 exit 1
             fi
         fi
 
         cd "${REPO_PATH}"
-        git checkout "${INITIAL_BRANCH}"
+        git checkout "${RECOVERY_BRANCH}"
         cd -
 
         {% endfor %}
@@ -143,9 +144,9 @@
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        INITIAL_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
+        RECOVERY_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_commit_ids:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
 
         {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
 
@@ -182,14 +183,14 @@
         # This step resets HEAD to the commit before the beginning
         # while leaving all local files as they are at restore point.
         # We cannot simply checkout the branch as this would also set
-        # local files into initial commits instead of restore point.
-        git reset "${INITIAL_COMMIT_ID}"
+        # local files into recovery commits instead of restore point.
+        git reset "${RECOVERY_COMMIT_ID}"
 
         # This step moves away from detached HEAD to specified branch.
         # All modifications to local files produced by checking out
-        # restore point and resetting to initial commit are
-        # left untouched ("rebased" on top of initial branch).
-        git checkout "${INITIAL_BRANCH}"
+        # restore point and resetting to recovery commit are
+        # left untouched ("rebased" on top of RECOVERY branch).
+        git checkout "${RECOVERY_BRANCH}"
 
         cd -
 
@@ -223,9 +224,9 @@
             test "${CURRENT_BRANCH}" != "HEAD"
             cd -
 
-            INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+            RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
             BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-            test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+            test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
 
             {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
 
