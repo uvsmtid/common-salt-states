@@ -317,6 +317,17 @@ system_resources:
         item_base_name: jdk-7u71-linux-x64.rpm
         item_content_hash: md5=f9dafcc0bd52f085c8b0894c27b39d10
 
+    # See:
+    #   https://github.com/tmux-plugins/tmux-resurrect
+    tmux_resurrect_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/tmux
+        item_base_name: tmux-resurrect-2.4.0.tar.gz
+        item_content_hash: md5=75db424eb50d36902ee9052e20458c67
+
     # OpenStack YUM repository config RPM package.
     # Downloadable from:
     #   https://repos.fedorapeople.org/repos/openstack/openstack-juno/

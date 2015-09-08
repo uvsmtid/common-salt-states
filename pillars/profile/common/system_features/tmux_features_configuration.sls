@@ -10,7 +10,8 @@ system_features:
         # Enable custom configuration in `/etc/tmux.conf`.
         feature_enabled: True
 
-        # TODO: Add ressurect: https://github.com/tmux-plugins/tmux-resurrect
+        # See:
+        #   https://github.com/tmux-plugins/tmux-resurrect
         enable_tmux_ressurect: True
 
 ###############################################################################
