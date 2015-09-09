@@ -6,8 +6,9 @@
 
 {% if pillar['system_features']['maven_repository_manager_configuration']['primary_maven_repository_manager'] %} <!-- primary_maven_repository_manager -->
 
-{% set primary_maven_repository_manager_name = pillar['system_features']['maven_repository_manager_configuration']['primary_maven_repository_manager'] %}
-{% set primary_maven_repository_manager_config = pillar['system_features']['maven_repository_manager_configuration']['maven_repository_managers'][primary_maven_repository_manager_name] %}
+{% set primary_maven_repository_manager_role_id = pillar['system_features']['maven_repository_manager_configuration']['primary_maven_repository_manager'] %}
+{% set primary_maven_repository_manager_role_hostname = pillar['system_host_roles'][primary_maven_repository_manager_role_id]['hostname'] %}
+{% set primary_maven_repository_manager_config = pillar['system_features']['maven_repository_manager_configuration']['maven_repository_managers'][primary_maven_repository_manager_role_id] %}
 
 {% set nexus_url_scheme_part = primary_maven_repository_manager_config['maven_repo_url_scheme_part'] %}
 {% set nexus_url_port_part = primary_maven_repository_manager_config['maven_repo_url_port_part'] %}
@@ -15,8 +16,8 @@
 {% set nexus_url_snapshots_path_part = primary_maven_repository_manager_config['maven_repo_url_snapshots_path_part'] %}
 
 {% set define_deployment_url = True %}
-{% set nexus_releases_deployment_url = nexus_url_scheme_part + primary_maven_repository_manager_name + nexus_url_port_part + nexus_url_releases_path_part %}
-{% set nexus_snapshots_deployment_url = nexus_url_scheme_part + primary_maven_repository_manager_name + nexus_url_port_part + nexus_url_snapshots_path_part %}
+{% set nexus_releases_deployment_url = nexus_url_scheme_part + primary_maven_repository_manager_role_hostname + nexus_url_port_part + nexus_url_releases_path_part %}
+{% set nexus_snapshots_deployment_url = nexus_url_scheme_part + primary_maven_repository_manager_role_hostname + nexus_url_port_part + nexus_url_snapshots_path_part %}
 
 {% else %} <!-- primary_maven_repository_manager -->
 
@@ -53,14 +54,15 @@
 
 {% if pillar['system_features']['maven_repository_manager_configuration']['proxy_maven_repository_manager'] %}
 
-{% set proxy_maven_repository_manager_name = pillar['system_features']['maven_repository_manager_configuration']['proxy_maven_repository_manager'] %}
-{% set proxy_maven_repository_manager_config = pillar['system_features']['maven_repository_manager_configuration']['maven_repository_managers'][proxy_maven_repository_manager_name] %}
+{% set proxy_maven_repository_manager_role_id = pillar['system_features']['maven_repository_manager_configuration']['proxy_maven_repository_manager'] %}
+{% set proxy_maven_repository_manager_role_hostname = pillar['system_host_roles'][proxy_maven_repository_manager_role_id]['hostname'] %}
+{% set proxy_maven_repository_manager_config = pillar['system_features']['maven_repository_manager_configuration']['maven_repository_managers'][proxy_maven_repository_manager_role_id] %}
 
 {% set proxy_maven_repository_manager_url_scheme_part = proxy_maven_repository_manager_config['maven_repo_url_scheme_part'] %}
 {% set proxy_maven_repository_manager_url_port_part = proxy_maven_repository_manager_config['maven_repo_url_port_part'] %}
 {% set proxy_maven_repository_manager_url_public_path_part = proxy_maven_repository_manager_config['maven_repo_url_public_path_part'] %}
 
-{% set proxy_maven_repository_manager_url = proxy_maven_repository_manager_url_scheme_part + proxy_maven_repository_manager_name + proxy_maven_repository_manager_url_port_part + proxy_maven_repository_manager_url_public_path_part %}
+{% set proxy_maven_repository_manager_url = proxy_maven_repository_manager_url_scheme_part + proxy_maven_repository_manager_role_hostname + proxy_maven_repository_manager_url_port_part + proxy_maven_repository_manager_url_public_path_part %}
 
     <mirrors>
         <mirror>
