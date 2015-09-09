@@ -7,6 +7,13 @@ export EDITOR="vim"
 
 ###############################################################################
 
+{% if grains['os_platform_type'].startswith('rhel5') %}
+# Add `/sbin` to `PATH` for commands like `ip`, `service`, etc.
+export PATH="${PATH}:/sbin"
+{% endif %}
+
+###############################################################################
+
 # Set variable to indicate which pillar profile is used.
 {% set profile_name = pillar['profile_name'] %}
 export SALT_PROFILE_NAME="{{ profile_name }}"
