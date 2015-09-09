@@ -102,15 +102,14 @@
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
+
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
         # HEAD value means that repository is at detached head.
         test "${CURRENT_BRANCH}" != "HEAD"
-        cd -
 
         BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
-        cd "${REPO_PATH}"
         # NOTE: Without `add -all` `diff-index` will not notice untracked files.
         git add --all
         git status
@@ -119,6 +118,11 @@
         # commit them from top-level repo anyway (and all dirty content
         # will be committed by children).
         git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: {{ job_environ['job_name'] }}'
+
+        # Record `latest_commit_ids`.
+        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+        echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ repo_name }}"
+
         cd -
 
         {% endfor %}

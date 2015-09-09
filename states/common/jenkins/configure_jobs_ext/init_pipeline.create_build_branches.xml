@@ -105,6 +105,10 @@
         RESTORE_POINT_COMMIT="$(git rev-parse --verify HEAD)"
         echo "$RESTORE_POINT_COMMIT" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}"
 
+        # NOTE: Do not record `latest_commit_ids` here.
+        #       Do it later when it is decided that it is part
+        #       of the build branch.
+
         {% endif %}
 
         # Now check out `CURRENT_BRANCH` back.
@@ -157,6 +161,13 @@
             # Nothing to do. The restore point should not be part
             # of the build branch.
             echo "Switch to parent build branches without including restore point."
+
+            # NOTE: The recovery commits are skipped altogether.
+            #       They are not recorded in the `latest_commit_ids` because
+            #       they are irrelevant for the build - the initial
+            #       HEADs were switched into branches
+            #       from parent dyn build desc.
+
         else
             # NOTE: Fast-forward merge newly created build branch to
             #       `RESTORE_POINT_COMMIT` because we are using
@@ -164,6 +175,12 @@
             #       the pipeline.
             RESTORE_POINT_COMMIT="$(python "${KEY_GETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "restore_point_commit_ids:{{ repo_name }}")"
             git merge --ff-only "${RESTORE_POINT_COMMIT}"
+
+            # Record `latest_commit_ids`.
+            CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+            test "${CURRENT_COMMIT_ID}" == "${RESTORE_POINT_COMMIT}"
+            echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ repo_name }}"
+
         fi
 
         {% endif %}
@@ -211,6 +228,10 @@
         # There must be changes - each version of
         # dynamic build descriptor should be different.
         git commit --author "${GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
+
+        # Record `latest_commit_ids`.
+        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+        echo "$CURRENT_COMMIT_ID" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ repo_name }}"
 
         cd -
 
