@@ -88,7 +88,7 @@
             # Export dynamic build descriptor from specified build title.
             # See:
             #    http://stackoverflow.com/a/5324532/441652
-            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}/dynamic_build_descriptor.yaml" | tar -x 'dynamic_build_descriptor.yaml'
+            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'dynamic_build_descriptor.yaml'
             mv 'dynamic_build_descriptor.yaml' "${PARENT_DYN_BUILD_DESC_PATH}"
         fi
 
