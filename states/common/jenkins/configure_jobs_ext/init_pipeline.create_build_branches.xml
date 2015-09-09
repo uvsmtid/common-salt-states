@@ -68,6 +68,14 @@
 
         {% for repo_name in repo_list %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: Do not create restore point in `build_history_role`.
+        #       There must be no local modifications on start of the pipeline.
+
+        {% else %}
+
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
@@ -88,12 +96,6 @@
         #       (and recorded in `RESTORE_POINT_COMMIT`)
         #       if no parent dynamic build descriptor is used.
 
-        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
-
-        # NOTE: Do not create restore point in `build_history_role` purposefully.
-
-        {% else %}
-
         # NOTE: Without `add -all` `diff-index` will not notice untracked files.
         git add --all
         git status
@@ -109,8 +111,6 @@
         #       Do it later when it is decided that it is part
         #       of the build branch.
 
-        {% endif %}
-
         # Now check out `CURRENT_BRANCH` back.
         git checkout "${CURRENT_BRANCH}"
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
@@ -119,6 +119,8 @@
         test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
 
         cd -
+
+        {% endif %}
 
         {% endfor %}
 
@@ -137,6 +139,14 @@
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: There is no restore points for `build_history_role`.
+        #       There must be no local modifications on start of the pipeline.
+
+        {% else %}
+
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
@@ -149,12 +159,6 @@
         REQUIRED_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_commit_ids:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" != "${BUILD_BRANCH}"
         git checkout -b "${BUILD_BRANCH}" "${REQUIRED_COMMIT_ID}"
-
-        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
-
-        # NOTE: There is no restore points for `build_history_role`.
-
-        {% else %}
 
         if [ "${PARENT_BUILD_TITLE}" != "_" ]
         then
@@ -183,59 +187,11 @@
 
         fi
 
+        cd -
+
         {% endif %}
 
-        cd -
-
         {% endfor %}
-
-        #######################################################################
-        # Commit versions of dynamic build descriptor
-        #
-        # - Version 1 `init_pipeline.start_new_build`.
-        # - Version 2 `init_pipeline.describe_repositories_state`.
-        # - Version 3 `init_pipeline.create_build_branches`.
-
-        {% set project_name = pillar['project_name'] %}
-
-        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
-        {% set repo_id = get_repository_id_by_role('build_history_role') %}
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
-
-        JENKINS_DIR_PATH="{{ job_environ['jenkins_dir_path'] }}"
-
-        # At the moment simply save it into repository.
-        for JOB_NAME in start_new_build describe_repositories_state create_build_branches
-        do
-
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
-        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
-
-        cd "${REPO_PATH}"
-
-        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-        # HEAD value means that repository is at detached head.
-        test "${CURRENT_BRANCH}" != "HEAD"
-
-        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_id }}")"
-        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
-
-        VER_DYN_BUILD_DESC_PATH="{{ job_environ['jenkins_dir_path'] }}/build_pipeline/init_pipeline.${JOB_NAME}.dynamic_build_descriptor.yaml"
-        cp "${VER_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
-        git add --all
-        git status
-        # Note that we don't check whether there are changes to commit.
-        # There must be changes - each version of
-        # dynamic build descriptor should be different.
-        git commit --author "${GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
-
-        # Record `latest_commit_ids`.
-        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
-        echo "$CURRENT_COMMIT_ID" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ repo_name }}"
-
-        cd -
-
-        done
 
         #######################################################################
         # Update dynamic build descriptor.

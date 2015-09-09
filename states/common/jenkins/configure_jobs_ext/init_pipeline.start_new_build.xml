@@ -41,21 +41,34 @@
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
         {{ locate_repository_dynamic_build_descriptor(job_config, job_environ, check_repo_dyn_build_desc = False) }}
 
-        # Make sure `build_history_role` is clean.
         cd "${REPO_DYN_BUILD_DESC_REPO_PATH}"
+
+        # Make sure `build_history_role` is clean.
         # NOTE: Without `add -all` `diff-index` will not notice untracked files.
         git add --all
         git diff-index --ignore-submodules=dirty --exit-code HEAD
-        cd -
 
-        # Do not branch or check in anything -
-        # it will be done for all repos later.
+        # Create orphan build branch in `build_history_role`.
+        # Even if it is done for all repositories later, `build_history_role`
+        # is special one which requires tracking build from the start.
+        # NOTE: Orphan branch is used always making it unnecessary to
+        #       recover from failed builds.
+        # See: http://stackoverflow.com/a/5690048/441652
+        git checkout --orphan "${BUILD_TITLE}"
+        git rm -rf .
+
         # Initialize with empty dict for dyn build desc.
         mkdir -p "$(dirname "${REPO_DYN_BUILD_DESC_PATH}")"
         echo "{}" > "${REPO_DYN_BUILD_DESC_PATH}"
         echo "${BUILD_TIMESTAMP}"     | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_timestamp"
         echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_title"
         echo "${SOURCE_PROFILE_NAME}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "source_profile_name"
+        echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_branch"
+
+        git add --all
+        git commit --author "${GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
+
+        cd -
 
         #######################################################################
         # Locate dynamic build descriptor.

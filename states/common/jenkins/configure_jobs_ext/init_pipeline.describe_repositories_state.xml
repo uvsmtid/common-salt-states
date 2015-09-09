@@ -42,6 +42,18 @@
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: There is no need to collect the same info for
+        #       `build_history_role` repository.
+
+        # NOTE: Do not use `INITIAL_BRANCH` and `INITIAL_SHORT_COMMIT_ID` in
+        #       the branch name of `build_history_role`. Otherwise, it is
+        #       difficult to find parent build descriptor by build title.
+
+        {% else %}
+
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
@@ -66,14 +78,7 @@
         RECOVERY_BRANCH="${CURRENT_BRANCH}"
         RECOVERY_COMMIT_ID="${CURRENT_COMMIT_ID}"
 
-        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
-        # NOTE: Do not use `INITIAL_BRANCH` and `INITIAL_SHORT_COMMIT_ID` in
-        #       the branch name of `build_history_role`. Otherwise, it is
-        #       difficult to find parent build descriptor by build title.
-        BUILD_BRANCH="${BUILD_TITLE}"
-        {% else %}
         BUILD_BRANCH="${INITIAL_BRANCH}-${INITIAL_SHORT_COMMIT_ID}-${BUILD_TITLE}"
-        {% endif %}
 
         UNTRACKED_ITEMS="$(git ls-files --other --exclude-standard --directory | wc -l)"
         MODIFIED_ITEMS="$((git diff --name-only --cached --ignore-submodules=dirty ; git diff --name-only --ignore-submodules=dirty) | sort -u | wc -l)"
@@ -108,6 +113,8 @@
         echo "$MODIFIED_ITEMS"           | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}"
 
         cd -
+
+        {% endif %}
 
         {% endfor %}
 

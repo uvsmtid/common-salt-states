@@ -553,11 +553,52 @@ cp "${LATEST_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
 {% endmacro %}
 
 ###############################################################################
-{% macro update_dynamic_build_descriptor(job_config, job_environ) %}
+{% macro update_dynamic_build_descriptor(job_config, job_environ, skip_dyn_build_desc_commit = False) %}
 
 # Update the latest dynamic build desciptor by
 # the one generated for this during job.
 cp "${JOB_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
+
+# Commit dyn build desc at each job except initial ones
+# (before build branches are created) which have to set
+# `skip_dyn_build_desc_commit` to `True`.
+{% if not skip_dyn_build_desc_commit %}
+
+{% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
+{{ locate_repository_dynamic_build_descriptor(job_config, job_environ) }}
+
+cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
+
+{% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+{% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+{% set repo_id = get_repository_id_by_role('build_history_role') %}
+{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
+
+export JOB_NAME="{{ job_environ['job_name'] }}"
+
+REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+cd "${REPO_PATH}"
+
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+# HEAD value means that repository is at detached head.
+test "${CURRENT_BRANCH}" != "HEAD"
+
+BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_id }}")"
+test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
+
+git add --all
+git status
+# NOTE: If commit is made to `build_history_role`, there will new changes
+#       (for example, new `latest_commit_ids`) for `build_history_role`
+#       inside to-be-updated dyn build desc and for top level repository
+#       as new commits were made.
+#       These changes are ignored as they do not bear information which
+#       has to be restored from parent dyn build desc.
+git commit --author "${GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
+
+cd -
+{% endif %}
 
 {% endmacro %}
 
