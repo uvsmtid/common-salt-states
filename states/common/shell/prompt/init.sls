@@ -12,7 +12,7 @@ include:
 
 
 # Variable PROMPT_COMMAND is sometimes set by some scripts in `profile.d`
-# directory (like `vte.sh`) which are placed there by packages automaticall
+# directory (like `vte.sh`) which are placed there by packages automatically
 # (not by human) which makes little sense as prompt is essentially a humah
 # requirement.
 # Run command and rename all `PROMPT_COMMAND` in all `*.sh` scripts under
@@ -27,6 +27,14 @@ rename_PROMPT_COMMAND_in_profile_dir:
         - onlyif: "find /etc/profile.d -name '*.sh' -and -not -name 'common.custom.prompt.sh' -exec grep '\\<PROMPT_COMMAND\\>' '{}' ';' | grep '\\<PROMPT_COMMAND\\>'"
         - cwd: '/etc/profile.d'
 
+rename_PROMPT_COMMAND_in_bashrc:
+    cmd.run:
+        - name: "sed -i 's/\\<PROMPT_COMMAND\\>/PROMPT_COMMAND_RENAMED/g' /etc/bashrc"
+        # Note that double grep is required:
+        # - The first one generates output but does not produce error code.
+        # - The second one checks the output again and generates error code.
+        - onlyif: "grep '\\<PROMPT_COMMAND\\>' /etc/bashrc | grep '\\<PROMPT_COMMAND\\>'"
+
 /etc/profile.d/common.custom.prompt.sh:
     file.managed:
         - source: salt://common/shell/prompt/common.custom.prompt.sh
@@ -35,6 +43,7 @@ rename_PROMPT_COMMAND_in_profile_dir:
         - require:
             - sls: common.shell
             - cmd: rename_PROMPT_COMMAND_in_profile_dir
+            - cmd: rename_PROMPT_COMMAND_in_bashrc
 
 {% if 'bash_prompt_info_config' in pillar['system_features'] %}
 
