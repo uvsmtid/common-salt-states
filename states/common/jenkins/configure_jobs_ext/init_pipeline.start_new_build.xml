@@ -136,6 +136,11 @@
             #    http://stackoverflow.com/a/5324532/441652
             git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'dynamic_build_descriptor.yaml'
             mv 'dynamic_build_descriptor.yaml' "${PARENT_DYN_BUILD_DESC_PATH}"
+
+            # Restore initial dyn build desc which is used as a fingerprint
+            # to link all jobs together.
+            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'initial.dynamic_build_descriptor.yaml'
+            mv 'initial.dynamic_build_descriptor.yaml' "${INIT_DYN_BUILD_DESC_PATH}"
         fi
 
         #######################################################################
@@ -179,12 +184,25 @@ HEREDOC_MARKER
         #######################################################################
         # Update dynamic build descriptor.
 
+        # Current job dyn build desc is not used when
+        # there is a parent build specified.
+        if [ "${PARENT_BUILD_TITLE}" != '_' ]
+        then
+            echo 'Reusing initial dynamic build descriptor from parent build...'
+        else
+            # Use current job dyn build desc as initial one.
+            cp "${JOB_DYN_BUILD_DESC_PATH}" "${INIT_DYN_BUILD_DESC_PATH}"
+        fi
+
+        # Copy initial dyn build desc into
+        # `build_history_role` repository.
+        # This is needed to be able to specify current build as
+        # parent build in the future.
+        cp "${INIT_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_REPO_PATH}/${BUILD_TITLE}"
+
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
 
-        # Save initial dynamic build descriptor to save it for verification.
-        cp "${JOB_DYN_BUILD_DESC_PATH}" "${INIT_DYN_BUILD_DESC_PATH}"
-
-        # Present as initial dyn build desc as an artifact
+        # Present initial dyn build desc as an artifact
         # build by this first job (for fingerprinting).
         cp "${INIT_DYN_BUILD_DESC_PATH}" "initial.dynamic_build_descriptor.yaml"
 
