@@ -553,16 +553,11 @@ cp "${LATEST_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
 {% endmacro %}
 
 ###############################################################################
-{% macro update_dynamic_build_descriptor(job_config, job_environ, skip_dyn_build_desc_commit = False) %}
+{% macro update_dynamic_build_descriptor(job_config, job_environ) %}
 
 # Update the latest dynamic build desciptor by
 # the one generated for this during job.
 cp "${JOB_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
-
-# Commit dyn build desc at each job except initial ones
-# (before build branches are created) which have to set
-# `skip_dyn_build_desc_commit` to `True`.
-{% if not skip_dyn_build_desc_commit %}
 
 {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
 {{ locate_repository_dynamic_build_descriptor(job_config, job_environ) }}
@@ -598,7 +593,6 @@ git status
 git commit --author "${GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
 
 cd -
-{% endif %}
 
 {% endmacro %}
 

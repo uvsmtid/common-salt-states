@@ -35,13 +35,13 @@
 
         {{ locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = False) }}
 
-        # IMPORTANT: We need to update dynamic bulid descriptor
-        #            for the next job in the pipeline now (as there is
-        #            no more updates of dyn build desc within current
-        #            pipeline) to pass the info generated in the jobs before.
-        # Skip dyn build desc commit because there is
-        # no updates expected during recovery.
-        {{ update_dynamic_build_descriptor(job_config, job_environ, skip_dyn_build_desc_commit = True) }}
+        # IMPORTANT: We need to pass dyn build desc for the next job
+        #            in the pipeline now (as there is no more
+        #            updates of dyn build desc within this job)
+        #            to pass the info generated in the jobs before.
+        # NOTE: Skip dyn build desc commit because there is
+        #       no updates expected during recovery.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
 
         # Detect if recovery is needed from the previous build.
         if [ ! -f "${RECOVERY_DYN_BUILD_DESC_PATH}" ]
@@ -299,9 +299,9 @@
         #######################################################################
         # Update dynamic build descriptor.
 
-        # Skip dyn build desc commit because there is
-        # no updates expected during recovery.
-        {{ update_dynamic_build_descriptor(job_config, job_environ, skip_dyn_build_desc_commit = True) }}
+        # NOTE: Skip any updates.
+        #       The required dyn build desc is already passed to the next job.
+        #       There is no updates expected during recovery.
 
         # The purpose of this job is to indicate to itself (or its clones)
         # that all changes made to set up environment for the previous build
