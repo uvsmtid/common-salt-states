@@ -632,7 +632,8 @@ then
 fi
 {% endif %}
 
-JOB_STATUS='stable'
+# The higher the status the more severe the problem.
+JOB_STATUS='0'
 
 {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import get_JENKINS_CLI_TOOL_INVOKE_STRING with context %}
 {{ get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) }}
@@ -661,16 +662,20 @@ HEREDOC_MARKER
 {% macro common_build_script_footer(job_config, job_environ) %}
 
 # Report status of the execution.
-if [ "${JOB_STATUS}" == 'unstable' ]
-then
+case "${JOB_STATUS}" in
+0)
+    exit 0
+;;
+1)
     # Set build unstable.
     # See: http://stackoverflow.com/a/8822743/441652
     eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
-elif [ "${JOB_STATUS}" != 'stable' ]
-then
+;;
+*)
     # If not stable or unstable, fail the job.
     exit 1
-fi
+;;
+esac
 
 {% endmacro %}
 

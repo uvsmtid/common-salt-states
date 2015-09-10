@@ -87,8 +87,10 @@
 
             # Set job status to failed (but don't fail now, restore first)
             # in order to highlight stashed changes.
-            # TODO: Check previous value of `JOB_STATUS` - it may get overwritten.
-            JOB_STATUS='failed'
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                JOB_STATUS='2'
+            fi
         fi
 
         cd -
@@ -134,7 +136,10 @@
         then
 
             # This is already suspicious.
-            JOB_STATUS='unstable'
+            if [ "${JOB_STATUS}" -lt '1' ]
+            then
+                JOB_STATUS='1'
+            fi
 
             if [ "${CURRENT_BRANCH}" != "${RECOVERY_BRANCH}" ]
             then
@@ -199,7 +204,10 @@
         else
 
             # This is rather unexpected, but not critical.
-            JOB_STATUS='unstable'
+            if [ "${JOB_STATUS}" -lt '1' ]
+            then
+                JOB_STATUS='1'
+            fi
 
         fi
 
@@ -275,7 +283,10 @@
             set -e
             if [ "${RET_VAL}" != "0" ]
             then
-                JOB_STATUS='unstable'
+                if [ "${JOB_STATUS}" -lt '1' ]
+                then
+                    JOB_STATUS='1'
+                fi
             fi
             cd -
 
