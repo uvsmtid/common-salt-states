@@ -255,13 +255,6 @@ system_features:
                             NOTE: If `USE_SOURCES_FROM_BUILD_TITLE` is set, this option is ignored.
                         parameter_type: boolean
                         parameter_value: True
-                    REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION:
-                        parameter_description: |
-                            This causes all build branches to be removed in the last job.
-                            TODO: Fail build if this is set for for `INCREMENTAL_RELEASE` or `SEMANTIC_RELEASE` build type without tagging.
-                            TODO: Build branches should be automatically removed if previous build was unsuccessful.
-                        parameter_type: boolean
-                        parameter_value: True
                     PARENT_BUILD_TITLE:
                         parameter_description: |
                             Specify build title from existing history.
@@ -1268,13 +1261,6 @@ system_features:
                             Substring can be used if it is uniquely identifies author within existing commits.
                         parameter_type: string
                         parameter_value: '_'
-                    REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION:
-                        parameter_description: |
-                            This causes all build branches to be removed in the last job.
-                            TODO: Fail build if this is set for for `INCREMENTAL_RELEASE` or `SEMANTIC_RELEASE` build type without tagging.
-                            TODO: Build branches should be automatically removed if previous build was unsuccessful.
-                        parameter_type: boolean
-                        parameter_value: True
                     PARENT_BUILD_TITLE:
                         parameter_description: |
                             Specify build title from existing history.

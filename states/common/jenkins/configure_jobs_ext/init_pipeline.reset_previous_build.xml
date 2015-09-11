@@ -232,69 +232,60 @@
         #######################################################################
         # Remove all build branches.
         # NOTE: This does not apply to repos of `build_history_role`.
+        #       In other words, it is almost always possible to restore
+        #       these build branches from info in `build_history_role`
+        #       (unless commits are garbage collected).
 
         # TODO: This better be done after promotion (which causes tagging).
 
-        # TODO: In order to use `REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION`
-        #       env var, it must be set in properties file for this job.
-        #       If this job is run as a standalone one (not part of
-        #       pipeline build), the properties should be restored from
-        #       dynamic build descriptor (because this variable is only
-        #       set by user in the first job of the pipeline).
-        REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_parameters:REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION")"
-        if [ "${REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION}" == "true" ]
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: Build branches in `build_history_role` repository should not
+        #       be removed. In fact, build branches should be removed
+        #       everywhere unconditionally except `build_history_role`
+        #       repository. There is even a need for a job which
+        #       restores build branches as they were from
+        #       `build_history_role` repository.
+
+        {% else %}
+
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
+
+        cd "${REPO_PATH}"
+        # We need to force the deletion because branches may contain
+        # unmerges changes - pipeline designed so that changes are saved.
+        # Even if forced command fails, let's continue and indicate
+        # cleanup as unstable - the old build branch leftover
+        # is not critical.
+        set +e
+        git branch -vv -D "${BUILD_BRANCH}"
+        RET_VAL="${?}"
+        set -e
+        if [ "${RET_VAL}" != "0" ]
         then
-
-            {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
-            {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
-
-            {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
-
-            # NOTE: Build branches in `build_history_role` repository should not
-            #       be removed. In fact, build branches should be removed
-            #       everywhere unconditionally except `build_history_role`
-            #       repository. There is even a need for a job which
-            #       restores build branches as they were from
-            #       `build_history_role` repository.
-
-            {% else %}
-
-            REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
-
-            cd "${REPO_PATH}"
-            CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-            # HEAD value means that repository is at detached head.
-            test "${CURRENT_BRANCH}" != "HEAD"
-            cd -
-
-            RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
-            BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-            test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
-
-            cd "${REPO_PATH}"
-            # We need to force the deletion because branches may contain
-            # unmerges changes - pipeline designed so that changes are saved.
-            # Even if forced command fails, let's continue and indicate
-            # cleanup as unstable - the old build branch leftover
-            # is not critical.
-            set +e
-            git branch -vv -D "${BUILD_BRANCH}"
-            RET_VAL="${?}"
-            set -e
-            if [ "${RET_VAL}" != "0" ]
+            if [ "${JOB_STATUS}" -lt '1' ]
             then
-                if [ "${JOB_STATUS}" -lt '1' ]
-                then
-                    JOB_STATUS='1'
-                fi
+                JOB_STATUS='1'
             fi
-            cd -
-
-            {% endif %}
-
-            {% endfor %}
-
         fi
+        cd -
+
+        {% endif %}
+
+        {% endfor %}
 
         #######################################################################
         # Update dynamic build descriptor.
