@@ -541,18 +541,6 @@ ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
 ###############################################################################
 {% macro locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = True) %}
 
-# Location of the initial build descriptor used to set fingerprints
-# for all related jobs.
-INIT_DYN_BUILD_DESC_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/initial.dynamic_build_descriptor.yaml'
-{% if check_init_dyn_build_desc %}
-# Make sure it exists.
-ls -lrt "${INIT_DYN_BUILD_DESC_PATH}"
-# The file should also match the one provided by Copy Artifact plugin.
-MD5SUM_LEFT="$(md5sum 'initial.dynamic_build_descriptor.yaml' | cut -d' ' -f1 )"
-MD5SUM_RIGH="$(md5sum "${INIT_DYN_BUILD_DESC_PATH}"   | cut -d' ' -f1 )"
-test "${MD5SUM_LEFT}" == "${MD5SUM_RIGH}"
-{% endif  %}
-
 # Location of the job dynamic build descriptor.
 # The purpose of this file is to have working copy of
 # dynamic build descriptor for this job.

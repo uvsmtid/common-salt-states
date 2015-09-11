@@ -108,9 +108,8 @@
         {{ locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = False) }}
 
         # This is the first job in the init_pipeline.
-        # Clean contents of the initial and latest dyn build desc.
+        # Clean contents of the latest dyn build desc.
         cp "${REPO_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
-        cp "${REPO_DYN_BUILD_DESC_PATH}" "${INIT_DYN_BUILD_DESC_PATH}"
 
         # Clean job dyn build desc as well. Unlike other jobs, this one
         # is the first in entire "global" pipeline and inherits no
@@ -121,23 +120,38 @@
         rm -f "${PARENT_DYN_BUILD_DESC_PATH}"
 
         # There must be no sign of produced artifact at the start.
-        rm -f "initial.dynamic_build_descriptor.yaml"
+        {% if 'restore_artifacts_from_parent_build' in job_config %}
+        {% for produced_artifact in job_config['restore_artifacts_from_parent_build'] %}
+        rm -f '{{ produced_artifact }}'
+        {% endfor %}
+        {% endif %}
+
+        # There must be no sign of initial build descriptor.
+        {% if 'initial_dynamic_build_descriptor' in job_config %}
+        # Produce initial dynamic build descriptor.
+        rm -f '{{ job_config['initial_dynamic_build_descriptor'] }}'
+        {% endif %}
 
         #######################################################################
         # Restore parent build descriptor.
 
         if [ "${PARENT_BUILD_TITLE}" != '_' ]
         then
-            # Export dynamic build descriptor from specified build title.
+            # Export (the latest) dynamic build descriptor from
+            # specified build title (branch).
             # See:
             #    http://stackoverflow.com/a/5324532/441652
             git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'dynamic_build_descriptor.yaml'
             mv 'dynamic_build_descriptor.yaml' "${PARENT_DYN_BUILD_DESC_PATH}"
 
-            # Restore initial dyn build desc which is used as a fingerprint
+            {% if 'restore_artifacts_from_parent_build' in job_config %}
+            # Restore artifacts which might be used as a fingerprint
             # to link all jobs together.
-            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'initial.dynamic_build_descriptor.yaml'
-            mv 'initial.dynamic_build_descriptor.yaml' "${INIT_DYN_BUILD_DESC_PATH}"
+            {% for restored_artifact in job_config['restore_artifacts_from_parent_build'] %}
+            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x '{{ restored_artifact }}'
+            {% endfor %}
+            {% endif %}
+
         fi
 
         #######################################################################
@@ -181,39 +195,34 @@ HEREDOC_MARKER
         #######################################################################
         # Update dynamic build descriptor.
 
-        # Current job dyn build desc is not used when
-        # there is a parent build specified.
+        # TODO: Remove this parameter
         # It is also not used when parameter `associate_with_parent_build`
         # in `job_config` is not set to `True`.
-        if [ "${PARENT_BUILD_TITLE}" != '_' ]
-        then
-            {% if 'associate_with_parent_build' in job_config and job_config['associate_with_parent_build'] %}
 
-            echo 'Reusing initial dynamic build descriptor to associate it with parent build...'
+        {% if 'initial_dynamic_build_descriptor' in job_config %}
 
-            {% else %}
-
-            echo 'Creating build unassociated with parent one using new initial dyn build desc...'
-            cp "${JOB_DYN_BUILD_DESC_PATH}" "${INIT_DYN_BUILD_DESC_PATH}"
-
-            {% endif %}
-        else
-            # Use current job dyn build desc as initial one.
-            echo 'Creating build unassociated with parent one using new initial dyn build desc...'
-            cp "${JOB_DYN_BUILD_DESC_PATH}" "${INIT_DYN_BUILD_DESC_PATH}"
-        fi
+        # Produce initial dynamic build descriptor.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "{{ job_config['initial_dynamic_build_descriptor'] }}"
 
         # Copy initial dyn build desc into
         # `build_history_role` repository.
         # This is needed to be able to specify current build as
         # parent build in the future.
-        cp "${INIT_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_REPO_PATH}/${BUILD_TITLE}"
+        cp "{{ job_config['initial_dynamic_build_descriptor'] }}" "${REPO_DYN_BUILD_DESC_REPO_PATH}/${BUILD_TITLE}"
+
+        {% endif %}
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
 
-        # Present initial dyn build desc as an artifact
-        # build by this first job (for fingerprinting).
-        cp "${INIT_DYN_BUILD_DESC_PATH}" "initial.dynamic_build_descriptor.yaml"
+        {% if 'restore_artifacts_from_parent_build' in job_config %}
+
+        # Make sure all other artifact producible by this first job
+        # (for fingerprinting) are present.
+        {% for produced_artifact in job_config['restore_artifacts_from_parent_build'] %}
+        ls -l "{{ produced_artifact }}"
+        {% endfor %}
+
+        {% endif %}
 
         #######################################################################
         # Script footer

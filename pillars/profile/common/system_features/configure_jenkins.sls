@@ -173,9 +173,41 @@ system_features:
                 archive_artifacts:
                     # NOTE: This is the file which fingerprint allows
                     #       associate all jobs in the pipelines together.
-                    - initial.dynamic_build_descriptor.yaml
+                    - initial.init_pipeline.dynamic_build_descriptor.yaml
 
-                associate_with_parent_build: False
+                # NOTE: Even if we need to re-use this artifact from
+                #       `init_pipeline.start_new_build` for association,
+                #       the approach is to re-create this artifact
+                #       (get from parent build) and archive it again instead
+                #       of using Copy Artifact plugin.
+                #       Because we re-use existing artifact, the fingerprint
+                #       will be the same and association with
+                #       `init_pipeline.start_new_build` will happen again.
+                #       Why not using Copy Artifact plugin?
+                #       Because this build is triggered manually and copying
+                #       artifact would resort to the latest build of
+                #       `init_pipeline.start_new_build` instead of
+                #       continuing based on parent build. We want
+                #       to set all branches to condition met in some
+                #       build in the past. This can only be done by
+                #       the job itself which takes parent build parameter.
+                #       And we also have to archive another artefact which
+                #       originates in this job so that promotion jobs can
+                #       see associations of downstream jobs with this one.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
+
+                # This list combined with value of
+                # `initial_dynamic_build_descriptor` are part of
+                # produced artifacts.
+                restore_artifacts_from_parent_build:
+                    - initial.init_pipeline.dynamic_build_descriptor.yaml
+                # The following parameter indicates artifact file name
+                # which is fingerprinted to associate this job with
+                # all downstream jobs (if they restore or copy it).
+                initial_dynamic_build_descriptor: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -291,7 +323,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -320,7 +352,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -349,7 +381,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -382,7 +414,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # The job is supposed to be started
                 # after all all pipelines finish as the final step.
@@ -620,7 +652,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -649,7 +681,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -678,7 +710,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -714,7 +746,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -752,7 +784,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     build_always:
@@ -822,7 +854,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -873,7 +905,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -908,7 +940,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -939,7 +971,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -970,7 +1002,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -999,7 +1031,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1028,7 +1060,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1057,7 +1089,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1086,7 +1118,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1115,7 +1147,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -1151,10 +1183,45 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
-                associate_with_parent_build: True
+                archive_artifacts:
+                    # NOTE: We re-archive the same file which is
+                    #       restored from parent build.
+                    - initial.init_pipeline.dynamic_build_descriptor.yaml
+                    - initial.package_pipeline.dynamic_build_descriptor.yaml
 
+                # NOTE: Even if we need to re-use this artifact from
+                #       `init_pipeline.start_new_build` for association,
+                #       the approach is to re-create this artifact
+                #       (get from parent build) and archive it again instead
+                #       of using Copy Artifact plugin.
+                #       Because we re-use existing artifact, the fingerprint
+                #       will be the same and association with
+                #       `init_pipeline.start_new_build` will happen again.
+                #       Why not using Copy Artifact plugin?
+                #       Because this build is triggered manually and copying
+                #       artifact would resort to the latest build of
+                #       `init_pipeline.start_new_build` instead of
+                #       continuing based on parent build. We want
+                #       to set all branches to condition met in some
+                #       build in the past. This can only be done by
+                #       the job itself which takes parent build parameter.
+                #       And we also have to archive another artefact which
+                #       originates in this job so that promotion jobs can
+                #       see associations of downstream jobs with this one.
+                {% if False %}
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
+
+                # This list combined with value of
+                # `initial_dynamic_build_descriptor` are part of
+                # produced artifacts.
+                restore_artifacts_from_parent_build:
+                    - initial.init_pipeline.dynamic_build_descriptor.yaml
+                # The following parameter indicates artifact file name
+                # which is fingerprinted to associate this job with
+                # all downstream jobs (if they restore or copy it).
+                initial_dynamic_build_descriptor: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1247,7 +1314,8 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1278,7 +1346,8 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1309,7 +1378,8 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1340,7 +1410,8 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1369,7 +1440,8 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1398,7 +1470,8 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -1434,10 +1507,45 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
-                associate_with_parent_build: True
+                archive_artifacts:
+                    # NOTE: We re-archive the same file which is
+                    #       restored from parent build.
+                    - initial.init_pipeline.dynamic_build_descriptor.yaml
+                    - initial.release_pipeline.dynamic_build_descriptor.yaml
 
+                # NOTE: Even if we need to re-use this artifact from
+                #       `init_pipeline.start_new_build` for association,
+                #       the approach is to re-create this artifact
+                #       (get from parent build) and archive it again instead
+                #       of using Copy Artifact plugin.
+                #       Because we re-use existing artifact, the fingerprint
+                #       will be the same and association with
+                #       `init_pipeline.start_new_build` will happen again.
+                #       Why not using Copy Artifact plugin?
+                #       Because this build is triggered manually and copying
+                #       artifact would resort to the latest build of
+                #       `init_pipeline.start_new_build` instead of
+                #       continuing based on parent build. We want
+                #       to set all branches to condition met in some
+                #       build in the past. This can only be done by
+                #       the job itself which takes parent build parameter.
+                #       And we also have to archive another artefact which
+                #       originates in this job so that promotion jobs can
+                #       see associations of downstream jobs with this one.
+                {% if False %}
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
+
+                # This list combined with value of
+                # `initial_dynamic_build_descriptor` are part of
+                # produced artifacts.
+                restore_artifacts_from_parent_build:
+                    - initial.init_pipeline.dynamic_build_descriptor.yaml
+                # The following parameter indicates artifact file name
+                # which is fingerprinted to associate this job with
+                # all downstream jobs (if they restore or copy it).
+                initial_dynamic_build_descriptor: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 # TODO: Implement.
                 #       This is the first and the final job at the moment.
