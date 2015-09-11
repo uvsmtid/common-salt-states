@@ -178,7 +178,7 @@ system_features:
                         trigger_jobs:
                             - 02.init_pipeline.reset_previous_build
 
-                # NOTE: This job is protable and uses another config.
+                # NOTE: This job is promotable and uses another config.
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
@@ -189,6 +189,11 @@ system_features:
                             Short meaningful string to differentiate this build.
                             It is embedded into build title.
                         parameter_type: string
+                        parameter_value: '_'
+                    BUILD_NOTES:
+                        parameter_description: |
+                            Any notes describing the build.
+                        parameter_type: text
                         parameter_value: '_'
                     MAVEN_SKIP_TESTS:
                         parameter_description: |
@@ -206,11 +211,6 @@ system_features:
                             The value will be used with `--author` option for all Git commits made automatically.
                             Substring can be used if it is uniquely identifies author within existing commits.
                         parameter_type: string
-                        parameter_value: '_'
-                    BUILD_NOTES:
-                        parameter_description: |
-                            Any notes describing the build.
-                        parameter_type: text
                         parameter_value: '_'
                     UPDATE_REPOSITORIES:
                         parameter_description: |
@@ -257,16 +257,6 @@ system_features:
                             TODO: Quick and dirty impl to skip pipeline.
                         parameter_type: boolean
                         parameter_value: False
-                    SKIP_PACKAGE_PIPELINE:
-                        parameter_description: |
-                            TODO: Quick and dirty impl to skip pipeline.
-                        parameter_type: boolean
-                        parameter_value: True
-                    SKIP_RELEASE_PIPELINE:
-                        parameter_description: |
-                            TODO: Quick and dirty impl to skip pipeline.
-                        parameter_type: boolean
-                        parameter_value: True
 
                 use_promotions:
                     - 01.promotion.init_pipeline_passed
@@ -535,7 +525,7 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    - 53.package_pipeline.build_bootstrap_package
+                    - 57.package_pipeline.store_bootstrap_package
 
                 condition_type: downstream_passed
                 accept_unstable: True
@@ -1156,14 +1146,22 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                associate_with_parent_build: True
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 52.package_pipeline.transfer_dynamic_build_descriptor
+                            - 52.package_pipeline.reset_previous_build
 
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                # NOTE: This job is promotable and uses another config.
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
+                    # NOTE: We reuse `init_pipeline.start_new_build` template.
+                    {% set job_template_id = 'init_pipeline.start_new_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
                 build_parameters:
@@ -1178,6 +1176,19 @@ system_features:
                             - {{ target_profile_name }}
                             {% endfor %}
                             - {{ profile_name }}
+                    BUILD_LABEL:
+                        parameter_description: |
+                            Short meaningful string to differentiate this build.
+                            It is embedded into package title.
+                            TODO: Should it be named `PACKAGE_LABEL`?
+                        parameter_type: string
+                        parameter_value: '_'
+                    BUILD_NOTES:
+                        parameter_description: |
+                            Any notes describing the build.
+                            TODO: Should it be named `PACKAGE_NOTES`?
+                        parameter_type: text
+                        parameter_value: '_'
                     GIT_AUTHOR_EMAIL:
                         parameter_description: |
                             Specify author email for Git commits.
@@ -1185,19 +1196,36 @@ system_features:
                             Substring can be used if it is uniquely identifies author within existing commits.
                         parameter_type: string
                         parameter_value: '_'
-                    BOOTSTRAP_PACKAGE_NOTES:
+                    REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION:
                         parameter_description: |
-                            Any notes describing the build.
-                        parameter_type: text
-                        parameter_value: '_'
-                    BUILD_TITLE:
+                            This causes all build branches to be removed in the last job.
+                            TODO: Fail build if this is set for for `INCREMENTAL_RELEASE` or `SEMANTIC_RELEASE` build type without tagging.
+                            TODO: Build branches should be automatically removed if previous build was unsuccessful.
+                        parameter_type: boolean
+                        parameter_value: True
+                    PARENT_BUILD_TITLE:
                         parameter_description: |
-                            TODO: Not implemented yet.
+                            Specify build title from existing history.
+                            If this parameter is specified, then `init_pipeline.create_build_branches` job
+                            sets HEADs of newly created build branches to `latest_commit_ids` from that build title;.
+                            NOTE: The new build will have its own build title (and build branch names).
+                            This is just a mechanism to reuse state of the build from the past
+                            (for example, for release, packaging, or re-building).
                             The build title can be found in dynamic build descriptor in the value of `build_title` key.
                         parameter_type: string
                         parameter_value: '_'
 
-            {% set job_template_id = 'package_pipeline.transfer_dynamic_build_descriptor' %}
+                    SKIP_PACKAGE_PIPELINE:
+                        parameter_description: |
+                            TODO: Quick and dirty impl to skip pipeline.
+                        parameter_type: boolean
+                        parameter_value: False
+
+                use_promotions:
+                    - 05.promotion.package_pipeline_passed
+                    - 07.promotion.bootstrap_package_approved
+
+            {% set job_template_id = 'package_pipeline.reset_previous_build' %}
             52.{{ job_template_id }}:
 
                 enabled: True
@@ -1209,22 +1237,89 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                skip_if_true: SKIP_PACKAGE_PIPELINE
+                skip_if_true: SKIP_INIT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 53.package_pipeline.build_bootstrap_package
+                            - 53.package_pipeline.describe_repositories_state
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
+                    # NOTE: We reuse `init_pipeline.reset_previous_build` template.
+                    {% set job_template_id = 'init_pipeline.reset_previous_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
-            {% set job_template_id = 'package_pipeline.build_bootstrap_package' %}
+            {% set job_template_id = 'package_pipeline.describe_repositories_state' %}
             53.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_INIT_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 54.package_pipeline.create_build_branches
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: We reuse `init_pipeline.describe_repositories_state` template.
+                    {% set job_template_id = 'init_pipeline.describe_repositories_state' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'package_pipeline.create_build_branches' %}
+            54.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_INIT_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 55.package_pipeline.transfer_dynamic_build_descriptor
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: We reuse `init_pipeline.create_build_branches` template.
+                    {% set job_template_id = 'init_pipeline.create_build_branches' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'package_pipeline.transfer_dynamic_build_descriptor' %}
+            55.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1238,6 +1333,67 @@ system_features:
                 skip_if_true: SKIP_PACKAGE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 56.package_pipeline.build_bootstrap_package
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'package_pipeline.build_bootstrap_package' %}
+            56.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_PACKAGE_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 57.package_pipeline.store_bootstrap_package
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'package_pipeline.store_bootstrap_package' %}
+            57.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_PACKAGE_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -1273,6 +1429,11 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                associate_with_parent_build: True
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 # TODO: Implement.
                 #       This is the first and the final job at the moment.
                 {% if False %}
@@ -1283,8 +1444,11 @@ system_features:
                             []
                 {% endif %}
 
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                # NOTE: This job is promotable and uses another config.
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
+                    # NOTE: We reuse `init_pipeline.start_new_build` template.
+                    {% set job_template_id = 'init_pipeline.start_new_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
                 build_parameters:
@@ -1302,11 +1466,18 @@ system_features:
                             It is embedded into release title.
                         parameter_type: string
                         parameter_value: '_'
-                    RELEASE_LABEL:
+                    BUILD_LABEL:
                         parameter_description: |
-                            Short meaningful string to differentiate this release.
-                            It is embedded into release title.
+                            Short meaningful string to differentiate this build.
+                            It is embedded into package title.
+                            TODO: Should it be named `RELEASE_LABEL`?
                         parameter_type: string
+                        parameter_value: '_'
+                    BUILD_NOTES:
+                        parameter_description: |
+                            Any notes describing the build.
+                            TODO: Should it be named `RELEASE_NOTES`?
+                        parameter_type: text
                         parameter_value: '_'
                     GIT_AUTHOR_EMAIL:
                         parameter_description: |
@@ -1315,17 +1486,26 @@ system_features:
                             Substring can be used if it is uniquely identifies author within existing commits.
                         parameter_type: string
                         parameter_value: '_'
-                    RELEASE_NOTES:
+                    PARENT_BUILD_TITLE:
                         parameter_description: |
-                            Any notes describing the release.
-                        parameter_type: text
-                        parameter_value: '_'
-                    BUILD_TITLE:
-                        parameter_description: |
-                            TODO: Not implemented yet.
+                            Specify build title from existing history.
+                            If this parameter is specified, then `init_pipeline.create_build_branches` job
+                            sets HEADs of newly created build branches to `latest_commit_ids` from that build title;.
+                            NOTE: The new build will have its own build title (and build branch names).
+                            This is just a mechanism to reuse state of the build from the past
+                            (for example, for release, packaging, or re-building).
                             The build title can be found in dynamic build descriptor in the value of `build_title` key.
                         parameter_type: string
                         parameter_value: '_'
+
+                    SKIP_RELEASE_PIPELINE:
+                        parameter_description: |
+                            TODO: Quick and dirty impl to skip pipeline.
+                        parameter_type: boolean
+                        parameter_value: False
+
+                use_promotions:
+                    - 06.promotion.release_pipeline_passed
 
         #######################################################################
         #
