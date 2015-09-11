@@ -52,7 +52,7 @@
 
         BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
         SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
-        export BUILD_TITLE="${BUILD_TIMESTAMP}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-SNAPSHOT-${BUILD_LABEL}"
+        export BUILD_TITLE="${BUILD_TIMESTAMP}-{{ job_environ['job_name'] }}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-${BUILD_LABEL}"
 
         #######################################################################
         # Initialize repository build descriptor.
@@ -70,18 +70,34 @@
         git add --all
         git diff-index --ignore-submodules=dirty --exit-code HEAD
 
-        # Create orphan build branch in `build_history_role`.
-        # Even if it is done for all repositories later, `build_history_role`
-        # is special one which requires tracking build from the start.
-        # NOTE: Orphan branch is used always making it unnecessary to
-        #       recover from failed builds.
-        # See: http://stackoverflow.com/a/5690048/441652
-        git checkout --orphan "${BUILD_TITLE}"
-        git rm -rf .
-        git clean -xdf
+        # Create build branch in `build_history_role`.
+        # Creating build branches for other repositories is later -
+        # `build_history_role` is special one which requires tracking
+        # build from the start of the pipeline.
+        if [ "${PARENT_BUILD_TITLE}" != '_' ]
+        then
+            # Reuse contents of parent (until overwritten) -
+            # copy directory named after parent build title.
+            git checkout -b "${BUILD_TITLE}" "${PARENT_BUILD_TITLE}"
+            cp -r "${PARENT_BUILD_TITLE}" "${BUILD_TITLE}"
+
+            # NOTE: If parent build title is used, its directory
+            #       with all contents is left untouched.
+        else
+            # No parent - start from clean orphan branch.
+
+            # NOTE: Orphan branch is used making it unnecessary to
+            #       recover from failed builds into original branch.
+            # See: http://stackoverflow.com/a/5690048/441652
+            git checkout --orphan "${BUILD_TITLE}"
+            git rm -rf .
+            git clean -xdf
+
+            # Create destination directory.
+            mkdir -p "$(dirname "${REPO_DYN_BUILD_DESC_PATH}")"
+        fi
 
         # Initialize with empty dict for dyn build desc.
-        mkdir -p "$(dirname "${REPO_DYN_BUILD_DESC_PATH}")"
         echo "{}" > "${REPO_DYN_BUILD_DESC_PATH}"
 
         echo "${BUILD_TIMESTAMP}"     | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_timestamp"
@@ -195,10 +211,6 @@ HEREDOC_MARKER
         #######################################################################
         # Update dynamic build descriptor.
 
-        # TODO: Remove this parameter
-        # It is also not used when parameter `associate_with_parent_build`
-        # in `job_config` is not set to `True`.
-
         {% if 'initial_dynamic_build_descriptor' in job_config %}
 
         # Produce initial dynamic build descriptor.
@@ -216,7 +228,7 @@ HEREDOC_MARKER
 
         {% if 'restore_artifacts_from_parent_build' in job_config %}
 
-        # Make sure all other artifact producible by this first job
+        # Make sure all other artifacts producible by this first job
         # (for fingerprinting) are present.
         {% for produced_artifact in job_config['restore_artifacts_from_parent_build'] %}
         ls -l "{{ produced_artifact }}"
