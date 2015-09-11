@@ -170,6 +170,11 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                archive_artifacts:
+                    # NOTE: This is the file which fingerprint allows
+                    #       associate all jobs in the pipelines together.
+                    - initial.dynamic_build_descriptor.yaml
+
                 associate_with_parent_build: False
 
                 parameterized_job_triggers:

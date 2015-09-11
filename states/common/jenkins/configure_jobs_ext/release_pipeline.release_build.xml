@@ -6,12 +6,8 @@
 
   <builders>
 
-    {#
-    DISABLE copying artifacts because this job is supposed to retrieve
-            the required artifact from another job in a special way.
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
     {{ copy_artifacts(job_config, job_environ) }}
-    #}
 
     <hudson.tasks.Shell>
       <command>
@@ -59,7 +55,7 @@
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
 
-        # Present as initial dyn build desc as an artifact
+        # Present initial dyn build desc as an artifact
         # build by this first job (for fingerprinting).
         cp "${INIT_DYN_BUILD_DESC_PATH}" "initial.dynamic_build_descriptor.yaml"
 
@@ -76,22 +72,8 @@
 
   <publishers>
 
-    <!--
-        Archive and Fingerprint initial dynamic build descriptor.
-        This is only needed to trace jobs of the same pipeline execution.
-
-        NOTE: This job is supposed to _re-archive_ artifact
-              which was already archived before in the upstream job
-              `init_pipeline.start_new_build` to link it
-              with this upstream job.
-    -->
-    <hudson.tasks.ArtifactArchiver>
-      <artifacts>initial.dynamic_build_descriptor.yaml</artifacts>
-      <allowEmptyArchive>false</allowEmptyArchive>
-      <onlyIfSuccessful>true</onlyIfSuccessful>
-      <fingerprint>true</fingerprint>
-      <defaultExcludes>true</defaultExcludes>
-    </hudson.tasks.ArtifactArchiver>
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
 
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
     {{ parameterized_job_triggers_macro(job_config, job_environ) }}

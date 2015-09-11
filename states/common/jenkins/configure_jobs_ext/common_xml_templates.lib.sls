@@ -343,6 +343,28 @@
 {% endmacro %}
 
 ###############################################################################
+{% macro archive_artifacts(job_config, job_environ) %}
+
+{% if 'archive_artifacts' in job_config %}
+
+    <!--
+        Archive and Fingerprint.
+        For example, archiving initial build descriptor is only needed to
+        trace jobs of the same pipeline execution.
+    -->
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>{{ job_config['archive_artifacts']|join(',') }}</artifacts>
+      <allowEmptyArchive>false</allowEmptyArchive>
+      <onlyIfSuccessful>true</onlyIfSuccessful>
+      <fingerprint>true</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+    </hudson.tasks.ArtifactArchiver>
+
+{% endif %}
+
+{% endmacro %}
+
+###############################################################################
 {% macro copy_artifacts(job_config, job_environ) %}
 
 {% if not 'is_standalone' in job_config or not job_config['is_standalone'] %}

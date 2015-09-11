@@ -6,11 +6,8 @@
 
   <builders>
 
-    {#
-    DISABLE copying artifacts because it is the very first job in the pipeline.
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
     {{ copy_artifacts(job_config, job_environ) }}
-    #}
 
     <hudson.tasks.Shell>
       <command>
@@ -231,17 +228,8 @@ HEREDOC_MARKER
 
   <publishers>
 
-    <!--
-        Archive and Fingerprint initial dynamic build descriptor.
-        This is only needed to trace jobs of the same pipeline execution.
-    -->
-    <hudson.tasks.ArtifactArchiver>
-      <artifacts>initial.dynamic_build_descriptor.yaml</artifacts>
-      <allowEmptyArchive>false</allowEmptyArchive>
-      <onlyIfSuccessful>true</onlyIfSuccessful>
-      <fingerprint>true</fingerprint>
-      <defaultExcludes>true</defaultExcludes>
-    </hudson.tasks.ArtifactArchiver>
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
 
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
     {{ parameterized_job_triggers_macro(job_config, job_environ) }}
