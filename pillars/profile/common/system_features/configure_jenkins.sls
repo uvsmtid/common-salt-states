@@ -178,7 +178,8 @@ system_features:
                         trigger_jobs:
                             - 02.init_pipeline.reset_previous_build
 
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                # NOTE: This job is protable and uses another config.
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
