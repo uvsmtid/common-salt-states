@@ -351,9 +351,11 @@
         Copy fingerprinted and archived artifact just for the sake
         of reliably linking this job to the initial one in the pipeline.
     -->
+    {% if 'input_fingerprinted_artifacts' in job_config %}
+    {% for job_id in job_config['input_fingerprinted_artifacts'].keys() %}
     <hudson.plugins.copyartifact.CopyArtifact plugin="copyartifact@1.35.2">
-      <project>init_pipeline.start_new_build</project>
-      <filter>initial.dynamic_build_descriptor.yaml</filter>
+      <project>{{ job_id }}</project>
+      <filter>{{ job_config['input_fingerprinted_artifacts'][job_id] }}</filter>
       <target></target>
       <excludes></excludes>
       <selector class="hudson.plugins.copyartifact.TriggeredBuildSelector">
@@ -366,6 +368,8 @@
       </selector>
       <doNotFingerprintArtifacts>false</doNotFingerprintArtifacts>
     </hudson.plugins.copyartifact.CopyArtifact>
+    {% endfor %}
+    {% endif %}
 
 {% endif %}
 

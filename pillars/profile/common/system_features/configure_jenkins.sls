@@ -294,6 +294,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -320,6 +323,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -345,6 +351,9 @@ system_features:
                 skip_if_true: SKIP_INIT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -375,6 +384,9 @@ system_features:
                 skip_if_true: SKIP_INIT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 # The job is supposed to be started
                 # after all all pipelines finish as the final step.
@@ -611,6 +623,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -637,6 +652,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -662,6 +680,9 @@ system_features:
                 skip_if_true: SKIP_UPDATE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -695,6 +716,9 @@ system_features:
                 skip_if_true: SKIP_UPDATE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -730,6 +754,9 @@ system_features:
                 skip_if_true: SKIP_MAVEN_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     build_always:
@@ -798,6 +825,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/maven_pipeline.maven_project_job.xml'
@@ -846,6 +876,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -878,6 +911,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -905,6 +941,9 @@ system_features:
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -934,6 +973,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -959,6 +1001,9 @@ system_features:
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -986,6 +1031,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -1011,6 +1059,9 @@ system_features:
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1038,6 +1089,9 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -1063,6 +1117,9 @@ system_features:
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    01.init_pipeline.start_new_build: initial.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
