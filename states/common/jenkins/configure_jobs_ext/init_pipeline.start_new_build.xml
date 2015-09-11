@@ -186,11 +186,23 @@ HEREDOC_MARKER
 
         # Current job dyn build desc is not used when
         # there is a parent build specified.
+        # It is also not used when parameter `associate_with_parent_build`
+        # in `job_config` is not set to `True`.
         if [ "${PARENT_BUILD_TITLE}" != '_' ]
         then
-            echo 'Reusing initial dynamic build descriptor from parent build...'
+            {% if 'associate_with_parent_build' in job_config and job_config['associate_with_parent_build'] %}
+
+            echo 'Reusing initial dynamic build descriptor to associate it with parent build...'
+
+            {% else %}
+
+            echo 'Creating build unassociated with parent one using new initial dyn build desc...'
+            cp "${JOB_DYN_BUILD_DESC_PATH}" "${INIT_DYN_BUILD_DESC_PATH}"
+
+            {% endif %}
         else
             # Use current job dyn build desc as initial one.
+            echo 'Creating build unassociated with parent one using new initial dyn build desc...'
             cp "${JOB_DYN_BUILD_DESC_PATH}" "${INIT_DYN_BUILD_DESC_PATH}"
         fi
 

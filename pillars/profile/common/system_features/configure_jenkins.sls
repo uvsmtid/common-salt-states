@@ -170,6 +170,8 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
+                associate_with_parent_build: False
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
