@@ -55,12 +55,35 @@
         export BUILD_TITLE="${BUILD_TIMESTAMP}-{{ job_environ['job_name'] }}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-${BUILD_LABEL}"
 
         #######################################################################
-        # Initialize repository build descriptor.
+        # Set env vars.
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
         {{ locate_repository_dynamic_build_descriptor(job_config, job_environ, check_repo_dyn_build_desc = False) }}
 
         {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+
+        #######################################################################
+        # Make sure target profile pillars repo is set.
+
+        {% set target_profile_repo_id = get_repository_id_by_role('target_profile_pillars_role') %}
+
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][target_profile_repo_id]['git'] %}
+        export TARGET_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        if [ "${TARGET_PROFILE_NAME}" ]
+        then
+
+            cd "${TARGET_PROFILE_REPO_PATH}"
+
+            git checkout "${TARGET_PROFILE_NAME}"
+
+            cd -
+
+        fi
+
+        #######################################################################
+        # Initialize repository build descriptor.
+
         {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
 
         cd "${REPO_DYN_BUILD_DESC_REPO_PATH}"

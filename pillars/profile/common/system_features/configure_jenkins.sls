@@ -1186,7 +1186,8 @@ system_features:
                 #       `init_pipeline.start_new_build` for association,
                 #       the approach is to re-create this artifact
                 #       (get from parent build) and archive it again instead
-                #       of using Copy Artifact plugin.
+                #       of using Copy Artifact plugin
+                #       (see `archive_artifacts`).
                 #       Because we re-use existing artifact, the fingerprint
                 #       will be the same and association with
                 #       `init_pipeline.start_new_build` will happen again.

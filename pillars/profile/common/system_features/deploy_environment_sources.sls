@@ -70,8 +70,22 @@ system_features:
         control_scripts_dir_basename: 'control'
 
         repository_roles:
+
             build_history_role:
                 - '{{ project_name }}-build-history'
+
+            source_profile_pillars_role:
+                - '{{ project_name }}-salt-pillars'
+
+            target_profile_pillars_role:
+                - '{{ project_name }}-salt-pillars.bootstrap-target'
+
+            effective_pillars_role:
+            {% if props['use_pillars_from_states_repo'] %}
+                - '{{ project_name }}-salt-states'
+            {% else %}
+                - '{{ project_name }}-salt-pillars'
+            {% endif %}
 
         # Specify type per repository:
         #  - `svn` for Subversion.
