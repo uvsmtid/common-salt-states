@@ -24,7 +24,7 @@ system_hosts:
             #   - 'hansode/fedora-21-server-x86_64' # virtualbox
             #   - 'fedora:21' # docker
             base_image: 'uvsmtid/centos-5.5-minimal' # libvirt
-            memory_size: 2024
+            memory_size: 2048
             cpus_number: 2
 
         os_platform: rhel5
