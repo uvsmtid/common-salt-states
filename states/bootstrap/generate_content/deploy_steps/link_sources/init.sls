@@ -194,7 +194,7 @@
     {% else %}
         {{ FAIL_unknown_export_method }}
     {% endif %}
-    {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][grains['id']]['primary_user'] ] %}
+    {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         # User and Group are from source env pillar - where the package is build.
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['username'] }}'
@@ -222,7 +222,7 @@
     {% else %}
         {{ FAIL_unknown_export_method }}
     {% endif %}
-    {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][grains['id']]['primary_user'] ] %}
+    {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         # User and Group are from source env pillar - where the package is build.
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['username'] }}'
