@@ -184,7 +184,7 @@ cat &lt;&lt;HEREDOC_MARKER &gt; ${ENV_PYTHON_SCRIPT}
 HEREDOC_MARKER
 
         # Write output of env command into dynamic build descriptor.
-        env | python "${ENV_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}"
+        python "${ENV_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
         # Write parameters to the file used by subsequent jobs.

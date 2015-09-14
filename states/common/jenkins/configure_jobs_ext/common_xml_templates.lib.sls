@@ -500,10 +500,7 @@ key_prefix = ''
 if len(sys.argv) >= 3:
     key_prefix = sys.argv[2]
 
-# Capture environment variables in two formats:
-# - Save environment variables as text with shell code.
-loaded_data['environ_text'] = sys.stdin.read()
-# - Save environment variables as dict structure.
+# Capture environment variables as dict structure.
 loaded_data['environ'] = os.environ.copy()
 
 # Save dynamic build descriptor.
