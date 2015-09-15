@@ -62,7 +62,17 @@
 {% from 'common/git/git_uri.lib.sls' import define_git_repo_uri with context %}
 {% set git_repo_uri = define_git_repo_uri(selected_repo_name) %}
 
+<!--
+    NOTE: The `branch_name` was removed from pillars as its changes are too noizy for configuration.
+          Instead, `develop` branch is used by default. Alternatively, a special aproach just for
+          this case can be developed whey branch name is loaded from YAML file similar to
+          the one used for `properties.yaml` file.
+-->
+{% if False %}
 {% set remote_branch_name = repo_config['branch_name'] %}
+{% else %}
+{% set remote_branch_name = 'develop' %}
+{% endif %}
 
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.4">
     <configVersion>2</configVersion>

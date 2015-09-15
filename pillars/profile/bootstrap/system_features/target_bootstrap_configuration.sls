@@ -11,7 +11,6 @@
 {% set master_minion_id = props['master_minion_id'] %}
 {% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
 {% set default_username = props['default_username'] %}
-{% set current_task_branch = props['current_task_branch'] %}
 
 # Import `maven_repo_names`.
 {% set maven_repo_names_path = profile_root.replace('.', '/') + '/common/system_maven_artifacts/maven_repo_names.yaml' %}
@@ -22,28 +21,6 @@
 # which has to be exported during the build.
 {% set dynamic_build_descriptor_path = profile_root.replace('.', '/') + '/dynamic_build_descriptor.yaml' %}
 {% import_yaml dynamic_build_descriptor_path as dynamic_build_descriptor %}
-
-# This is in-plave macro for common logic to set repo branch name.
-# The indentation has to be preserved for proper YAML rendering.
-{% macro set_repo_branch_name(repo_name, default_branch) %}
-                # NOTE: Quick fix for pillars which deal with released
-                #       dyn build desc (when normal branches should be used
-                #       and not ugly long build branches).
-                #       We only need to use build branches
-                #       during build pipeline.
-                {% if 'released' in dynamic_build_descriptor and dynamic_build_descriptor['released'] %}
-                branch_name: '{{ default_branch }}'
-                {% else %}
-
-                {% if 'build_branches' in dynamic_build_descriptor %}
-                {% set branch_name = dynamic_build_descriptor['build_branches'][repo_name] %}
-                branch_name: '{{ branch_name }}'
-                {% else %}
-                branch_name: '{{ default_branch }}'
-                {% endif %}
-
-                {% endif %}
-{% endmacro %}
 
 system_features:
 
@@ -81,7 +58,6 @@ system_features:
                 export_enabled: False
                 export_method: clone
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
             {% endif %}
 
             # Salt states.
@@ -91,7 +67,6 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
 
             {% if project_name != 'common' %}
             {% set repo_name = project_name + '-salt-states' %}
@@ -99,7 +74,6 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
             {% endif %}
 
             # Salt resources.
@@ -115,7 +89,6 @@ system_features:
                 #       using `checkout-index` method.
                 export_method: checkout-index
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
 
             {% if project_name != 'common' %}
             {% set repo_name = project_name + '-salt-resources' %}
@@ -129,7 +102,6 @@ system_features:
                 #       using `checkout-index` method.
                 export_method: checkout-index
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
             {% endif %}
 
             # Salt pillars.
@@ -148,9 +120,6 @@ system_features:
                 export_enabled: False
                 export_method: clone
                 export_format: dir
-                # If it was actually exportable, the default for
-                # target pillar repository would be profile name.
-                {{ set_repo_branch_name(repo_name, profile_name) }}
 
             {% endif %} # use_pillars_from_states_repo
 
@@ -158,32 +127,12 @@ system_features:
             # but rename them.
             {% set repo_name = project_name + '-salt-pillars.bootstrap-target' %}
             {{ repo_name }}:
+                # NOTE: During the build, target pillar is selected and
+                # the repository is adjusted to point to the branch
+                # with corresponding profile.
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                # NOTE: Choice of the target pillar is special.
-                # During the build, target pillar is selected and
-                # the repository is adjusted to point to the branch
-                # with corresponding profile. The following logic
-                # makes sure that the target pillar is influenced
-                # by the selection.
-                # NOTE: Quick fix for pillars which deal with released
-                #       dyn build desc (when normal branches should be used
-                #       and not ugly long build branches).
-                #       We only need to use build branches
-                #       during build pipeline.
-                {% if 'released' in dynamic_build_descriptor and dynamic_build_descriptor['released'] %}
-                branch_name: '{{ profile_name }}'
-                {% else %}
-
-                {% if 'environ' in dynamic_build_descriptor and 'TARGET_PROFILE_NAME' in dynamic_build_descriptor['environ'] %}
-                {% set branch_name = dynamic_build_descriptor['environ']['TARGET_PROFILE_NAME'] %}
-                branch_name: '{{ branch_name }}'
-                {% else %}
-                branch_name: '{{ profile_name }}'
-                {% endif %}
-
-                {% endif %}
                 # This is required.
                 # Pillars repository considered as "target" in the "source" environment
                 # becomes "source" configuration in the "target" environment.
@@ -201,23 +150,6 @@ system_features:
                 #       using `checkout-index` method.
                 export_method: checkout-index
                 export_format: dir
-                # NOTE: Quick fix for build-history which deal with released
-                #       dyn build desc (when normal branches should be used
-                #       and not ugly long build branches).
-                #       We only need to use build branches
-                #       during build pipeline.
-                {% if 'released' in dynamic_build_descriptor and dynamic_build_descriptor['released'] %}
-                branch_name: '{{ profile_name }}'
-                {% else %}
-
-                {% if 'environ' in dynamic_build_descriptor and 'TARGET_PROFILE_NAME' in dynamic_build_descriptor['environ'] %}
-                {% set branch_name = dynamic_build_descriptor['environ']['TARGET_PROFILE_NAME'] %}
-                branch_name: '{{ branch_name }}'
-                {% else %}
-                branch_name: '{{ profile_name }}'
-                {% endif %}
-
-                {% endif %}
 
             # Maven component repositories.
 
@@ -227,7 +159,6 @@ system_features:
                 export_enabled: False
                 export_method: git-archive
                 export_format: tar
-                branch_name: ~
 
             {% endfor %}
 
