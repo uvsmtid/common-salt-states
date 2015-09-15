@@ -70,7 +70,9 @@
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][target_profile_repo_id]['git'] %}
         export TARGET_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
-        if [ "${TARGET_PROFILE_NAME}" ]
+        # NOTE: `TARGET_PROFILE_NAME` may be undefined.
+        #       Assume default is empty.
+        if [ -n "${TARGET_PROFILE_NAME:-}" ]
         then
 
             cd "${TARGET_PROFILE_REPO_PATH}"
