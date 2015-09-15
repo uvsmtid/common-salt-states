@@ -14,7 +14,6 @@
 {% set profile_name = pillar['profile_name'] %}
 {% set master_minion_id = pillar['master_minion_id'] %}
 {% set default_username = pillar['default_username'] %}
-{% set current_task_branch = pillar['current_task_branch'] %}
 {% set load_bootstrap_target_envs = pillar['load_bootstrap_target_envs'] %}
 
 /etc/salt/master:
@@ -28,7 +27,6 @@
             profile_name: {{ profile_name }}
             master_minion_id: {{ master_minion_id }}
             default_username: {{ default_username }}
-            current_task_branch: {{ current_task_branch }}
             resources_links_dir: '{{ get_URI_scheme_abs_links_base_dir_path_from_pillar('salt://', pillar) }}'
             load_bootstrap_target_envs: {{ load_bootstrap_target_envs }}
         - user: root

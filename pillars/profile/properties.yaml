@@ -51,12 +51,6 @@ master_minion_id: master_minion_id
 # `master_minion_id` property will be used.
 use_master_minion_template_host: True
 default_username: username
-# Current task branch specifies default branch name for non-configuration
-# repositories (e.g. states or other source code).
-# TODO: Refactor `current_task_branch` as it require ALL repositories
-#       (except source and target pillars) use it by template default
-#       which is coarse-grained approach.
-current_task_branch: develop
 
 # Specify dict of target profile names (mapped into any value).
 # TODO: Add link to docs.
