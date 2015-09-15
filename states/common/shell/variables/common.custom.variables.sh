@@ -8,8 +8,9 @@ export EDITOR="vim"
 ###############################################################################
 
 {% if grains['os_platform_type'].startswith('rhel5') %}
-# Add `/sbin` to `PATH` for commands like `ip`, `service`, etc.
-export PATH="${PATH}:/sbin"
+# Add `/sbin` and `/usr/sbin` to `PATH` for commands
+# like `ip`, `service`, `tcpdump`, etc.
+export PATH="${PATH}:/sbin:/usr/sbin"
 {% endif %}
 
 ###############################################################################
