@@ -34,7 +34,7 @@ offline_mode: False
 # NOTE: This is only for convenience of development when both states
 #       and pillars (template pillars) are changed in the same
 #       `states` repository.
-# NOTE: None of the `pillars` repositories is considered
+# NOTE: The main `pillars` repository is NOT considered
 #       when generic profile from `states` repository is used.
 #       Normally profile is not generic, and this value is set to `False`.
 use_pillars_from_states_repo: True
