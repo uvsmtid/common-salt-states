@@ -158,7 +158,6 @@
 {% if selected_repo_name in target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'].keys() %} # selected_repo_name
 
 # Branch name, enabling export, and export method come from target environment.
-{% set branch_name = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['branch_name'] %}
 {% set export_enabled = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['export_enabled'] %}
 {% set export_method = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['export_method'] %}
 
@@ -181,7 +180,7 @@
     {% if not export_method %}
         {{ FAIL_no_export_method_specified }}
     {% elif export_method == 'git-archive' %}
-        - name: 'git archive --format tar --output="{{ export_dir_path }}/{{ target_repo_name }}.tar" --remote="{{ git_repo_uri }}" "{{ branch_name }}"'
+        - name: 'git archive --format tar --output="{{ export_dir_path }}/{{ target_repo_name }}.tar" --remote="{{ git_repo_uri }}" HEAD'
     {% elif export_method == 'checkout-index' %}
     {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][source_system_host]['primary_user'] ] %}
     {% set base_repo_dir = account_conf['posix_user_home_dir'] %}
@@ -190,7 +189,7 @@
         - cwd: '{{ base_repo_dir }}/{{ origin_uri_ssh_path }}'
     {% elif export_method == 'clone' %}
         # Note that repo dir does not have `.git` extension.
-        - name: 'rm -rf "{{ export_dir_path }}/{{ target_repo_name }}" && git clone --branch "{{ branch_name }}" "{{ git_repo_uri }}" "{{ export_dir_path }}/{{ target_repo_name }}"'
+        - name: 'rm -rf "{{ export_dir_path }}/{{ target_repo_name }}" && git clone "{{ git_repo_uri }}" "{{ export_dir_path }}/{{ target_repo_name }}"'
     {% else %}
         {{ FAIL_unknown_export_method }}
     {% endif %}
