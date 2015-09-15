@@ -27,6 +27,11 @@ tmux:
 {% from resources_macro_lib import get_registered_content_item_URI with context %}
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 
+opt_dir_for_tmux-resurrec_exists:
+    file.directory:
+        - name: /opt/tmux-resurrect
+        - makedirs: True
+
 deploy_tmux_resurrect_plugin:
     archive.extracted:
         - name: /opt/tmux-resurrect
@@ -36,6 +41,8 @@ deploy_tmux_resurrect_plugin:
         - archive_format: tar
         # NOTE: Skip first-level directory (which embeds version number).
         - tar_options: --strip-components=1
+        - require:
+            - file: opt_dir_for_tmux-resurrec_exists
 
 {% endif %} # enable_tmux_ressurect
 
