@@ -134,8 +134,10 @@ system_features:
 
             # Salt pillars.
 
-            # NOTE: None of the `pillars` repositories is considered
+            # NOTE: The main `pillars` repository is NOT considered
             #       when generic profile from `states` repository is used.
+            #       However, `bootstrap-target` is still used to generate
+            #       bootstrap target pillar.
             {% if use_pillars_from_states_repo %}
 
             {% else %}
@@ -149,6 +151,8 @@ system_features:
                 # If it was actually exportable, the default for
                 # target pillar repository would be profile name.
                 {{ set_repo_branch_name(repo_name, profile_name) }}
+
+            {% endif %} # use_pillars_from_states_repo
 
             # We only need to export pillars for target environment
             # but rename them.
@@ -184,8 +188,6 @@ system_features:
                 # Pillars repository considered as "target" in the "source" environment
                 # becomes "source" configuration in the "target" environment.
                 target_repo_name: {{ project_name }}-salt-pillars
-
-            {% endif %} # use_pillars_from_states_repo
 
             # Repository with build history.
 

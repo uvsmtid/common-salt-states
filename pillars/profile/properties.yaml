@@ -83,9 +83,11 @@ symlinks_map:
 # One way these paths are used is to set up symlinks from locations
 # known by Salt (in `/srv` directory) to the required data in repositories.
 repo_path_states: '/home/username/Works/common-salt-states.git'
-# Note that in case of generic profile `states` repository for the project is
-# used instead of `pillars` one ignoring what is specified here:
+# Note that in case of generic profile, `states` repository for the project is
+# used instead of `pillars` one. And it ignores the main `pillars` repository.
 repo_path_pillars: '/home/username/Works/common-salt-pillars.git'
+# The `bootstrap-target` pillars repository is always used if
+# bootstrap package has to be generated.
 repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-pillars.bootstrap-target.git'
 
 # Additional symlinks from common states repo to project states repos.

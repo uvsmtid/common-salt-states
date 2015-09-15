@@ -63,7 +63,7 @@
         {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 
         #######################################################################
-        # Make sure target profile pillars repo is set.
+        # Make sure target profile pillars repo is set to required branch.
 
         {% set target_profile_repo_id = get_repository_id_by_role('target_profile_pillars_role') %}
 
