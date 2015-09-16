@@ -634,6 +634,12 @@ wget http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/jnlpJars/jenki
 set -e
 set -u
 
+# Unset proxy variables.
+# By default, there is no need to access Internet the way when these
+# variables get used.
+unset http_proxy
+unset https_proxy
+
 env
 
 {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
