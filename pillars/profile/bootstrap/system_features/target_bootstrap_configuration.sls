@@ -9,9 +9,8 @@
 {% set project_name = props['project_name'] %}
 {% set profile_name = props['profile_name'] %}
 {% set master_minion_id = props['master_minion_id'] %}
-{% set is_generic_profile = props['is_generic_profile'] %}
+{% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
 {% set default_username = props['default_username'] %}
-{% set current_task_branch = props['current_task_branch'] %}
 
 # Import `maven_repo_names`.
 {% set maven_repo_names_path = profile_root.replace('.', '/') + '/common/system_maven_artifacts/maven_repo_names.yaml' %}
@@ -23,39 +22,17 @@
 {% set dynamic_build_descriptor_path = profile_root.replace('.', '/') + '/dynamic_build_descriptor.yaml' %}
 {% import_yaml dynamic_build_descriptor_path as dynamic_build_descriptor %}
 
-# This is in-plave macro for common logic to set repo branch name.
-# The indentation has to be preserved for proper YAML rendering.
-{% macro set_repo_branch_name(repo_name, default_branch) %}
-                # NOTE: Quick fix for pillars which deal with released
-                #       dyn build desc (when normal branches should be used
-                #       and not ugly long build branches).
-                #       We only need to use build branches
-                #       during build pipeline.
-                {% if 'released' in dynamic_build_descriptor and dynamic_build_descriptor['released'] %}
-                branch_name: '{{ default_branch }}'
-                {% else %}
-
-                {% if 'build_branches' in dynamic_build_descriptor %}
-                {% set branch_name = dynamic_build_descriptor['build_branches'][repo_name] %}
-                branch_name: '{{ branch_name }}'
-                {% else %}
-                branch_name: '{{ default_branch }}'
-                {% endif %}
-
-                {% endif %}
-{% endmacro %}
-
 system_features:
 
     target_bootstrap_configuration:
 
         # The very initial sources (symlinks) to make Salt operational.
         # NOTE: These are only `states` and `pillars`. Even though there can
-        #       be more than one repo for `states, only the common one
+        #       be more than one repo for `states`, only the `common` one
         #       is specified (which bootstraps the rest).
         bootstrap_sources:
             states: common-salt-states
-            {% if is_generic_profile %}
+            {% if use_pillars_from_states_repo %}
             pillars: {{ project_name }}-salt-states
             {% else %}
             pillars: {{ project_name }}-salt-pillars
@@ -81,7 +58,6 @@ system_features:
                 export_enabled: False
                 export_method: clone
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
             {% endif %}
 
             # Salt states.
@@ -91,7 +67,6 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
 
             {% if project_name != 'common' %}
             {% set repo_name = project_name + '-salt-states' %}
@@ -99,7 +74,6 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
             {% endif %}
 
             # Salt resources.
@@ -115,7 +89,6 @@ system_features:
                 #       using `checkout-index` method.
                 export_method: checkout-index
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
 
             {% if project_name != 'common' %}
             {% set repo_name = project_name + '-salt-resources' %}
@@ -129,10 +102,17 @@ system_features:
                 #       using `checkout-index` method.
                 export_method: checkout-index
                 export_format: dir
-                {{ set_repo_branch_name(repo_name, current_task_branch) }}
             {% endif %}
 
             # Salt pillars.
+
+            # NOTE: The main `pillars` repository is NOT considered
+            #       when generic profile from `states` repository is used.
+            #       However, `bootstrap-target` is still used to generate
+            #       bootstrap target pillar.
+            {% if use_pillars_from_states_repo %}
+
+            {% else %}
 
             {% set repo_name = project_name + '-salt-pillars' %}
             {{ repo_name }}:
@@ -140,44 +120,36 @@ system_features:
                 export_enabled: False
                 export_method: clone
                 export_format: dir
-                # If it was actually exportable, the default for
-                # target pillar repository would be profile name.
-                {{ set_repo_branch_name(repo_name, profile_name) }}
+
+            {% endif %} # use_pillars_from_states_repo
 
             # We only need to export pillars for target environment
             # but rename them.
             {% set repo_name = project_name + '-salt-pillars.bootstrap-target' %}
             {{ repo_name }}:
+                # NOTE: During the build, target pillar is selected and
+                # the repository is adjusted to point to the branch
+                # with corresponding profile.
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                # NOTE: Choice of the target pillar is special.
-                # During the build, target pillar is selected and
-                # the repository is adjusted to point to the branch
-                # with corresponding profile. The following logic
-                # makes sure that the target pillar is influenced
-                # by the selection.
-                # NOTE: Quick fix for pillars which deal with released
-                #       dyn build desc (when normal branches should be used
-                #       and not ugly long build branches).
-                #       We only need to use build branches
-                #       during build pipeline.
-                {% if 'released' in dynamic_build_descriptor and dynamic_build_descriptor['released'] %}
-                branch_name: '{{ profile_name }}'
-                {% else %}
-
-                {% if 'environ' in dynamic_build_descriptor and 'TARGET_PROFILE_NAME' in dynamic_build_descriptor['environ'] %}
-                {% set branch_name = dynamic_build_descriptor['environ']['TARGET_PROFILE_NAME'] %}
-                branch_name: '{{ branch_name }}'
-                {% else %}
-                branch_name: '{{ profile_name }}'
-                {% endif %}
-
-                {% endif %}
                 # This is required.
                 # Pillars repository considered as "target" in the "source" environment
                 # becomes "source" configuration in the "target" environment.
                 target_repo_name: {{ project_name }}-salt-pillars
+
+            # Repository with build history.
+
+            {% set repo_name = project_name + '-build-history' %}
+            {{ repo_name }}:
+                # NOTE: Disable export, it is not used.
+                export_enabled: False
+                # NOTE: When export enabled, in order to
+                #       cut size of resources repository,
+                #       get only checked out data (without history)
+                #       using `checkout-index` method.
+                export_method: checkout-index
+                export_format: dir
 
             # Maven component repositories.
 
@@ -187,7 +159,6 @@ system_features:
                 export_enabled: False
                 export_method: git-archive
                 export_format: tar
-                branch_name: ~
 
             {% endfor %}
 

@@ -68,7 +68,7 @@ def set_salt_states_and_pillars_symlinks(
     pillars_repo_abs_path,
     projects_states_repo_abs_paths,
     bootstrap_target_pillars_repo_abs_path,
-    is_generic_profile,
+    use_pillars_from_states_repo,
     load_bootstrap_target_envs,
     project_name,
     profile_name,
@@ -136,7 +136,7 @@ def set_salt_states_and_pillars_symlinks(
     # Note that in case of generic profile instead of `pillars_repo_abs_path`
     # `states` repo of the project is used instead.
     effective_pillars_repo_abs_path = None
-    if is_generic_profile:
+    if use_pillars_from_states_repo:
         if project_name != 'common':
             effective_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
         else:
@@ -277,7 +277,7 @@ def do(action_context):
         pillars_repo_abs_path = pillars_destination_dir,
         projects_states_repo_abs_paths = action_context.conf_m.link_sources['projects_states_repo_abs_paths'],
         bootstrap_target_pillars_repo_abs_path = action_context.conf_m.link_sources['bootstrap_target_pillars_repo_abs_path'],
-        is_generic_profile = action_context.conf_m.link_sources['is_generic_profile'],
+        use_pillars_from_states_repo = action_context.conf_m.link_sources['use_pillars_from_states_repo'],
         load_bootstrap_target_envs = action_context.conf_m.link_sources['load_bootstrap_target_envs'],
         project_name = action_context.conf_m.project_name,
         profile_name = action_context.conf_m.profile_name,

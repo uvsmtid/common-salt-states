@@ -6,36 +6,140 @@
 
   <builders>
 
-    {#
-    DISABLE copying artifacts because it is the very first job in the pipeline.
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
     {{ copy_artifacts(job_config, job_environ) }}
-    #}
 
     <hudson.tasks.Shell>
       <command>
-
-        set -e
-        set -u
-
-        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
-        exit 0
-        {% endif %}
-
-        {% if 'skip_if_true' in job_config %}
-        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
-        then
-            exit 0
-        fi
-        {% endif %}
 
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
 
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
+
+        #######################################################################
+        # Check that specified author is able to commit in every repository.
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        TEMP_FILE_NAME="${SALT_PROFILE_NAME}-$(date "+%Y-%m-%dT%H-%M-%S.%N")"
+        touch "${TEMP_FILE_NAME}"
+        git add "${TEMP_FILE_NAME}"
+        set +e
+        git commit --dry-run --author="${GIT_AUTHOR_EMAIL}"
+        RET_VAL="${?}"
+        set -e
+        git reset "${TEMP_FILE_NAME}"
+        rm "${TEMP_FILE_NAME}"
+        test "${RET_VAL}" == "0"
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
+        # Set build title.
+
+        BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
+        SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
+        export BUILD_TITLE="${BUILD_TIMESTAMP}-{{ job_environ['job_name'] }}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-${BUILD_LABEL}"
+
+        #######################################################################
+        # Set env vars.
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
+        {{ locate_repository_dynamic_build_descriptor(job_config, job_environ, check_repo_dyn_build_desc = False) }}
+
+        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+
+        #######################################################################
+        # Make sure target profile pillars repo is set to required branch.
+
+        {% set target_profile_repo_id = get_repository_id_by_role('target_profile_pillars_role') %}
+
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][target_profile_repo_id]['git'] %}
+        export TARGET_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        # NOTE: `TARGET_PROFILE_NAME` may be undefined.
+        #       Assume default is empty.
+        if [ -n "${TARGET_PROFILE_NAME:-}" ]
+        then
+
+            cd "${TARGET_PROFILE_REPO_PATH}"
+
+            git checkout "${TARGET_PROFILE_NAME}"
+
+            cd -
+
+        fi
+
+        #######################################################################
+        # Initialize repository build descriptor.
+
+        {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
+
+        cd "${REPO_DYN_BUILD_DESC_REPO_PATH}"
+
+        # Make sure `build_history_role` is clean.
+        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
+        git add --all
+        git diff-index --ignore-submodules=dirty --exit-code HEAD
+
+        # Create build branch in `build_history_role`.
+        # Creating build branches for other repositories is later -
+        # `build_history_role` is special one which requires tracking
+        # build from the start of the pipeline.
+        if [ "${PARENT_BUILD_TITLE}" != '_' ]
+        then
+            # Reuse contents of parent (until overwritten) -
+            # copy directory named after parent build title.
+            git checkout -b "${BUILD_TITLE}" "${PARENT_BUILD_TITLE}"
+            cp -r "${PARENT_BUILD_TITLE}" "${BUILD_TITLE}"
+
+            # NOTE: If parent build title is used, its directory
+            #       with all contents is left untouched.
+        else
+            # No parent - start from clean orphan branch.
+
+            # NOTE: Orphan branch is used making it unnecessary to
+            #       recover from failed builds into original branch.
+            # See: http://stackoverflow.com/a/5690048/441652
+            git checkout --orphan "${BUILD_TITLE}"
+            git rm -rf .
+            git clean -xdf
+
+            # Create destination directory.
+            mkdir -p "$(dirname "${REPO_DYN_BUILD_DESC_PATH}")"
+        fi
+
+        # Initialize with empty dict for dyn build desc.
+        echo "{}" > "${REPO_DYN_BUILD_DESC_PATH}"
+
+        echo "${BUILD_TIMESTAMP}"     | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_timestamp"
+        echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_title"
+        echo "${SOURCE_PROFILE_NAME}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "source_profile_name"
+
+        echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_branches:{{ build_history_repo_id }}"
+        echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_branches:{{ build_history_repo_id }}"
+
+        # Make initial commit.
+        git add --all
+        git commit --author "${GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
+
+        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+        echo "${CURRENT_COMMIT_ID}"  | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_commit_ids:{{ build_history_repo_id }}"
+
+        cd -
 
         #######################################################################
         # Locate dynamic build descriptor.
@@ -45,59 +149,124 @@
         {{ locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = False) }}
 
         # This is the first job in the init_pipeline.
-        # Clean contents of the initial and latest dyn build desc.
-        echo > "${LATEST_DYN_BUILD_DESC_PATH}"
-        echo > "${INIT_DYN_BUILD_DESC_PATH}"
+        # Clean contents of the latest dyn build desc.
+        cp "${REPO_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
 
         # Clean job dyn build desc as well. Unlike other jobs, this one
         # is the first in entire "global" pipeline and inherits no
         # info from the previous jobs.
-        echo > "${JOB_DYN_BUILD_DESC_PATH}"
+        cp "${REPO_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
+
+        # Remove any parent dyn build desc as it is not yet identified.
+        rm -f "${PARENT_DYN_BUILD_DESC_PATH}"
 
         # There must be no sign of produced artifact at the start.
-        rm -f "initial.dynamic_build_descriptor.yaml"
+        {% if 'restore_artifacts_from_parent_build' in job_config %}
+        {% for produced_artifact in job_config['restore_artifacts_from_parent_build'] %}
+        rm -f '{{ produced_artifact }}'
+        {% endfor %}
+        {% endif %}
+
+        # There must be no sign of initial build descriptor.
+        {% if 'initial_dynamic_build_descriptor' in job_config %}
+        # Produce initial dynamic build descriptor.
+        rm -f '{{ job_config['initial_dynamic_build_descriptor'] }}'
+        {% endif %}
+
+        #######################################################################
+        # Restore parent build descriptor.
+
+        if [ "${PARENT_BUILD_TITLE}" != '_' ]
+        then
+            # Export (the latest) dynamic build descriptor from
+            # specified build title (branch).
+            # See:
+            #    http://stackoverflow.com/a/5324532/441652
+            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'dynamic_build_descriptor.yaml'
+            mv 'dynamic_build_descriptor.yaml' "${PARENT_DYN_BUILD_DESC_PATH}"
+
+            {% if 'restore_artifacts_from_parent_build' in job_config %}
+            # Restore artifacts which might be used as a fingerprint
+            # to link all jobs together.
+            {% for restored_artifact in job_config['restore_artifacts_from_parent_build'] %}
+            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x '{{ restored_artifact }}'
+            {% endfor %}
+            {% endif %}
+
+        fi
 
         #######################################################################
         # Write environment variables into dynamic build descriptor.
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import store_environment_python_script with context %}
 
-        # Print environment variables.
-        env
+        # TODO: Filter sensitive environment variables.
 
         # In-place Python script. Write it into a file to be executed later.
         ENV_PYTHON_SCRIPT=$(mktemp)
-        cat &lt;&lt;HEREDOC_MARKER &gt; ${ENV_PYTHON_SCRIPT}
+cat &lt;&lt;HEREDOC_MARKER &gt; ${ENV_PYTHON_SCRIPT}
 {{ store_environment_python_script(job_config, job_environ) }}
 HEREDOC_MARKER
 
         # Write output of env command into dynamic build descriptor.
-        env | python ${ENV_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH}
+        python "${ENV_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
         # Write parameters to the file used by subsequent jobs.
+
+        # NOTE: The properties are pretty useless at the moment.
+        #       All information is exchanged through dyn build desc.
 
         # Locate and create clean properties file.
         BUILD_PROPS_PATH='{{ job_environ['jenkins_dir_path'] }}/build_pipeline/build.properties'
         mkdir -p "$(dirname "$BUILD_PROPS_PATH")"
         echo > "$BUILD_PROPS_PATH"
 
-        # Write each build parameter (property) into the file.
+        # Write each build parameter into the properties file.
         {% for param_name in job_config['build_parameters'].keys() %}
         echo "{{ param_name }}=${{ param_name }}" >> "$BUILD_PROPS_PATH"
+        # Even though build parameters are part of environment variables,
+        # save them into special section of dynamic build descriptor.
+        echo "${{ param_name }}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_parameters:{{ param_name }}"
         {% endfor %}
+
+        # In addition to that, store BUILD_TITLE.
+        echo "BUILD_TITLE=${BUILD_TITLE}" >> "$BUILD_PROPS_PATH"
 
         #######################################################################
         # Update dynamic build descriptor.
 
+        {% if 'initial_dynamic_build_descriptor' in job_config %}
+
+        # Produce initial dynamic build descriptor.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "{{ job_config['initial_dynamic_build_descriptor'] }}"
+
+        # Copy initial dyn build desc into
+        # `build_history_role` repository.
+        # This is needed to be able to specify current build as
+        # parent build in the future.
+        cp "{{ job_config['initial_dynamic_build_descriptor'] }}" "${REPO_DYN_BUILD_DESC_REPO_PATH}/${BUILD_TITLE}"
+
+        {% endif %}
+
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
 
-        # Save initial dynamic build descriptor to save it for verification.
-        cp "${JOB_DYN_BUILD_DESC_PATH}" "${INIT_DYN_BUILD_DESC_PATH}"
+        {% if 'restore_artifacts_from_parent_build' in job_config %}
 
-        # Present as initial dyn build desc as an artifact
-        # build by this first job (for fingerprinting).
-        cp "${INIT_DYN_BUILD_DESC_PATH}" "initial.dynamic_build_descriptor.yaml"
+        # Make sure all other artifacts producible by this first job
+        # (for fingerprinting) are present.
+        {% for produced_artifact in job_config['restore_artifacts_from_parent_build'] %}
+        ls -l "{{ produced_artifact }}"
+        {% endfor %}
+
+        {% endif %}
+
+        #######################################################################
+        # Script footer
+
+        {{ common_build_script_footer(job_config, job_environ) }}
+
+        #######################################################################
 
       </command>
     </hudson.tasks.Shell>
@@ -105,17 +274,8 @@ HEREDOC_MARKER
 
   <publishers>
 
-    <!--
-        Archive and Fingerprint initial dynamic build descriptor.
-        This is only needed to trace jobs of the same pipeline execution.
-    -->
-    <hudson.tasks.ArtifactArchiver>
-      <artifacts>initial.dynamic_build_descriptor.yaml</artifacts>
-      <allowEmptyArchive>false</allowEmptyArchive>
-      <onlyIfSuccessful>true</onlyIfSuccessful>
-      <fingerprint>true</fingerprint>
-      <defaultExcludes>true</defaultExcludes>
-    </hudson.tasks.ArtifactArchiver>
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
 
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
     {{ parameterized_job_triggers_macro(job_config, job_environ) }}

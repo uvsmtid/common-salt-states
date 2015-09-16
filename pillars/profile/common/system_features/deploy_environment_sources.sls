@@ -8,9 +8,8 @@
 
 {% set project_name = props['project_name'] %}
 {% set master_minion_id = props['master_minion_id'] %}
-{% set is_generic_profile = props['is_generic_profile'] %}
+{% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
 {% set profile_name = props['profile_name'] %}
-{% set current_task_branch = props['current_task_branch'] %}
 
 # Import `maven_repo_names`.
 {% set maven_repo_names_path = profile_root.replace('.', '/') + '/common/system_maven_artifacts/maven_repo_names.yaml' %}
@@ -69,6 +68,24 @@ system_features:
         # Name of the directory for the initially deployed control scripts.
         control_scripts_dir_basename: 'control'
 
+        repository_roles:
+
+            build_history_role:
+                - '{{ project_name }}-build-history'
+
+            source_profile_pillars_role:
+                - '{{ project_name }}-salt-pillars'
+
+            target_profile_pillars_role:
+                - '{{ project_name }}-salt-pillars.bootstrap-target'
+
+            effective_pillars_role:
+            {% if use_pillars_from_states_repo %}
+                - '{{ project_name }}-salt-states'
+            {% else %}
+                - '{{ project_name }}-salt-pillars'
+            {% endif %}
+
         # Specify type per repository:
         #  - `svn` for Subversion.
         #  - `git` for Git.
@@ -98,9 +115,23 @@ system_features:
 
             # Salt pillars.
 
+            # NOTE: The main `pillars` repository is NOT considered
+            #       when generic profile from `states` repository is used.
+            #       However, `bootstrap-target` is still used to generate
+            #       bootstrap target pillar.
+            {% if use_pillars_from_states_repo %}
+
+            {% else %}
+
             '{{ project_name }}-salt-pillars': git
 
+            {% endif %} # use_pillars_from_states_repo
+
             '{{ project_name }}-salt-pillars.bootstrap-target': git
+
+            # Repository with build history.
+
+            '{{ project_name }}-build-history': git
 
             # Maven repositories.
 
@@ -149,15 +180,29 @@ system_features:
 
             # Salt pillars.
 
+            # NOTE: The main `pillars` repository is NOT considered
+            #       when generic profile from `states` repository is used.
+            #       However, `bootstrap-target` is still used to generate
+            #       bootstrap target pillar.
+            {% if use_pillars_from_states_repo %}
+
+            {% else %}
+
             '{{ project_name }}-salt-pillars': '/environment.sources/{{ project_name }}-salt-pillars.git'
 
+            {% endif %} # use_pillars_from_states_repo
+
             '{{ project_name }}-salt-pillars.bootstrap-target': '/environment.sources/{{ project_name }}-salt-pillars.bootstrap-target.git'
+
+            # Repository with build history.
+
+            '{{ project_name }}-build-history': '/environment.sources/{{ project_name }}-build-history.git'
 
             # Maven repositories.
 
             {% for maven_repo_name in maven_repo_names %}
 
-            '{{ maven_repo_name }}': '/environment.sources/observer.git/maven/{{ maven_repo_name }}.git'
+            '{{ maven_repo_name }}': '/environment.sources/{{ maven_repo_name }}.git'
 
             {% endfor %}
 
@@ -182,9 +227,6 @@ system_features:
         #   `origin_url`
         #     For Git only.
         #     Specify remote URL (origin) to clone repo on all minions.
-        #   `branch_name`
-        #     For Git only.
-        #     Specify branch name to be checked out.
         #   `root_url`
         #     For Subversion only.
         #     Specify root URL of repository.
@@ -203,8 +245,6 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git'
 
-                    branch_name: 'develop'
-
             {% endif %}
 
             # Salt states.
@@ -215,8 +255,6 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/common-salt-states.git'
 
-                    branch_name: '{{ current_task_branch }}'
-
             {% if project_name != 'common' %}
             '{{ project_name }}-salt-states':
                 git:
@@ -224,7 +262,6 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-states.git'
 
-                    branch_name: '{{ current_task_branch }}'
             {% endif %}
 
             # Salt resources.
@@ -235,8 +272,6 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/common-salt-resources.git'
 
-                    branch_name: '{{ current_task_branch }}'
-
             {% if project_name != 'common' %}
             '{{ project_name }}-salt-resources':
                 git:
@@ -244,10 +279,17 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-resources.git'
 
-                    branch_name: '{{ current_task_branch }}'
             {% endif %}
 
             # Salt pillars.
+
+            # NOTE: The main `pillars` repository is NOT considered
+            #       when generic profile from `states` repository is used.
+            #       However, `bootstrap-target` is still used to generate
+            #       bootstrap target pillar.
+            {% if use_pillars_from_states_repo %}
+
+            {% else %}
 
             '{{ project_name }}-salt-pillars':
                 git:
@@ -255,7 +297,7 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.git'
 
-                    branch_name: '{{ profile_name }}'
+            {% endif %} # use_pillars_from_states_repo
 
             '{{ project_name }}-salt-pillars.bootstrap-target':
                 git:
@@ -263,7 +305,13 @@ system_features:
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.bootstrap-target.git'
 
-                    branch_name: '{{ profile_name }}'
+            # Repository with build history.
+
+            '{{ project_name }}-build-history':
+                git:
+                    source_system_host: '{{ master_minion_id }}'
+
+                    origin_uri_ssh_path: 'Works/{{ project_name }}-build-history.git'
 
             # Maven component repositories.
 
@@ -274,8 +322,6 @@ system_features:
                     source_system_host: '{{ master_minion_id }}'
 
                     origin_uri_ssh_path: 'Works/{{ maven_repo_name }}.git'
-
-                    branch_name: 'develop'
 
             {% endfor %}
 

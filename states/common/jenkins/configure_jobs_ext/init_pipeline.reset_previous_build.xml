@@ -12,43 +12,36 @@
     <hudson.tasks.Shell>
       <command>
 
-        set -e
-        set -u
-
-        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
-        exit 0
-        {% endif %}
-
-        {% if 'skip_if_true' in job_config %}
-        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
-        then
-            exit 0
-        fi
-        {% endif %}
-
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
 
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
 
         #######################################################################
         # Locate dynamic build descriptor.
 
         # NOTE: When we recover, we do not need to verify
-        #       initial dyn build desc. In fact, it cannot be verified
-        #       as this is either standalone (no initial dyn build desc)
+        #       recovery dyn build desc. In fact, it cannot be verified
+        #       as this is either standalone (no recovery dyn build desc)
         #       or belongs to a new build (with different dyn build desc).
 
         {{ locate_dynamic_build_descriptor(job_config, job_environ, check_init_dyn_build_desc = False) }}
 
-        # IMPORTANT: We need to update dynamic bulid descriptor
-        #            for the next job in the pipeline now (as there is
-        #            no more updates of dyn build desc within current
-        #            pipeline) to pass the info generated in the jobs before.
-        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+        # IMPORTANT: We need to pass dyn build desc for the next job
+        #            in the pipeline now (as there is no more
+        #            updates of dyn build desc within this job)
+        #            to pass the info generated in the jobs before.
+        # NOTE: Skip dyn build desc commit because there is
+        #       no updates expected during recovery.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
 
         # Detect if recovery is needed from the previous build.
         if [ ! -f "${RECOVERY_DYN_BUILD_DESC_PATH}" ]
@@ -57,6 +50,10 @@
             # the previous build - nothing to do.
             echo "No need to recover from the previous build".
 
+            # Set build unstable.
+            # See: http://stackoverflow.com/a/8822743/441652
+            eval "${JENKINS_CLI_TOOL_INVOKE_STRING} set-build-result unstable"
+
             exit 0
         fi
 
@@ -64,22 +61,60 @@
         cp "${RECOVERY_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
-        # In-place Python script which returns data under
-        # specified key in destination dict on stdout.
+        # Normally, there should not be any changes or untracked files
+        # as they are either ignored (by `.gitignore`) or
+        # committed during the build pipeline.
+        # Before proceeding with recovery, check if there are any local
+        # changes or untracked files and stash them.
 
-        KEY_GETTER_PYTHON_SCRIPT=$(mktemp)
-        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_GETTER_PYTHON_SCRIPT}
-{{ key_getter_python_script(job_config, job_environ) }}
-HEREDOC_MARKER
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: We ignore `build_history_role` repo as it must start clean.
+
+        {% else %}
+
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
+        git add --all
+        if ! git diff-index --ignore-submodules=dirty --exit-code HEAD
+        then
+            git stash
+
+            # Set job status to failed (but don't fail now, restore first)
+            # in order to highlight stashed changes.
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                JOB_STATUS='2'
+            fi
+        fi
+
+        cd -
+
+        {% endif %}
+
+        {% endfor %}
 
         #######################################################################
-        # Switch back to initial branches.
+        # Switch back to recovery branches.
 
         # NOTE: We assume that repository is available
         #       locally on Jenkins slave.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: The `build_history_role` repository does not need to
+        #       switch back anywhere. It always starts from orphan branch.
+
+        {% else %}
+
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
@@ -88,37 +123,59 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
 
         # Current branch and build branch are normally the same at this point.
         # However, allow it to be different if current branch is
-        # switched back to initial branch (possibly manually,
+        # switched back to recovery branch (possibly manually,
         # possibly by this job, or... it should not be a problem).
         # The main point is to find build branch (i.g. to make sure that
         # the build actually happend and restore uncommited files).
-        if [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH_NAME}" ]
+        if [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH}" ]
         then
-            if [ "${CURRENT_BRANCH}" != "${INITIAL_BRANCH}" ]
+
+            # This is already suspicious.
+            if [ "${JOB_STATUS}" -lt '1' ]
             then
-                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH_NAME} != ${INITIAL_BRANCH}"
+                JOB_STATUS='1'
+            fi
+
+            if [ "${CURRENT_BRANCH}" != "${RECOVERY_BRANCH}" ]
+            then
+                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH} != ${RECOVERY_BRANCH}"
                 exit 1
             fi
         fi
 
         cd "${REPO_PATH}"
-        git checkout "${INITIAL_BRANCH}"
+        git checkout "${RECOVERY_BRANCH}"
         cd -
+
+        {% endif %}
 
         {% endfor %}
 
         #######################################################################
         # Restore uncommitted local content to the conditions
-        # they were at the begining of the build pipeline
-        #
+        # they were at the begining of the build pipeline.
+        # NOTE: This does not apply to repos of `build_history_role`.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: Build branches in `build_history_role` repository should not
+        #       be recovered - they are meant to contain the build history
+        #       as it was captured. The `build_history_role` repository
+        #       should only be switched to its original branch.
+        # NOTE: There is also nothing to be recovered.
+        #       The `build_history_role` repository is required to be
+        #       clean at the start of the pipeline.
+
+        {% else %}
+
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
@@ -127,44 +184,74 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
+        RECOVERY_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_commit_ids:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
 
-        RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}")"
+        RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}" "NOT_AVAILABLE")"
 
         cd "${REPO_PATH}"
 
-        # This step restores all local changes committed at the beginning.
-        git checkout "${RESTORE_POINT_COMMIT}"
+        # The case of unavailable restore point may happen
+        # when previous `init_pipeline` failed even before preparation
+        # to making any changes.
+        if [ "${RESTORE_POINT_COMMIT}" != "NOT_AVAILABLE" ]
+        then
+
+            # This step restores all local changes committed at the beginning.
+            git checkout "${RESTORE_POINT_COMMIT}"
+
+        else
+
+            # This is rather unexpected, but not critical.
+            if [ "${JOB_STATUS}" -lt '1' ]
+            then
+                JOB_STATUS='1'
+            fi
+
+        fi
 
         # This step resets HEAD to the commit before the beginning
         # while leaving all local files as they are at restore point.
-        git reset "${INITIAL_BRANCH}"
+        # We cannot simply checkout the branch as this would also set
+        # local files into recovery commits instead of restore point.
+        git reset "${RECOVERY_COMMIT_ID}"
 
-        # This step simply checks out branch (moves away from detached HEAD).
-        git checkout "${INITIAL_BRANCH}"
+        # This step moves away from detached HEAD to specified branch.
+        # All modifications to local files produced by checking out
+        # restore point and resetting to recovery commit are
+        # left untouched ("rebased" on top of RECOVERY branch).
+        git checkout "${RECOVERY_BRANCH}"
 
         cd -
+
+        {% endif %}
 
         {% endfor %}
 
         #######################################################################
         # Remove all build branches.
-        #
-        # TODO: This better be done after promotion (which causes tagging).
+        # NOTE: This does not apply to repos of `build_history_role`.
+        #       In other words, it is almost always possible to restore
+        #       these build branches from info in `build_history_role`
+        #       (unless commits are garbage collected).
 
-        # TODO: In order to use environment variable, it must be set in
-        #       properties file for this job.
-        #       If this job is run as a standalone one (not part of
-        #       pipeline build), the properties should be restored from
-        #       dynamic build descriptor (because this variable is only
-        #       set by user in the first job of the pipeline).
-        REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "environ:REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION")"
-        if [ "${REMOVE_BUILD_BRANCHES_AFTER_PIPELINE_COMPLETION}" == "true" ]
-        then
+        # TODO: This better be done after promotion (which causes tagging).
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: Build branches in `build_history_role` repository should not
+        #       be removed. In fact, build branches should be removed
+        #       everywhere unconditionally except `build_history_role`
+        #       repository. There is even a need for a job which
+        #       restores build branches as they were from
+        #       `build_history_role` repository.
+
+        {% else %}
+
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
@@ -173,25 +260,39 @@ HEREDOC_MARKER
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
-        BUILD_BRANCH_NAME="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${INITIAL_BRANCH}"
+        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
+        test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
 
         cd "${REPO_PATH}"
-        # Note that we ignore exit code (the command may fail and only logs may show why).
+        # We need to force the deletion because branches may contain
+        # unmerges changes - pipeline designed so that changes are saved.
+        # Even if forced command fails, let's continue and indicate
+        # cleanup as unstable - the old build branch leftover
+        # is not critical.
         set +e
-        git branch -D "${BUILD_BRANCH_NAME}"
+        git branch -vv -D "${BUILD_BRANCH}"
+        RET_VAL="${?}"
         set -e
+        if [ "${RET_VAL}" != "0" ]
+        then
+            if [ "${JOB_STATUS}" -lt '1' ]
+            then
+                JOB_STATUS='1'
+            fi
+        fi
         cd -
 
-        {% endfor %}
+        {% endif %}
 
-        fi
+        {% endfor %}
 
         #######################################################################
         # Update dynamic build descriptor.
 
-        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+        # NOTE: Skip any updates.
+        #       The required dyn build desc is already passed to the next job.
+        #       There is no updates expected during recovery.
 
         # The purpose of this job is to indicate to itself (or its clones)
         # that all changes made to set up environment for the previous build
@@ -201,12 +302,20 @@ HEREDOC_MARKER
         rm "${RECOVERY_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
+        # Script footer
+
+        {{ common_build_script_footer(job_config, job_environ) }}
+
+        #######################################################################
 
       </command>
     </hudson.tasks.Shell>
   </builders>
 
   <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
 
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
     {{ parameterized_job_triggers_macro(job_config, job_environ) }}

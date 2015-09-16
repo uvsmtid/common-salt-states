@@ -50,7 +50,7 @@
 # <<<
 {% if grains['os_platform_type'].startswith('win') %}
 
-install_observer_java_on_windows:
+install_default_java_on_windows:
     cmd.run:
         - name: "echo TODO: java installation"
 

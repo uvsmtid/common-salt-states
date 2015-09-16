@@ -254,7 +254,7 @@ in addition to those mentioned in [Salt configuration][7] document
 
     *   `this_system_keys:load_bootstrap_target_envs`
 
-        It should list at least target profile `TRG_env_profile`.
+        It should list at least one target profile `TRG_env_profile`.
 
     ```
     this_system_keys:

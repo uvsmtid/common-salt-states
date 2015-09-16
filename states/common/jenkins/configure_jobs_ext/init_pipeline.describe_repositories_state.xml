@@ -12,27 +12,18 @@
     <hudson.tasks.Shell>
       <command>
 
-        set -e
-        set -u
-
-        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
-        exit 0
-        {% endif %}
-
-        {% if 'skip_if_true' in job_config %}
-        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
-        then
-            exit 0
-        fi
-        {% endif %}
-
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
 
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_getter_python_script with context %}
-        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import key_setter_python_script with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
 
         #######################################################################
         # Locate dynamic build descriptor.
@@ -40,17 +31,7 @@
         {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
 
         #######################################################################
-        # In-place Python script which captures stdin data under
-        # specified key in destination dict.
-
-        KEY_SETTER_PYTHON_SCRIPT=$(mktemp)
-        cat &lt;&lt;HEREDOC_MARKER &gt; ${KEY_SETTER_PYTHON_SCRIPT}
-{{ key_setter_python_script(job_config, job_environ) }}
-HEREDOC_MARKER
-
-        #######################################################################
         # Capture into dynamic build descriptor:
-        # - build timestamp
         # - current branch names
         # - current commit ids
         # - build branch names
@@ -59,37 +40,111 @@ HEREDOC_MARKER
         # NOTE: We assume that repository is available
         #       locally on Jenkins slave.
 
-        BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
-        SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
-        BUILD_TITLE="${BUILD_TIMESTAMP}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-SNAPSHOT-${BUILD_LABEL}"
-
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+
+        # NOTE: There is no need to collect the same info for
+        #       `build_history_role` repository.
+
+        # NOTE: Do not use `INITIAL_BRANCH` and `INITIAL_SHORT_COMMIT_ID` in
+        #       the branch name of `build_history_role`. Otherwise, it is
+        #       difficult to find parent build descriptor by build title.
+
+        {% else %}
+
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
+
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
         # HEAD value means that repository is at detached head.
         test "$CURRENT_BRANCH" != "HEAD"
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
-        CURRENT_COMMIT_ID_SHORT="$(git rev-parse --short --verify HEAD)"
-        BUILD_BRANCH_NAME="${CURRENT_BRANCH}-${CURRENT_COMMIT_ID_SHORT}-${BUILD_TITLE}"
+        CURRENT_SHORT_COMMIT_ID="$(git rev-parse --short --verify HEAD)"
+
+        if [ "${PARENT_BUILD_TITLE}" != "_" ]
+        then
+            INITIAL_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}")"
+            INITIAL_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}")"
+            INITIAL_SHORT_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "initial_short_commit_ids:{{ repo_name }}")"
+        else
+            INITIAL_BRANCH="${CURRENT_BRANCH}"
+            INITIAL_COMMIT_ID="${CURRENT_COMMIT_ID}"
+            INITIAL_SHORT_COMMIT_ID="${CURRENT_SHORT_COMMIT_ID}"
+        fi
+
+        RECOVERY_BRANCH="${CURRENT_BRANCH}"
+        RECOVERY_COMMIT_ID="${CURRENT_COMMIT_ID}"
+
+        BUILD_BRANCH="${INITIAL_BRANCH}-${INITIAL_SHORT_COMMIT_ID}-${BUILD_TITLE}"
+
         UNTRACKED_ITEMS="$(git ls-files --other --exclude-standard --directory | wc -l)"
         MODIFIED_ITEMS="$((git diff --name-only --cached --ignore-submodules=dirty ; git diff --name-only --ignore-submodules=dirty) | sort -u | wc -l)"
+
+        if [ "${PARENT_BUILD_TITLE}" != "_" ]
+        then
+            # Take latest commits from parent dynamic build descriptor.
+            REQUIRED_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "latest_branches:{{ repo_name }}")"
+            REQUIRED_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}")"
+        else
+            # Trivial case.
+            REQUIRED_BRANCH="${CURRENT_BRANCH}"
+            REQUIRED_COMMIT_ID="${CURRENT_COMMIT_ID}"
+        fi
+
+        # Regardles of whether there is parent build or not,
+        # latest ones are those where the build should continue from.
+        LATEST_BRANCH="${REQUIRED_BRANCH}"
+        LATEST_COMMIT_ID="${REQUIRED_COMMIT_ID}"
+
+        echo "$RECOVERY_BRANCH"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}"
+        echo "$RECOVERY_COMMIT_ID"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_commit_ids:{{ repo_name }}"
+        echo "$INITIAL_BRANCH"           | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
+        echo "$INITIAL_COMMIT_ID"        | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
+        echo "$INITIAL_SHORT_COMMIT_ID"  | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_short_commit_ids:{{ repo_name }}"
+        echo "$REQUIRED_BRANCH"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_branches:{{ repo_name }}"
+        echo "$REQUIRED_COMMIT_ID"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_commit_ids:{{ repo_name }}"
+        echo "$LATEST_BRANCH"            | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "latest_branches:{{ repo_name }}"
+        echo "$LATEST_COMMIT_ID"         | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}"
+        echo "$BUILD_BRANCH"             | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}"
+        echo "$UNTRACKED_ITEMS"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}"
+        echo "$MODIFIED_ITEMS"           | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}"
+
         cd -
 
-        echo "$CURRENT_BRANCH"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
-        echo "$CURRENT_COMMIT_ID" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
-        echo "$BUILD_BRANCH_NAME" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}"
-        echo "$UNTRACKED_ITEMS"   | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}"
-        echo "$MODIFIED_ITEMS"    | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}"
+        {% endif %}
 
         {% endfor %}
+
+        #######################################################################
+        # Verify:
+        # All repositories are actually different directories
+        # (no symlinks from one repository to another).
+        # This is required as switching to build branches and restoring
+        # them will unnecessarily complicate the procedure reducing
+        # overall trust in it.
+
+        DIR_FS_ID_LIST_FILE="$(mktemp)"
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+        stat "${REPO_PATH}/." | grep '^Device:' >> "${DIR_FS_ID_LIST_FILE}"
+        {% endfor %}
+
+        # If there is at least one duplicated line, line is not zero lenght.
+        test -z "$(cat "${DIR_FS_ID_LIST_FILE}" | sort | uniq -d)"
 
         #######################################################################
         # Update dynamic build descriptor.
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # Script footer
+
+        {{ common_build_script_footer(job_config, job_environ) }}
 
         #######################################################################
 
@@ -98,6 +153,9 @@ HEREDOC_MARKER
   </builders>
 
   <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
 
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
     {{ parameterized_job_triggers_macro(job_config, job_environ) }}

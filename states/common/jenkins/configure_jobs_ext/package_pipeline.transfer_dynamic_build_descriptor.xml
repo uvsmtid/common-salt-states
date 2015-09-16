@@ -12,53 +12,88 @@
     <hudson.tasks.Shell>
       <command>
 
-        set -e
-        set -u
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
-        {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
-        exit 0
-        {% endif %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
 
-        {% if 'skip_if_true' in job_config %}
-        if [ "${{ '{' }}{{ job_config['skip_if_true'] }}:-false}" == "true" ]
-        then
-            exit 0
-        fi
-        {% endif %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
+
+        #######################################################################
+        # Load additional macros.
+
+        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+
+        #######################################################################
+        # Make sure target bootstrap profile pillars repo is on required branch.
+
+        # Get location of target bootstrap profile pillars repo.
+        {% set profile_repo_id = get_repository_id_by_role('target_profile_pillars_role') %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][profile_repo_id]['git'] %}
+        export TARGET_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${TARGET_PROFILE_REPO_PATH}"
+
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ profile_repo_id }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
+
+        cd -
+
+        #######################################################################
 
         # Before building bootstrap package this job needs to transfer
         # (with any necessary updates) dynamic build descriptor from
         # the source pillar repository into target pillar repository.
 
-        # TODO: Implement
-        exit 0
+        # Get location of effective pillars (source profile) repo.
+        {% set profile_repo_id = get_repository_id_by_role('effective_pillars_role') %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][profile_repo_id]['git'] %}
+        export SOURCE_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
-        # DISABLED
-        {% if False %}
+        cd "${TARGET_PROFILE_REPO_PATH}"
 
-        #######################################################################
-        # TODO: Move it to build verification job.
-        # Make sure target bootstrap profile pillars repo is on required branch.
-
-        # Get location of target bootstrap profile pillars repo.
-        {% set project_name = pillar['project_name'] %}
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_name + '-salt-pillars.bootstrap-target']['git'] %}
-
-        TARGET_BOOTSTRAP_PROFILE_PILLARS_REPO_PATH='{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}'
-        cd "${TARGET_BOOTSTRAP_PROFILE_PILLARS_REPO_PATH}"
-        git checkout ${TARGET_PROFILE_NAME}
         CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ profile_repo_id }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
+
+        cp "${SOURCE_PROFILE_REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml" "${TARGET_PROFILE_REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
+
+        # Make sure repository became dirty.
+        git diff-index --ignore-submodules=dirty --exit-code HEAD
+
+        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
+        git add --all
+        git status
+        # Commit only if there are changes.
+        # Ignore dirty content in submodules because there is no way to
+        # commit them from top-level repo anyway (and all dirty content
+        # will be committed by children).
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${GIT_AUTHOR_EMAIL}" -m 'Auto-commit: provide dynamic build descriptor'
+
         cd -
 
-        test "$CURRENT_BRANCH" == "${TARGET_PROFILE_NAME}"
+        #######################################################################
+        # Script footer
 
-        {% endif %}
+        {{ common_build_script_footer(job_config, job_environ) }}
+
+        #######################################################################
 
       </command>
     </hudson.tasks.Shell>
   </builders>
 
   <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
 
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
     {{ parameterized_job_triggers_macro(job_config, job_environ) }}
