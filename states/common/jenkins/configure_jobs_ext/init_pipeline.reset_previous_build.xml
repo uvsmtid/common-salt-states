@@ -85,6 +85,14 @@
         then
             git stash
 
+            # NOTE: If the repository is a submodule, `git stash` would leave
+            #       changes done by `git add` still staged.
+            #       We run `git reset` to set them unstaged, otherwise
+            #       `git checkout` for this repository may potentially
+            #       fail due to local modifications (which are only
+            #       "non-stashable" for submodules).
+            git reset
+
             # Set job status to failed (but don't fail now, restore first)
             # in order to highlight stashed changes.
             if [ "${JOB_STATUS}" -lt '2' ]
