@@ -154,24 +154,36 @@ yum install salt-master salt-minion
 
 ### Simplest configuration ###
 
+Minion is identified by its minion id.
+
+Set `id` field in Salt minion configuration in `/etc/salt/minion` file:
+
+```
+id master_minion_id
+```
+
+NOTE: Substitute `master_minion_id` by chosen master minion id.
+
 In order to use all defaults and make sure that Salt minion
 finds Salt master automatically, `salt` hostname should be
 resolvable (by any means: DNS, hosts file, etc.).
 
-In the simplest case of single host with both Salt master and minion
-just add `salt` into your hosts file `/etc/hosts` pointing to
-local IP address:
+In the simplest case to resolve `salt` hostname on Salt master minion
+only just add `salt` into master minion's hosts file `/etc/hosts` pointing
+to local IP address:
 
 ```
-127.0.0.1 salt
+127.0.0.1 salt master_minion_id
 ```
 
-Minion is identified by its minion id.
-Run this command (substitute `some_minion_id` with something meaningful):
+NOTE: Substitute `master_minion_id` by chosen master minion id.
 
-```
-echo some_minion_id > /etc/salt/minion_id
-```
+NOTE: In addition to `salt` hostname `master_minion_id` is also resolved
+into localhost IP address. This is required for some Salt states where
+master connects to itself using its hostname (which matches master minion
+id by convention). This line is only applicable for master minion because
+other minions will not be able to find Salt master via localhost.
+
 
 ### Run ###
 

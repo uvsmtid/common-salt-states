@@ -1,3 +1,10 @@
+
+NOTE: The following document is outdated - it is complex and error-prone to
+follow manually. There is already automatic `configure_salt.py` script
+which configures Salt automatically.
+
+TODO: Update document to run `configure_salt.py` script.
+
 # Configure Salt #
 
 The following staps configure [framework][2] for multiple projects.
