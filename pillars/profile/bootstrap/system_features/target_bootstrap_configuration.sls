@@ -64,17 +64,34 @@ system_features:
 
             {% set repo_name = 'common-salt-states' %}
             {{ repo_name }}:
+                # NOTE: In case of `use_pillars_from_states_repo` is True,
+                #       this repo is substituted by `bootstrap-target` clone.
+                #       No need to export in this case
+                {% if use_pillars_from_states_repo and project_name == 'common' %}
+                export_enabled: False
+                {% else %}
                 export_enabled: True
+                {% endif %}
                 export_method: clone
                 export_format: dir
 
             {% if project_name != 'common' %}
             {% set repo_name = project_name + '-salt-states' %}
             {{ repo_name }}:
+                # NOTE: In case of `use_pillars_from_states_repo` is True,
+                #       this repo is substituted by `bootstrap-target` clone.
+                #       No need to export in this case
+                {% if use_pillars_from_states_repo and project_name != 'common' %}
+                export_enabled: False
+                {% else %}
                 export_enabled: True
+                {% endif %}
                 export_method: clone
                 export_format: dir
             {% endif %}
+
+            # TODO: There can be additional states becides
+            #       `common` and `project_name`.
 
             # Salt resources.
 
@@ -133,10 +150,16 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
+                # NOTE: In case of `use_pillars_from_states_repo` is True,
+                #       `states` repositoriy is used.
                 # This is required.
                 # Pillars repository considered as "target" in the "source" environment
                 # becomes "source" configuration in the "target" environment.
+                {% if use_pillars_from_states_repo %}
+                target_repo_name: {{ project_name }}-salt-states
+                {% else %}
                 target_repo_name: {{ project_name }}-salt-pillars
+                {% endif %}
 
             # Repository with build history.
 
