@@ -13,13 +13,13 @@ include:
 {% for sub_item in [
         primary_network['network_name']
         ,
-        'internal_net'
+        'internal_net_A'
         ,
-        'secondary_internal_net'
+        'internal_net_B'
         ,
-        'external_net'
+        'external_net_A'
         ,
-        'secondary_external_net'
+        'external_net_B'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

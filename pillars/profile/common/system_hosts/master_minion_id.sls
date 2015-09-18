@@ -46,13 +46,13 @@ system_hosts:
             {{ primary_network['network_name'] }}:
                 ip: {{ props['enabled_minion_hosts'][master_minion_id] }}
 
-            internal_net:
+            internal_net_A:
                 ip: 192.168.51.1
-            secondary_internal_net:
+            internal_net_B:
                 ip: 192.168.52.1
-            external_net:
+            external_net_A:
                 ip: 192.168.61.1
-            secondary_external_net:
+            external_net_B:
                 ip: 192.168.62.1
 
         primary_user: master_minion_user

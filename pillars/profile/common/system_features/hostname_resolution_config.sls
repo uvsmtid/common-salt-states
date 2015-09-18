@@ -18,9 +18,6 @@ system_features:
 
         # Managed DNS zone for this system.
         #
-        # All hosts in `internal_net` or `external_net` are resolved as part
-        # of this domain zone.
-        #
         # The DNS server is configured in `resolver_role` role. See `system_host_roles`.
         domain_name: {{ project_name }}.example.com
 
@@ -47,9 +44,9 @@ system_features:
 
         # Networks to be served by DHCP server.
         dchp_networks:
-            internal_net:
+            internal_net_A:
                 enabled: False
-            external_net:
+            external_net_A:
                 enabled: False
 
 ###############################################################################

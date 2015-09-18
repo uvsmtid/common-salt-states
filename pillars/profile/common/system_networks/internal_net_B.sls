@@ -4,7 +4,7 @@
 
 system_networks:
 
-    secondary_internal_net:
+    internal_net_B:
 
         subnet: 192.168.52.0
 
