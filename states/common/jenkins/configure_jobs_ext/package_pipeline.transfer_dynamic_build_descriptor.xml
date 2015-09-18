@@ -68,7 +68,7 @@
         # Make sure repository became dirty.
         git diff-index --ignore-submodules=dirty --exit-code HEAD
 
-        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
+        # NOTE: Without `add --all` `diff-index` will not notice untracked files.
         git add --all
         git status
         # Commit only if there are changes.

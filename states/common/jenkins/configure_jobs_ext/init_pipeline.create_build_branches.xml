@@ -96,7 +96,7 @@
         #       (and recorded in `RESTORE_POINT_COMMIT`)
         #       if no parent dynamic build descriptor is used.
 
-        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
+        # NOTE: Without `add --all` `diff-index` will not notice untracked files.
         git add --all
         git status
         # Commit only if there are changes.
