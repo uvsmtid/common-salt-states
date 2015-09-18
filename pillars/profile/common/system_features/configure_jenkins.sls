@@ -389,42 +389,6 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
-            {% set job_template_id = 'init_pipeline.complete_build' %}
-            {{ job_template_id }}:
-
-                enabled: True
-
-                discard_old_builds:
-                    build_days: {{ discard_build_days }}
-                    build_num: {{ discard_build_num }}
-
-                restrict_to_system_role:
-                    - controller_role
-
-                skip_if_true: SKIP_INIT_PIPELINE
-
-                skip_script_execution: {{ skip_script_execution }}
-
-                input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-
-                # The job is supposed to be started
-                # after all all pipelines finish as the final step.
-                {% if False %}
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            []
-                {% endif %}
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    # NOTE: This is the same job as `reset_previous_build`.
-                    #       It just have different configuration.
-                    {% set job_template_id = 'init_pipeline.reset_previous_build' %}
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
-
             #------------------------------------------------------------------
 
             {% set job_template_id = 'promotion.init_pipeline_passed' %}
