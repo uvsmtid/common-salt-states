@@ -311,7 +311,7 @@ system_features:
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/{{ project_name }}-build-history.git'
+                    origin_uri_ssh_path: 'Works/build-history.git'
 
             # Maven component repositories.
 
