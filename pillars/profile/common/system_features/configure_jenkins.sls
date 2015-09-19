@@ -241,7 +241,7 @@ system_features:
                             TODO: Enable obfuscation.
                         parameter_type: boolean
                         parameter_value: False
-                    GIT_AUTHOR_EMAIL:
+                    AUTO_COMMIT_GIT_AUTHOR_EMAIL:
                         parameter_description: |
                             Specify author email for Git commits.
                             The value will be used with `--author` option for all Git commits made automatically.
@@ -1254,7 +1254,7 @@ system_features:
                             TODO: Should it be named `PACKAGE_NOTES`?
                         parameter_type: text
                         parameter_value: '_'
-                    GIT_AUTHOR_EMAIL:
+                    AUTO_COMMIT_GIT_AUTHOR_EMAIL:
                         parameter_description: |
                             Specify author email for Git commits.
                             The value will be used with `--author` option for all Git commits made automatically.
@@ -1578,7 +1578,7 @@ system_features:
                             TODO: Should it be named `RELEASE_NOTES`?
                         parameter_type: text
                         parameter_value: '_'
-                    GIT_AUTHOR_EMAIL:
+                    AUTO_COMMIT_GIT_AUTHOR_EMAIL:
                         parameter_description: |
                             Specify author email for Git commits.
                             The value will be used with `--author` option for all Git commits made automatically.

@@ -37,7 +37,7 @@
         touch "${TEMP_FILE_NAME}"
         git add "${TEMP_FILE_NAME}"
         set +e
-        git commit --dry-run --author="${GIT_AUTHOR_EMAIL}"
+        git commit --dry-run --author="${AUTO_COMMIT_GIT_AUTHOR_EMAIL}"
         RET_VAL="${?}"
         set -e
         git reset "${TEMP_FILE_NAME}"
@@ -134,7 +134,7 @@
 
         # Make initial commit.
         git add --all
-        git commit --author "${GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
+        git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
 
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
         echo "${CURRENT_COMMIT_ID}"  | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_commit_ids:{{ build_history_repo_id }}"

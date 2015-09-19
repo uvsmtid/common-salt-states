@@ -611,7 +611,7 @@ git status
 #       as new commits were made.
 #       These changes are ignored as they do not bear information which
 #       has to be restored from parent dyn build desc.
-git commit --author "${GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
+git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
 
 cd -
 
