@@ -170,6 +170,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                scm_poll_timer_spec: '*/1 * * * *'
+
                 skip_if_true: SKIP_INIT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
