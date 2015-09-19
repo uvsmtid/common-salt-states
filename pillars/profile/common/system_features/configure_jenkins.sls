@@ -36,6 +36,11 @@ system_features:
         rewrite_jenkins_configuration_for_jobs: True
         rewrite_jenkins_configuration_for_views: True
 
+        # Build branch name.
+        # Jenkins expects this branch in repositories.
+        # This branch is supposed to be set to what is supposed to be built.
+        build_branch_name: next_build
+
         # TODO: Jenkins does not support credentials management via CLI yet.
         #       Find a way to preconfigure keys to connect to the nodes.
         #       There is an issue that credentials are identified by their
