@@ -352,6 +352,15 @@
     {% endif %}
     {% endif %}
 
+    {% if 'scm_poll_timer_spec' in job_config %}
+    {% if job_config['scm_poll_timer_spec'] %}
+    <hudson.triggers.SCMTrigger>
+      <spec>{{ job_config['scm_poll_timer_spec'] }}</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+    {% endif %}
+    {% endif %}
+
   </triggers>
 
 {% endmacro %}
