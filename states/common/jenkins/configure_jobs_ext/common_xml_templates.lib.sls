@@ -31,7 +31,6 @@
 {% endmacro %}
 
 ###############################################################################
-
 {% macro join_downstream_jobs_macro(job_config, job_environ) %}
 
 {% if 'trigger_jobs_on_downstream_join' in job_config %}
@@ -47,10 +46,8 @@
 {% endmacro %}
 
 ###############################################################################
-{% macro job_scm_configuration(job_config, job_environ) %}
-  <!--
-      Git configuration.
-  -->
+{% macro job_single_scm_configuration(job_config, job_environ) %}
+
 {% set selected_repo_name = job_config['job_config_data']['repository_name'] %}
 {% set selected_repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][selected_repo_name] %}
 
@@ -62,17 +59,7 @@
 {% from 'common/git/git_uri.lib.sls' import define_git_repo_uri with context %}
 {% set git_repo_uri = define_git_repo_uri(selected_repo_name) %}
 
-<!--
-    NOTE: The `branch_name` was removed from pillars as its changes are too noizy for configuration.
-          Instead, `develop` branch is used by default. Alternatively, a special aproach just for
-          this case can be developed whey branch name is loaded from YAML file similar to
-          the one used for `properties.yaml` file.
--->
-{% if False %}
-{% set remote_branch_name = repo_config['branch_name'] %}
-{% else %}
-{% set remote_branch_name = 'develop' %}
-{% endif %}
+{% set remote_branch_name = pillar['system_features']['configure_jenkins']['build_branch_name'] %}
 
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.4">
     <configVersion>2</configVersion>
@@ -89,7 +76,9 @@
                   credentials which exists are all IDs generated (not
                   configured.
         -->
+
 {% from 'common/jenkins/credentials.lib.sls' import get_jenkins_credentials_id_by_host_id with context %}
+
         <credentialsId>{{ get_jenkins_credentials_id_by_host_id(repo_config['source_system_host']) }}</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
@@ -105,108 +94,123 @@
     <submoduleCfg class="list"/>
     <extensions/>
   </scm>
+
 {% endif %} <!-- SCM Git -->
 
 
-{% if selected_repo_type != 'git' %} <!-- SCM Git -->
+{% if selected_repo_type != 'git' %} <!-- Another SCM -->
     <!--
         TODO: Implement SVN configuration.
               Refer to non-existing variable to fail template instantiation.
     -->
     {{ FAIL_this_template_instantiation_unsupported_SCM }}
 
-{% endif %} <!-- SCM Git -->
+{% endif %} <!-- Another SCM -->
 
 {% endmacro %}
 
 ###############################################################################
-# TODO: Example of Multipe SCM Plugin configuration with Git
-#       future implementation.
-#       NOTE:
-#       *   Checkout all repos in a single job.
-#       *   Disabling processing of submodules.
-#           Parent is checked out and handled independently of children.
-#       *   Parameterized branch name.
-#       *   LIMITIATION: At the moment Git does not allow checking out
-#           into absolute path.
-#           See: https://issues.jenkins-ci.org/browse/JENKINS-30210
-#{#
+# Multipe SCM Plugin configuration with Git
+# future implementation.
+# NOTE:
+# *   Checkout all repos in a single job.
+# *   Disabling processing of submodules.
+#     Parent is checked out and handled independently of children.
+# *   Parameterized branch name.
+# *   LIMITIATION: At the moment Jenkins Git plugin itself
+#     does not allow checking out into absolute path.
+#     Instead, it requires different approaches based on job type.
+#     See:
+#        https://issues.jenkins-ci.org/browse/JENKINS-30210
+#        https://issues.jenkins-ci.org/browse/JENKINS-13576
+{% macro job_multiple_scm_configuration(job_config, job_environ) %}
+
   <scm class="org.jenkinsci.plugins.multiplescms.MultiSCM" plugin="multiple-scms@0.5">
     <scms>
+
+{% for selected_repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'] %}
+
+{% set selected_repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][selected_repo_name] %}
+
+{% if selected_repo_type == 'git' %} <!-- SCM Git -->
+
+{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name][selected_repo_type] %}
+
+{# Call marco `define_git_repo_uri` to define variable `git_repo_uri`. #}
+{% from 'common/git/git_uri.lib.sls' import define_git_repo_uri with context %}
+{% set git_repo_uri = define_git_repo_uri(selected_repo_name) %}
+
+{% set remote_branch_name = pillar['system_features']['configure_jenkins']['build_branch_name'] %}
+
       <hudson.plugins.git.GitSCM plugin="git@2.3.4">
         <configVersion>2</configVersion>
+
         <userRemoteConfigs>
           <hudson.plugins.git.UserRemoteConfig>
-            <url>uvsmtid@projector:Works/observer.git/salt/common-salt-states.git</url>
-            <credentialsId>uvsmtid@projector_credentials</credentialsId>
+
+            <!--
+            <url>username@hostname:path/to/repo.git</url>
+            -->
+            <url>{{ git_repo_uri }}</url>
+            <!--
+                TODO: Figure out how to define credentials per repository
+                      when repository is identified by a string (no reliable
+                      easy to use hostname or minion id) and the ids for
+                      credentials which exists are all IDs generated (not
+                      configured.
+            -->
+            <url>{{ git_repo_uri }}</url>
+
+{% from 'common/jenkins/credentials.lib.sls' import get_jenkins_credentials_id_by_host_id with context %}
+
+            <credentialsId>{{ get_jenkins_credentials_id_by_host_id(repo_config['source_system_host']) }}</credentialsId>
+
           </hudson.plugins.git.UserRemoteConfig>
         </userRemoteConfigs>
+
         <branches>
           <hudson.plugins.git.BranchSpec>
-            <name>refs/heads/${GIT_REMOTE_BRANCH_NAME}</name>
+            <name>refs/heads/{{ remote_branch_name }}</name>
           </hudson.plugins.git.BranchSpec>
         </branches>
+
         <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+
         <submoduleCfg class="list"/>
+
         <extensions>
+
           <hudson.plugins.git.extensions.impl.ScmName>
-            <name>common-salt-states</name>
+            <name>{{ selected_repo_name }}</name>
           </hudson.plugins.git.extensions.impl.ScmName>
+
           <hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
-            <relativeTargetDir>/home/uvsmtid/jenkins/deleteme.common-salt-states.git</relativeTargetDir>
+            <relativeTargetDir>{{ selected_repo_name }}</relativeTargetDir>
           </hudson.plugins.git.extensions.impl.RelativeTargetDirectory>
+
         </extensions>
+
       </hudson.plugins.git.GitSCM>
-      <hudson.plugins.git.GitSCM plugin="git@2.3.4">
-        <configVersion>2</configVersion>
-        <userRemoteConfigs>
-          <hudson.plugins.git.UserRemoteConfig>
-            <url>uvsmtid@projector:Works/observer.git/salt/observer-salt-pillars.git</url>
-            <credentialsId>uvsmtid@projector_credentials</credentialsId>
-          </hudson.plugins.git.UserRemoteConfig>
-        </userRemoteConfigs>
-        <branches>
-          <hudson.plugins.git.BranchSpec>
-            <name>refs/heads/${GIT_REMOTE_BRANCH_NAME}</name>
-          </hudson.plugins.git.BranchSpec>
-        </branches>
-        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-        <submoduleCfg class="list"/>
-        <extensions>
-          <hudson.plugins.git.extensions.impl.ScmName>
-            <name>observer-salt-pillars</name>
-          </hudson.plugins.git.extensions.impl.ScmName>
-        </extensions>
-      </hudson.plugins.git.GitSCM>
-      <hudson.plugins.git.GitSCM plugin="git@2.3.4">
-        <configVersion>2</configVersion>
-        <userRemoteConfigs>
-          <hudson.plugins.git.UserRemoteConfig>
-            <url>uvsmtid@projector:Works/observer.git</url>
-            <credentialsId>uvsmtid@projector_credentials</credentialsId>
-          </hudson.plugins.git.UserRemoteConfig>
-        </userRemoteConfigs>
-        <branches>
-          <hudson.plugins.git.BranchSpec>
-            <name>refs/heads/${GIT_REMOTE_BRANCH_NAME}</name>
-          </hudson.plugins.git.BranchSpec>
-        </branches>
-        <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-        <submoduleCfg class="list"/>
-        <extensions>
-          <hudson.plugins.git.extensions.impl.ScmName>
-            <name>observer</name>
-          </hudson.plugins.git.extensions.impl.ScmName>
-          <hudson.plugins.git.extensions.impl.SubmoduleOption>
-            <disableSubmodules>true</disableSubmodules>
-            <recursiveSubmodules>false</recursiveSubmodules>
-            <trackingSubmodules>false</trackingSubmodules>
-          </hudson.plugins.git.extensions.impl.SubmoduleOption>
-        </extensions>
-      </hudson.plugins.git.GitSCM>
+
+{% endif %} <!-- SCM Git -->
+
+
+{% if selected_repo_type != 'git' %} <!-- Another SCM -->
+    <!--
+        TODO: Implement SVN configuration.
+              Refer to non-existing variable to fail template instantiation.
+    -->
+    {{ FAIL_this_template_instantiation_unsupported_SCM }}
+
+{% endif %} <!-- Another Git -->
+
+{% endfor %}
+
     </scms>
   </scm>
-#}#
+
+{% endmacro %}
+
 ###############################################################################
 {% macro common_job_configuration(job_config, job_environ) %}
 
