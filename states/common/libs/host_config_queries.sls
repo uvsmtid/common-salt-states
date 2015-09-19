@@ -110,7 +110,7 @@
 {%- set offline_mode = True -%}
 {%- endif -%}
 
-{%- if 'offline_mode' in pillar -%}
+{%- if 'offline_mode' in pillar and pillar['offline_mode'] -%}
 {%- set offline_mode = True -%}
 {%- endif -%}
 
