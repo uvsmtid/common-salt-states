@@ -248,7 +248,7 @@
         <hudson.model.BooleanParameterDefinition>
           <name>{{ param_name }}</name>
           <description>{{ param_config['parameter_description'] }}</description>
-          <defaultValue>{{ param_config['parameter_value'] }}</defaultValue>
+          <defaultValue>{{ param_config['parameter_value']|e }}</defaultValue>
         </hudson.model.BooleanParameterDefinition>
 
         {% elif param_type == 'choice' %}
@@ -259,7 +259,7 @@
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
               {% for param_value in param_config['parameter_value'] %}
-              <string>{{ param_value }}</string>
+              <string>{{ param_value|e }}</string>
               {% endfor %}
             </a>
           </choices>
@@ -270,7 +270,7 @@
         <hudson.model.StringParameterDefinition>
           <name>{{ param_name }}</name>
           <description>{{ param_config['parameter_description'] }}</description>
-          <defaultValue>{{ param_config['parameter_value'] }}</defaultValue>
+          <defaultValue>{{ param_config['parameter_value']|e }}</defaultValue>
         </hudson.model.StringParameterDefinition>
 
         {% elif param_type == 'text' %}
@@ -278,7 +278,7 @@
         <hudson.model.TextParameterDefinition>
           <name>{{ param_name }}</name>
           <description>{{ param_config['parameter_description'] }}</description>
-          <defaultValue>{{ param_config['parameter_value'] }}</defaultValue>
+          <defaultValue>{{ param_config['parameter_value']|e }}</defaultValue>
         </hudson.model.TextParameterDefinition>
 
         {% endif %}
