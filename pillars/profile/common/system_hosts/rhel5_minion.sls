@@ -36,6 +36,7 @@ system_hosts:
 
             {{ primary_network['network_name'] }}:
                 ip: {{ props['enabled_minion_hosts']['rhel5_minion'] }}
+                mac: 52:54:00:52:2e:75
 
             internal_net_A:
                 ip: 192.168.51.10
