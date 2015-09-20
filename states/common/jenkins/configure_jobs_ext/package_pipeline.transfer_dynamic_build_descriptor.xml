@@ -26,6 +26,11 @@
         {{ common_build_script_header(job_config, job_environ) }}
 
         #######################################################################
+        # Locate dynamic build descriptor.
+
+        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
         # Load additional macros.
 
         {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
@@ -78,6 +83,11 @@
         git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m 'Auto-commit: provide dynamic build descriptor'
 
         cd -
+
+        #######################################################################
+        # Update dynamic build descriptor.
+
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
 
         #######################################################################
         # Script footer
