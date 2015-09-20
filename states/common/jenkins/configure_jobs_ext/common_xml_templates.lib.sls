@@ -125,10 +125,15 @@
 #        https://issues.jenkins-ci.org/browse/JENKINS-13576
 {% macro job_multiple_scm_configuration(job_config, job_environ) %}
 
+{% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+{% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
+
   <scm class="org.jenkinsci.plugins.multiplescms.MultiSCM" plugin="multiple-scms@0.5">
     <scms>
 
 {% for selected_repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'] %}
+
+{% if selected_repo_name != build_history_repo_id %}
 
 {% set selected_repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][selected_repo_name] %}
 
@@ -202,6 +207,8 @@
     {{ FAIL_this_template_instantiation_unsupported_SCM }}
 
 {% endif %} <!-- Another Git -->
+
+{% endif %}
 
 {% endfor %}
 
