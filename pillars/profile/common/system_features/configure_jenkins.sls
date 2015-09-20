@@ -93,35 +93,6 @@ system_features:
             ###################################################################
             # The `init_pipeline`
 
-            # TODO: At the moment this job is disabled.
-            {% set job_template_id = 'init_pipeline.automatic_trigger' %}
-            __.{{ job_template_id }}:
-
-                enabled: False
-
-                discard_old_builds:
-                    build_days: {{ discard_build_days }}
-                    build_num: {{ discard_build_num }}
-
-                restrict_to_system_role:
-                    - controller_role
-
-                # NOTE: This job is initial and not a parameterized.
-                #       This environment variable won't be available.
-                {% if False %}
-                skip_if_true: SKIP_INIT_PIPELINE
-                {% endif %}
-
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            - 01.init_pipeline.start_new_build
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
-
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'init_pipeline.clean_old_build' %}
