@@ -31,6 +31,11 @@
         {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
 
         #######################################################################
+        # Import additional marco.
+
+        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+
+        #######################################################################
         # Capture into dynamic build descriptor:
         # - current branch names
         # - current commit ids
@@ -78,10 +83,11 @@
         RECOVERY_BRANCH="${CURRENT_BRANCH}"
         RECOVERY_COMMIT_ID="${CURRENT_COMMIT_ID}"
 
-        BUILD_BRANCH="${INITIAL_BRANCH}-${INITIAL_SHORT_COMMIT_ID}-${BUILD_TITLE}"
-
         UNTRACKED_ITEMS="$(git ls-files --other --exclude-standard --directory | wc -l)"
         MODIFIED_ITEMS="$((git diff --name-only --cached --ignore-submodules=dirty ; git diff --name-only --ignore-submodules=dirty) | sort -u | wc -l)"
+
+        # Default value for `BUILD_BRANCH`.
+        BUILD_BRANCH="${INITIAL_BRANCH}-${INITIAL_SHORT_COMMIT_ID}-${BUILD_TITLE}"
 
         if [ "${PARENT_BUILD_TITLE}" != "_" ]
         then
@@ -92,6 +98,29 @@
             # Trivial case.
             REQUIRED_BRANCH="${CURRENT_BRANCH}"
             REQUIRED_COMMIT_ID="${CURRENT_COMMIT_ID}"
+
+            {% set target_profile_repo_id = get_repository_id_by_role('target_profile_pillars_role') %}
+            {% if target_profile_repo_id == repo_name %}
+            # Override variables in special case of target profile repo.
+            # Point them to correct profile:
+            # - `REQUIRED_BRANCH`
+            # - `REQUIRED_COMMIT_ID`
+            # - `BUILD_BRANCH`
+            # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`.
+            #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
+            #       it should match (source) `SALT_PROFILE_NAME`.
+            if [ -n "${TARGET_PROFILE_NAME:-}" ]
+            then
+                REQUIRED_BRANCH="${TARGET_PROFILE_NAME}"
+            else
+                REQUIRED_BRANCH="${SALT_PROFILE_NAME}"
+            fi
+            REQUIRED_COMMIT_ID="$(git rev-parse --verify "${REQUIRED_BRANCH}")"
+            REQUIRED_SHORT_COMMIT_ID="$(git rev-parse --short --verify "${REQUIRED_BRANCH}")"
+            BUILD_BRANCH="${REQUIRED_BRANCH}-${REQUIRED_SHORT_COMMIT_ID}-${BUILD_TITLE}"
+
+            {% endif %}
+
         fi
 
         # Regardles of whether there is parent build or not,
