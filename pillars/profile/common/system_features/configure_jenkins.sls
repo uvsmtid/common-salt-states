@@ -158,6 +158,37 @@ system_features:
                     {% set job_template_id = 'init_pipeline.reset_previous_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
+            {% set job_template_id = 'init_pipeline.propose_build' %}
+            __.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_INIT_PIPELINE
+
+                is_standalone: True
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
             {% set job_template_id = 'init_pipeline.start_new_build' %}
             01.{{ job_template_id }}:
 
@@ -1593,6 +1624,7 @@ system_features:
                     job_list:
                         - __.init_pipeline.automatic_trigger
                         - __.init_pipeline.clean_old_build
+                        - __.init_pipeline.propose_build
                         - 01.init_pipeline.start_new_build
                         - 51.package_pipeline.create_new_package
                         - 61.release_pipeline.release_build

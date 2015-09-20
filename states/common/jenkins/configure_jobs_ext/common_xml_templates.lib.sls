@@ -68,7 +68,6 @@
         <!--
         <url>username@hostname:path/to/repo.git</url>
         -->
-        <url>{{ git_repo_uri }}</url>
         <!--
             TODO: Figure out how to define credentials per repository
                   when repository is identified by a string (no reliable
@@ -76,6 +75,7 @@
                   credentials which exists are all IDs generated (not
                   configured.
         -->
+        <url>{{ git_repo_uri }}</url>
 
 {% from 'common/jenkins/credentials.lib.sls' import get_jenkins_credentials_id_by_host_id with context %}
 
@@ -151,7 +151,6 @@
             <!--
             <url>username@hostname:path/to/repo.git</url>
             -->
-            <url>{{ git_repo_uri }}</url>
             <!--
                 TODO: Figure out how to define credentials per repository
                       when repository is identified by a string (no reliable

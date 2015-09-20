@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
+
+  <builders>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+
+    <hudson.tasks.Shell>
+      <command>
+
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
+
+        #######################################################################
+
+        {% for selected_repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'] %}
+
+        {% set selected_repo_type = pillar['system_features']['deploy_environment_sources']['source_repo_types'][selected_repo_name] %}
+
+        {% if selected_repo_type == 'git' %}
+
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][selected_repo_name][selected_repo_type] %}
+
+        {% set remote_branch_name = pillar['system_features']['configure_jenkins']['build_branch_name'] %}
+
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+
+        # Set branch to the current HEAD.
+        git branch -f "{{ remote_branch_name }}" HEAD
+
+        cd -
+
+        {% endif %}
+
+        {% if selected_repo_type != 'git' %}
+        {{ FAIL_this_template_instantiation_unsupported_SCM }}
+        {% endif %}
+
+        {% endfor %}
+
+        #######################################################################
+        # Script footer
+
+        {{ common_build_script_footer(job_config, job_environ) }}
+
+        #######################################################################
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+
+  <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+  </publishers>
+
+  <buildWrappers/>
+
+</project>
+
