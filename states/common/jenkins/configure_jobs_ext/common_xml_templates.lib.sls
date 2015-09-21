@@ -326,6 +326,20 @@
 
     {% endif %}
 
+
+    <!-- build blocker -->
+    {% if 'block_build' in job_config and job_config['block_build'] %}
+    <hudson.plugins.buildblocker.BuildBlockerProperty plugin="build-blocker-plugin@1.7.1">
+      <useBuildBlocker>true</useBuildBlocker>
+      <blockLevel>GLOBAL</blockLevel>
+      <scanQueueFor>DISABLED</scanQueueFor>
+      <!--
+        NOTE: Jobs cannot be run until any other job is running.
+      -->
+      <blockingJobs>.*</blockingJobs>
+    </hudson.plugins.buildblocker.BuildBlockerProperty>
+    {% endif %}
+
   </properties>
 
   {% if 'force_jenkins_master' in job_config and job_config['force_jenkins_master'] %}
