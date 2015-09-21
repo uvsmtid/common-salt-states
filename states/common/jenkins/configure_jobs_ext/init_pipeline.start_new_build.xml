@@ -4,6 +4,9 @@
   {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
   {{ common_job_configuration(job_config, job_environ) }}
 
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import job_multiple_scm_configuration with context %}
+  {{ job_multiple_scm_configuration(job_config, job_environ) }}
+
   <builders>
 
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
@@ -37,7 +40,7 @@
         touch "${TEMP_FILE_NAME}"
         git add "${TEMP_FILE_NAME}"
         set +e
-        git commit --dry-run --author="${GIT_AUTHOR_EMAIL}"
+        git commit --dry-run --author="${AUTO_COMMIT_GIT_AUTHOR_EMAIL}"
         RET_VAL="${?}"
         set -e
         git reset "${TEMP_FILE_NAME}"
@@ -60,28 +63,30 @@
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
         {{ locate_repository_dynamic_build_descriptor(job_config, job_environ, check_repo_dyn_build_desc = False) }}
 
+        #######################################################################
+        # Import additional marco.
+
         {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 
         #######################################################################
-        # Make sure target profile pillars repo is set to required branch.
+        # Make sure target profile pillars repo has required branch.
 
         {% set target_profile_repo_id = get_repository_id_by_role('target_profile_pillars_role') %}
 
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][target_profile_repo_id]['git'] %}
         export TARGET_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
-        # NOTE: `TARGET_PROFILE_NAME` may be undefined.
-        #       Assume default is empty.
+        # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`.
+        #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
+        #       it should match (source) `SALT_PROFILE_NAME`.
+        cd "${TARGET_PROFILE_REPO_PATH}"
         if [ -n "${TARGET_PROFILE_NAME:-}" ]
         then
-
-            cd "${TARGET_PROFILE_REPO_PATH}"
-
-            git checkout "${TARGET_PROFILE_NAME}"
-
-            cd -
-
+            git rev-parse --verify "${TARGET_PROFILE_NAME}"
+        else
+            git rev-parse --verify "${SALT_PROFILE_NAME}"
         fi
+        cd -
 
         #######################################################################
         # Initialize repository build descriptor.
@@ -134,7 +139,7 @@
 
         # Make initial commit.
         git add --all
-        git commit --author "${GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
+        git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
 
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
         echo "${CURRENT_COMMIT_ID}"  | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_commit_ids:{{ build_history_repo_id }}"

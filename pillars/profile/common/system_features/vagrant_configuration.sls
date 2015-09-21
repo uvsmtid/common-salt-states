@@ -1,4 +1,10 @@
 
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% set primary_network = props['primary_network'] %}
+
 ###############################################################################
 #
 
@@ -30,28 +36,34 @@ system_features:
         #
         vagrant_networks:
 
-            primary_vagrant_private_net:
+            {{ primary_network['network_name'] }}:
                 enabled: True
                 vagrant_net_type: 'private_network'
                 enable_dhcp: True
-                system_network: internal_net
-            secondary_vagrant_private_net:
-                enabled: True
-                vagrant_net_type: 'private_network'
-                enable_dhcp: True
-                system_network: secondary_internal_net
+                system_network: primary_net
 
-            primary_vagrant_public_net:
+            vagrant_internal_net_A:
+                enabled: True
+                vagrant_net_type: 'private_network'
+                enable_dhcp: True
+                system_network: internal_net_A
+            vagrant_internal_net_B:
+                enabled: True
+                vagrant_net_type: 'private_network'
+                enable_dhcp: True
+                system_network: internal_net_B
+
+            vagrant_external_net_A:
                 enabled: False
                 vagrant_net_type: 'public_network'
                 enable_dhcp: True
-                system_network: external_net
+                system_network: external_net_A
                 host_bridge_interface: em1
-            secondary_vagrant_public_net:
+            vagrant_external_net_B:
                 enabled: False
                 vagrant_net_type: 'public_network'
                 enable_dhcp: True
-                system_network: secondary_external_net
+                system_network: external_net_B
                 host_bridge_interface: em1
 
         vagrant_providers_configs:

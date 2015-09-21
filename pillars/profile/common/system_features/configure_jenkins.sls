@@ -36,6 +36,11 @@ system_features:
         rewrite_jenkins_configuration_for_jobs: True
         rewrite_jenkins_configuration_for_views: True
 
+        # Build branch name.
+        # Jenkins expects this branch in repositories.
+        # This branch is supposed to be set to what is supposed to be built.
+        build_branch_name: next_build
+
         # TODO: Jenkins does not support credentials management via CLI yet.
         #       Find a way to preconfigure keys to connect to the nodes.
         #       There is an issue that credentials are identified by their
@@ -88,35 +93,6 @@ system_features:
             ###################################################################
             # The `init_pipeline`
 
-            # TODO: At the moment this job is disabled.
-            {% set job_template_id = 'init_pipeline.automatic_trigger' %}
-            __.{{ job_template_id }}:
-
-                enabled: False
-
-                discard_old_builds:
-                    build_days: {{ discard_build_days }}
-                    build_num: {{ discard_build_num }}
-
-                restrict_to_system_role:
-                    - controller_role
-
-                # NOTE: This job is initial and not a parameterized.
-                #       This environment variable won't be available.
-                {% if False %}
-                skip_if_true: SKIP_INIT_PIPELINE
-                {% endif %}
-
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            - 01.init_pipeline.start_new_build
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
-
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'init_pipeline.clean_old_build' %}
@@ -153,6 +129,37 @@ system_features:
                     {% set job_template_id = 'init_pipeline.reset_previous_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
+            {% set job_template_id = 'init_pipeline.propose_build' %}
+            __.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_INIT_PIPELINE
+
+                is_standalone: True
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
             {% set job_template_id = 'init_pipeline.start_new_build' %}
             01.{{ job_template_id }}:
 
@@ -164,6 +171,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                scm_poll_timer_spec: '*/1 * * * *'
 
                 skip_if_true: SKIP_INIT_PIPELINE
 
@@ -241,7 +250,7 @@ system_features:
                             TODO: Enable obfuscation.
                         parameter_type: boolean
                         parameter_value: False
-                    GIT_AUTHOR_EMAIL:
+                    AUTO_COMMIT_GIT_AUTHOR_EMAIL:
                         parameter_description: |
                             Specify author email for Git commits.
                             The value will be used with `--author` option for all Git commits made automatically.
@@ -387,42 +396,6 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
-
-            {% set job_template_id = 'init_pipeline.complete_build' %}
-            {{ job_template_id }}:
-
-                enabled: True
-
-                discard_old_builds:
-                    build_days: {{ discard_build_days }}
-                    build_num: {{ discard_build_num }}
-
-                restrict_to_system_role:
-                    - controller_role
-
-                skip_if_true: SKIP_INIT_PIPELINE
-
-                skip_script_execution: {{ skip_script_execution }}
-
-                input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-
-                # The job is supposed to be started
-                # after all all pipelines finish as the final step.
-                {% if False %}
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            []
-                {% endif %}
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    # NOTE: This is the same job as `reset_previous_build`.
-                    #       It just have different configuration.
-                    {% set job_template_id = 'init_pipeline.reset_previous_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             #------------------------------------------------------------------
@@ -1254,7 +1227,7 @@ system_features:
                             TODO: Should it be named `PACKAGE_NOTES`?
                         parameter_type: text
                         parameter_value: '_'
-                    GIT_AUTHOR_EMAIL:
+                    AUTO_COMMIT_GIT_AUTHOR_EMAIL:
                         parameter_description: |
                             Specify author email for Git commits.
                             The value will be used with `--author` option for all Git commits made automatically.
@@ -1578,7 +1551,7 @@ system_features:
                             TODO: Should it be named `RELEASE_NOTES`?
                         parameter_type: text
                         parameter_value: '_'
-                    GIT_AUTHOR_EMAIL:
+                    AUTO_COMMIT_GIT_AUTHOR_EMAIL:
                         parameter_description: |
                             Specify author email for Git commits.
                             The value will be used with `--author` option for all Git commits made automatically.
@@ -1622,6 +1595,7 @@ system_features:
                     job_list:
                         - __.init_pipeline.automatic_trigger
                         - __.init_pipeline.clean_old_build
+                        - __.init_pipeline.propose_build
                         - 01.init_pipeline.start_new_build
                         - 51.package_pipeline.create_new_package
                         - 61.release_pipeline.release_build

@@ -36,14 +36,15 @@ system_hosts:
 
             {{ primary_network['network_name'] }}:
                 ip: {{ props['enabled_minion_hosts']['rhel5_minion'] }}
+                mac: 52:54:00:52:2e:75
 
-            internal_net:
+            internal_net_A:
                 ip: 192.168.51.10
-            secondary_internal_net:
+            internal_net_B:
                 ip: 192.168.52.10
-            external_net:
+            external_net_A:
                 ip: 192.168.61.10
-            secondary_external_net:
+            external_net_B:
                 ip: 192.168.62.10
 
         primary_user: default_user

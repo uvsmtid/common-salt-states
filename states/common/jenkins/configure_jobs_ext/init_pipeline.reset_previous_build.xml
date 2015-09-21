@@ -80,19 +80,11 @@
 
         cd "${REPO_PATH}"
         # NOTE: Without `add --all` `diff-index` will not notice untracked files.
-        # NOTE: We also ignore changes in submodules completely.
         git add --all
+        # NOTE: We ignore any changes in submodules for parent repo.
         if ! git diff-index --ignore-submodules=all --exit-code HEAD
         then
             git stash
-
-            # NOTE: If the repository is a submodule, `git stash` would leave
-            #       changes done by `git add` still staged.
-            #       We run `git reset` to set them unstaged, otherwise
-            #       `git checkout` for this repository may potentially
-            #       fail due to local modifications (which are only
-            #       "non-stashable" for submodules).
-            git reset
 
             # Set job status to failed (but don't fail now, restore first)
             # in order to highlight stashed changes.
@@ -101,6 +93,14 @@
                 JOB_STATUS='2'
             fi
         fi
+
+        # NOTE: If the repository is a submodule, `git stash` would leave
+        #       changes done by `git add` still staged.
+        #       We run `git reset` to set them unstaged, otherwise
+        #       `git checkout` for this repository will fail
+        #       fail due to local modifications (which are only
+        #       "non-stashable" for submodules).
+        git reset
 
         cd -
 
