@@ -280,6 +280,21 @@ system_resources:
         item_content_hash: md5=54318348886da3fce3f46b1daec29287
         plugin_name: timestamper
 
+    # Jenkins: Build Blocker Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Build+Blocker+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/latest/build-blocker-plugin.hpi
+    jenkins_build-blocker-plugin_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: build-blocker-plugin.v1.7.1.hpi
+        item_content_hash: md5=31d6dbdd21d10861f7a960f71f368384
+        plugin_name: build-blocker-plugin
+
     # Nexus maven repository manager (community edition).
     # Downloadable from:
     #   http://www.sonatype.org/nexus/go/

@@ -30,6 +30,7 @@ include:
         'jenkins_join_plugin',
         'jenkins_rebuild_plugin',
         'jenkins_envinject_plugin',
+        'jenkins_build-blocker-plugin_plugin',
     ]
 %}
 
