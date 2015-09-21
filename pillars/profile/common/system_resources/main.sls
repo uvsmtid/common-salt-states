@@ -250,6 +250,21 @@ system_resources:
         item_content_hash: md5=723f9998ce3f7404e3e77f62e5670eb3
         plugin_name: envinject
 
+    # Jenkins: Multiple SCMs Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Multiple+SCMs+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/latest/multiple-scms.hpi
+    jenkins_multiple-scms_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: multiple-scms.v0.5.hpi
+        item_content_hash: md5=a9760547ad0c820f694af6bd2f652958
+        plugin_name: multiple-scms
+
     # Nexus maven repository manager (community edition).
     # Downloadable from:
     #   http://www.sonatype.org/nexus/go/

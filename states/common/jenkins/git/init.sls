@@ -24,6 +24,7 @@ include:
         'jenkins_scm-api_plugin',
         'jenkins_git-client_plugin',
         'jenkins_git_plugin',
+        'jenkins_multiple-scms_plugin',
     ]
 %}
 
