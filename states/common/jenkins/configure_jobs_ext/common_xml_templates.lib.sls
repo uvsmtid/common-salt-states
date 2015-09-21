@@ -342,8 +342,6 @@
 
   <concurrentBuild>false</concurrentBuild>
 
-  <scm class="hudson.scm.NullSCM"/>
-
   <!-- NOTE: Maintains single active/running pipeline at a time. -->
   <blockBuildWhenDownstreamBuilding>true</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>true</blockBuildWhenUpstreamBuilding>
