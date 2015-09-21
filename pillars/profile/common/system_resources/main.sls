@@ -66,8 +66,8 @@ system_resources:
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: common/jenkins
-        item_base_name: maven-plugin.hpi
-        item_content_hash: md5=d05426ca23528ff782cc3bf926da999e
+        item_base_name: maven-plugin.v2.12.hpi
+        item_content_hash: md5=a66e444d4d4453899b661cd6079a186b
         plugin_name: maven-plugin
 
     # Jenkins: M2 Release Plugin
