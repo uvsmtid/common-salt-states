@@ -51,7 +51,7 @@ system_resources:
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: common/jenkins
-        item_base_name: cygpath.hpi
+        item_base_name: cygpath.v1.5.hpi
         item_content_hash: md5=fec9d1b734089f8fae0e9755f2a1bc75
         plugin_name: cygpath
 
@@ -81,7 +81,7 @@ system_resources:
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: common/jenkins
-        item_base_name: m2release.hpi
+        item_base_name: m2release.v0.14.0.hpi
         item_content_hash: md5=fde761d8d19f2154a24461d005340e91
         plugin_name: m2release
 
@@ -96,7 +96,7 @@ system_resources:
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: common/jenkins
-        item_base_name: git-client.hpi
+        item_base_name: git-client.v1.16.1.hpi
         item_content_hash: md5=5331dd9f233228bca6486f51e21bf6ac
         plugin_name: git-client
 
@@ -216,7 +216,7 @@ system_resources:
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: common/jenkins
-        item_base_name: git.hpi
+        item_base_name: git.v2.3.4.hpi
         item_content_hash: md5=e3ead2aa0ba8b7666566e0e3dea964e3
         plugin_name: git
 
@@ -231,7 +231,7 @@ system_resources:
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: common/jenkins
-        item_base_name: scm-api.hpi
+        item_base_name: scm-api.v0.2.hpi
         item_content_hash: md5=9574c07bf6bfd02a57b451145c870f0e
         plugin_name: scm-api
 
