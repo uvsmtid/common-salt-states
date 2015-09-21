@@ -107,6 +107,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                block_build: True
+
                 skip_if_true: SKIP_INIT_PIPELINE
 
                 is_standalone: True
@@ -141,6 +143,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                block_build: True
+
                 skip_if_true: SKIP_INIT_PIPELINE
 
                 is_standalone: True
@@ -171,6 +175,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                block_build: True
 
                 scm_poll_timer_spec: '*/1 * * * *'
 
@@ -1144,6 +1150,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                block_build: True
+
                 skip_if_true: SKIP_PACKAGE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
@@ -1461,6 +1469,8 @@ system_features:
 
                 restrict_to_system_role:
                     - controller_role
+
+                block_build: True
 
                 skip_if_true: SKIP_RELEASE_PIPELINE
 
