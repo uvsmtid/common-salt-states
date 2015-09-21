@@ -29,6 +29,7 @@ include:
         'jenkins_copyartifact_plugin',
         'jenkins_join_plugin',
         'jenkins_rebuild_plugin',
+        'jenkins_envinject_plugin',
     ]
 %}
 

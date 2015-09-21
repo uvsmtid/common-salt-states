@@ -1,5 +1,4 @@
 # Additional `infra`-related plugins for Jenkins.
-# TODO: Move them to `pipeline`.
 
 # Import generic template for Jenkins plugin installation.
 {% from 'common/jenkins/install_plugin.sls' import jenkins_plugin_installation_macros with context %}
@@ -24,7 +23,7 @@ include:
     - common.jenkins.maven
 
 {% for registered_content_item_id in [
-        'jenkins_envinject_plugin',
+        'jenkins_timestamper_plugin',
     ]
 %}
 

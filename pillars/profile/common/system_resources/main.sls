@@ -265,6 +265,21 @@ system_resources:
         item_content_hash: md5=a9760547ad0c820f694af6bd2f652958
         plugin_name: multiple-scms
 
+    # Jenkins: Timestamper
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Timestamper
+    # Direct link:
+    #   http://updates.jenkins-ci.org/latest/timestamper.hpi
+    jenkins_timestamper_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: timestamper.v1.7.2.hpi
+        item_content_hash: md5=54318348886da3fce3f46b1daec29287
+        plugin_name: timestamper
+
     # Nexus maven repository manager (community edition).
     # Downloadable from:
     #   http://www.sonatype.org/nexus/go/
