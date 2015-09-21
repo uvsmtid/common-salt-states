@@ -295,6 +295,21 @@ system_resources:
         item_content_hash: md5=31d6dbdd21d10861f7a960f71f368384
         plugin_name: build-blocker-plugin
 
+    # Jenkins: Modern Status Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Modern+Status+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/latest/modernstatus.hpi
+    jenkins_modernstatus_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: modernstatus.v1.2.hpi
+        item_content_hash: md5=f62c468ca9561931dea89676084f30f1
+        plugin_name: modernstatus
+
     # Nexus maven repository manager (community edition).
     # Downloadable from:
     #   http://www.sonatype.org/nexus/go/

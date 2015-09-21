@@ -24,6 +24,7 @@ include:
 
 {% for registered_content_item_id in [
         'jenkins_timestamper_plugin',
+        'jenkins_modernstatus_plugin',
     ]
 %}
 
