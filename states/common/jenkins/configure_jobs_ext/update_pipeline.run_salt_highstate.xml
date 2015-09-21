@@ -65,7 +65,9 @@
 
   </publishers>
 
-  <buildWrappers/>
+  <buildWrappers>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.7.2"/>
+  </buildWrappers>
 
 </project>
 
