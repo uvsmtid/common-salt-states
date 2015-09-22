@@ -17,6 +17,8 @@ include:
     - common.shell.aliases
     - common.shell.variables
 
+    - common.tmux
+
     # Set splash screen and boot console resolution.
     - common.grub
 

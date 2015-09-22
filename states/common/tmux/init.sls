@@ -29,7 +29,7 @@ tmux:
 
 opt_dir_for_tmux-resurrec_exists:
     file.directory:
-        - name: /opt/tmux-resurrect
+        - name: /opt
         - makedirs: True
 
 deploy_tmux_resurrect_plugin:
