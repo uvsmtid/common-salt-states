@@ -34,7 +34,8 @@ opt_dir_for_tmux-resurrec_exists:
 
 deploy_tmux_resurrect_plugin:
     archive.extracted:
-        - name: /opt/tmux-resurrect
+        - name: /opt
+        - if_missing: /opt/tmux-resurrect
         {% set resource_id = 'tmux_resurrect_plugin' %}
         - source: {{ get_registered_content_item_URI(resource_id) }}
         - source_hash: {{ get_registered_content_item_hash(resource_id) }}
