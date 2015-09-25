@@ -165,7 +165,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'init_pipeline.start_new_build' %}
-            01.{{ job_template_id }}:
+            11.{{ job_template_id }}:
 
                 enabled: True
 
@@ -210,7 +210,7 @@ system_features:
                 #       see associations of downstream jobs with this one.
                 {% if False %}
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                 {% endif %}
 
                 # This list combined with value of
@@ -227,7 +227,7 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 02.init_pipeline.reset_previous_build
+                            - 12.init_pipeline.reset_previous_build
 
                 # NOTE: This job is promotable and uses another config.
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
@@ -303,18 +303,18 @@ system_features:
                         parameter_value: False
 
                 use_promotions:
-                    - 01.promotion.init_pipeline_passed
-                    - 02.promotion.update_pipeline_passed
-                    - 03.promotion.maven_pipeline_passed
-                    - 04.promotion.deploy_pipeline_passed
+                    - 11.promotion.init_pipeline_passed
+                    - 12.promotion.update_pipeline_passed
+                    - 13.promotion.maven_pipeline_passed
+                    - 14.promotion.deploy_pipeline_passed
 
-                    - 05.promotion.package_pipeline_passed
-                    - 06.promotion.release_pipeline_passed
+                    - 15.promotion.package_pipeline_passed
+                    - 16.promotion.release_pipeline_passed
 
-                    - 07.promotion.bootstrap_package_approved
+                    - 17.promotion.bootstrap_package_approved
 
             {% set job_template_id = 'init_pipeline.reset_previous_build' %}
-            02.{{ job_template_id }}:
+            12.{{ job_template_id }}:
 
                 enabled: True
 
@@ -330,20 +330,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 03.init_pipeline.describe_repositories_state
+                            - 13.init_pipeline.describe_repositories_state
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'init_pipeline.describe_repositories_state' %}
-            03.{{ job_template_id }}:
+            13.{{ job_template_id }}:
 
                 enabled: True
 
@@ -359,20 +359,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 04.init_pipeline.create_build_branches
+                            - 14.init_pipeline.create_build_branches
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'init_pipeline.create_build_branches' %}
-            04.{{ job_template_id }}:
+            14.{{ job_template_id }}:
 
                 enabled: True
 
@@ -388,7 +388,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -407,7 +407,7 @@ system_features:
             #------------------------------------------------------------------
 
             {% set job_template_id = 'promotion.init_pipeline_passed' %}
-            01.{{ job_template_id }}:
+            11.{{ job_template_id }}:
 
                 enabled: True
 
@@ -417,7 +417,7 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    - 04.init_pipeline.create_build_branches
+                    - 14.init_pipeline.create_build_branches
 
                 condition_type: downstream_passed
                 accept_unstable: True
@@ -434,7 +434,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.update_pipeline_passed' %}
-            02.{{ job_template_id }}:
+            12.{{ job_template_id }}:
 
                 enabled: True
 
@@ -461,7 +461,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.maven_pipeline_passed' %}
-            03.{{ job_template_id }}:
+            13.{{ job_template_id }}:
 
                 enabled: True
 
@@ -491,7 +491,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.deploy_pipeline_passed' %}
-            04.{{ job_template_id }}:
+            14.{{ job_template_id }}:
 
                 enabled: True
 
@@ -523,7 +523,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.package_pipeline_passed' %}
-            05.{{ job_template_id }}:
+            15.{{ job_template_id }}:
 
                 enabled: True
 
@@ -554,7 +554,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.release_pipeline_passed' %}
-            06.{{ job_template_id }}:
+            16.{{ job_template_id }}:
 
                 enabled: True
 
@@ -585,7 +585,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.bootstrap_package_approved' %}
-            07.{{ job_template_id }}:
+            17.{{ job_template_id }}:
 
                 enabled: True
 
@@ -623,7 +623,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -652,7 +652,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -681,7 +681,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -717,7 +717,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -755,7 +755,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     build_always:
@@ -825,7 +825,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -876,7 +876,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -911,7 +911,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -942,7 +942,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -973,7 +973,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1002,7 +1002,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1031,7 +1031,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1060,7 +1060,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1089,7 +1089,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1118,7 +1118,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -1184,7 +1184,7 @@ system_features:
                 #       see associations of downstream jobs with this one.
                 {% if False %}
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                 {% endif %}
 
                 # This list combined with value of
@@ -1261,8 +1261,8 @@ system_features:
                         parameter_value: False
 
                 use_promotions:
-                    - 05.promotion.package_pipeline_passed
-                    - 07.promotion.bootstrap_package_approved
+                    - 15.promotion.package_pipeline_passed
+                    - 17.promotion.bootstrap_package_approved
 
             {% set job_template_id = 'package_pipeline.reset_previous_build' %}
             52.{{ job_template_id }}:
@@ -1281,7 +1281,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
@@ -1313,7 +1313,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
@@ -1345,7 +1345,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
@@ -1377,7 +1377,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
@@ -1407,7 +1407,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
@@ -1437,7 +1437,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
@@ -1503,7 +1503,7 @@ system_features:
                 #       see associations of downstream jobs with this one.
                 {% if False %}
                 input_fingerprinted_artifacts:
-                    01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                 {% endif %}
 
                 # This list combined with value of
@@ -1587,7 +1587,7 @@ system_features:
                         parameter_value: False
 
                 use_promotions:
-                    - 06.promotion.release_pipeline_passed
+                    - 16.promotion.release_pipeline_passed
 
         #######################################################################
         #
@@ -1606,7 +1606,7 @@ system_features:
                         - __.init_pipeline.automatic_trigger
                         - __.init_pipeline.clean_old_build
                         - __.init_pipeline.propose_build
-                        - 01.init_pipeline.start_new_build
+                        - 11.init_pipeline.start_new_build
                         - 51.package_pipeline.create_new_package
                         - 61.release_pipeline.release_build
 
@@ -1634,7 +1634,7 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 01.init_pipeline.start_new_build
+                    first_job_name: 11.init_pipeline.start_new_build
 
             2.update_pipeline:
 
