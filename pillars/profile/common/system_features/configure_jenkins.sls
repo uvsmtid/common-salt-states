@@ -86,17 +86,12 @@ system_features:
             {% set discard_build_num = 9 %}
 
             ###################################################################
-            # The trigger is not supposed to be doing much.
-            # Instead, it can be configured to start downstream job
-            # on timer or on change (or on demand as always available).
-
-            ###################################################################
-            # The `init_pipeline`
+            # Triggers
 
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'init_pipeline.clean_old_build' %}
-            __.{{ job_template_id }}:
+            +_.{{ job_template_id }}:
 
                 enabled: True
 
@@ -131,8 +126,8 @@ system_features:
                     {% set job_template_id = 'init_pipeline.reset_previous_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
-            {% set job_template_id = 'init_pipeline.propose_build' %}
-            __.{{ job_template_id }}:
+            {% set job_template_id = 'poll_pipeline.propose_build' %}
+            +_.{{ job_template_id }}:
 
                 enabled: True
 
@@ -145,7 +140,7 @@ system_features:
 
                 block_build: True
 
-                skip_if_true: SKIP_INIT_PIPELINE
+                skip_if_true: SKIP_POLL_PIPELINE
 
                 is_standalone: True
 
@@ -163,6 +158,138 @@ system_features:
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            ###################################################################
+            # The `poll_pipeline`
+
+            {% set skip_script_execution = False %}
+
+            {% set job_template_id = 'poll_pipeline.verify_approval' %}
+            01.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                block_build: True
+
+                timer_spec: '*/10 * * * *'
+
+                skip_if_true: SKIP_POLL_PIPELINE
+
+                is_standalone: True
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: SUCCESS
+                        trigger_jobs:
+                            - 02.poll_pipeline.reset_previous_build
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'poll_pipeline.reset_previous_build' %}
+            02.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_POLL_PIPELINE
+
+                is_standalone: True
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 03.poll_pipeline.update_sources
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: This is the same job as `reset_previous_build`.
+                    #       It just have different configuration.
+                    {% set job_template_id = 'init_pipeline.reset_previous_build' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'poll_pipeline.update_sources' %}
+            03.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_POLL_PIPELINE
+
+                is_standalone: True
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 04.poll_pipeline.propose_build
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'poll_pipeline.propose_build' %}
+            04.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_POLL_PIPELINE
+
+                is_standalone: True
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # This is the final job in the pipeline.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            ###################################################################
+            # The `init_pipeline`
+
+            {% set skip_script_execution = False %}
 
             {% set job_template_id = 'init_pipeline.start_new_build' %}
             11.{{ job_template_id }}:
@@ -1594,7 +1721,7 @@ system_features:
 
         view_configs:
 
-            0.triggers:
+            +.triggers:
 
                 enabled: True
 
@@ -1603,9 +1730,9 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
 
                     job_list:
-                        - __.init_pipeline.automatic_trigger
-                        - __.init_pipeline.clean_old_build
-                        - __.init_pipeline.propose_build
+                        - +_.init_pipeline.clean_old_build
+                        - +_.poll_pipeline.propose_build
+                        - 01.poll_pipeline.verify_approval
                         - 11.init_pipeline.start_new_build
                         - 51.package_pipeline.create_new_package
                         - 61.release_pipeline.release_build
@@ -1625,6 +1752,16 @@ system_features:
                         - 32.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
                         {% endfor %}
             {% endif %}
+
+            0.poll_pipeline:
+
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: 01.poll_pipeline.verify_approval
 
             1.init_pipeline:
 
