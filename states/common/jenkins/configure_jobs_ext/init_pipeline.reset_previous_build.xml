@@ -133,29 +133,6 @@
         cd -
 
         RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
-        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-
-        # Current branch and build branch are normally the same at this point.
-        # However, allow it to be different if current branch is
-        # switched back to recovery branch (possibly manually,
-        # possibly by this job, or... it should not be a problem).
-        # The main point is to find build branch (i.g. to make sure that
-        # the build actually happend and restore uncommited files).
-        if [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH}" ]
-        then
-
-            # This is already suspicious.
-            if [ "${JOB_STATUS}" -lt '1' ]
-            then
-                JOB_STATUS='1'
-            fi
-
-            if [ "${CURRENT_BRANCH}" != "${RECOVERY_BRANCH}" ]
-            then
-                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH} != ${RECOVERY_BRANCH}"
-                exit 1
-            fi
-        fi
 
         cd "${REPO_PATH}"
         git checkout "${RECOVERY_BRANCH}"
