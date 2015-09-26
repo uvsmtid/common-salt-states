@@ -86,11 +86,11 @@
         then
             git stash
 
-            # Set job status to failed (but don't fail now, restore first)
-            # in order to highlight stashed changes.
-            if [ "${JOB_STATUS}" -lt '2' ]
+            # Set job status to unstable (warning to check stash).
+            if [ "${JOB_STATUS}" -lt '1' ]
             then
-                JOB_STATUS='2'
+                echo "WARNING: Check stash. There were unexpected non-submodule local changes saved before cleanup."
+                JOB_STATUS='1'
             fi
         fi
 
@@ -192,6 +192,7 @@
             # This is rather unexpected, but not critical.
             if [ "${JOB_STATUS}" -lt '1' ]
             then
+                echo "WARNING: No restore point. Did last build fail before restore points were created?"
                 JOB_STATUS='1'
             fi
 
@@ -264,6 +265,7 @@
         then
             if [ "${JOB_STATUS}" -lt '1' ]
             then
+                echo "WARNING: Cannot delete build branch ${BUILD_BRANCH}."
                 JOB_STATUS='1'
             fi
         fi
