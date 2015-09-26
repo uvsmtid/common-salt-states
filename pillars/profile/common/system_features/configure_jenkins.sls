@@ -390,12 +390,6 @@ system_features:
                             Substring can be used if it is uniquely identifies author within existing commits.
                         parameter_type: string
                         parameter_value: '_'
-                    UPDATE_REPOSITORIES:
-                        parameter_description: |
-                            This update branches from upstream repositories.
-                            NOTE: If `USE_SOURCES_FROM_BUILD_TITLE` is set, this option is ignored.
-                        parameter_type: boolean
-                        parameter_value: True
                     PARENT_BUILD_TITLE:
                         parameter_description: |
                             Specify build title from existing history.
