@@ -331,8 +331,16 @@
     {% if 'block_build' in job_config and job_config['block_build'] %}
     <hudson.plugins.buildblocker.BuildBlockerProperty plugin="build-blocker-plugin@1.7.1">
       <useBuildBlocker>true</useBuildBlocker>
+      <!--
+        NOTE: Make sure to be blocked globally (not per slave node).
+      -->
       <blockLevel>GLOBAL</blockLevel>
-      <scanQueueFor>DISABLED</scanQueueFor>
+      <!--
+        NOTE: Make sure queue is scanned to be blocked.
+              Otherwise, the job may jump into build while there is
+              a pipeline job queueing (this will disrupt the pipeline).
+      -->
+      <scanQueueFor>ALL</scanQueueFor>
       <!--
         NOTE: Jobs cannot be run until any other job is running.
       -->
