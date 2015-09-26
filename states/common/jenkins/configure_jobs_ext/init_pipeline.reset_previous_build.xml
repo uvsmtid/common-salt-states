@@ -86,11 +86,11 @@
         then
             git stash
 
-            # Set job status to failed (but don't fail now, restore first)
-            # in order to highlight stashed changes.
-            if [ "${JOB_STATUS}" -lt '2' ]
+            # Set job status to unstable (warning to check stash).
+            if [ "${JOB_STATUS}" -lt '1' ]
             then
-                JOB_STATUS='2'
+                echo "WARNING: Check stash. There were unexpected non-submodule local changes saved before cleanup."
+                JOB_STATUS='1'
             fi
         fi
 
@@ -133,29 +133,6 @@
         cd -
 
         RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
-        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-
-        # Current branch and build branch are normally the same at this point.
-        # However, allow it to be different if current branch is
-        # switched back to recovery branch (possibly manually,
-        # possibly by this job, or... it should not be a problem).
-        # The main point is to find build branch (i.g. to make sure that
-        # the build actually happend and restore uncommited files).
-        if [ "${CURRENT_BRANCH}" != "${BUILD_BRANCH}" ]
-        then
-
-            # This is already suspicious.
-            if [ "${JOB_STATUS}" -lt '1' ]
-            then
-                JOB_STATUS='1'
-            fi
-
-            if [ "${CURRENT_BRANCH}" != "${RECOVERY_BRANCH}" ]
-            then
-                echo "${CURRENT_BRANCH} != ${BUILD_BRANCH} != ${RECOVERY_BRANCH}"
-                exit 1
-            fi
-        fi
 
         cd "${REPO_PATH}"
         git checkout "${RECOVERY_BRANCH}"
@@ -215,6 +192,7 @@
             # This is rather unexpected, but not critical.
             if [ "${JOB_STATUS}" -lt '1' ]
             then
+                echo "WARNING: No restore point. Did last build fail before restore points were created?"
                 JOB_STATUS='1'
             fi
 
@@ -287,6 +265,7 @@
         then
             if [ "${JOB_STATUS}" -lt '1' ]
             then
+                echo "WARNING: Cannot delete build branch ${BUILD_BRANCH}."
                 JOB_STATUS='1'
             fi
         fi

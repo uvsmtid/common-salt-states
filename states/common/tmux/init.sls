@@ -32,6 +32,11 @@ opt_dir_for_tmux-resurrec_exists:
         - name: /opt
         - makedirs: True
 
+
+# Option `tar_options` causes problems on old Salt versions
+# (it is treated as list of chars instead of string).
+{% if grains['saltversion'] not in [ '2014.7.1' ] %}
+
 deploy_tmux_resurrect_plugin:
     archive.extracted:
         - name: /opt
@@ -44,6 +49,8 @@ deploy_tmux_resurrect_plugin:
         - tar_options: --strip-components=1
         - require:
             - file: opt_dir_for_tmux-resurrec_exists
+
+{% endif %} # saltversion
 
 {% endif %} # enable_tmux_ressurect
 
