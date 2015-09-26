@@ -30,6 +30,9 @@
         #
         # Only current local branches are updated to their remote counterparts.
 
+        # NOTE: Initial job status is WARNING (unless there are updates).
+        JOB_STATUS='1'
+
         {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% for repo_name in repo_list %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -48,9 +51,22 @@
         # HEAD value means that repository is at detached head.
         test "${CURRENT_BRANCH}" != "HEAD"
 
+        INITIAL_COMMIT_ID="$(git rev-parse --verify HEAD)"
+
         # NOTE: It is expected that `origin` remote is configured to
         #       required URL to pull from.
         git pull --ff-only origin "${CURRENT_BRANCH}"
+
+        UPDATED_COMMIT_ID="$(git rev-parse --verify HEAD)"
+
+        # If there are updates found, set job status to normal.
+        if [ "${INITIAL_COMMIT_ID}" != "${UPDATED_COMMIT_ID}" ]
+        then
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                JOB_STATUS='0'
+            fi
+        fi
 
         cd -
 
