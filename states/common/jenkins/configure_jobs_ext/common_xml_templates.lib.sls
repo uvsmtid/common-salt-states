@@ -673,6 +673,11 @@ wget http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/jnlpJars/jenki
 set -e
 set -u
 
+# Set minimal job duration.
+# Otherwise, if there are short jobs in the queue, the build history
+# shows them started at the same time (confusing during analysis).
+sleep 2
+
 # Unset proxy variables.
 # By default, there is no need to access Internet the way when these
 # variables get used.
