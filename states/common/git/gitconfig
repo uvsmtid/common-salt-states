@@ -49,7 +49,7 @@
     # It is used for overview of branching - orphans are visually seen
     # due to the second line which always forces to draw graph connectors.
     #
-    blog = log -all --decorate=full --graph --abbrev-commit --format='%C(auto)%h%d %s\n        %Cgreen%an %Cblue%ad'
+    blog = log --all --decorate=full --graph --abbrev-commit --format='%C(auto)%h%d %s\n        %Cgreen%an %Cblue%ad'
 
     # "All log"
     # Displays any unreferenced commits (anything found in `reflog`) with
