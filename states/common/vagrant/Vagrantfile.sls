@@ -15,8 +15,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Based on Vagrant explanation, in the future they may support provider
   # per each VM. At the moment, it should only be configured per all
   # set of VMs (outside of individual configuration).
-{% set vagrant_provider = pillar['system_features']['vagrant_configuration']['vagrant_provider'] %}
+  {% set vagrant_provider = pillar['system_features']['vagrant_configuration']['vagrant_provider'] %}
   config.vm.provider "{{ vagrant_provider }}"
+  config.vm.provider :{{ vagrant_provider }} do |{{ vagrant_provider }}|
+
+      {% if vagrant_provider == 'libvirt' %}
+      # In case of `libvirt`, specify `qxl` graphics card type.
+      # This graphics supports multiple monitors for VM and better resolution.
+      {{ vagrant_provider }}.video_type = 'qxl'
+      {% endif %}
+
+  end
 
   # Without this line it fails when proxy is used to access Internet and
   # SSL certificates break somehow:
