@@ -10,6 +10,10 @@ import logging
 import tempfile
 import subprocess
 
+# NOTE: This command depends on `python-lxml` package (as of Fedora 22).
+#       See also: http://lxml.de/tutorial.html
+from lxml import etree
+
 ################################################################################
 #
 
@@ -75,6 +79,7 @@ def call_subprocess_with_pipes(
     return result
 
 ###############################################################################
+#
 
 def call_subprocess_with_files(
     command_args,
@@ -224,6 +229,7 @@ def print_process_output(
         logging.info("exit code = " + str(process_output["code"]))
 
 ###############################################################################
+#
 
 def call_subprocess(
     command_args,
@@ -264,7 +270,7 @@ def essentialize_dependency_items(
 ):
 
     """
-    Extract only relevan information in the depencency items.
+    Extract only relevant information in the depencency items.
 
     * Strip off version and scope.
     * Make unique list of items.
@@ -548,6 +554,7 @@ def check_all_projects_in_all_repos(
 
 ###############################################################################
 #
+
 def load_yaml_file(
     file_path,
 ):
@@ -575,6 +582,20 @@ def load_dep_confs(
 ):
 
     return load_yaml_file(dep_confs_file_path)
+
+###############################################################################
+#
+
+def load_xml_file(
+    xml_file_path,
+):
+    """
+    Parse arbitrary XML file.
+    """
+
+    data = etree.parse(xml_file_path).getroot()
+
+    return data
 
 ###############################################################################
 # MAIN
