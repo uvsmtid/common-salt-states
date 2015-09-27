@@ -3,13 +3,19 @@
   <links>
 
 {% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
-
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 
     <hudson.plugins.sidebar__link.LinkAction>
-      <url>http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/quietDown</url>
+      <!--
+        NOTE: Instead of guessing absolute linke (with schema, hostname, port),
+              specify relative URL.
+      -->
+      <url>/quietDown</url>
       <text>Block builds</text>
-      <icon></icon>
+      <!--
+        NOTE: Set image to some known resource shipped with Jenkins.
+      -->
+      <icon>/images/24x24/lock.png</icon>
     </hudson.plugins.sidebar__link.LinkAction>
   </links>
 </hudson.plugins.sidebar__link.SidebarLinkPlugin>
