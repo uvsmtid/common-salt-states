@@ -80,6 +80,21 @@ jenkins_configuration_file:
         - template: jinja
         - makedirs: False
 
+# TODO: This is supposed to be refactored to be done through configuration.
+# Deploy configuration files for plugins which need them (in advance).
+{% for plugin_config_file in [
+        'sidebar-link.xml'
+    ]
+%}
+
+jenkins_plugin_config_file_{{ plugin_config_file }}:
+    file.managed:
+        - name: '{{ pillar['system_features']['configure_jenkins']['jenkins_root_dir'] }}/{{ plugin_config_file }}'
+        - source: salt://common/jenkins/plugin_configs/{{ plugin_config_file }}
+        - template: jinja
+
+{% endfor %}
+
 {% if False %} # Disabled
 # The following state does not work at the moment due to a bug:
 #   https://github.com/saltstack/salt/issues/11900
