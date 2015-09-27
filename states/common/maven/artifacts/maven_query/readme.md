@@ -32,7 +32,7 @@ The following steps rely on Maven to set up classpath to execute the jar.
 The following steps build jar with all dependencies and avoid relying on
 Maven to execute the jar.
 
-See also: http://stackoverflow.com/a/1729094/441652
+See also [here][2].
 
 * Build package with all dependencies:
   
@@ -49,4 +49,5 @@ See also: http://stackoverflow.com/a/1729094/441652
 # [footer] #
 
 [1]: http://stackoverflow.com/q/29224974/441652
+[2]: http://stackoverflow.com/a/1729094/441652
 
