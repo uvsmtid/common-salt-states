@@ -33,6 +33,7 @@
 {% set os_type = pillar['system_platforms'][assigned_slave_host_config['os_platform']]['os_type'] %}
 {% set host_config = pillar['system_hosts'][ grains['id'] ] %}
 {% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
+{% set jenkins_dir_path = account_conf['posix_user_home_dir'] + '/jenkins' %}
 
 {% set URI_prefix = pillar['system_features']['deploy_central_control_directory']['URI_prefix'] %}
 
@@ -48,10 +49,22 @@
             job_environ:
                 job_name: "{{ job_name }}"
                 os_type: "{{ os_type }}"
-                jenkins_dir_path: '{{ account_conf['posix_user_home_dir'] }}/jenkins'
+                jenkins_dir_path: '{{ jenkins_dir_path }}'
                 job_description: ""
                 job_assigned_host: "{{ assigned_slave_host }}"
                 control_url: '{{ URI_prefix }}/{{ pillar['system_features']['deploy_central_control_directory']['control_dir_url_path'] }}'
+
+# Job environment variables file.
+{% if 'job_environment_variables' in job_config %}
+{{ job_name }}_job_environment_variables_file:
+    file.managed:
+        - name: '{{ jenkins_dir_path }}/job_env_vars.{{ job_name }}.properties'
+        - contents: |
+            {% for env_var_key in job_config['job_environment_variables'].keys() %}
+            {% set env_var_value = job_config['job_environment_variables'][env_var_key] %}
+            {{ env_var_key }} = {{ env_var_value }}
+            {% endfor %}
+{% endif %}
 
 # Make sure job configuration does not exist:
 add_{{ job_name }}_job_configuration_to_jenkins:
