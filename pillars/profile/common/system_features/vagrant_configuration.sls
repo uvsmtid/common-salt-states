@@ -36,11 +36,11 @@ system_features:
         #
         vagrant_networks:
 
-            {{ primary_network['network_name'] }}:
+            vagrant_{{ primary_network['network_name'] }}:
                 enabled: True
                 vagrant_net_type: 'private_network'
                 enable_dhcp: True
-                system_network: primary_net
+                system_network: {{ primary_network['network_name'] }}
 
             vagrant_internal_net_A:
                 enabled: True

@@ -44,9 +44,14 @@ system_features:
 
         # Networks to be served by DHCP server.
         dchp_networks:
+
             internal_net_A:
                 enabled: False
+            internal_net_B:
+                enabled: False
             external_net_A:
+                enabled: False
+            external_net_B:
                 enabled: False
 
 ###############################################################################
