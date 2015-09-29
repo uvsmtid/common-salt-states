@@ -9,6 +9,9 @@
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
     {{ copy_artifacts(job_config, job_environ) }}
 
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import add_job_environment_variables with context %}
+    {{ add_job_environment_variables(job_config, job_environ) }}
+
     <hudson.tasks.Shell>
       <command>
 

@@ -100,9 +100,28 @@
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
     {{ copy_artifacts(job_config, job_environ) }}
 
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import add_job_environment_variables with context %}
+    {{ add_job_environment_variables(job_config, job_environ) }}
+
+    <!--
+        NOTE: Print job environment variables before Maven bulid.
+    -->
+    <hudson.tasks.Shell>
+      <command>env</command>
+    </hudson.tasks.Shell>
+
   </prebuilders>
 
-  <postbuilders/>
+  <postbuilders>
+
+    <!--
+        NOTE: Print job environment variables after Maven bulid.
+    -->
+    <hudson.tasks.Shell>
+      <command>env</command>
+    </hudson.tasks.Shell>
+
+  </postbuilders>
 
   <runPostStepsIfResult>
     <name>FAILURE</name>

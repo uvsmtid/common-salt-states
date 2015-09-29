@@ -908,6 +908,12 @@ system_features:
                 #   https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError
                 MAVEN_OPTS: '-Xmx2048m -XX:MaxPermSize=512m'
 
+                # NOTE: This variables has to be synced with deployment
+                #       of specific JDK refered here.
+                job_environment_variables:
+                    JAVA_HOME: '/usr/java/jdk1.7.0_71'
+                    PATH: '/usr/java/jdk1.7.0_71/bin:${PATH}'
+
                 # Instead of join, use promotion to trigger next pipeline.
                 # Otherwise, the Build Pipeline View cannot handle join
                 # and draws duplicated chains after each job to be joined.
