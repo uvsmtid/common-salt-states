@@ -745,6 +745,21 @@ esac
 {% endmacro %}
 
 ###############################################################################
+{% macro add_job_environment_variables(job_config, job_environ) %}
+
+    {% if 'job_environment_variables' in job_config %}
+
+    <EnvInjectBuilder plugin="envinject@1.91.3">
+      <info>
+        <propertiesFilePath>{{ job_environ['jenkins_dir_path'] }}/job_env_vars.{{ job_environ['job_name'] }}.properties</propertiesFilePath>
+      </info>
+    </EnvInjectBuilder>
+
+    {% endif %}
+
+{% endmacro %}
+
+###############################################################################
 # EOF
 ###############################################################################
 
