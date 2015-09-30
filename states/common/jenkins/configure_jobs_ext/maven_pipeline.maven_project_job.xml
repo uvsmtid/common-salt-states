@@ -104,10 +104,14 @@
     {{ add_job_environment_variables(job_config, job_environ) }}
 
     <!--
-        NOTE: Print job environment variables before Maven bulid.
+        NOTE: Print job environment variables and java version
+              before Maven bulid (ensure required precondition).
     -->
     <hudson.tasks.Shell>
-      <command>env</command>
+      <command>
+        env
+        java -version
+      </command>
     </hudson.tasks.Shell>
 
   </prebuilders>
@@ -115,10 +119,14 @@
   <postbuilders>
 
     <!--
-        NOTE: Print job environment variables after Maven bulid.
+        NOTE: Print job environment variables and java version
+              after Maven bulid (ensure no changes during job run).
     -->
     <hudson.tasks.Shell>
-      <command>env</command>
+      <command>
+        env
+        java -version
+      </command>
     </hudson.tasks.Shell>
 
   </postbuilders>
