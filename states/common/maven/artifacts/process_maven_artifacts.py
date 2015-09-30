@@ -700,6 +700,28 @@ def load_xml_file(
 ###############################################################################
 #
 
+def get_effective_pom(
+    input_pom_file_path,
+    output_effective_pom_file_path,
+):
+
+    """
+    Generate effective pom file into specified output file.
+    """
+
+    process_output = call_subprocess(
+        command_args = [
+            'mvn',
+            '-f',
+            input_pom_file_path,
+            'help:effective-pom',
+            '-Doutput=' + output_effective_pom_file_path,
+        ],
+    )
+
+###############################################################################
+#
+
 def verify_known_dependencies(
     context,
 ):
