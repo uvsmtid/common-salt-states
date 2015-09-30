@@ -53,7 +53,7 @@
         - source: '{{ deploy_step_config['resolv_conf_template'] }}'
         - template: jinja
         - makedirs: True
-        {% set account_conf = target_env_pillar['system_accounts'][ target_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+        {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - context:
             selected_pillar: {{ target_env_pillar }}
         - group: '{{ account_conf['username'] }}'
