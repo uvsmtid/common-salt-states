@@ -111,11 +111,13 @@ def setLoggingLevel(
 # Function to call scripts
 #
 
+# TODO: This function, if used, won't work with `stdin_string`.
 def call_subprocess_with_pipes(
     command_args,
     raise_on_error = True,
     capture_stdout = False,
     capture_stderr = False,
+    stdin_string = None,
 ):
 
     logging.debug("command line: " + "\"" + "\" \"".join(command_args) + "\"")
@@ -166,6 +168,7 @@ def call_subprocess_with_files(
     capture_stdout = False,
     capture_stderr = False,
     cwd = None,
+    stdin_string = None,
 ):
 
     logging.debug("command line: " + "\"" + "\" \"".join(command_args) + "\"")
@@ -189,12 +192,26 @@ def call_subprocess_with_files(
         stderr_file = os.fdopen(handle, "w")
         stderr_sink = stderr_file
 
+    stdin = None
+    if stdin_string:
+        stdin = subprocess.PIPE
+
     p = subprocess.Popen(
         command_args,
         stdout = stdout_sink,
         stderr = stderr_sink,
         cwd = cwd,
+        stdin = stdin,
     )
+
+    logging.debug('stdin_string: ' + str(stdin_string))
+    if stdin_string:
+        logging.debug('before write: ' + str(stdin_string))
+        p.stdin.write(stdin_string)
+        logging.debug('before communicate')
+        p.communicate()
+        logging.debug('before close')
+        p.stdin.close()
 
     # Wait until command stops
     p.wait()
@@ -213,8 +230,6 @@ def call_subprocess_with_files(
             check_stderr = False,
             check_stdout = False,
         )
-
-    stds = p.communicate()
 
     if stdout_file:
         stdout_file.close()
@@ -320,6 +335,7 @@ def call_subprocess(
     # feedback to user Collector->Slave->Master->User: do not capture stderr.
     capture_stderr = False,
     cwd = None,
+    stdin_string = None,
 ):
 
     # Alternative versions of the same function which captures output into
@@ -331,6 +347,7 @@ def call_subprocess(
             capture_stdout = capture_stdout,
             capture_stderr = capture_stderr,
             cwd = cwd,
+            stdin_string = stdin_string,
         )
     else:
         return call_subprocess_with_pipes(
@@ -339,6 +356,7 @@ def call_subprocess(
             capture_stdout = capture_stdout,
             capture_stderr = capture_stderr,
             cwd = cwd,
+            stdin_string = stdin_string,
         )
 
 ###############################################################################
