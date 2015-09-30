@@ -8,11 +8,90 @@ import yaml
 import sets
 import logging
 import tempfile
+import argparse
 import subprocess
 
 # NOTE: This command depends on `python-lxml` package (as of Fedora 22).
 #       See also: http://lxml.de/tutorial.html
 from lxml import etree
+
+################################################################################
+#
+
+# Path to configuration file                                                    
+configuration_file = "train_generator.conf"                                     
+# Configuration object                                                          
+config = None                                                                   
+
+################################################################################
+#
+
+def build_parser(
+):
+
+    default_format_string = "[default from config = \"%(default)s\"]"
+
+    # Build command line parser.
+    parser = argparse.ArgumentParser(description="Process Maven Artifacts")
+
+    sections_ps = parser.add_subparsers(
+        title = 'sections',
+        description = "select section [c]commands or [u]unused"
+        ,
+        help = 'valid sections'
+    )
+    commands_p = sections_ps.add_parser(
+        'c',
+        help = "[c]ommands - section with various commands"
+    )
+    tests_p = sections_ps.add_parser(
+        'u',
+        help = "[u]unused - TODO"
+    )
+
+    # ==========================================================================
+    # Commands
+
+    commands_sps = commands_p.add_subparsers(
+        title = 'commands',
+        description = "TODO"
+        ,
+        help = 'Description of each command:'
+    )
+
+    # --------------------------------------------------------------------------
+    # verify_known_dependencies
+
+    verify_known_dependencies_p = commands_sps.add_parser(
+        'verify_known_dependencies',
+        description = "TODO"
+            + "TODO"
+        ,
+        help = "TODO"
+            + "TODO"
+    )
+    def_value = 'TODO'
+    verify_known_dependencies_p.add_argument(
+        '--repos_config_file',
+        dest = 'repos_config_file',
+        metavar = 'repos_config_file',
+        default = def_value,
+        help="File with configuration for all repositories "
+            + default_format_string % { "default": def_value }
+    )
+    def_value = 'TODO'
+    verify_known_dependencies_p.add_argument(
+        '--artifacts_config_file',
+        dest = 'artifacts_config_file',
+        metavar = 'artifacts_config_file',
+        default = def_value,
+        help="File with configuration for all Maven artifacts "
+            + default_format_string % { "default": def_value }
+    )
+    verify_known_dependencies_p.set_defaults(func=verify_known_dependencies)
+
+    # Result
+    return parser
 
 ################################################################################
 #
@@ -559,11 +638,14 @@ def load_yaml_file(
     file_path,
 ):
 
+    yaml_stream = None
+
     try:
         yaml_stream = open(file_path, 'r')
         return yaml.load(yaml_stream)
     finally:
-        yaml_stream.close()
+        if yaml_stream:
+            yaml_stream.close()
 
 ###############################################################################
 #
@@ -598,15 +680,14 @@ def load_xml_file(
     return data
 
 ###############################################################################
-# MAIN
+#
 
-if __name__ == '__main__':
+def verify_known_dependencies(
+    context,
+):
 
-
-    setLoggingLevel('debug')
-
-    repo_conf_file = sys.argv[1]
-    dep_conf_file = sys.argv[2]
+    repo_conf_file = context.repos_config_file
+    dep_conf_file = context.artifacts_config_file
 
     # Load repository confs.
     repo_confs = load_repo_confs(repo_conf_file)
@@ -621,6 +702,22 @@ if __name__ == '__main__':
         repo_confs,
         dep_confs,
     )
+
+    return result
+
+###############################################################################
+# MAIN
+
+if __name__ == '__main__':
+
+    setLoggingLevel('debug')
+
+    # Build parser
+    parser = build_parser()
+    # Parse command line
+    context = parser.parse_args()
+    # Execute
+    context.func(context)
 
     if result:
         sys.exit(0)
