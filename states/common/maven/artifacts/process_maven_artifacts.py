@@ -11,17 +11,17 @@ import tempfile
 import argparse
 import subprocess
 
+# Without this line `salt.client` somehow prevents all subsequent output.
+logging.debug('initialize logging')
+
 # NOTE: This command depends on `python-lxml` package (as of Fedora 22).
 #       See also: http://lxml.de/tutorial.html
 from lxml import etree
 
 ################################################################################
-#
+# Global variables
 
-# Path to configuration file                                                    
-configuration_file = "train_generator.conf"                                     
-# Configuration object                                                          
-config = None                                                                   
+config = None
 
 ################################################################################
 #
@@ -64,11 +64,13 @@ def build_parser(
 
     verify_known_dependencies_p = commands_sps.add_parser(
         'verify_known_dependencies',
-        description = "TODO"
-            + "TODO"
+        description = ""
+            + ""
+            + ""
         ,
-        help = "TODO"
-            + "TODO"
+        help = ""
+            + ""
+            + ""
     )
     def_value = 'TODO'
     verify_known_dependencies_p.add_argument(
@@ -89,6 +91,83 @@ def build_parser(
             + default_format_string % { "default": def_value }
     )
     verify_known_dependencies_p.set_defaults(func=verify_known_dependencies)
+
+    # --------------------------------------------------------------------------
+    # get_salt_pillar
+
+    get_salt_pillar_p = commands_sps.add_parser(
+        'get_salt_pillar',
+        description = "Connect to Salt and retrieve pillar data"
+            + ""
+            + ""
+        ,
+        help = ""
+            + ""
+            + ""
+    )
+    def_value = None
+    get_salt_pillar_p.add_argument(
+        '--output_salt_pillar_yaml_file_path',
+        default = def_value,
+        help="Output Salt pillar YAML file path"
+    )
+    get_salt_pillar_p.set_defaults(func=get_salt_pillar_wrapper)
+
+    # --------------------------------------------------------------------------
+    # get_effective_pom
+
+    get_effective_pom_p = commands_sps.add_parser(
+        'get_effective_pom',
+        description = "Generate Maven effective pom for specified original pom"
+            + ""
+            + ""
+        ,
+        help = ""
+            + ""
+            + ""
+    )
+    def_value = None
+    get_effective_pom_p.add_argument(
+        '--input_original_pom_file_path',
+        default = def_value,
+        help="Input original pom file path"
+    )
+    def_value = None
+    get_effective_pom_p.add_argument(
+        '--output_effective_pom_file_path',
+        default = def_value,
+        help="Output effective pom file path"
+    )
+    get_effective_pom_p.set_defaults(func=get_effective_pom_wrapper)
+
+    # --------------------------------------------------------------------------
+    # get_pom_files_per_repo
+
+    get_pom_files_per_repo_p = commands_sps.add_parser(
+        'get_pom_files_per_repo',
+        description = "Generate Maven effective pom for specified original pom"
+            + ""
+            + ""
+        ,
+        help = ""
+            + ""
+            + ""
+    )
+    def_value = None
+    get_pom_files_per_repo_p.add_argument(
+        '--input_salt_pillar_yaml_path',
+        default = def_value,
+        help="Input file path with Salt pillar data"
+    )
+    def_value = None
+    get_pom_files_per_repo_p.add_argument(
+        '--output_pom_files_per_repo_yaml_path',
+        default = def_value,
+        help="Output file path for pom files per repo"
+    )
+    get_pom_files_per_repo_p.set_defaults(func=get_pom_files_per_repo_wrapper)
+
+    # --------------------------------------------------------------------------
 
     # Result
     return parser
@@ -656,11 +735,41 @@ def load_yaml_file(
     file_path,
 ):
 
+    """
+    Return data loaded from specified YAML file path.
+    """
+
     yaml_stream = None
 
     try:
         yaml_stream = open(file_path, 'r')
         return yaml.load(yaml_stream)
+    finally:
+        if yaml_stream:
+            yaml_stream.close()
+
+###############################################################################
+#
+
+def save_yaml_file(
+    data,
+    file_path,
+):
+
+    """
+    Save data into specified YAML file path.
+    """
+
+    yaml_stream = None
+
+    try:
+        yaml_stream = open(file_path, 'w')
+        yaml.dump(
+            data,
+            yaml_stream,
+            default_flow_style = False,
+            indent = 4,
+        )
     finally:
         if yaml_stream:
             yaml_stream.close()
@@ -700,20 +809,82 @@ def load_xml_file(
 ###############################################################################
 #
 
+def get_salt_pillar_wrapper(
+    context,
+):
+    """
+    Wrap input/output and verify conditions for `get_salt_pillar`
+    """
+
+    if os.geteuid() != 0:
+        raise Exception('This operation requires root privileges')
+
+    salt_pillar = get_salt_pillar()
+
+    # Save Salt pillar data.
+    save_yaml_file(
+        salt_pillar,
+        context.output_salt_pillar_yaml_file_path
+    )
+
+#------------------------------------------------------------------------------
+#
+
+def get_salt_pillar(
+):
+
+    """
+    Connects to Salt and retrieves pillar data.
+
+    This function requires root privelege.
+    """
+
+    # Salt modules.
+    import salt.client
+
+    caller = salt.client.Caller()
+    logging.debug(str(caller))
+
+    salt_pillar = caller.function('pillar.items')
+    logging.debug(str(salt_pillar))
+
+    return salt_pillar
+
+###############################################################################
+#
+
+def get_effective_pom_wrapper(
+    context,
+):
+    """
+    Wrap input/output and verify conditions for `get_effective_pom`
+    """
+
+    input_original_pom_file_path = context.input_original_pom_file_path
+    output_effective_pom_file_path = context.output_effective_pom_file_path
+
+    return get_effective_pom(
+        input_original_pom_file_path,
+        output_effective_pom_file_path,
+    )
+
+#------------------------------------------------------------------------------
+#
+
 def get_effective_pom(
-    input_pom_file_path,
+    input_original_pom_file_path,
     output_effective_pom_file_path,
 ):
 
     """
-    Generate effective pom file into specified output file.
+    Generate output effective pom file from specified input original pom file.
     """
 
     process_output = call_subprocess(
         command_args = [
             'mvn',
             '-f',
-            input_pom_file_path,
+            input_original_pom_file_path,
             'help:effective-pom',
             '-Doutput=' + output_effective_pom_file_path,
         ],
@@ -746,6 +917,92 @@ def verify_known_dependencies(
     return result
 
 ###############################################################################
+#
+
+def get_pom_files_per_repo_wrapper(
+    context,
+):
+    """
+    Wrap input/output and verify conditions for `get_pom_files_per_repo`
+    """
+
+    salt_pillar = load_yaml_file(
+        context.input_salt_pillar_yaml_path
+    )
+
+    pom_files_per_repo = get_pom_files_per_repo(
+        salt_pillar,
+    )
+
+    save_yaml_file(
+        pom_files_per_repo,
+        context.output_pom_files_per_repo_yaml_path
+    )
+
+    return pom_files_per_repo
+
+#------------------------------------------------------------------------------
+#
+
+def get_pom_files_per_repo(
+    salt_pillar,
+):
+    """
+    Find all pom files in all Maven repositories.
+    """
+
+    pom_files_per_repo = {}
+
+    # Select all Maven repositories.
+    repo_configs = salt_pillar['system_features']['deploy_environment_sources']
+    for repo_id in repo_configs['repository_roles']['maven_project_container_role']:
+
+        # Only Git repository is supported at the moment.
+        assert(repo_configs['source_repo_types'][repo_id] == 'git')
+
+        repo_config = repo_configs['source_repositories'][repo_id]['git']
+
+        # Get absolute path to repository.
+        account_conf = salt_pillar['system_accounts'][
+            salt_pillar['system_hosts'][
+                repo_config['source_system_host']
+            ]['primary_user']
+        ]
+        local_path_base = account_conf['posix_user_home_dir']
+        local_path_rest = repo_config['origin_uri_ssh_path']
+        local_path = local_path_base + '/' + local_path_rest
+
+        # Find all `pom.xml` files.
+        process_output = call_subprocess(
+            command_args = [
+                'find',
+                local_path,
+                '-iname',
+                'pom.xml',
+            ],
+            capture_stdout = True,
+        )
+
+        logging.debug('find output: ' + str(process_output['stdout']))
+
+        pom_files = []
+        for pom_file in process_output['stdout'].split('\n'):
+            if os.path.isfile(pom_file):
+                if repo_id in salt_pillar['system_maven_artifacts']['pom_file_exceptions']:
+                    if pom_file not in salt_pillar['system_maven_artifacts']['pom_file_exceptions'][repo_id]:
+                        pom_files += [ pom_file ]
+                    else:
+                        logging.warning('ignore this pom file from exceptions: ' + str(pom_file))
+                else:
+                    pom_files += [ pom_file ]
+            else:
+                logging.warning('this path is not a file: ' + str(pom_file))
+
+        pom_files_per_repo[repo_id] = pom_files
+
+    return pom_files_per_repo
+
+###############################################################################
 # MAIN
 
 if __name__ == '__main__':
@@ -757,7 +1014,7 @@ if __name__ == '__main__':
     # Parse command line
     context = parser.parse_args()
     # Execute
-    context.func(context)
+    result = context.func(context)
 
     if result:
         sys.exit(0)
