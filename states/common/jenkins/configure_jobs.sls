@@ -10,9 +10,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
-
-
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %} # os_platform_type
 
 # TODO: It's code duplication due to poor Python logic/loop support in Jinja templates:
 #       https://groups.google.com/forum/#!topic/salt-users/gUNUEFWds1U
@@ -51,10 +49,9 @@ include:
 
 {% endfor %}
 
-    # At least one single element should be in the include list:
-    - common.dummy
-
-
+    # At least one single element should be in the include list.
+    # And this single element is required one now:
+    - common.jenkins.download_jenkins_cli_tool
 
 # TODO: It's code duplication due to poor Python logic/loop support in Jinja templates:
 #       https://groups.google.com/forum/#!topic/salt-users/gUNUEFWds1U
@@ -88,11 +85,19 @@ include:
 
 {% endif %} # job_config['enabled']
 
-
-
 {% endfor %}
 
-{% endif %}
+# 3. Disable jobs which are not part of configuration.
+{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+{% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
+
+disable_jobs_missing_in_pillars:
+    cmd.run:
+        - name: 'for EXISTING_JOB_NAME in $( java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ list-jobs All ) ; do if ! ( echo "{{ pillar['system_features']['configure_jenkins']['job_configs'].keys()|join(' ') }}" | grep -F "${EXISTING_JOB_NAME}" ) ; then java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ disable-job "${EXISTING_JOB_NAME}" ; fi ; done'
+        - require:
+            - cmd: download_jenkins_cli_jar
+
+{% endif %} # os_platform_type
 # >>>
 ###############################################################################
 
@@ -103,5 +108,4 @@ include:
 {% endif %}
 # >>>
 ###############################################################################
-
 
