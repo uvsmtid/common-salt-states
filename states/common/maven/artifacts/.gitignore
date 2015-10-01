@@ -5,6 +5,7 @@
 # Intermediate output files.
 /salt_pillar.yaml
 /pom_files_per_repo.yaml
+/pom_dependencies.yaml
 
 ###############################################################################
 # EOF

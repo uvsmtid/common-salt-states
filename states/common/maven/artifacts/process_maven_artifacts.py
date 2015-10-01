@@ -23,6 +23,9 @@ from lxml import etree
 
 config = None
 
+pom_xml_ns = 'http://maven.apache.org/POM/4.0.0'
+pom_xml_ns_prefix = '{' + pom_xml_ns + '}'
+
 ################################################################################
 #
 
@@ -145,7 +148,7 @@ def build_parser(
 
     get_pom_files_per_repo_p = commands_sps.add_parser(
         'get_pom_files_per_repo',
-        description = "Generate Maven effective pom for specified original pom"
+        description = "Find list of pom files per repository"
             + ""
             + ""
         ,
@@ -166,6 +169,33 @@ def build_parser(
         help="Output file path for pom files per repo"
     )
     get_pom_files_per_repo_p.set_defaults(func=get_pom_files_per_repo_wrapper)
+
+    # --------------------------------------------------------------------------
+    # get_pom_dependencies
+
+    get_pom_dependencies_p = commands_sps.add_parser(
+        'get_pom_dependencies',
+        description = "Get list of dependencies from pom data"
+            + ""
+            + ""
+        ,
+        help = ""
+            + ""
+            + ""
+    )
+    def_value = None
+    get_pom_dependencies_p.add_argument(
+        '--input_effective_pom_xml_path',
+        default = def_value,
+        help="Input effective pom.xml file path"
+    )
+    def_value = None
+    get_pom_dependencies_p.add_argument(
+        '--output_pom_dependencies_yaml_path',
+        default = def_value,
+        help="Output file path with pom dependencies"
+    )
+    get_pom_dependencies_p.set_defaults(func=get_pom_dependencies_wrapper)
 
     # --------------------------------------------------------------------------
 
@@ -762,6 +792,8 @@ def save_yaml_file(
 
     yaml_stream = None
 
+    logging.debug('save_yaml_file.file_path: ' + str(file_path))
+
     try:
         yaml_stream = open(file_path, 'w')
         yaml.dump(
@@ -802,9 +834,9 @@ def load_xml_file(
     Parse arbitrary XML file.
     """
 
-    data = etree.parse(xml_file_path).getroot()
+    xml_data = etree.parse(xml_file_path).getroot()
 
-    return data
+    return xml_data
 
 ###############################################################################
 #
@@ -1001,6 +1033,116 @@ def get_pom_files_per_repo(
         pom_files_per_repo[repo_id] = pom_files
 
     return pom_files_per_repo
+
+###############################################################################
+#
+
+def get_pom_dependencies_wrapper(
+    context
+):
+
+    effective_pom_data = load_xml_file(
+        context.input_effective_pom_xml_path,
+    )
+
+    pom_dependencies = get_pom_dependencies(
+        effective_pom_data,
+    )
+
+    save_yaml_file(
+        pom_dependencies,
+        context.output_pom_dependencies_yaml_path,
+    )
+
+    return pom_dependencies
+
+#------------------------------------------------------------------------------
+#
+def get_xpath_elements(
+    # NOTE: The elements must be prefixed by `x:` namespece.
+    #       For example, `x:artifactId`.
+    parent_elem,
+    xpath_expr,
+    x_xml_ns = pom_xml_ns,
+):
+
+    return parent_elem.xpath(
+        xpath_expr,
+        namespaces = {
+            'x': x_xml_ns,
+        }
+    )
+
+#------------------------------------------------------------------------------
+#
+
+def get_pom_dependencies(
+    # This object is output of this function call:
+    #     etree.parse(input_xml_file_path).getroot()
+    effective_pom_data,
+):
+    """
+    Find Maven pom dependencies.
+
+    The information collected about dependency includes Maven Coordinates:
+        https://maven.apache.org/pom.html#Maven_Coordinates
+
+    The search for dependencies includes (hopefully, all) locations
+    where Maven Coordinates can be specified.
+    """
+
+    all_artifactId_elems = get_xpath_elements(effective_pom_data, './/x:artifactId')
+
+    logging.debug('artifactIds: ' + str(all_artifactId_elems))
+
+    # Skip some tags without considering them as dependency.
+    # The problem is that plugins often miss some information
+    # like `groupId` or `version` which is hard to guess.
+    ignore_dependency_tags = [
+        pom_xml_ns_prefix + 'reportPlugin',
+        pom_xml_ns_prefix + 'plugin',
+    ]
+
+    pom_dependencies = []
+    for artifactId_elem in all_artifactId_elems:
+        dependency_elem = artifactId_elem.getparent()
+
+        pom_dependency = {}
+
+        logging.debug('dependency_elem: ' + str(dependency_elem) + ': ' + str(etree.tostring(dependency_elem)))
+
+        # Get `groupId`.
+        maven_coords = get_xpath_elements(dependency_elem, './x:groupId')
+        logging.debug('groupId: ' + str(maven_coords))
+        if len(maven_coords) == 0:
+            logging.debug('dependency_elem.tag: ' + str(dependency_elem.tag))
+            assert(dependency_elem.tag in ignore_dependency_tags)
+            pom_dependency['groupId'] = ''
+        else:
+            assert(len(maven_coords) == 1)
+            pom_dependency['groupId'] = maven_coords[0].text
+
+        # Get `artifactId`.
+        maven_coords = get_xpath_elements(dependency_elem, './x:artifactId')
+        logging.debug('artifactId: ' + str(maven_coords))
+        assert(len(maven_coords) == 1)
+        pom_dependency['artifactId'] = maven_coords[0].text
+
+        # Get `version`.
+        maven_coords = get_xpath_elements(dependency_elem, './x:version')
+        logging.debug('version: ' + str(maven_coords))
+        if len(maven_coords) == 0:
+            logging.debug('dependency_elem.tag: ' + str(dependency_elem.tag))
+            assert(dependency_elem.tag in ignore_dependency_tags)
+            pom_dependency['version'] = ''
+        else:
+            assert(len(maven_coords) == 1)
+            pom_dependency['version'] = maven_coords[0].text
+
+        # Seve dependency.
+        pom_dependencies += [ pom_dependency ]
+
+    return pom_dependencies
 
 ###############################################################################
 # MAIN
