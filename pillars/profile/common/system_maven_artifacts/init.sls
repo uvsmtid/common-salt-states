@@ -5,7 +5,9 @@
 include:
 
 {% for sub_item in [
-        'maven-demo'
+        'artifact_descriptors'
+        ,
+        'pom_file_exceptions'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

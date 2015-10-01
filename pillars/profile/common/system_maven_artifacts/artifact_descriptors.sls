@@ -10,15 +10,16 @@
 
 system_maven_artifacts:
 
-    #Updated POM.xml
-    'GROUP_ID:ARTIFACT_ID': # TODO
-        used: True
-        source_type: modified-open
-        repository_id: maven-demo
-        item_path: pom.xml
+    artifact_descriptors:
 
-        remarks: build success
-        current_version: 0.0.0.0-SNAPSHOT
+        'GROUP_ID:ARTIFACT_ID': # TODO
+            used: True
+            source_type: modified-open
+            repository_id: maven-demo
+            item_path: pom.xml
+
+            remarks: build success
+            current_version: 0.0.0.0-SNAPSHOT
 
 ###############################################################################
 # EOF
