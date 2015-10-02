@@ -978,26 +978,39 @@ def get_all_pom_files_per_repo(
                 repo_config['source_system_host']
             ]['primary_user']
         ]
-        local_path_base = account_conf['posix_user_home_dir']
-        local_path_rest = repo_config['origin_uri_ssh_path']
-        local_path = local_path_base + '/' + local_path_rest
+        repo_path_base = account_conf['posix_user_home_dir']
+        repo_path_rest = repo_config['origin_uri_ssh_path']
+        repo_path = repo_path_base + '/' + repo_path_rest
 
         # Find all `pom.xml` files.
         exit_data = call_subprocess(
             command_args = [
                 'find',
-                local_path,
                 '-iname',
                 'pom.xml',
             ],
+            cwd = repo_path,
             capture_stdout = True,
         )
 
         logging.debug('find output: ' + str(exit_data['stdout']))
 
         pom_files = []
-        for pom_file in exit_data['stdout'].split('\n'):
-            if os.path.isfile(pom_file):
+        for rel_pom_file in exit_data['stdout'].split('\n'):
+
+            # Remove any leading `./` from `rel_pom_file`.
+            if './' in rel_pom_file[:2]:
+                rel_pom_file = rel_pom_file[2:]
+                logging.debug('rel_pom_file: ' + str(rel_pom_file))
+
+            # Get abs path to pom file.
+            abs_pom_file = os.path.join(
+                repo_path,
+                rel_pom_file,
+            )
+            assert(os.path.exists(abs_pom_file))
+
+            if os.path.isfile(abs_pom_file):
 
                 # NOTE: Quick fix: check that file is tracked by Git.
                 #           git ls-files --error-unmatch pom.xml
@@ -1008,24 +1021,24 @@ def get_all_pom_files_per_repo(
                         'git',
                         'ls-files',
                         '--error-unmatch',
-                        os.path.basename(pom_file),
+                        os.path.basename(abs_pom_file),
                     ],
-                    cwd = os.path.dirname(pom_file),
+                    cwd = os.path.dirname(abs_pom_file),
                     raise_on_error = False,
                 )
                 if exit_data['code'] != 0:
-                    logging.warning('this file is not tracked: ' + str(pom_file))
+                    logging.warning('this file is not tracked: ' + str(abs_pom_file))
                     continue
 
                 if repo_id in salt_pillar['system_maven_artifacts']['pom_file_exceptions']:
-                    if pom_file not in salt_pillar['system_maven_artifacts']['pom_file_exceptions'][repo_id]:
-                        pom_files += [ pom_file ]
+                    if rel_pom_file not in salt_pillar['system_maven_artifacts']['pom_file_exceptions'][repo_id]:
+                        pom_files += [ abs_pom_file ]
                     else:
-                        logging.warning('ignore this pom file from exceptions: ' + str(pom_file))
+                        logging.warning('ignore this pom file from exceptions: ' + str(abs_pom_file))
                 else:
-                    pom_files += [ pom_file ]
+                    pom_files += [ abs_pom_file ]
             else:
-                logging.warning('this path is not a file: ' + str(pom_file))
+                logging.warning('this path is not a file: ' + str(abs_pom_file))
 
         all_pom_files_per_repo[repo_id] = pom_files
 
