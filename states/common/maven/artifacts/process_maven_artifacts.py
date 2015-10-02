@@ -117,33 +117,6 @@ def build_parser(
     get_salt_pillar_p.set_defaults(func=get_salt_pillar_wrapper)
 
     # --------------------------------------------------------------------------
-    # get_single_effective_pom
-
-    get_single_effective_pom_p = commands_sps.add_parser(
-        'get_single_effective_pom',
-        description = "Generate Maven effective pom for specified original pom"
-            + ""
-            + ""
-        ,
-        help = ""
-            + ""
-            + ""
-    )
-    def_value = None
-    get_single_effective_pom_p.add_argument(
-        '--input_original_pom_file_path',
-        default = def_value,
-        help="Input original pom file path"
-    )
-    def_value = None
-    get_single_effective_pom_p.add_argument(
-        '--output_single_effective_pom_file_path',
-        default = def_value,
-        help="Output effective pom file path"
-    )
-    get_single_effective_pom_p.set_defaults(func=get_single_effective_pom_wrapper)
-
-    # --------------------------------------------------------------------------
     # get_all_pom_files_per_repo
 
     get_all_pom_files_per_repo_p = commands_sps.add_parser(
@@ -169,63 +142,6 @@ def build_parser(
         help="Output file path for pom files per repo"
     )
     get_all_pom_files_per_repo_p.set_defaults(func=get_all_pom_files_per_repo_wrapper)
-
-    # --------------------------------------------------------------------------
-    # get_single_pom_dependencies
-
-    get_single_pom_dependencies_p = commands_sps.add_parser(
-        'get_single_pom_dependencies',
-        description = "Get list of dependencies from pom data"
-            + ""
-            + ""
-        ,
-        help = ""
-            + ""
-            + ""
-    )
-    def_value = None
-    get_single_pom_dependencies_p.add_argument(
-        '--input_single_effective_pom_xml_path',
-        default = def_value,
-        help="Input effective pom.xml file path"
-    )
-    def_value = None
-    get_single_pom_dependencies_p.add_argument(
-        '--output_single_pom_dependencies_yaml_path',
-        default = def_value,
-        help="Output file path with pom dependencies"
-    )
-    get_single_pom_dependencies_p.set_defaults(func=get_single_pom_dependencies_wrapper)
-
-    # --------------------------------------------------------------------------
-    # get_all_effective_poms_per_repo
-
-    get_all_effective_poms_per_repo_p = commands_sps.add_parser(
-        'get_all_effective_poms_per_repo',
-        description = "Generate effective poms in temporary directories "
-            + "with config file point to them"
-            + ""
-        ,
-        help = ""
-            + ""
-            + ""
-    )
-    def_value = None
-    get_all_effective_poms_per_repo_p.add_argument(
-        '--input_all_pom_files_per_repo_yaml_path',
-        default = def_value,
-    )
-    def_value = None
-    get_all_effective_poms_per_repo_p.add_argument(
-        '--output_all_effective_poms_per_repo_yaml_path',
-        default = def_value,
-    )
-    def_value = None
-    get_all_effective_poms_per_repo_p.add_argument(
-        '--output_all_effective_poms_per_repo_dir',
-        default = def_value,
-    )
-    get_all_effective_poms_per_repo_p.set_defaults(func=get_all_effective_poms_per_repo_wrapper)
 
     # --------------------------------------------------------------------------
     # get_verification_report_pom_files_with_artifact_descriptors
@@ -871,6 +787,8 @@ def get_salt_pillar_wrapper(
         context.output_salt_pillar_yaml_file_path
     )
 
+    return salt_pillar
+
 #------------------------------------------------------------------------------
 #
 
@@ -895,24 +813,6 @@ def get_salt_pillar(
     return salt_pillar
 
 ###############################################################################
-#
-
-def get_single_effective_pom_wrapper(
-    context,
-):
-    """
-    Wrap input/output and verify conditions for `get_single_effective_pom`
-    """
-
-    input_original_pom_file_path = context.input_original_pom_file_path
-    output_single_effective_pom_file_path = context.output_single_effective_pom_file_path
-
-    return get_single_effective_pom(
-        input_original_pom_file_path,
-        output_single_effective_pom_file_path,
-    )
-
-#------------------------------------------------------------------------------
 #
 
 def get_single_effective_pom(
@@ -1087,27 +987,6 @@ def get_all_pom_files_per_repo(
 ###############################################################################
 #
 
-def get_single_pom_dependencies_wrapper(
-    context
-):
-
-    single_effective_pom_data = load_xml_file(
-        context.input_single_effective_pom_xml_path,
-    )
-
-    single_pom_dependencies = get_single_pom_dependencies(
-        single_effective_pom_data,
-    )
-
-    save_yaml_file(
-        single_pom_dependencies,
-        context.output_single_pom_dependencies_yaml_path,
-    )
-
-    return single_pom_dependencies
-
-#------------------------------------------------------------------------------
-#
 def get_xpath_elements(
     # NOTE: The elements must be prefixed by `x:` namespece.
     #       For example, `x:artifactId`.
@@ -1122,6 +1001,24 @@ def get_xpath_elements(
             'x': x_xml_ns,
         }
     )
+
+#------------------------------------------------------------------------------
+#
+def get_maven_coordinate(
+    dependency_elem,
+    coordinate_tag_name,
+    ignore_dependency_tags,
+):
+
+    maven_coords = get_xpath_elements(dependency_elem, './x:' + coordinate_tag_name)
+    logging.debug(coordinate_tag_name + ': ' + str(maven_coords))
+    if len(maven_coords) == 0:
+        logging.debug('dependency_elem.tag: ' + str(dependency_elem.tag))
+        assert(dependency_elem.tag in ignore_dependency_tags)
+        return None
+    else:
+        assert(len(maven_coords) == 1)
+        return maven_coords[0].text
 
 #------------------------------------------------------------------------------
 #
@@ -1176,109 +1073,24 @@ def get_single_pom_dependencies(
 
         logging.debug('dependency_elem: ' + str(dependency_elem) + ': ' + str(etree.tostring(dependency_elem)))
 
-        # Get `groupId`.
-        maven_coords = get_xpath_elements(dependency_elem, './x:groupId')
-        logging.debug('groupId: ' + str(maven_coords))
-        if len(maven_coords) == 0:
-            logging.debug('dependency_elem.tag: ' + str(dependency_elem.tag))
-            assert(dependency_elem.tag in ignore_dependency_tags)
-            pom_dependency['groupId'] = ''
-        else:
-            assert(len(maven_coords) == 1)
-            pom_dependency['groupId'] = maven_coords[0].text
+        for coordinate_tag_name in [
+            'groupId',
+            'artifactId',
+            'version',
+        ]:
+            pom_dependency[coordinate_tag_name] = get_maven_coordinate(
+                dependency_elem,
+                coordinate_tag_name,
+                ignore_dependency_tags,
+            )
 
-        # Get `artifactId`.
-        maven_coords = get_xpath_elements(dependency_elem, './x:artifactId')
-        logging.debug('artifactId: ' + str(maven_coords))
-        assert(len(maven_coords) == 1)
-        pom_dependency['artifactId'] = maven_coords[0].text
-
-        # Get `version`.
-        maven_coords = get_xpath_elements(dependency_elem, './x:version')
-        logging.debug('version: ' + str(maven_coords))
-        if len(maven_coords) == 0:
-            logging.debug('dependency_elem.tag: ' + str(dependency_elem.tag))
-            assert(dependency_elem.tag in ignore_dependency_tags)
-            pom_dependency['version'] = ''
-        else:
-            assert(len(maven_coords) == 1)
-            pom_dependency['version'] = maven_coords[0].text
+        # Tag `artifactId` cannot be missed.
+        assert(pom_dependency['artifactId'] != None)
 
         # Seve dependency.
         single_pom_dependencies += [ pom_dependency ]
 
     return single_pom_dependencies
-
-###############################################################################
-#
-
-def get_all_effective_poms_per_repo_wrapper(
-    context,
-):
-
-    all_pom_files_per_repo = load_yaml_file(
-        context.input_all_pom_files_per_repo_yaml_path,
-    )
-
-    all_effective_poms_per_repo = get_all_effective_poms_per_repo(
-        all_pom_files_per_repo,
-        context.output_all_effective_poms_per_repo_dir,
-    )
-
-    save_yaml_file(
-        all_effective_poms_per_repo,
-        context.output_all_effective_poms_per_repo_yaml_path,
-    )
-
-    return all_effective_poms_per_repo
-
-#------------------------------------------------------------------------------
-#
-
-def get_all_effective_poms_per_repo(
-    all_pom_files_per_repo,
-    output_all_effective_poms_per_repo_dir,
-):
-
-    # Root directory for effective pom files (in current dir).
-    output_dir = output_all_effective_poms_per_repo_dir
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    all_effective_poms_per_repo = {}
-    for repo_id in all_pom_files_per_repo.keys():
-        original_pom_paths = all_pom_files_per_repo[repo_id]
-
-        all_effective_poms_per_repo[repo_id] = []
-        for original_pom_path in original_pom_paths:
-
-            effective_pom_path = original_pom_path
-
-            if os.path.isabs(effective_pom_path):
-                # Drop the first char `/`.
-                # Otherwise, `os.path.join` may take abs path.
-                effective_pom_path = effective_pom_path[1:]
-
-            effective_pom_path = os.path.join(
-                output_dir,
-                effective_pom_path,
-            )
-
-            # Create directories.
-            effective_pom_parent_dir = os.path.dirname(effective_pom_path)
-            if not os.path.exists(effective_pom_parent_dir):
-                os.makedirs(effective_pom_parent_dir)
-
-            # Generate effective pom file.
-            get_single_effective_pom(
-                original_pom_path,
-                effective_pom_path,
-            )
-
-            # Record information in captured config.
-            all_effective_poms_per_repo[repo_id] += [ effective_pom_path ]
-
-    return all_effective_poms_per_repo
 
 ###############################################################################
 #
@@ -1419,6 +1231,7 @@ if __name__ == '__main__':
     if result:
         sys.exit(0)
     else:
+        logging.critical('result: ' + str(result))
         sys.exit(1)
 
 ###############################################################################
