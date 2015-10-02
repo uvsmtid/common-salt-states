@@ -998,6 +998,25 @@ def get_all_pom_files_per_repo(
         pom_files = []
         for pom_file in exit_data['stdout'].split('\n'):
             if os.path.isfile(pom_file):
+
+                # NOTE: Quick fix: check that file is tracked by Git.
+                #           git ls-files --error-unmatch pom.xml
+                # TODO: Currently it is limited to Git repository only.
+
+                exit_data = call_subprocess(
+                    command_args = [
+                        'git',
+                        'ls-files',
+                        '--error-unmatch',
+                        os.path.basename(pom_file),
+                    ],
+                    cwd = os.path.dirname(pom_file),
+                    raise_on_error = False,
+                )
+                if exit_data['code'] != 0:
+                    logging.warning('this file is not tracked: ' + str(pom_file))
+                    continue
+
                 if repo_id in salt_pillar['system_maven_artifacts']['pom_file_exceptions']:
                     if pom_file not in salt_pillar['system_maven_artifacts']['pom_file_exceptions'][repo_id]:
                         pom_files += [ pom_file ]
