@@ -53,7 +53,7 @@ then
 
 fi
 
-# Generate all effective pom files per repo.
+# Get verification report.
 if true
 then
 

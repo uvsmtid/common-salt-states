@@ -924,6 +924,12 @@ def get_single_effective_pom(
     Generate output effective pom file from specified input original pom file.
     """
 
+    assert(os.path.isabs(input_original_pom_file_path))
+
+    # NOTE: If output is not absolute, Maven writes it into subdirectory
+    #       of original pom file.
+    assert(os.path.isabs(output_single_effective_pom_file_path))
+
     exit_data = call_subprocess(
         command_args = [
             'mvn',
@@ -1142,9 +1148,24 @@ def get_single_pom_dependencies(
     # Skip some tags without considering them as dependency.
     # The problem is that plugins often miss some information
     # like `groupId` or `version` which is hard to guess.
+    # NOTE: It's not clear whether these cases can be ignored.
     ignore_dependency_tags = [
         pom_xml_ns_prefix + 'reportPlugin',
         pom_xml_ns_prefix + 'plugin',
+
+        # Tag `exclusion` exclude some dependencies from classpath.
+        # See:
+        #    https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html
+        pom_xml_ns_prefix + 'exclusion',
+
+        # Tag `inclusion` is used by `maven-assembly-plugin`:
+        # See:
+        #    https://maven.apache.org/plugins/maven-assembly-plugin/examples/single/including-and-excluding-artifacts.html
+        pom_xml_ns_prefix + 'inclusion',
+
+        # Tag `pluginExecutionFilter` was seen used for Eclipse configuration
+        # (without affecting build itself as claimed by comments).
+        pom_xml_ns_prefix + 'pluginExecutionFilter',
     ]
 
     single_pom_dependencies = []
@@ -1298,43 +1319,88 @@ def get_verification_report_pom_files_with_artifact_descriptors(
 
     # Root directory for effective pom files (in current dir).
     output_dir = output_all_effective_poms_per_repo_dir
+    if not os.path.isabs(output_dir):
+        output_dir = os.path.join(
+            os.getcwd(),
+            output_dir,
+        )
+
+    # NOTE: Make sure output directory for effective pom files is absolute
+    #       to avoid Maven writting effective pom files into subdirectories
+    #       of original ones.
+    assert(os.path.isabs(output_dir))
+    logging.debug('output_dir: ' + str(output_dir))
+
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    all_effective_poms_per_repo = {}
+    # Initialize report object.
+    report_data = {
+        'pom_files': {}
+        ,
+        'artifact_descriptors': {}
+        ,
+    }
+
     for repo_id in all_pom_files_per_repo.keys():
         original_pom_paths = all_pom_files_per_repo[repo_id]
 
-        all_effective_poms_per_repo[repo_id] = []
         for original_pom_path in original_pom_paths:
 
-            effective_pom_path = original_pom_path
+            effective_pom_path = None
 
-            if os.path.isabs(effective_pom_path):
-                # Drop the first char `/`.
-                # Otherwise, `os.path.join` may take abs path.
-                effective_pom_path = effective_pom_path[1:]
+            try:
+                report_data['pom_files'][original_pom_path] = {}
+                pom_report_data = report_data['pom_files'][original_pom_path]
 
-            effective_pom_path = os.path.join(
-                output_dir,
-                effective_pom_path,
-            )
+                logging.debug('original_pom_path: ' + str(original_pom_path))
 
-            # Create directories.
-            effective_pom_parent_dir = os.path.dirname(effective_pom_path)
-            if not os.path.exists(effective_pom_parent_dir):
-                os.makedirs(effective_pom_parent_dir)
+                effective_pom_path = original_pom_path
 
-            # Generate effective pom file.
-            get_single_effective_pom(
-                original_pom_path,
-                effective_pom_path,
-            )
+                if os.path.isabs(effective_pom_path):
+                    # Drop the first char `/`.
+                    # Otherwise, `os.path.join` may take abs path.
+                    effective_pom_path = effective_pom_path[1:]
 
-            # Record information in captured config.
-            all_effective_poms_per_repo[repo_id] += [ effective_pom_path ]
+                effective_pom_path = os.path.join(
+                    output_dir,
+                    effective_pom_path,
+                )
+                logging.debug('effective_pom_path: ' + str(effective_pom_path))
 
-    return all_effective_poms_per_repo
+                # Create directories.
+                effective_pom_parent_dir = os.path.dirname(effective_pom_path)
+                if not os.path.exists(effective_pom_parent_dir):
+                    logging.debug('effective_pom_parent_dir: ' + str(effective_pom_parent_dir))
+                    os.makedirs(effective_pom_parent_dir)
+
+                # Generate effective pom file.
+                get_single_effective_pom(
+                    original_pom_path,
+                    effective_pom_path,
+                )
+
+                # Load effective pom XML data.
+                single_effective_pom_data = load_xml_file(
+                    effective_pom_path,
+                )
+
+                # Get Maven Coordinates.
+                single_pom_dependencies = get_single_pom_dependencies(
+                    single_effective_pom_data,
+                )
+
+                # Record information in captured report.
+                pom_report_data['original'] = original_pom_path
+                pom_report_data['effective'] = effective_pom_path
+                pom_report_data['repo_id'] = repo_id
+
+            except:
+                logging.critical('FAILED at original_pom_path: ' + str(original_pom_path))
+                logging.critical('FAILED at effective_pom_path: ' + str(effective_pom_path))
+                raise
+
+    return report_data
 
 ###############################################################################
 # MAIN
