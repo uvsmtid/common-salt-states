@@ -117,10 +117,10 @@ def build_parser(
     get_salt_pillar_p.set_defaults(func=get_salt_pillar_wrapper)
 
     # --------------------------------------------------------------------------
-    # get_effective_pom
+    # get_single_effective_pom
 
-    get_effective_pom_p = commands_sps.add_parser(
-        'get_effective_pom',
+    get_single_effective_pom_p = commands_sps.add_parser(
+        'get_single_effective_pom',
         description = "Generate Maven effective pom for specified original pom"
             + ""
             + ""
@@ -130,24 +130,24 @@ def build_parser(
             + ""
     )
     def_value = None
-    get_effective_pom_p.add_argument(
+    get_single_effective_pom_p.add_argument(
         '--input_original_pom_file_path',
         default = def_value,
         help="Input original pom file path"
     )
     def_value = None
-    get_effective_pom_p.add_argument(
-        '--output_effective_pom_file_path',
+    get_single_effective_pom_p.add_argument(
+        '--output_single_effective_pom_file_path',
         default = def_value,
         help="Output effective pom file path"
     )
-    get_effective_pom_p.set_defaults(func=get_effective_pom_wrapper)
+    get_single_effective_pom_p.set_defaults(func=get_single_effective_pom_wrapper)
 
     # --------------------------------------------------------------------------
-    # get_pom_files_per_repo
+    # get_all_pom_files_per_repo
 
-    get_pom_files_per_repo_p = commands_sps.add_parser(
-        'get_pom_files_per_repo',
+    get_all_pom_files_per_repo_p = commands_sps.add_parser(
+        'get_all_pom_files_per_repo',
         description = "Find list of pom files per repository"
             + ""
             + ""
@@ -157,24 +157,24 @@ def build_parser(
             + ""
     )
     def_value = None
-    get_pom_files_per_repo_p.add_argument(
+    get_all_pom_files_per_repo_p.add_argument(
         '--input_salt_pillar_yaml_path',
         default = def_value,
         help="Input file path with Salt pillar data"
     )
     def_value = None
-    get_pom_files_per_repo_p.add_argument(
-        '--output_pom_files_per_repo_yaml_path',
+    get_all_pom_files_per_repo_p.add_argument(
+        '--output_all_pom_files_per_repo_yaml_path',
         default = def_value,
         help="Output file path for pom files per repo"
     )
-    get_pom_files_per_repo_p.set_defaults(func=get_pom_files_per_repo_wrapper)
+    get_all_pom_files_per_repo_p.set_defaults(func=get_all_pom_files_per_repo_wrapper)
 
     # --------------------------------------------------------------------------
-    # get_pom_dependencies
+    # get_single_pom_dependencies
 
-    get_pom_dependencies_p = commands_sps.add_parser(
-        'get_pom_dependencies',
+    get_single_pom_dependencies_p = commands_sps.add_parser(
+        'get_single_pom_dependencies',
         description = "Get list of dependencies from pom data"
             + ""
             + ""
@@ -184,18 +184,18 @@ def build_parser(
             + ""
     )
     def_value = None
-    get_pom_dependencies_p.add_argument(
-        '--input_effective_pom_xml_path',
+    get_single_pom_dependencies_p.add_argument(
+        '--input_single_effective_pom_xml_path',
         default = def_value,
         help="Input effective pom.xml file path"
     )
     def_value = None
-    get_pom_dependencies_p.add_argument(
-        '--output_pom_dependencies_yaml_path',
+    get_single_pom_dependencies_p.add_argument(
+        '--output_single_pom_dependencies_yaml_path',
         default = def_value,
         help="Output file path with pom dependencies"
     )
-    get_pom_dependencies_p.set_defaults(func=get_pom_dependencies_wrapper)
+    get_single_pom_dependencies_p.set_defaults(func=get_single_pom_dependencies_wrapper)
 
     # --------------------------------------------------------------------------
 
@@ -885,27 +885,27 @@ def get_salt_pillar(
 ###############################################################################
 #
 
-def get_effective_pom_wrapper(
+def get_single_effective_pom_wrapper(
     context,
 ):
     """
-    Wrap input/output and verify conditions for `get_effective_pom`
+    Wrap input/output and verify conditions for `get_single_effective_pom`
     """
 
     input_original_pom_file_path = context.input_original_pom_file_path
-    output_effective_pom_file_path = context.output_effective_pom_file_path
+    output_single_effective_pom_file_path = context.output_single_effective_pom_file_path
 
-    return get_effective_pom(
+    return get_single_effective_pom(
         input_original_pom_file_path,
-        output_effective_pom_file_path,
+        output_single_effective_pom_file_path,
     )
 
 #------------------------------------------------------------------------------
 #
 
-def get_effective_pom(
+def get_single_effective_pom(
     input_original_pom_file_path,
-    output_effective_pom_file_path,
+    output_single_effective_pom_file_path,
 ):
 
     """
@@ -918,7 +918,7 @@ def get_effective_pom(
             '-f',
             input_original_pom_file_path,
             'help:effective-pom',
-            '-Doutput=' + output_effective_pom_file_path,
+            '-Doutput=' + output_single_effective_pom_file_path,
         ],
     )
 
@@ -951,39 +951,39 @@ def verify_known_dependencies(
 ###############################################################################
 #
 
-def get_pom_files_per_repo_wrapper(
+def get_all_pom_files_per_repo_wrapper(
     context,
 ):
     """
-    Wrap input/output and verify conditions for `get_pom_files_per_repo`
+    Wrap input/output and verify conditions for `get_all_pom_files_per_repo`
     """
 
     salt_pillar = load_yaml_file(
         context.input_salt_pillar_yaml_path
     )
 
-    pom_files_per_repo = get_pom_files_per_repo(
+    all_pom_files_per_repo = get_all_pom_files_per_repo(
         salt_pillar,
     )
 
     save_yaml_file(
-        pom_files_per_repo,
-        context.output_pom_files_per_repo_yaml_path
+        all_pom_files_per_repo,
+        context.output_all_pom_files_per_repo_yaml_path
     )
 
-    return pom_files_per_repo
+    return all_pom_files_per_repo
 
 #------------------------------------------------------------------------------
 #
 
-def get_pom_files_per_repo(
+def get_all_pom_files_per_repo(
     salt_pillar,
 ):
     """
     Find all pom files in all Maven repositories.
     """
 
-    pom_files_per_repo = {}
+    all_pom_files_per_repo = {}
 
     # Select all Maven repositories.
     repo_configs = salt_pillar['system_features']['deploy_environment_sources']
@@ -1030,31 +1030,31 @@ def get_pom_files_per_repo(
             else:
                 logging.warning('this path is not a file: ' + str(pom_file))
 
-        pom_files_per_repo[repo_id] = pom_files
+        all_pom_files_per_repo[repo_id] = pom_files
 
-    return pom_files_per_repo
+    return all_pom_files_per_repo
 
 ###############################################################################
 #
 
-def get_pom_dependencies_wrapper(
+def get_single_pom_dependencies_wrapper(
     context
 ):
 
-    effective_pom_data = load_xml_file(
-        context.input_effective_pom_xml_path,
+    single_effective_pom_data = load_xml_file(
+        context.input_single_effective_pom_xml_path,
     )
 
-    pom_dependencies = get_pom_dependencies(
-        effective_pom_data,
+    single_pom_dependencies = get_single_pom_dependencies(
+        single_effective_pom_data,
     )
 
     save_yaml_file(
-        pom_dependencies,
-        context.output_pom_dependencies_yaml_path,
+        single_pom_dependencies,
+        context.output_single_pom_dependencies_yaml_path,
     )
 
-    return pom_dependencies
+    return single_pom_dependencies
 
 #------------------------------------------------------------------------------
 #
@@ -1076,10 +1076,10 @@ def get_xpath_elements(
 #------------------------------------------------------------------------------
 #
 
-def get_pom_dependencies(
+def get_single_pom_dependencies(
     # This object is output of this function call:
     #     etree.parse(input_xml_file_path).getroot()
-    effective_pom_data,
+    single_effective_pom_data,
 ):
     """
     Find Maven pom dependencies.
@@ -1091,7 +1091,7 @@ def get_pom_dependencies(
     where Maven Coordinates can be specified.
     """
 
-    all_artifactId_elems = get_xpath_elements(effective_pom_data, './/x:artifactId')
+    all_artifactId_elems = get_xpath_elements(single_effective_pom_data, './/x:artifactId')
 
     logging.debug('artifactIds: ' + str(all_artifactId_elems))
 
@@ -1103,7 +1103,7 @@ def get_pom_dependencies(
         pom_xml_ns_prefix + 'plugin',
     ]
 
-    pom_dependencies = []
+    single_pom_dependencies = []
     for artifactId_elem in all_artifactId_elems:
         dependency_elem = artifactId_elem.getparent()
 
@@ -1140,9 +1140,9 @@ def get_pom_dependencies(
             pom_dependency['version'] = maven_coords[0].text
 
         # Seve dependency.
-        pom_dependencies += [ pom_dependency ]
+        single_pom_dependencies += [ pom_dependency ]
 
-    return pom_dependencies
+    return single_pom_dependencies
 
 ###############################################################################
 # MAIN
