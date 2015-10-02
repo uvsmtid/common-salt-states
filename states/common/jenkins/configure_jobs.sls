@@ -1,5 +1,12 @@
 # Jenkins jobs configurations.
 
+{% if grains['kernel'] == 'Linux' %} # Linux
+{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
+{% endif %} # Linux
+{% if grains['kernel'] == 'Windows' %} # Windows
+{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
+{% endif %} # Windows
+
 ###############################################################################
 # <<<
 {% if grains['os_platform_type'].startswith('rhel5') %}
@@ -88,14 +95,21 @@ include:
 {% endfor %}
 
 # 3. Disable jobs which are not part of configuration.
-{% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
-{% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
+
+deploy_script_for_disabling_jobs:
+    file.managed:
+        - name: '{{ config_temp_dir }}/jenkins/disable_jobs_missing_in_pillars.sh'
+        - source: 'salt://common/jenkins/disable_jobs_missing_in_pillars.sh'
+        - template: jinja
+        - makedirs: True
+        - mode: 755
 
 disable_jobs_missing_in_pillars:
     cmd.run:
-        - name: 'for EXISTING_JOB_NAME in $( java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ list-jobs All ) ; do if ! ( echo "{{ pillar['system_features']['configure_jenkins']['job_configs'].keys()|join(' ') }}" | grep -F "${EXISTING_JOB_NAME}" ) ; then java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ disable-job "${EXISTING_JOB_NAME}" ; fi ; done'
+        - name: '{{ config_temp_dir }}/jenkins/disable_jobs_missing_in_pillars.sh'
         - require:
             - cmd: download_jenkins_cli_jar
+            - file: deploy_script_for_disabling_jobs
 
 {% endif %} # os_platform_type
 # >>>
