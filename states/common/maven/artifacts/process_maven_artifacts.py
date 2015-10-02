@@ -250,57 +250,6 @@ def setLoggingLevel(
 # Function to call scripts
 #
 
-# TODO: This function, if used, won't work with `stdin_string`.
-def call_subprocess_with_pipes(
-    command_args,
-    raise_on_error = True,
-    capture_stdout = False,
-    capture_stderr = False,
-    stdin_string = None,
-):
-
-    logging.debug("command line: " + "\"" + "\" \"".join(command_args) + "\"")
-
-    stdoutsink = None
-    stderrsink = None
-
-    if capture_stdout:
-        stdoutsink = subprocess.PIPE
-
-    if capture_stderr:
-        stderrsink = subprocess.PIPE
-
-    p = subprocess.Popen(command_args, stdout=stdoutsink, stderr=stderrsink)
-
-    # Wait until command stops
-    p.wait()
-
-    # Return dictionary
-    result = {}
-
-    result["code"] = p.returncode
-
-    if raise_on_error:
-        check_generic_errors(
-            command_args = command_args,
-            process_output = result,
-            raise_on_error = raise_on_error,
-            check_code = True,
-            check_stderr = False,
-            check_stdout = False,
-        )
-
-    stds = p.communicate()
-    if capture_stdout:
-        result["stdout"] = stds[0]
-    if capture_stderr:
-        result["stderr"] = stds[1]
-
-    return result
-
-###############################################################################
-#
-
 def call_subprocess_with_files(
     command_args,
     raise_on_error = True,
@@ -310,7 +259,11 @@ def call_subprocess_with_files(
     stdin_string = None,
 ):
 
-    logging.debug("command line: " + "\"" + "\" \"".join(command_args) + "\"")
+    logging.debug('cwd: ' + str(cwd))
+    logging.debug("command_args: " + "\"" + "\" \"".join(command_args) + "\"")
+
+    # Return dictionary
+    exit_data = {}
 
     stdout_sink = None
     stderr_sink = None
@@ -320,6 +273,7 @@ def call_subprocess_with_files(
     if capture_stdout:
         (handle, stdout_file_path) = tempfile.mkstemp()
         logging.debug("stdout_file_path: " + str(stdout_file_path))
+        exit_data['stdout_file_path'] = stdout_file_path
         stdout_file = os.fdopen(handle, "w")
         stdout_sink = stdout_file
 
@@ -328,6 +282,7 @@ def call_subprocess_with_files(
     if capture_stderr:
         (handle, stderr_file_path) = tempfile.mkstemp()
         logging.debug("stderr_file_path: " + str(stderr_file_path))
+        exit_data['stderr_file_path'] = stderr_file_path
         stderr_file = os.fdopen(handle, "w")
         stderr_sink = stderr_file
 
@@ -355,19 +310,17 @@ def call_subprocess_with_files(
     # Wait until command stops
     p.wait()
 
-    # Return dictionary
-    result = {}
-
-    result["code"] = p.returncode
+    exit_data["code"] = p.returncode
 
     if raise_on_error:
         check_generic_errors(
             command_args = command_args,
-            process_output = result,
+            exit_data = exit_data,
             raise_on_error = raise_on_error,
             check_code = True,
             check_stderr = False,
             check_stdout = False,
+            cwd = cwd,
         )
 
     if stdout_file:
@@ -377,60 +330,62 @@ def call_subprocess_with_files(
 
     if capture_stdout:
         stdout_file = open(stdout_file_path, "r")
-        result["stdout"] = stdout_file.read()
+        exit_data["stdout"] = stdout_file.read()
         stdout_file.close()
     if capture_stderr:
         stderr_file = open(stderr_file_path, "r")
-        result["stderr"] = stderr_file.read()
+        exit_data["stderr"] = stderr_file.read()
         stderr_file.close()
 
-    return result
+    return exit_data
 
 ################################################################################
 #
 
 def check_generic_errors(
     command_args,
-    process_output,
+    exit_data,
     raise_on_error = True,
     check_code = True,
     check_stderr = True,
     check_stdout = False,
+    cwd = None,
 ):
     error_code = 0
-    format_msg = "Error: command failed\n%(command)s"
+    format_msg = "Error: command failed\n%(command)s\ncwd: %(cwd)s"
     format_dict = {
-        "command": "\"" + "\" \"".join(command_args) + "\""
+        "command": "\"" + "\" \"".join(command_args) + "\"",
+        "cwd": str(cwd),
     }
 
     if check_code:
-        if process_output["code"] != 0:
+        if exit_data["code"] != 0:
             # Command failed
             error_code = 1
-            format_dict["code"] = process_output["code"]
+            format_dict["code"] = exit_data["code"]
             format_msg += "\nExit code: %(code)s"
 
     if check_stderr:
-        if len(process_output["stderr"]) != 0:
+        if len(exit_data["stderr"]) != 0:
             # There are some error output
             error_code = 1
-            format_dict["stderr"] = process_output["stderr"]
+            format_dict["stderr"] = exit_data["stderr"]
             format_msg += "\nSTDERR: %(stderr)s"
 
     if check_stdout:
-        if len(process_output["stdout"]) != 0:
+        if len(exit_data["stdout"]) != 0:
             # There are some standard output
             error_code = 1
-            format_dict["stdout"] = process_output["stdout"]
+            format_dict["stdout"] = exit_data["stdout"]
             format_msg += "\nSTDOUT: %(stdout)s"
 
     if raise_on_error:
         if error_code != 0:
             # Print captured stderr and stdout (if any) before raising
-            if "stderr" in process_output.keys():
-                logging.debug("\'stderr' before failure:\n" + process_output["stderr"])
-            if "stdout" in process_output.keys():
-                logging.debug("\'stdout' before failure:\n" + process_output["stdout"])
+            if "stderr" in exit_data.keys():
+                logging.debug("\'stderr' before failure:\n" + exit_data["stderr"])
+            if "stdout" in exit_data.keys():
+                logging.debug("\'stdout' before failure:\n" + exit_data["stdout"])
 
             # Raise
             msg = format_msg % format_dict
@@ -441,25 +396,25 @@ def check_generic_errors(
 ################################################################################
 #
 
-def print_process_output(
-    process_output,
+def print_exit_data(
+    exit_data,
     suppress_success_output = False,
 ):
 
     if suppress_success_output:
-        if "code" in process_output.keys():
-            if process_output["code"] == 0:
+        if "code" in exit_data.keys():
+            if exit_data["code"] == 0:
                 return
 
-    if "stdout" in process_output.keys():
+    if "stdout" in exit_data.keys():
         # Use stderr to print stdout of the command.
         # If stdout results were captured,
         # they are not meant to be on stdout by default.
-        logging.info(process_output["stdout"])
-    if "stderr" in process_output.keys():
-        logging.info(process_output["stderr"])
-    if "code" in process_output.keys():
-        logging.info("exit code = " + str(process_output["code"]))
+        logging.info(exit_data["stdout"])
+    if "stderr" in exit_data.keys():
+        logging.info(exit_data["stderr"])
+    if "code" in exit_data.keys():
+        logging.info("exit code = " + str(exit_data["code"]))
 
 ###############################################################################
 #
@@ -489,14 +444,7 @@ def call_subprocess(
             stdin_string = stdin_string,
         )
     else:
-        return call_subprocess_with_pipes(
-            command_args = command_args,
-            raise_on_error = raise_on_error,
-            capture_stdout = capture_stdout,
-            capture_stderr = capture_stderr,
-            cwd = cwd,
-            stdin_string = stdin_string,
-        )
+        raise Exception("Not implemented")
 
 ###############################################################################
 #
@@ -538,7 +486,7 @@ def parse_maven_dependency_list_ouput(
     )
 
     # Get list of all dependencies.
-    process_output = call_subprocess(
+    exit_data = call_subprocess(
         command_args = [
             'mvn',
             '-f',
@@ -554,7 +502,7 @@ def parse_maven_dependency_list_ouput(
     artifact_regex = re.compile('^\[INFO\]\s*([^:\s]*):([^:\s]*):([^:\s]*):([^:\s]*):([^:\s]*)$')
 
     dependency_items = []
-    for str_line in process_output['stdout'].split('\n'):
+    for str_line in exit_data['stdout'].split('\n'):
         artifact_match = artifact_regex.match(str_line)
 
         if artifact_match:
@@ -590,7 +538,7 @@ def find_project_pom_files_in_a_repo(
 ):
 
     # Find all `pom.xml` files.
-    process_output = call_subprocess(
+    exit_data = call_subprocess(
         command_args = [
             'find',
             repo_conf['repo_root_path'],
@@ -600,10 +548,10 @@ def find_project_pom_files_in_a_repo(
         capture_stdout = True,
     )
 
-    logging.debug('find output: ' + str(process_output['stdout']))
+    logging.debug('find output: ' + str(exit_data['stdout']))
 
     project_pom_files = []
-    for pom_file in process_output['stdout'].split('\n'):
+    for pom_file in exit_data['stdout'].split('\n'):
         if os.path.isfile(pom_file):
             project_pom_files += [ pom_file ]
         else:
@@ -942,7 +890,7 @@ def get_single_effective_pom(
     Generate output effective pom file from specified input original pom file.
     """
 
-    process_output = call_subprocess(
+    exit_data = call_subprocess(
         command_args = [
             'mvn',
             '-f',
@@ -1035,7 +983,7 @@ def get_all_pom_files_per_repo(
         local_path = local_path_base + '/' + local_path_rest
 
         # Find all `pom.xml` files.
-        process_output = call_subprocess(
+        exit_data = call_subprocess(
             command_args = [
                 'find',
                 local_path,
@@ -1045,10 +993,10 @@ def get_all_pom_files_per_repo(
             capture_stdout = True,
         )
 
-        logging.debug('find output: ' + str(process_output['stdout']))
+        logging.debug('find output: ' + str(exit_data['stdout']))
 
         pom_files = []
-        for pom_file in process_output['stdout'].split('\n'):
+        for pom_file in exit_data['stdout'].split('\n'):
             if os.path.isfile(pom_file):
                 if repo_id in salt_pillar['system_maven_artifacts']['pom_file_exceptions']:
                     if pom_file not in salt_pillar['system_maven_artifacts']['pom_file_exceptions'][repo_id]:
