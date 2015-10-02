@@ -80,11 +80,16 @@ system_features:
                 - '{{ project_name }}-salt-pillars.bootstrap-target'
 
             effective_pillars_role:
-            {% if use_pillars_from_states_repo %}
+                {% if use_pillars_from_states_repo %}
                 - '{{ project_name }}-salt-states'
-            {% else %}
+                {% else %}
                 - '{{ project_name }}-salt-pillars'
-            {% endif %}
+                {% endif %}
+
+            maven_project_container_role:
+                {% for maven_repo_name in maven_repo_names %}
+                - '{{ maven_repo_name }}'
+                {% endfor %}
 
         # Specify type per repository:
         #  - `svn` for Subversion.
