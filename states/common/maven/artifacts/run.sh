@@ -32,11 +32,11 @@ fi
 if true
 then
 
-    ./process_maven_artifacts.py c get_verification_report_pom_files_with_artifact_descriptors \
+    ./process_maven_artifacts.py c get_verification_report \
         --input_salt_pillar_yaml_path salt_pillar.yaml \
         --input_all_pom_files_per_repo_yaml_path all_pom_files_per_repo.yaml \
         --output_all_effective_poms_per_repo_dir all_effective_poms_per_repo_dir \
-        --output_verification_report_pom_files_with_artifact_descriptors_yaml_path verification_report_pom_files_with_artifact_descriptors.yaml\
+        --output_verification_report_yaml_path verification_report.yaml\
 
 fi
 

@@ -6,7 +6,7 @@
 /salt_pillar.yaml
 /all_pom_files_per_repo.yaml
 /all_effective_poms_per_repo_dir/
-/verification_report_pom_files_with_artifact_descriptors.yaml
+/verification_report.yaml
 
 ###############################################################################
 # EOF
