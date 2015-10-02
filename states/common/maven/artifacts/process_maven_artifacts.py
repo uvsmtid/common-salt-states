@@ -198,6 +198,36 @@ def build_parser(
     get_single_pom_dependencies_p.set_defaults(func=get_single_pom_dependencies_wrapper)
 
     # --------------------------------------------------------------------------
+    # get_all_effective_poms_per_repo
+
+    get_all_effective_poms_per_repo_p = commands_sps.add_parser(
+        'get_all_effective_poms_per_repo',
+        description = "Generate effective poms in temporary directories "
+            +" with config file point to them"
+            + ""
+        ,
+        help = ""
+            + ""
+            + ""
+    )
+    def_value = None
+    get_all_effective_poms_per_repo_p.add_argument(
+        '--input_all_pom_files_per_repo_yaml_path',
+        default = def_value,
+    )
+    def_value = None
+    get_all_effective_poms_per_repo_p.add_argument(
+        '--output_all_effective_poms_per_repo_yaml_path',
+        default = def_value,
+    )
+    def_value = None
+    get_all_effective_poms_per_repo_p.add_argument(
+        '--output_all_effective_poms_per_repo_dir',
+        default = def_value,
+    )
+    get_all_effective_poms_per_repo_p.set_defaults(func=get_all_effective_poms_per_repo_wrapper)
+
+    # --------------------------------------------------------------------------
 
     # Result
     return parser
@@ -1143,6 +1173,77 @@ def get_single_pom_dependencies(
         single_pom_dependencies += [ pom_dependency ]
 
     return single_pom_dependencies
+
+###############################################################################
+#
+
+def get_all_effective_poms_per_repo_wrapper(
+    context,
+):
+
+    all_pom_files_per_repo = load_yaml_file(
+        context.input_all_pom_files_per_repo_yaml_path,
+    )
+
+    all_effective_poms_per_repo = get_all_effective_poms_per_repo(
+        all_pom_files_per_repo,
+        context.output_all_effective_poms_per_repo_dir,
+    )
+
+    save_yaml_file(
+        all_effective_poms_per_repo,
+        context.output_all_effective_poms_per_repo_yaml_path,
+    )
+
+    return all_effective_poms_per_repo
+
+#------------------------------------------------------------------------------
+#
+
+def get_all_effective_poms_per_repo(
+    all_pom_files_per_repo,
+    output_all_effective_poms_per_repo_dir,
+):
+
+    # Root directory for effective pom files (in current dir).
+    output_dir = output_all_effective_poms_per_repo_dir
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    all_effective_poms_per_repo = {}
+    for repo_id in all_pom_files_per_repo.keys():
+        original_pom_paths = all_pom_files_per_repo[repo_id]
+
+        all_effective_poms_per_repo[repo_id] = []
+        for original_pom_path in original_pom_paths:
+
+            effective_pom_path = original_pom_path
+
+            if os.path.isabs(effective_pom_path):
+                # Drop the first char `/`.
+                # Otherwise, `os.path.join` may take abs path.
+                effective_pom_path = effective_pom_path[1:]
+
+            effective_pom_path = os.path.join(
+                output_dir,
+                effective_pom_path,
+            )
+
+            # Create directories.
+            effective_pom_parent_dir = os.path.dirname(effective_pom_path)
+            if not os.path.exists(effective_pom_parent_dir):
+                os.makedirs(effective_pom_parent_dir)
+
+            # Generate effective pom file.
+            get_single_effective_pom(
+                original_pom_path,
+                effective_pom_path,
+            )
+
+            # Record information in captured config.
+            all_effective_poms_per_repo[repo_id] += [ effective_pom_path ]
+
+    return all_effective_poms_per_repo
 
 ###############################################################################
 # MAIN
