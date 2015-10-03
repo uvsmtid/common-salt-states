@@ -6,6 +6,7 @@ import re
 import sys
 import yaml
 import sets
+import types
 import logging
 import tempfile
 import argparse
@@ -445,66 +446,6 @@ def essentialize_dependency_items(
 
 ###############################################################################
 #
-
-def parse_maven_dependency_list_ouput(
-    pom_file,
-):
-
-    # Resolve (download) all dependencies locally so that next command
-    # can work offline.
-    call_subprocess(
-        command_args = [
-            'mvn',
-            '-f',
-            pom_file,
-            'dependency:resolve',
-        ],
-    )
-
-    # Get list of all dependencies.
-    exit_data = call_subprocess(
-        command_args = [
-            'mvn',
-            '-f',
-            pom_file,
-            'dependency:list',
-        ],
-        capture_stdout = True,
-    )
-
-    # Regex to capture artifact reported by Maven.
-    # Example line:
-    # [INFO]    org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
-    artifact_regex = re.compile('^\[INFO\]\s*([^:\s]*):([^:\s]*):([^:\s]*):([^:\s]*):([^:\s]*)$')
-
-    dependency_items = []
-    for str_line in exit_data['stdout'].split('\n'):
-        artifact_match = artifact_regex.match(str_line)
-
-        if artifact_match:
-            logging.info('line matched: ' + str(str_line))
-
-            artifact_group = artifact_match.group(1)
-            artifact_name = artifact_match.group(2)
-            artifact_package = artifact_match.group(3)
-            artifact_version = artifact_match.group(4)
-            artifact_scope = artifact_match.group(5)
-
-            dependency_item = {
-                'artifact_group': artifact_group,
-                'artifact_name': artifact_name,
-                'artifact_package': artifact_package,
-                'artifact_version': artifact_version,
-                'artifact_scope': artifact_scope,
-            }
-
-            logging.info('artifact_group: ' + str(dependency_item))
-
-            dependency_items += [ dependency_item ]
-        else:
-            logging.debug('line didn\'t match: ' + str(str_line))
-
-    return dependency_items
 
 ###############################################################################
 #
@@ -1057,6 +998,35 @@ def get_maven_coords(
 #------------------------------------------------------------------------------
 #
 
+def verify_maven_coords(
+    left_artifact,
+    left_artifact_src,
+    right_artifact,
+    right_artifact_src,
+    auto_verification_target,
+):
+    # TODO: What if there are more than one version used?
+    #       There is only one value in `current_version`.
+    # TODO: If there are more than one version, there should also be
+    #       verification of unused versions in `artifact_descriptors`.
+    for maven_coord in [
+        'groupId',
+        'artifactId',
+        'version',
+    ]:
+        if left_artifact[maven_coord] != right_artifact[maven_coord]:
+
+            msg = 'Artifact `' + artifact_key + '` has different '
+            + maven_coord + ' = `' + left_artifact[maven_coord] + '` in ' + left_artifact_sr + ' '
+            + maven_coord + ' = `' + right_artifact[maven_coord] + '` in ' + right_artifact_src + ' '
+
+            logging.error(msg)
+            auto_verification_target['auto_verification_keys']['verification_result'] = False
+            auto_verification_target['auto_verification_keys']['error_messages'] += [ msg ]
+
+#------------------------------------------------------------------------------
+#
+
 def get_xpath_elements(
     # NOTE: The elements must be prefixed by `x:` namespece.
     #       For example, `x:artifactId`.
@@ -1140,10 +1110,9 @@ def get_single_pom_dependencies(
     single_pom_dependencies = {}
     for artifactId_elem in all_artifactId_elems:
         dependency_elem = artifactId_elem.getparent()
+        elem_xpath = single_effective_pom_data.getpath(dependency_elem)
 
-        pom_dependency = {
-            'xpath': single_effective_pom_data.getpath(artifactId_elem)
-        }
+        pom_dependency = {}
 
         logging.debug('dependency_elem: ' + str(dependency_elem) + ': ' + str(etree.tostring(dependency_elem)))
 
@@ -1162,8 +1131,13 @@ def get_single_pom_dependencies(
         assert(pom_dependency['artifactId'] != None)
 
         # Seve dependency.
+        # There can be repeatative dependencies
+        # (i.g. refrerenced by more than one tag in pom file).
         artifact_key = get_artifact_key(pom_dependency)
-        single_pom_dependencies[artifact_key] = pom_dependency
+        if artifact_key not in single_pom_dependencies:
+            single_pom_dependencies[artifact_key] = {}
+        assert(elem_xpath not in single_pom_dependencies[artifact_key])
+        single_pom_dependencies[artifact_key][elem_xpath] = pom_dependency
 
     return single_pom_dependencies
 
@@ -1259,15 +1233,26 @@ def load_pom_files_data(
             )
 
             # Initialize `auto_verification_keys`.
-            for pom_dependency in single_pom_dependencies.values():
-                if 'auto_verification_keys' not in pom_dependency:
-                    pom_dependency['auto_verification_keys'] = {
-                        'verification_result': True,
-                        'error_messages': [],
-                    }
+            for artifact_key in single_pom_dependencies.keys():
+                for xpath_key in single_pom_dependencies[artifact_key].keys():
+                    pom_dependency = single_pom_dependencies[artifact_key][xpath_key]
+                    if 'auto_verification_keys' not in pom_dependency:
+                        pom_dependency['auto_verification_keys'] = {
+                            'verification_result': True,
+                            'error_messages': [],
+                        }
 
             # Record data loaded from ar into artifact descriptor.
-            pom_file_data['referenced_dependencies'] = single_pom_dependencies
+            pom_file_data['xml_referenced_dependencies'] = single_pom_dependencies
+
+            # Load dependency list data.
+            dependency_items = load_dependency_list_data(
+                salt_pillar,
+                repo_id,
+                pom_rel_path,
+                output_dir,
+            )
+            pom_file_data['maven_dependency_list'] = dependency_items
 
     return report_data
 
@@ -1344,6 +1329,142 @@ def load_artifact_descriptors_data(
 
     return report_data
 
+
+#------------------------------------------------------------------------------
+#
+
+def load_dependency_list_data(
+    salt_pillar,
+    repo_id,
+    pom_rel_path,
+    output_dir,
+):
+
+    pom_abs_path = os.path.join(
+        get_repo_path(
+            repo_id,
+            salt_pillar,
+        ),
+        normalize_pom_rel_path(
+            pom_rel_path,
+        ),
+    )
+    assert(os.path.isabs(pom_abs_path))
+
+    assert(os.path.isabs(output_dir))
+
+    output_dependency_list_txt_path = os.path.join(
+        output_dir,
+        repo_id,
+        'dependency_list.txt',
+    )
+
+    # NOTE: Make sure output path is absolute
+    #       to avoid Maven writting into subdirectories
+    #       of Maven projects.
+    assert(os.path.isabs(output_dependency_list_txt_path))
+    logging.debug('output_dependency_list_txt_path: ' + str(output_dependency_list_txt_path))
+
+    # Resolve (download) all dependencies locally so that next command
+    # can work offline.
+    call_subprocess(
+        command_args = [
+            'mvn',
+            '-f',
+            pom_abs_path,
+            'dependency:resolve',
+        ],
+    )
+
+    # Get list of all dependencies.
+    exit_data = call_subprocess(
+        command_args = [
+            'mvn',
+            '-f',
+            pom_abs_path,
+            'dependency:list',
+            '-DoutputFile=' + output_dependency_list_txt_path,
+        ],
+    )
+
+    # Load `dependency:list` output.
+    dependency_items = {}
+    with open(output_dependency_list_txt_path, 'r') as dependency_list_file:
+
+        # Regex to capture artifact reported by Maven.
+        #   org.hibernate.javax.persistence:hibernate-jpa-2.0-api:jar:1.0.1.Final:compile
+        artifact_regex = re.compile('^\s*([^:\s]*):([^:\s]*):([^:\s]*):([^:\s]*):([^:\s]*)$')
+
+        for str_line in dependency_list_file:
+            artifact_match = artifact_regex.match(str_line)
+
+            if artifact_match:
+                logging.info('line matched: ' + str(str_line))
+
+                dependency_groupId = artifact_match.group(1)
+                dependency_artifactId = artifact_match.group(2)
+                dependency_package = artifact_match.group(3)
+                dependency_version = artifact_match.group(4)
+                dependency_scope = artifact_match.group(5)
+
+                dependency_item = {
+                    'groupId': dependency_groupId,
+                    'artifactId': dependency_artifactId,
+                    'package': dependency_package,
+                    'version': dependency_version,
+                    'scope': dependency_scope,
+                }
+
+                artifact_key = get_artifact_key(dependency_item)
+
+                logging.info('dependency_item: ' + str(dependency_item))
+
+                dependency_items[artifact_key] = dependency_item
+            else:
+                logging.debug('line didn\'t match: ' + str(str_line))
+
+    return dependency_items
+
+#------------------------------------------------------------------------------
+#
+
+def get_key_values(req_key_id, input_data):
+
+    """
+    Search complex object for dict with values of keys equal to `req_key_id`.
+    """
+
+    if (
+        isinstance(input_data, list)
+        or
+        isinstance(input_data, types.GeneratorType)
+    ):
+
+        values_list = []
+
+        # Continue searching for dicts in values of list element.
+        for seq_item in input_data:
+            values_list += get_key_values(req_key_id, seq_item)
+
+        return values_list
+
+    if isinstance(input_data, dict):
+
+        values_list = []
+
+        if req_key_id in input_data.keys():
+            # Get value for `req_key_id`.
+            values_list = [ input_data[req_key_id] ]
+
+        # Continue searching for dicts in values of each key.
+        for key_id in input_data.keys():
+            values_list += get_key_values(req_key_id, input_data[key_id])
+
+        return values_list
+
+    # Simple value means no key `req_key_id`.
+    return []
+
 #------------------------------------------------------------------------------
 #
 
@@ -1351,22 +1472,18 @@ def get_overall_result(
     report_data,
 ):
 
-    # Get recursively all `verification_result` keys.
-    # See also: http://stackoverflow.com/a/9807955/441652
-    def fun(d):
-        if 'verification_result' in d:
-            yield d['verification_result']
-        for k in d:
-            if isinstance(d[k], list):
-                for i in d[k]:
-                    for j in fun(i):
-                        yield j
-
     # If any verification result is false, overall result is false.
     overall_result = True
-    for verification_result in fun(report_data):
+    total_counter = 0
+    failed_conter = 0
+    for verification_result in get_key_values('verification_result', report_data):
+        total_counter += 1
         if not verification_result:
             overall_result = False
+            failed_conter += 1
+
+    if not overall_result:
+        logging.error('get_overall_result: FAILED out of TOTAL: ' + str(failed_conter) + ' out of ' + str(total_counter))
 
     return overall_result
 
@@ -1496,50 +1613,103 @@ def verify_referential_integrity_pom_file_to_artifact_descriptors(
     report_data,
 ):
 
+    # Sub-function for code used more than once.
+    def populate_reference_data(
+        report_data,
+        artifact_key,
+        dependency_data,
+    ):
+
+        derived_artifact_key = get_artifact_key(
+            dependency_data,
+        )
+        assert(derived_artifact_key == artifact_key)
+
+        if 'auto_verification_keys' not in dependency_data:
+            dependency_data['auto_verification_keys'] = {
+                'verification_result': True,
+                'error_messages': [],
+            }
+
+        # Check if artifact has descriptor.
+        if artifact_key not in report_data['artifact_descriptors']:
+            msg = 'Artifact `' + str(artifact_key) + '` is missing in `artifact_descriptors`'
+            logging.error(msg)
+            dependency_data['auto_verification_keys']['verification_result'] = False
+            dependency_data['auto_verification_keys']['error_messages'] += [ msg ]
+            return
+
+        # Get artifact descriptor object.
+        artifact_descriptor = report_data['artifact_descriptors'][artifact_key]
+
+        # NOTE: The counter includes both (not fair counter):
+        #       - data generated from parsed XML
+        #       - data generated from `dependency:list`
+        # NOTE: We count references even if artifact may be not `used`.
+        # Increment reference counter.
+        if 'reference_counter' not in artifact_descriptor['auto_verification_keys']:
+            artifact_descriptor['auto_verification_keys']['reference_counter'] = 0
+        artifact_descriptor['auto_verification_keys']['reference_counter'] += 1
+
+        # Ignore unused.
+        if 'used' not in artifact_descriptor or not artifact_descriptor['used']:
+            msg = 'Artifact `' + artifact_key + '` is defined in `artifact_descriptors` but NOT declared as `used`'
+            logging.error(msg)
+            dependency_data['auto_verification_keys']['verification_result'] = False
+            dependency_data['auto_verification_keys']['error_messages'] += [ msg ]
+            return
+
+    # Main loop.
     for repo_id in report_data['pom_files'].keys():
 
         for pom_rel_path in report_data['pom_files'][repo_id].keys():
 
             pom_file_data = report_data['pom_files'][repo_id][pom_rel_path]
 
-            for artifact_key in pom_file_data['referenced_dependencies'].keys():
+            # Dependencies generated from parsed XML.
+            for artifact_key in pom_file_data['xml_referenced_dependencies'].keys():
 
-                dependency_data = pom_file_data['referenced_dependencies'][artifact_key]
+                for xpath_key in pom_file_data['xml_referenced_dependencies'][artifact_key].keys():
 
-                derived_artifact_key = get_artifact_key(
+                    dependency_data = pom_file_data['xml_referenced_dependencies'][artifact_key][xpath_key]
+
+                    populate_reference_data(
+                        report_data,
+                        artifact_key,
+                        dependency_data,
+                    )
+
+            # Dependencies generated from `dependency:list`.
+            for artifact_key in pom_file_data['maven_dependency_list'].keys():
+
+                dependency_data = pom_file_data['maven_dependency_list'][artifact_key]
+
+                populate_reference_data(
+                    report_data,
+                    artifact_key,
                     dependency_data,
                 )
-                assert(derived_artifact_key == artifact_key)
 
-                if 'auto_verification_keys' not in dependency_data:
-                    dependency_data['auto_verification_keys'] = {
-                        'verification_result': True,
-                        'error_messages': [],
-                    }
-
-                # Check if artifact has descriptor.
-                if artifact_key not in report_data['artifact_descriptors']:
-                    msg = 'Artifact `' + str(artifact_key) + '` is missing in `artifact_descriptors`'
+                # Make sure that each dependency from `dependency:list`
+                # also exists in data from parsed XML.
+                # NOTE: No need to check the other way around as parsed XML
+                #       takes much more information (not true dependencies).
+                if artifact_key not in pom_file_data['xml_referenced_dependencies']:
+                    msg = 'Artifact `' + artifact_key + '` is part of `maven_dependency_list` but not part of `xml_referenced_dependencies`'
                     logging.error(msg)
                     dependency_data['auto_verification_keys']['verification_result'] = False
                     dependency_data['auto_verification_keys']['error_messages'] += [ msg ]
-                    continue
-
-                # Get artifact descriptor object.
-                artifact_descriptor = report_data['artifact_descriptors'][artifact_key]
-
-                # Increment reference counter.
-                if 'reference_counter' not in artifact_descriptor['auto_verification_keys']:
-                    artifact_descriptor['auto_verification_keys']['reference_counter'] = 0
-                artifact_descriptor['auto_verification_keys']['reference_counter'] += 1
-
-                # Ignore unused
-                if 'used' not in artifact_descriptor or not artifact_descriptor['used']:
-                    msg = 'Artifact `' + artifact_key + '` is defined in `artifact_descriptors` but NOT declared as `used`'
-                    loggin.error(msg)
-                    dependency_data['auto_verification_keys']['verification_result'] = False
-                    dependency_data['auto_verification_keys']['error_messages'] += [ msg ]
-                    continue
+                else:
+                    # Verify Maven Coordinates with each
+                    # XML entry corresponding to `artifact_key`.
+                    for xpath_key in pom_file_data['xml_referenced_dependencies'][artifact_key].keys():
+                        verify_maven_coords(
+                            dependency_data,
+                            'maven_dependency_list',
+                            pom_file_data['xml_referenced_dependencies'][artifact_key][xpath_key],
+                            'xml_referenced_dependencies',
+                            dependency_data,
+                        )
 
 #------------------------------------------------------------------------------
 #
@@ -1570,30 +1740,34 @@ def verify_referential_integrity_artifact_descriptors_to_pom_file(
 
             if repo_id not in report_data['pom_files']:
                 msg = 'Artifact `' + artifact_key + '` refers to non-existing repository id `' + repo_id + '`'
-                loggin.error(msg)
+                logging.error(msg)
                 artifact_descriptor['auto_verification_keys']['verification_result'] = False
                 artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
                 continue
 
             if pom_rel_path not in report_data['pom_files'][repo_id]:
                 msg = 'Artifact `' + artifact_key + '` refers to non-existing pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
-                loggin.error(msg)
+                logging.error(msg)
                 artifact_descriptor['auto_verification_keys']['verification_result'] = False
                 artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
                 continue
 
+            # NOTE: There are two pom file information:
+            #       - one is loaded from pom files searched automatically
+            #       - one is loaded from pom files declared in artifact descriptor
+            #       The following verification is done
             pom_file_data = report_data['pom_files'][repo_id][pom_rel_path]
 
             if pom_file_data['is_exception']:
                 msg = 'Artifact `' + artifact_key + '` refers to excepted pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
-                loggin.error(msg)
+                logging.error(msg)
                 artifact_descriptor['auto_verification_keys']['verification_result'] = False
                 artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
                 continue
 
             if not pom_file_data['is_tracked']:
                 msg = 'Artifact `' + artifact_key + '` refers to untracked pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
-                loggin.error(msg)
+                logging.error(msg)
                 artifact_descriptor['auto_verification_keys']['verification_result'] = False
                 artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
                 continue
@@ -1611,24 +1785,13 @@ def verify_referential_integrity_artifact_descriptors_to_pom_file(
             )
             pom_file_maven_coords = artifact_descriptor['pom_data']['maven_coordinates']
 
-            # TODO: What if there are more than one version used?
-            #       There is only one value in `current_version`.
-            # TODO: If there are more than one version, there should also be
-            #       verification of unused versions in `artifact_descriptors`.
-            for maven_coord in [
-                'groupId',
-                'artifactId',
-                'version',
-            ]:
-                if artifact_maven_coords[maven_coord] != pom_file_maven_coords[maven_coord]:
-
-                    msg = 'Artifact `' + artifact_key + '` has different '
-                    + maven_coord + ' = `' + artifact_maven_coords[maven_coord] + '` from '
-                    + maven_coord + ' = `' + pom_file_maven_coords[maven_coord] + '` in `pom_files`'
-
-                    loggin.error(msg)
-                    artifact_descriptor['auto_verification_keys']['verification_result'] = False
-                    artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
+            verify_maven_coords(
+                artifact_maven_coords,
+                'artifact_descriptors',
+                pom_file_maven_coords,
+                'pom file of artifact_descriptors',
+                artifact_descriptor,
+            )
 
 ###############################################################################
 #
