@@ -699,7 +699,13 @@ def get_salt_pillar(
     logging.debug(str(caller))
 
     salt_pillar = caller.function('pillar.items')
-    logging.debug(str(salt_pillar))
+    logging.debug(str(salt_pillar.keys()))
+
+    # At the moment Salt does not return non-zero exit code on error.
+    # Instead, problems to compile pillar data result in message
+    # inside pillar itself under `_errors` key.
+    if '_errors' in salt_pillar:
+        raise Exception('Salt pillar compilation error: ' + str(salt_pillar['_errors']))
 
     return salt_pillar
 
@@ -1201,13 +1207,14 @@ def load_pom_files_data(
                 pom_file_data['auto_verification_keys'] = {
                     'verification_result': True,
                     'error_messages': [],
+                    'warning_messages': [],
                 }
 
             if pom_file_data['is_exception']:
                 msg = 'Pom `' + pom_rel_path + '` from `' + repo_id + '` repo is exception: ' + pom_abs_path
                 logging.warning(msg)
                 # NOTE: This is not a failure, just note about exceptoin.
-                pom_file_data['auto_verification_keys']['error_messages'] += [ msg ]
+                pom_file_data['auto_verification_keys']['warning_messages'] += [ msg ]
 
             if not pom_file_data['is_tracked']:
                 msg = 'Pom `' + pom_rel_path + '` from `' + repo_id + '` repo is not tracked: ' + pom_abs_path
@@ -1240,6 +1247,7 @@ def load_pom_files_data(
                         pom_dependency['auto_verification_keys'] = {
                             'verification_result': True,
                             'error_messages': [],
+                            'warning_messages': [],
                         }
 
             # Record data loaded from ar into artifact descriptor.
@@ -1322,6 +1330,7 @@ def load_artifact_descriptors_data(
                 pom_file_data['auto_verification_keys'] = {
                     'verification_result': True,
                     'error_messages': [],
+                    'warning_messages': [],
                 }
 
             # Record data loaded from pom into artifact descriptor.
@@ -1629,6 +1638,7 @@ def verify_referential_integrity_pom_file_to_artifact_descriptors(
             dependency_data['auto_verification_keys'] = {
                 'verification_result': True,
                 'error_messages': [],
+                'warning_messages': [],
             }
 
         # Check if artifact has descriptor.
@@ -1697,8 +1707,11 @@ def verify_referential_integrity_pom_file_to_artifact_descriptors(
                 if artifact_key not in pom_file_data['xml_referenced_dependencies']:
                     msg = 'Artifact `' + artifact_key + '` is part of `maven_dependency_list` but not part of `xml_referenced_dependencies`'
                     logging.error(msg)
-                    dependency_data['auto_verification_keys']['verification_result'] = False
-                    dependency_data['auto_verification_keys']['error_messages'] += [ msg ]
+                    # NOTE: This is not a vailure because `dependency:list`
+                    #       also provides transitive dependencies.
+                    # TODO: Should we check if it is really a transitive
+                    #       dependency or error?
+                    dependency_data['auto_verification_keys']['warning_messages'] += [ msg ]
                 else:
                     # Verify Maven Coordinates with each
                     # XML entry corresponding to `artifact_key`.
