@@ -31,10 +31,15 @@
   {% set component_pom_path = job_config['job_config_data']['component_pom_path'] %}
   <rootPOM>{{ repo_path }}/{{ component_pom_path }}</rootPOM>
 
+  <!--
+    NOTE: Regardless of specified goals, use `help:system` which is
+          the only known way to show exaclty those environment variables
+          used for Jenkins Maven plugin.
+  -->
   {% if 'maven_args' in job_config %}
-  <goals>{{ job_config['maven_args']|e }}</goals>
+  <goals>help:system {{ job_config['maven_args']|e }}</goals>
   {% else %}
-  <goals>clean install</goals>
+  <goals>help:system clean install</goals>
   {% endif %}
 
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
