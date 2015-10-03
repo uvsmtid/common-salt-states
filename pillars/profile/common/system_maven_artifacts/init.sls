@@ -8,6 +8,8 @@ include:
         'artifact_descriptors'
         ,
         'pom_file_exceptions'
+        ,
+        'maven_reactor_root_pom'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
