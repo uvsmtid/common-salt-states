@@ -64,39 +64,6 @@ def build_parser(
     )
 
     # --------------------------------------------------------------------------
-    # verify_known_dependencies
-
-    verify_known_dependencies_p = commands_sps.add_parser(
-        'verify_known_dependencies',
-        description = ""
-            + ""
-            + ""
-        ,
-        help = ""
-            + ""
-            + ""
-    )
-    def_value = 'TODO'
-    verify_known_dependencies_p.add_argument(
-        '--repos_config_file',
-        dest = 'repos_config_file',
-        metavar = 'repos_config_file',
-        default = def_value,
-        help="File with configuration for all repositories "
-            + default_format_string % { "default": def_value }
-    )
-    def_value = 'TODO'
-    verify_known_dependencies_p.add_argument(
-        '--artifacts_config_file',
-        dest = 'artifacts_config_file',
-        metavar = 'artifacts_config_file',
-        default = def_value,
-        help="File with configuration for all Maven artifacts "
-            + default_format_string % { "default": def_value }
-    )
-    verify_known_dependencies_p.set_defaults(func=verify_known_dependencies)
-
-    # --------------------------------------------------------------------------
     # get_salt_pillar
 
     get_salt_pillar_p = commands_sps.add_parser(
@@ -422,160 +389,6 @@ def call_subprocess(
         )
     else:
         raise Exception("Not implemented")
-
-###############################################################################
-#
-
-def essentialize_dependency_items(
-    dependency_items,
-):
-
-    """
-    Extract only relevant information in the depencency items.
-
-    * Strip off version and scope.
-    * Make unique list of items.
-    """
-
-    unique_deps = sets.Set()
-    for dependency_item in dependency_items:
-        stripped_dep_item = dependency_item['artifact_group'] + ':' + dependency_item['artifact_name']
-        unique_deps.add(stripped_dep_item)
-
-    return sorted(unique_deps)
-
-###############################################################################
-#
-
-###############################################################################
-#
-
-def verify_dep_items_info(
-    essential_dep_items,
-    dep_confs,
-):
-
-    # Check every item in collected dependencies against
-    # known status from configuration item.
-    for dep_item_name in essential_dep_items:
-
-        logging.debug('verify 1st-way: ' + str(dep_item_name))
-
-        if dep_item_name in dep_confs:
-
-
-            if dep_confs[dep_item_name]['used']:
-
-                # We deal with exiting known dependency.
-                logging.info('EXISTING: %(dep_name)s' % {
-                        'dep_name': str(dep_item_name),
-                    }
-                )
-
-                source_type_value = None
-
-                if 'source_type' in dep_confs[dep_item_name]:
-                    source_type_value = dep_confs[dep_item_name]['source_type']
-
-                if source_type_value == None:
-                    logging.critical('no value specified for `source_type`')
-
-                elif source_type_value == 'thales':
-
-                    # We could try to build the item here based on known
-                    # location of its sources, but it's a lengthy process
-                    # to do this for each dependency. Besides that,
-                    # the dependency may require build some other
-                    # dependencies it depends on (transient dependencies),
-                    # for example, new version of them.
-                    # In order to make this reliable, one should start going
-                    # from the roots of dependency trees not to fail. This
-                    # all complicates it and not implemented at the moment.
-
-                    source_repo_name_value = None
-                    source_repo_pom_path_value = None
-
-                    if 'source_repo_name' in dep_confs[dep_item_name]:
-                        source_repo_name_value = dep_confs[dep_item_name]['source_repo_name']
-
-                    if 'source_repo_pom_path' in dep_confs[dep_item_name]:
-                        source_repo_pom_path_value = dep_confs[dep_item_name]['source_repo_pom_path']
-
-                    if source_repo_name_value == None:
-                        logging.critical('no value specified for `source_repo_name`')
-
-                    if source_repo_pom_path_value == None:
-                        logging.critical('no value specified for `source_repo_pom_path`')
-
-                    # TODO: Check if specified `pom.xml` file exists.
-
-                    logging.info('%(dep_name)s is thales' % {
-                            'dep_name': str(dep_item_name),
-                        }
-                    )
-
-                elif dep_confs[dep_item_name]['source_type'] == 'open':
-                    logging.info('%(dep_name)s is open sourced' % {
-                            'dep_name': str(dep_item_name),
-                        }
-                    )
-
-                else:
-                    logging.critical('unknown value for `source_type`: ' + str(source_type_value))
-
-            else:
-                # The dependency is in current desription, but it
-                # is marked as not used while we just spotted its use.
-                # Therefore, it's `ADDED` (again).
-                logging.info('ADDED: %(dep_name)s' % {
-                        'dep_name': str(dep_item_name),
-                    }
-                )
-
-        else:
-
-            # We found new dependency which is not described in our
-            # current file describing each dependency.
-
-            logging.info('ADDED: %(dep_name)s' % {
-                    'dep_name': str(dep_item_name),
-                }
-            )
-
-    # Check if there is any dependency we knew about and it is
-    # not referenced anymore.
-    for dep_item_name in dep_confs.keys():
-
-        logging.debug('verify 2nd-way: ' + str(dep_item_name))
-
-        if dep_item_name in essential_dep_items:
-
-            # These cases are already processed above.
-            pass
-
-        else:
-            if dep_confs[dep_item_name]['used']:
-
-                # This case tells us that there are some items in configuration
-                # which are still makred as used, but they are not part of
-                # actual (newly collected) dependencies.
-
-                logging.info('UNUSED: %(dep_name)s' % {
-                        'dep_name': str(dep_item_name),
-                    }
-                )
-
-            else:
-
-                # Item is not in the newly collected dependencies
-                # and it is actually not used.
-
-                logging.info('SKIPPED: %(dep_name)s' % {
-                        'dep_name': str(dep_item_name),
-                    }
-                )
-
-    return True
 
 ###############################################################################
 #
@@ -1235,6 +1048,12 @@ def load_pom_files_data(
             )
 
             # Get Maven Coordinates.
+            maven_coords = get_single_pom_maven_coordinates(
+                single_effective_pom_data,
+            )
+            pom_file_data['maven_coordinates'] = maven_coords
+
+            # Get all dependencies.
             single_pom_dependencies = get_single_pom_dependencies(
                 single_effective_pom_data,
             )
@@ -1337,7 +1156,6 @@ def load_artifact_descriptors_data(
             artifact_descriptor['pom_data'] = pom_file_data
 
     return report_data
-
 
 #------------------------------------------------------------------------------
 #
@@ -1846,6 +1664,68 @@ def get_verification_report(
     verify_referential_integrity_artifact_descriptors_to_pom_file(
         report_data,
     )
+
+    # TODO: Additonal verifications.
+    #
+    #--------------------------------------------------------------------------
+    #
+    # -
+    # Verify that pom file is part of repository it is claimed to be.
+    # For example, avoid searching top level repository result in list
+    # of pom files pertaining to its submodules.
+    #
+    #--------------------------------------------------------------------------
+    # One-to-one pom-artifact match for internal components
+    #
+    # -
+    # Verify that every internal artifact from `artifact_descriptors`
+    # has exactly one pom file in `pom_files` which builds this artifact.
+    # Otherwise, keeping this record in component registry is useless.
+    # -
+    # Verify that every (non-excluded) pom file from `pom_files`
+    # has corresponding artifact which it builds in `artifact_descriptors`.
+    # Otherwise, our component registry is incomplete.
+    #
+    #--------------------------------------------------------------------------
+    # Reactor build group
+    #
+    # -
+    # Verify that all internal components are part of reactor build
+    # (except, possibly, some component explicitly excluded from the build).
+    # Otherwise, the component cannot be considered internal if it is not
+    # produced during the build.
+    # NOTE: There is no known precise and reliable way to ask Maven
+    #       about all artifacts which are part of reactor build.
+    #       Instead, running maven reactor build specifically for
+    #       the artifact in question verifies that it is part of the build.
+    # -
+    # Verify that no two pom files from `pom_files` produce the same
+    # artifact id (even if group id is different).
+    # Otherwise, it is confusing.
+    # -
+    # Verify that every (non-excluded) pom file from `pom_files`
+    # is part of reactor build.
+    # NOTE: There is no known precise and reliable way to ask Maven
+    #       about all pom files triggered by reactor build.
+    #       Instead, running maven reactor build specifically for
+    #       the artifact produced by the pom file together with
+    #       verification that no other pom files build the same
+    #       maven coordinates verifies that pom is part of the build.
+    #
+    #--------------------------------------------------------------------------
+    #
+    # -
+    # Verify that all internal components that are exluded from the build
+    # are not dependency of any other component.
+    # Otherwise, the dependency is not being updated during the build.
+    #
+    #--------------------------------------------------------------------------
+    #
+    # -
+    # Verify that all external artifacts in `artifact_descriptors` use
+    # non-SNAPSHOT versions.
+    #
+    #--------------------------------------------------------------------------
 
     # Compute overall result.
     report_data['overall_result'] = get_overall_result(
