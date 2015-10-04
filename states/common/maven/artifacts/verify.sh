@@ -15,7 +15,15 @@ set -u
 set -x
 
 # Get directory the script is in.
-RUNTIME_DIR="$( realpath "$( pwd )/$( dirname "${0}" )" )"
+SCRIPT_DIR="$( dirname "${0}" )"
+if [ "${SCRIPT_DIR:0:1}" == '/' ]
+then
+    # In case of absolute path, just use script dir.
+    RUNTIME_DIR="$( realpath "${SCRIPT_DIR}" )"
+else
+    # In case of relative path, append current workind dir.
+    RUNTIME_DIR="$( realpath "$( pwd )/${SCRIPT_DIR}" )"
+fi
 
 # Get pillar.
 if true
