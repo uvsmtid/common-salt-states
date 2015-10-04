@@ -644,6 +644,14 @@ test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
 git add --all
 git status
+
+# NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
+#       there are supposed to be no changes to commit.
+if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+then
+    git diff-index --ignore-submodules=dirty --exit-code HEAD
+fi
+
 # NOTE: If commit is made to `build_history_role`, there will new changes
 #       (for example, new `latest_commit_ids`) for `build_history_role`
 #       inside to-be-updated dyn build desc and for top level repository

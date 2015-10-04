@@ -401,6 +401,12 @@ system_features:
                             The build title can be found in dynamic build descriptor in the value of `build_title` key.
                         parameter_type: string
                         parameter_value: '_'
+                    RESTORE_PARENT_BUILD_ONLY:
+                        parameter_description: |
+                            Instead of creating new build based on PARENT_BUILD_TITLE,
+                            restore them (with the same names) without building anything.
+                        parameter_type: boolean
+                        parameter_value: False
 
                     SKIP_INIT_PIPELINE:
                         parameter_description: |

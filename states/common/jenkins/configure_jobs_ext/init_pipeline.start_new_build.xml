@@ -56,9 +56,17 @@
         #######################################################################
         # Set build title.
 
-        BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
-        SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
-        export BUILD_TITLE="${BUILD_TIMESTAMP}-{{ job_environ['job_name'] }}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-${BUILD_LABEL}"
+        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        then
+            BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
+            SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
+            export BUILD_TITLE="${BUILD_TIMESTAMP}-{{ job_environ['job_name'] }}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-${BUILD_LABEL}"
+        else
+            # In case of `RESTORE_PARENT_BUILD_ONLY`,
+            # make sure that `PARENT_BUILD_TITLE` is set.
+            test "${PARENT_BUILD_TITLE}" != '_'
+            export BUILD_TITLE="${PARENT_BUILD_TITLE}"
+        fi
 
         #######################################################################
         # Set env vars.
@@ -109,13 +117,28 @@
         # build from the start of the pipeline.
         if [ "${PARENT_BUILD_TITLE}" != '_' ]
         then
-            # Reuse contents of parent (until overwritten) -
-            # copy directory named after parent build title.
-            git checkout -b "${BUILD_TITLE}" "${PARENT_BUILD_TITLE}"
-            cp -r "${PARENT_BUILD_TITLE}" "${BUILD_TITLE}"
-
+            # Start from state of the branch as it was left in parent build.
             # NOTE: If parent build title is used, its directory
             #       with all contents is left untouched.
+
+            if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+            then
+                # Check out...
+                #   parent build branch (parent build title)
+                # as...
+                #   new build branch (new build title)
+                # and make copy of...
+                #   directory named after parent build title
+                # to new...
+                #   directory named after new build title.
+                git checkout -b "${BUILD_TITLE}" "${PARENT_BUILD_TITLE}"
+                cp -r "${PARENT_BUILD_TITLE}" "${BUILD_TITLE}"
+            else
+                # In case of `RESTORE_PARENT_BUILD_ONLY`,
+                # check out parent build title branch nad do nothing else.
+                git checkout "${PARENT_BUILD_TITLE}"
+            fi
+
         else
             # No parent - start from clean orphan branch.
 
@@ -130,22 +153,29 @@
             mkdir -p "$(dirname "${REPO_DYN_BUILD_DESC_PATH}")"
         fi
 
-        # Initialize with empty dict for dyn build desc.
-        echo "{}" > "${REPO_DYN_BUILD_DESC_PATH}"
+        # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
+        #       the operation is read-only.
+        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        then
 
-        echo "${BUILD_TIMESTAMP}"     | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_timestamp"
-        echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_title"
-        echo "${SOURCE_PROFILE_NAME}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "source_profile_name"
+            # Initialize with empty dict for dyn build desc.
+            echo "{}" > "${REPO_DYN_BUILD_DESC_PATH}"
 
-        echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_branches:{{ build_history_repo_id }}"
-        echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_branches:{{ build_history_repo_id }}"
+            echo "${BUILD_TIMESTAMP}"     | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_timestamp"
+            echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_title"
+            echo "${SOURCE_PROFILE_NAME}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "source_profile_name"
 
-        # Make initial commit.
-        git add --all
-        git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
+            echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_branches:{{ build_history_repo_id }}"
+            echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_branches:{{ build_history_repo_id }}"
 
-        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
-        echo "${CURRENT_COMMIT_ID}"  | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_commit_ids:{{ build_history_repo_id }}"
+            # Make initial commit.
+            git add --all
+            git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
+
+            CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+            echo "${CURRENT_COMMIT_ID}"  | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_commit_ids:{{ build_history_repo_id }}"
+
+        fi
 
         cd -
 
@@ -186,20 +216,28 @@
 
         if [ "${PARENT_BUILD_TITLE}" != '_' ]
         then
-            # Export (the latest) dynamic build descriptor from
-            # specified build title (branch).
-            # See:
-            #    http://stackoverflow.com/a/5324532/441652
-            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'dynamic_build_descriptor.yaml'
-            mv 'dynamic_build_descriptor.yaml' "${PARENT_DYN_BUILD_DESC_PATH}"
 
-            {% if 'restore_artifacts_from_parent_build' in job_config %}
-            # Restore artifacts which might be used as a fingerprint
-            # to link all jobs together.
-            {% for restored_artifact in job_config['restore_artifacts_from_parent_build'] %}
-            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x '{{ restored_artifact }}'
-            {% endfor %}
-            {% endif %}
+            # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
+            #       there is nothing to restore - the same branch is used.
+            if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+            then
+
+                # Export (the latest) dynamic build descriptor from
+                # specified parent build title (branch).
+                # See:
+                #    http://stackoverflow.com/a/5324532/441652
+                git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'dynamic_build_descriptor.yaml'
+                mv 'dynamic_build_descriptor.yaml' "${PARENT_DYN_BUILD_DESC_PATH}"
+
+                {% if 'restore_artifacts_from_parent_build' in job_config %}
+                # Restore artifacts which might be used as a fingerprint
+                # to link all jobs together.
+                {% for restored_artifact in job_config['restore_artifacts_from_parent_build'] %}
+                git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x '{{ restored_artifact }}'
+                {% endfor %}
+                {% endif %}
+
+            fi
 
         fi
 
@@ -216,8 +254,13 @@ cat &lt;&lt;HEREDOC_MARKER &gt; ${ENV_PYTHON_SCRIPT}
 {{ store_environment_python_script(job_config, job_environ) }}
 HEREDOC_MARKER
 
-        # Write output of env command into dynamic build descriptor.
-        python "${ENV_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}"
+        # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
+        #       the operation is read-only.
+        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        then
+            # Write output of env command into dynamic build descriptor.
+            python "${ENV_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}"
+        fi
 
         #######################################################################
         # Write parameters to the file used by subsequent jobs.
@@ -232,10 +275,18 @@ HEREDOC_MARKER
 
         # Write each build parameter into the properties file.
         {% for param_name in job_config['build_parameters'].keys() %}
+
         echo "{{ param_name }}=${{ param_name }}" >> "$BUILD_PROPS_PATH"
-        # Even though build parameters are part of environment variables,
-        # save them into special section of dynamic build descriptor.
-        echo "${{ param_name }}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_parameters:{{ param_name }}"
+
+        # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
+        #       the operation is read-only.
+        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        then
+            # Even though build parameters are part of environment variables,
+            # save them into special section of dynamic build descriptor.
+            echo "${{ param_name }}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_parameters:{{ param_name }}"
+        fi
+
         {% endfor %}
 
         # In addition to that, store BUILD_TITLE.
