@@ -40,16 +40,20 @@ offline_mode: False
 use_pillars_from_states_repo: True
 
 project_name: common
+
 # Profile name specifies default branch name for configuration
 # repositories (e.g. pillars).
 profile_name: develop
+
 master_minion_id: master_minion_id
+
 # Should master minion be defined through standard template host or no?
 # If true, `profile/common/system_hosts/master_minion_id.sls` template is used.
 # The template may not work for all cases.
 # Alternatively (if false), host definition specified in
 # `master_minion_id` property will be used.
 use_master_minion_template_host: True
+
 default_username: username
 
 # Specify dict of target profile names (mapped into any value).
@@ -77,9 +81,11 @@ symlinks_map:
 # One way these paths are used is to set up symlinks from locations
 # known by Salt (in `/srv` directory) to the required data in repositories.
 repo_path_states: '/home/username/Works/common-salt-states.git'
+
 # Note that in case of generic profile, `states` repository for the project is
 # used instead of `pillars` one. And it ignores the main `pillars` repository.
 repo_path_pillars: '/home/username/Works/common-salt-pillars.git'
+
 # The `bootstrap-target` pillars repository is always used if
 # bootstrap package has to be generated.
 repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-pillars.bootstrap-target.git'

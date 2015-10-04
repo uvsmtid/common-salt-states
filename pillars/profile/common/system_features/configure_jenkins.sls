@@ -593,8 +593,9 @@ system_features:
 
                 condition_job_list:
                     - 31.maven_pipeline.maven_build_all
+                    - 32.maven_pipeline.verify_maven_data
                     {% for maven_repo_name in maven_repo_names %}
-                    - 32.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                    - 33.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
                     {% endfor %}
 
                 condition_type: downstream_passed
@@ -884,9 +885,7 @@ system_features:
                         #       to update their status as well.
                         condition: ALWAYS
                         trigger_jobs:
-                            {% for maven_repo_name in maven_repo_names %}
-                            - 32.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
-                            {% endfor %}
+                            - 32.maven_pipeline.verify_maven_data
 
                 # Specific goals and options.
                 # Note that we run initial build - all repositories are
@@ -933,9 +932,8 @@ system_features:
 
                 disable_archiving: True
 
-            {% for maven_repo_name in maven_repo_names %}
-
-            32.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}:
+            {% set job_template_id = 'maven_pipeline.verify_maven_data' %}
+            32.{{ job_template_id }}:
 
                 enabled: True
 
@@ -944,7 +942,40 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - jenkins_slave_role
+                    - controller_role
+
+                # TODO: At the moment Maven jobs cannot be scipped.
+                skip_if_true: SKIP_MAVEN_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    build_always:
+                        condition: ALWAYS
+                        trigger_jobs:
+                            {% for maven_repo_name in maven_repo_names %}
+                            - 33.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                            {% endfor %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% for maven_repo_name in maven_repo_names %}
+
+            33.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
 
                 # TODO: At the moment Maven jobs cannot be scipped.
                 skip_if_true: SKIP_MAVEN_PIPELINE
@@ -1748,8 +1779,9 @@ system_features:
 
                     job_list:
                         - 31.maven_pipeline.maven_build_all
+                        - 32.maven_pipeline.verify_maven_data
                         {% for maven_repo_name in maven_repo_names %}
-                        - 32.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                        - 33.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
                         {% endfor %}
             {% endif %}
 

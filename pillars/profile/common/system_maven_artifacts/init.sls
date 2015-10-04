@@ -5,7 +5,11 @@
 include:
 
 {% for sub_item in [
-        'maven-demo'
+        'artifact_descriptors'
+        ,
+        'pom_file_exceptions'
+        ,
+        'maven_reactor_root_pom'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

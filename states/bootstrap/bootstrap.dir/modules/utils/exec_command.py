@@ -60,6 +60,7 @@ def call_subprocess_with_pipes(
     return result
 
 ###############################################################################
+#
 
 def call_subprocess_with_files(
     command_args,
@@ -113,9 +114,7 @@ def call_subprocess_with_files(
         p.stdin.close()
 
     # Wait until command stops
-    logging.debug('before wait')
     p.wait()
-    logging.debug('after wait')
 
     # Return dictionary
     result = {}
@@ -224,6 +223,7 @@ def print_process_output(
         logging.info("exit code = " + str(process_output["code"]))
 
 ###############################################################################
+#
 
 def call_subprocess(
     command_args,
