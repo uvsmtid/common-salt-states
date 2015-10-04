@@ -652,6 +652,12 @@ def check_if_pom_is_tracked(
     #           git ls-files --error-unmatch path/to/pom.xml
     # TODO: Currently it is limited to Git repository only.
 
+    # NOTE: This command also returns required results when
+    #       file is outside of repository rooted at `repo_path`
+    #       (for example, when file is in submodule) -
+    #       submodule files should not be considered tracked by
+    #       top level repository.
+
     exit_data = call_subprocess(
         command_args = [
             'git',
