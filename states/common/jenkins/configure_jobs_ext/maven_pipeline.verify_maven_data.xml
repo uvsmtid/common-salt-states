@@ -30,20 +30,14 @@
 
         #######################################################################
 
-        # NOTE: This job does nothing.
-        #       It is used as a trigger (dependency) for other Maven jobs.
+        # Get location of `verify.sh` script.
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+        {% set repo_id = 'common-salt-states' %}             
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
+        export COMMON_STATES_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
-        # CURRENT STATUS:
-        #
-        # This job config template is not used.
-        # In the existing porjects, the "bulid all" job uses parent
-        # `pom.xml` spanning all required Maven components in reactor build.
-        #
-        # In short, it can be done via `maven_pipeline.maven_project_job.xml`
-        # job template which is used by individual projects.
-        #
-        # TODO: Should this template be removed?
-
+        # Run `verify.sh` script.
+        "${COMMON_STATES_REPO_PATH}"/states/common/maven/artifacts/verify.sh
 
         #######################################################################
         # Script footer
