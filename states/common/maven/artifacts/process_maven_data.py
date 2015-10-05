@@ -529,17 +529,19 @@ def maven_reactor_root_clean(
     salt_pillar,
 ):
 
+    repo_id = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['repository_id']
+    pom_rel_path = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['pom_relative_path']
     pom_file_data = get_pom_file_data(
-        repo_id = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['repository_id'],
-        rel_pom_path = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['pom_relative_path'],
-        salt_pillar = salt_pillar,
+        repo_id,
+        pom_rel_path,
+        salt_pillar,
     )
 
     assert(not detect_ignorable_pom_file(
-            artifact_key = 'MAVEN-REACTOR-ROOT',
             repo_id,
             pom_rel_path,
             pom_file_data,
+            artifact_key = 'MAVEN-REACTOR-ROOT',
         )
     )
     assert(os.path.isabs(pom_file_data['absolute_path']))
@@ -669,21 +671,21 @@ def get_repo_path(
 #
 
 def normalize_pom_rel_path(
-    rel_pom_path,
+    pom_rel_path,
 ):
-    # Remove any leading `./` from `rel_pom_path`.
-    if './' in rel_pom_path[:2]:
-        rel_pom_path = rel_pom_path[2:]
-        logging.debug('rel_pom_path: ' + str(rel_pom_path))
+    # Remove any leading `./` from `pom_rel_path`.
+    if './' in pom_rel_path[:2]:
+        pom_rel_path = pom_rel_path[2:]
+        logging.debug('pom_rel_path: ' + str(pom_rel_path))
 
-    return rel_pom_path
+    return pom_rel_path
 
 #------------------------------------------------------------------------------
 #
 
 def check_if_pom_is_tracked(
     repo_path,
-    rel_pom_path,
+    pom_rel_path,
 ):
     # NOTE: Quick fix: check that file is tracked by Git.
     #           git ls-files --error-unmatch path/to/pom.xml
@@ -700,7 +702,7 @@ def check_if_pom_is_tracked(
             'git',
             'ls-files',
             '--error-unmatch',
-            rel_pom_path,
+            pom_rel_path,
         ],
         cwd = repo_path,
         raise_on_error = False,
@@ -708,7 +710,7 @@ def check_if_pom_is_tracked(
 
     abs_pom_file = os.path.join(
         repo_path,
-        rel_pom_path,
+        pom_rel_path,
     )
     if exit_data['code'] != 0:
         logging.warning('This pom file is not tracked: ' + str(abs_pom_file))
@@ -721,7 +723,7 @@ def check_if_pom_is_tracked(
 
 def get_pom_file_data(
     repo_id,
-    rel_pom_path,
+    pom_rel_path,
     salt_pillar,
 ):
 
@@ -735,12 +737,12 @@ def get_pom_file_data(
         salt_pillar,
     )
 
-    pom_file_data['relative_path'] = rel_pom_path
+    pom_file_data['relative_path'] = pom_rel_path
 
     # Get abs path to pom file.
     abs_pom_file = os.path.join(
         repo_path,
-        rel_pom_path,
+        pom_rel_path,
     )
     assert(os.path.exists(abs_pom_file))
     pom_file_data['absolute_path'] = abs_pom_file
@@ -753,7 +755,7 @@ def get_pom_file_data(
 
     if not check_if_pom_is_tracked(
         repo_path,
-        rel_pom_path,
+        pom_rel_path,
     ):
         pom_file_data['is_tracked'] = False
         logging.warning('ignore untracked pom file: ' + str(abs_pom_file))
@@ -762,7 +764,7 @@ def get_pom_file_data(
         pom_file_data['is_tracked'] = True
 
     if repo_id in salt_pillar['system_maven_artifacts']['pom_file_exceptions']:
-        if rel_pom_path in salt_pillar['system_maven_artifacts']['pom_file_exceptions'][repo_id]:
+        if pom_rel_path in salt_pillar['system_maven_artifacts']['pom_file_exceptions'][repo_id]:
             pom_file_data['is_exception'] = True
             logging.warning('ignore this pom file from exceptions: ' + str(abs_pom_file))
 
@@ -802,18 +804,18 @@ def get_all_pom_files_per_repo(
         logging.debug('find output: ' + str(exit_data['stdout']))
 
         pom_files_per_repo = {}
-        for rel_pom_path in exit_data['stdout'].split('\n'):
+        for pom_rel_path in exit_data['stdout'].split('\n'):
 
             # Skip empty lines.
-            if not rel_pom_path:
+            if not pom_rel_path:
                 continue
 
-            rel_pom_path = normalize_pom_rel_path(rel_pom_path)
-            assert(rel_pom_path not in pom_files_per_repo)
+            pom_rel_path = normalize_pom_rel_path(pom_rel_path)
+            assert(pom_rel_path not in pom_files_per_repo)
 
-            pom_files_per_repo[rel_pom_path] = get_pom_file_data(
+            pom_files_per_repo[pom_rel_path] = get_pom_file_data(
                 repo_id,
-                rel_pom_path,
+                pom_rel_path,
                 salt_pillar,
             )
 
@@ -932,10 +934,10 @@ def get_maven_coordinate(
 #
 
 def detect_ignorable_pom_file(
-    artifact_key,
     repo_id,
     pom_rel_path,
     pom_file_data,
+    artifact_key,
 ):
 
     if pom_file_data['is_exception']:
@@ -1221,10 +1223,10 @@ def load_artifact_descriptors_data(
                 }
 
             if detect_ignorable_pom_file(
-                artifact_key,
                 repo_id,
                 pom_rel_path,
                 pom_file_data,
+                artifact_key,
             ):
                 continue
 
@@ -1686,10 +1688,10 @@ def verify_referential_integrity_artifact_descriptors_to_pom_file(
             pom_file_data = report_data['pom_files'][repo_id][pom_rel_path]
 
             if detect_ignorable_pom_file(
-                artifact_key,
                 repo_id,
                 pom_rel_path,
                 pom_file_data,
+                artifact_key,
             ):
                 continue
 
