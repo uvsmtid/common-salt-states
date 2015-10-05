@@ -14,6 +14,15 @@ set -u
 # Debug.
 set -x
 
+# Set proper Java version.
+# TODO: Do not hardcode it - get from Salt pillar.
+export JAVA_HOME='/usr/java/jdk1.7.0_71'
+export PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Set Maven memory options.
+# TODO: Do not hardcode it - get from Salt pillar.
+export MAVEN_OPTS="-Xmx2048m -XX:MaxPermSize=512m"
+
 # Get directory the script is in.
 SCRIPT_DIR="$( dirname "${0}" )"
 if [ "${SCRIPT_DIR:0:1}" == '/' ]
