@@ -535,7 +535,13 @@ def maven_reactor_root_clean(
         salt_pillar = salt_pillar,
     )
 
-    assert(pom_file_data['is_tracked'])
+    assert(not detect_ignorable_pom_file(
+            artifact_key = 'MAVEN-REACTOR-ROOT',
+            repo_id,
+            pom_rel_path,
+            pom_file_data,
+        )
+    )
     assert(os.path.isabs(pom_file_data['absolute_path']))
     assert(not os.path.isabs(pom_file_data['relative_path']))
 
@@ -905,6 +911,7 @@ def get_xpath_elements(
 
 #------------------------------------------------------------------------------
 #
+
 def get_maven_coordinate(
     dependency_elem,
     coordinate_tag_name,
@@ -920,6 +927,30 @@ def get_maven_coordinate(
     else:
         assert(len(maven_coords) == 1)
         return maven_coords[0].text
+
+#------------------------------------------------------------------------------
+#
+
+def detect_ignorable_pom_file(
+    artifact_key,
+    repo_id,
+    pom_rel_path,
+    pom_file_data,
+):
+
+    if pom_file_data['is_exception']:
+        msg = 'Artifact `' + artifact_key + '` refers to excepted pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
+        logging.error(msg)
+        artifact_descriptor['auto_verification_keys']['verification_result'] = False
+        artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
+        return True
+
+    if not pom_file_data['is_tracked']:
+        msg = 'Artifact `' + artifact_key + '` refers to untracked pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
+        logging.error(msg)
+        artifact_descriptor['auto_verification_keys']['verification_result'] = False
+        artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
+        return True
 
 #------------------------------------------------------------------------------
 #
@@ -1079,14 +1110,16 @@ def load_pom_files_data(
             if pom_file_data['is_exception']:
                 msg = 'Pom `' + pom_rel_path + '` from `' + repo_id + '` repo is exception: ' + pom_abs_path
                 logging.warning(msg)
-                # NOTE: This is not a failure, just note about exceptoin.
+                # NOTE: This is not a failure, just note about known exceptoin.
                 pom_file_data['auto_verification_keys']['warning_messages'] += [ msg ]
+                continue
 
             if not pom_file_data['is_tracked']:
                 msg = 'Pom `' + pom_rel_path + '` from `' + repo_id + '` repo is not tracked: ' + pom_abs_path
                 logging.error(msg)
                 pom_file_data['auto_verification_keys']['verification_result'] = False
                 pom_file_data['auto_verification_keys']['error_messages'] += [ msg ]
+                continue
 
             # Generate effective pom file.
             pom_file_data = get_effective_pom_file_data(
@@ -1179,6 +1212,22 @@ def load_artifact_descriptors_data(
                 salt_pillar,
             )
 
+            # Initialize `auto_verification_keys`.
+            if 'auto_verification_keys' not in pom_file_data:
+                pom_file_data['auto_verification_keys'] = {
+                    'verification_result': True,
+                    'error_messages': [],
+                    'warning_messages': [],
+                }
+
+            if detect_ignorable_pom_file(
+                artifact_key,
+                repo_id,
+                pom_rel_path,
+                pom_file_data,
+            ):
+                continue
+
             # Generate effective pom file.
             pom_file_data = get_effective_pom_file_data(
                 repo_id,
@@ -1196,14 +1245,6 @@ def load_artifact_descriptors_data(
                 single_effective_pom_data,
             )
             pom_file_data['maven_coordinates'] = maven_coords
-
-            # Initialize `auto_verification_keys`.
-            if 'auto_verification_keys' not in pom_file_data:
-                pom_file_data['auto_verification_keys'] = {
-                    'verification_result': True,
-                    'error_messages': [],
-                    'warning_messages': [],
-                }
 
             # Record data loaded from pom into artifact descriptor.
             artifact_descriptor['pom_data'] = pom_file_data
@@ -1644,18 +1685,12 @@ def verify_referential_integrity_artifact_descriptors_to_pom_file(
             #       The following verification is done
             pom_file_data = report_data['pom_files'][repo_id][pom_rel_path]
 
-            if pom_file_data['is_exception']:
-                msg = 'Artifact `' + artifact_key + '` refers to excepted pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
-                logging.error(msg)
-                artifact_descriptor['auto_verification_keys']['verification_result'] = False
-                artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
-                continue
-
-            if not pom_file_data['is_tracked']:
-                msg = 'Artifact `' + artifact_key + '` refers to untracked pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
-                logging.error(msg)
-                artifact_descriptor['auto_verification_keys']['verification_result'] = False
-                artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
+            if detect_ignorable_pom_file(
+                artifact_key,
+                repo_id,
+                pom_rel_path,
+                pom_file_data,
+            ):
                 continue
 
             # Increment reference counter.
