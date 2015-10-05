@@ -1017,10 +1017,21 @@ def get_single_pom_maven_coordinates(
         https://maven.apache.org/pom.html#Maven_Coordinates
     """
 
-    # The single first element in pom is `project`.
-    project_element = single_effective_pom_data.getroot()
+    root_element = single_effective_pom_data.getroot()
+    logging.debug('root_element: ' + str(root_element) + ': ' + str(etree.tostring(root_element)))
 
-    logging.debug('project_element: ' + str(project_element) + ': ' + str(etree.tostring(project_element)))
+    # NOTE: In case of parent pom,
+    #       the root element is not `project` but `projects`.
+    # TODO: We assume that the actual pom file of this root is the first,
+    #       but we do not ensure it anyhow.
+    project_element = None
+    if root_element.tag == 'projects':
+        project_elements = get_xpath_elements(root_element, './/x:project')
+        project_element = project_elements[0]
+    else:
+        project_element = root_element
+    logging.debug('project_element: ' + str(project_element) + ' tag: ' + str(project_element.tag) + ' contents: ' + str(etree.tostring(project_element)))
+    assert(project_element.tag == pom_xml_ns_prefix + 'project')
 
     pom_maven_coordinates = {}
 
