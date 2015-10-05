@@ -537,13 +537,9 @@ def maven_reactor_root_clean(
         salt_pillar,
     )
 
-    assert(not detect_ignorable_pom_file(
-            repo_id,
-            pom_rel_path,
-            pom_file_data,
-            artifact_key = 'MAVEN-REACTOR-ROOT',
-        )
-    )
+    assert(pom_file_data['is_file'])
+    assert(pom_file_data['is_tracked'])
+    assert(not pom_file_data['is_exception'])
     assert(os.path.isabs(pom_file_data['absolute_path']))
     assert(not os.path.isabs(pom_file_data['relative_path']))
 
@@ -729,6 +725,8 @@ def get_pom_file_data(
 
     pom_file_data = {
         # Defaults.
+        'is_file': True,
+        'is_tracked': False,
         'is_exception': False,
     }
 
@@ -736,8 +734,10 @@ def get_pom_file_data(
         repo_id,
         salt_pillar,
     )
+    logging.debug('repo_path: ' + str(repo_path))
 
     pom_file_data['relative_path'] = pom_rel_path
+    logging.debug('relative_path: ' + str(pom_rel_path))
 
     # Get abs path to pom file.
     abs_pom_file = os.path.join(
@@ -937,6 +937,7 @@ def detect_ignorable_pom_file(
     repo_id,
     pom_rel_path,
     pom_file_data,
+    artifact_descriptor,
     artifact_key,
 ):
 
@@ -1148,6 +1149,9 @@ def load_pom_files_data(
 
             # Initialize `auto_verification_keys`.
             for artifact_key in single_pom_dependencies.keys():
+
+                logging.debug('artifact_key: ' + str(artifact_key))
+
                 for xpath_key in single_pom_dependencies[artifact_key].keys():
                     pom_dependency = single_pom_dependencies[artifact_key][xpath_key]
                     if 'auto_verification_keys' not in pom_dependency:
@@ -1183,6 +1187,8 @@ def load_artifact_descriptors_data(
     # Verify data from descriptors to pom.
     for artifact_key in report_data['artifact_descriptors'].keys():
 
+        logging.debug('artifact_key: ' + str(artifact_key))
+
         artifact_descriptor = report_data['artifact_descriptors'][artifact_key]
 
         if not artifact_descriptor['used']:
@@ -1193,6 +1199,8 @@ def load_artifact_descriptors_data(
         if 'auto_verification_keys' not in artifact_descriptor:
             artifact_descriptor['auto_verification_keys'] = {
                 'verification_result': True,
+                'error_messages': [],
+                'warning_messages': [],
             }
 
         # Only internal artifacts are supposed to have
@@ -1226,6 +1234,7 @@ def load_artifact_descriptors_data(
                 repo_id,
                 pom_rel_path,
                 pom_file_data,
+                artifact_descriptor,
                 artifact_key,
             ):
                 continue
@@ -1595,6 +1604,8 @@ def verify_referential_integrity_pom_file_to_artifact_descriptors(
             # Dependencies generated from parsed XML.
             for artifact_key in pom_file_data['xml_referenced_dependencies'].keys():
 
+                logging.debug('artifact_key: ' + str(artifact_key))
+
                 for xpath_key in pom_file_data['xml_referenced_dependencies'][artifact_key].keys():
 
                     dependency_data = pom_file_data['xml_referenced_dependencies'][artifact_key][xpath_key]
@@ -1607,6 +1618,8 @@ def verify_referential_integrity_pom_file_to_artifact_descriptors(
 
             # Dependencies generated from `dependency:list`.
             for artifact_key in pom_file_data['maven_dependency_list'].keys():
+
+                logging.debug('artifact_key: ' + str(artifact_key))
 
                 dependency_data = pom_file_data['maven_dependency_list'][artifact_key]
 
@@ -1648,6 +1661,8 @@ def verify_referential_integrity_artifact_descriptors_to_pom_file(
 ):
 
     for artifact_key in report_data['artifact_descriptors'].keys():
+
+        logging.debug('artifact_key: ' + str(artifact_key))
 
         artifact_descriptor = report_data['artifact_descriptors'][artifact_key]
 
@@ -1691,6 +1706,7 @@ def verify_referential_integrity_artifact_descriptors_to_pom_file(
                 repo_id,
                 pom_rel_path,
                 pom_file_data,
+                artifact_descriptor,
                 artifact_key,
             ):
                 continue
