@@ -89,3 +89,22 @@ then
 
 fi
 
+# Increment report.
+if true
+then
+
+    "${RUNTIME_DIR}"/process_maven_data.py \
+        c get_incremental_report \
+        --input_salt_pillar_yaml_path \
+        "${RUNTIME_DIR}"/salt_pillar.yaml \
+        --input_all_pom_files_per_repo_yaml_path \
+        "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
+        --output_all_effective_poms_per_repo_dir \
+        "${RUNTIME_DIR}"/all_effective_poms_per_repo_dir \
+        --input_incremental_report_yaml_path \
+        "${RUNTIME_DIR}"/incremental_report.yaml \
+        --output_incremental_report_yaml_path \
+        "${RUNTIME_DIR}"/incremental_report.yaml \
+
+fi
+

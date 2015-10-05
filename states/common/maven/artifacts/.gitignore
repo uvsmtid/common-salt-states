@@ -8,6 +8,7 @@
 /all_effective_poms_per_repo_dir/
 /initial_report_data.yaml
 /verification_report.yaml
+/incremental_report.yaml
 
 ###############################################################################
 # EOF

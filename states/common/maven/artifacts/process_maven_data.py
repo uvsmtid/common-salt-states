@@ -172,6 +172,46 @@ def build_parser(
     get_verification_report_p.set_defaults(func=get_verification_report_wrapper)
 
     # --------------------------------------------------------------------------
+    # get_incremental_report
+
+    get_incremental_report_p = commands_sps.add_parser(
+        'get_incremental_report',
+        description = "Load all necessary information into initial report."
+            + ""
+        ,
+        help = ""
+            + ""
+            + ""
+    )
+    def_value = None
+    get_incremental_report_p.add_argument(
+        '--input_salt_pillar_yaml_path',
+        default = def_value,
+        help="Input file path with Salt pillar data"
+    )
+    def_value = None
+    get_incremental_report_p.add_argument(
+        '--input_all_pom_files_per_repo_yaml_path',
+        default = def_value,
+    )
+    def_value = None
+    get_incremental_report_p.add_argument(
+        '--output_all_effective_poms_per_repo_dir',
+        default = def_value,
+    )
+    def_value = None
+    get_incremental_report_p.add_argument(
+        '--input_incremental_report_yaml_path',
+        default = def_value,
+    )
+    def_value = None
+    get_incremental_report_p.add_argument(
+        '--output_incremental_report_yaml_path',
+        default = def_value,
+    )
+    get_incremental_report_p.set_defaults(func=get_incremental_report_wrapper)
+
+    # --------------------------------------------------------------------------
     # Return parser
 
     return parser
@@ -1774,6 +1814,452 @@ def get_verification_report(
     verify_referential_integrity_artifact_descriptors_to_pom_file(
         report_data,
     )
+
+    # Compute overall result.
+    report_data['overall_result'] = get_overall_result(
+        report_data,
+    )
+
+###############################################################################
+#
+
+class ItemDescriptor:
+
+    #--------------------------------------------------------------------------
+    #
+
+    # Order of stages each descriptor goes through.
+    # As soon as decriptor passes each stage,
+    # it is not processed on this stage again
+    # until the stage is manually reset.
+    # Each descriptor optimistically tries to pass all stages in a row
+    # recording all errors/warnings.
+    # In order to be processed, descriptor has to go through all stages.
+    stage_order = [
+        'inited',
+        'loaded',
+        'verified',
+    ]
+
+    # Shared report among all objects.
+    report_data = None
+
+    # Shared descriptor coordinates order among all objects.
+    desc_coords_order = None
+
+    #--------------------------------------------------------------------------
+    #
+
+    def __init__(
+        self,
+        report_data,
+        data_item
+    ):
+
+        self.report_data = report_data
+        self.data_item = data_item
+
+        # Descriptor coordinates in `report_data`.
+        self.desc_coords = None
+
+    #--------------------------------------------------------------------------
+    #
+
+    def set_field(
+        self,
+        field_name,
+        field_value,
+    ):
+        assert(isinstance(self.data_item, dict))
+
+        self.data_item[field_name] = field_value
+
+    #--------------------------------------------------------------------------
+    #
+
+    def is_field_true(
+        self,
+        field_name,
+    ):
+        assert(isinstance(self.data_item, dict))
+
+        if field_name not in self.data_item:
+            # Initialize field.
+            self.data_item[field_name] = False
+
+        assert(isinstance(self.data_item[field_name], types.BooleanType))
+
+        return self.data_item[field_name]
+
+    #--------------------------------------------------------------------------
+    #
+
+    def is_stage_done(
+        self,
+        stage_id,
+    ):
+
+        field_name = 'is_' + stage_id
+
+        return self.is_field_true(field_name)
+
+    #--------------------------------------------------------------------------
+    #
+
+    def do_stage(
+        self,
+        stage_id,
+    ):
+        field_name = 'is_' + stage_id
+        function_name = 'get_' + stage_id
+
+        # Never repeat completed stages.
+        stage_status = self.is_field_true(field_name)
+        if not stage_status:
+
+            # NOTE: Function already "remembers" its object
+            #       (no need for `self` argument).
+            function_object = getattr(self, function_name)
+            stage_status = function_object()
+
+            # Record status.
+            self.set_field(field_name, stage_status)
+            self.set_field('last_stage_result', stage_status)
+
+            if stage_status:
+                # New stage completed successfuly -
+                # indicate progress.
+                self.set_field('is_progressed', True)
+                logging.debug(self.get_desc_coords_string() + 'stage ' + stage_id + ' succeeded')
+            else:
+                logging.debug(self.get_desc_coords_string() + 'stage ' + stage_id + ' failed')
+
+            return stage_status
+
+        logging.debug(self.get_desc_coords_string() + 'stage ' + stage_id + ' skipped as competed')
+        return None
+
+    #--------------------------------------------------------------------------
+    #
+
+    def process_all_stages(
+        self,
+    ):
+
+        # Initialize as no progress - prepare for the worst.
+        self.set_field('is_progressed', False)
+
+        is_broken = False
+        for stage_id in self.stage_order:
+            stage_status = self.do_stage(stage_id)
+
+            # Accept only "true" `False` (not `None` which means skipped).
+            if stage_status == False:
+                logging.debug(self.get_desc_coords_string() + ' broken at ' + stage_id)
+                is_broken = True
+                break
+
+        if not is_broken:
+            logging.debug(self.get_desc_coords_string() + ' is fully completed')
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_desc_coords_string(
+        self,
+    ):
+        """
+        Get string of coordinates within report.
+
+        This generic function is useful to indicate location
+        of the descriptor in report.
+        """
+
+        desc_coords_string = ''
+        for desc_coord_name in self.desc_coords_order:
+            if desc_coord_name in self.desc_coords:
+                desc_coords_string += desc_coord_name + ' = ' + self.desc_coords[desc_coord_name] + ': '
+            else:
+                desc_coords_string += desc_coord_name + ': '
+
+        return desc_coords_string
+
+    #--------------------------------------------------------------------------
+    #
+
+#------------------------------------------------------------------------------
+#
+
+class ArtifactDescriptor(ItemDescriptor):
+
+    #--------------------------------------------------------------------------
+    #
+
+    def __init__(
+        self,
+        report_data,
+        artifact_key,
+        artifact_descriptor,
+    ):
+        ItemDescriptor.__init__(
+            self,
+            report_data,
+            data_item = artifact_descriptor,
+        )
+
+        self.desc_coords_order = [
+            'artifact_descriptors',
+            'artifact_key',
+        ]
+
+        self.desc_coords = {
+            'artifact_key': artifact_key,
+        }
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_inited(
+        self,
+    ):
+        logging.critical('NOT IMPLEMENTED')
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_loaded(
+        self,
+    ):
+        logging.critical('NOT IMPLEMENTED')
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_verified(
+        self,
+    ):
+        logging.critical('NOT IMPLEMENTED')
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
+#------------------------------------------------------------------------------
+#
+
+class PomDescriptor(ItemDescriptor):
+
+    #--------------------------------------------------------------------------
+    #
+
+    def __init__(
+        self,
+        report_data,
+        repo_id,
+        pom_rel_path,
+        pom_file,
+    ):
+        ItemDescriptor.__init__(
+            self,
+            report_data,
+            data_item = pom_file,
+        )
+
+        self.desc_coords_order = [
+            'pom_files',
+            'repo_id',
+            'pom_rel_path',
+        ]
+
+        self.desc_coords = {
+            'repo_id': repo_id,
+            'pom_rel_path': pom_rel_path,
+        }
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_inited(
+        self,
+    ):
+        logging.critical('NOT IMPLEMENTED')
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_loaded(
+        self,
+    ):
+        logging.critical('NOT IMPLEMENTED')
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_verified(
+        self,
+    ):
+        logging.critical('NOT IMPLEMENTED')
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
+###############################################################################
+#
+
+def associate_report_data_item_descriptors(
+    report_data,
+):
+    item_descriptors = []
+
+    # Loop through unprocessed `artifact_descriptor`.
+    for artifact_key in report_data['artifact_descriptors'].keys():
+        logging.debug('artifact_key: ' + str(artifact_key))
+
+        artifact_descriptor = report_data['artifact_descriptors'][artifact_key]
+
+        item_descriptor = ArtifactDescriptor(
+            report_data,
+            artifact_key,
+            artifact_descriptor,
+        )
+        item_descriptors.append(item_descriptor)
+
+        logging.debug(item_descriptor.get_desc_coords_string() + 'associated')
+
+    # Loop through unprocessed `pom_files`.
+    for repo_id in report_data['pom_files'].keys():
+        logging.debug('repo_id: ' + str(repo_id))
+
+        pom_rel_paths = report_data['pom_files'][repo_id]
+
+        for pom_rel_path in pom_rel_paths.keys():
+            logging.debug('pom_rel_path: ' + str(pom_rel_path))
+
+            pom_file = pom_rel_paths[pom_rel_path]
+
+            # TODO: Rename `pom_file` into `pom_descriptor`.
+            item_descriptor = PomDescriptor(
+                report_data,
+                repo_id,
+                pom_rel_path,
+                pom_file,
+            )
+            item_descriptors.append(item_descriptor)
+
+        logging.debug(item_descriptor.get_desc_coords_string() + 'associated')
+
+    return item_descriptors
+
+#------------------------------------------------------------------------------
+#
+
+def detect_progressed_descriptors(item_descriptors):
+
+    is_progressed = True
+    for item_descriptor in item_descriptors:
+        logging.debug(item_descriptor.get_desc_coords_string() + 'is_progressed = ' + str(item_descriptor.is_field_true('is_progressed')))
+        if not item_descriptor.is_field_true('is_progressed'):
+            is_progressed = False
+            break
+
+    return is_progressed
+
+###############################################################################
+#
+
+def get_incremental_report_wrapper(
+    context,
+):
+
+    salt_pillar = load_yaml_file(
+        context.input_salt_pillar_yaml_path,
+    )
+
+    all_pom_files_per_repo = load_yaml_file(
+        context.input_all_pom_files_per_repo_yaml_path,
+    )
+
+    # If no report exists yet, create it.
+    logging.debug('input_incremental_report_yaml_path: ' + str(context.input_incremental_report_yaml_path))
+    if not os.path.exists(context.input_incremental_report_yaml_path):
+        open(context.input_incremental_report_yaml_path, 'a').close()
+
+    report_data = get_incremental_report(
+        salt_pillar,
+        all_pom_files_per_repo,
+        context.output_all_effective_poms_per_repo_dir,
+        context.input_incremental_report_yaml_path,
+        context.output_incremental_report_yaml_path,
+    )
+
+    return report_data['overall_result']
+
+#------------------------------------------------------------------------------
+#
+
+def get_incremental_report(
+    salt_pillar,
+    all_pom_files_per_repo,
+    output_all_effective_poms_per_repo_dir,
+    input_incremental_report_yaml_path,
+    output_incremental_report_yaml_path,
+):
+
+    # Load initial report.
+    report_data = load_yaml_file(
+        input_incremental_report_yaml_path,
+    )
+
+    # Initialize `report_data` object.
+    if not isinstance(report_data, dict):
+        # Overwrite whatever is in `report_data` unless it is a dict.
+        report_data = {}
+
+    # Initialize top-level keys in `report_data`.
+    if 'pom_files' not in report_data:
+        # Initial data was captured during pom files search.
+        report_data['pom_files'] = all_pom_files_per_repo
+    if 'artifact_descriptors' not in report_data:
+        # Initial data is loaded directly from pillar.
+        report_data['artifact_descriptors'] = salt_pillar['system_maven_artifacts']['artifact_descriptors']
+    # Set initial `overall_result` is true
+    # (regardless of result in previous iteration)
+    # because it is about to be recomputed.
+    report_data['overall_result'] = True
+
+    # Associate specific descriptors
+    # (either `pom_file` or `artifact_descriptor`).
+    item_descriptors = associate_report_data_item_descriptors(report_data)
+
+    # Save initial report.
+    save_yaml_file(
+        report_data,
+        output_incremental_report_yaml_path,
+    )
+
+    # Loop while there are no more progress detected
+    # (either `pom_file` or `artifact_descriptor`).
+    progress_detected = True
+    while progress_detected:
+
+        # Process each `item_descriptor` incrementally saving data.
+        for item_descriptor in item_descriptors:
+
+            item_descriptor.process_all_stages()
+
+            logging.debug(item_descriptor.get_desc_coords_string() + 'saving incremental report')
+            save_yaml_file(
+                report_data,
+                output_incremental_report_yaml_path,
+            )
+
+        # Check if there is any progress to start again.
+        progress_detected = detect_progressed_descriptors(item_descriptors)
 
     # TODO: Additonal verifications.
     #
