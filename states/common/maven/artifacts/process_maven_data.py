@@ -1519,19 +1519,21 @@ def get_initial_report_data(
         'verification_result': True
     }
 
-    # Load pom files data.
-    load_pom_files_data(
-        salt_pillar,
-        report_data,
-        output_dir,
-    )
-
     # Load artifacts descriptors data.
-    load_artifact_descriptors_data(
-        salt_pillar,
-        report_data,
-        output_dir,
-    )
+    if True:
+        load_artifact_descriptors_data(
+            salt_pillar,
+            report_data,
+            output_dir,
+        )
+
+    # Load pom files data.
+    if True:
+        load_pom_files_data(
+            salt_pillar,
+            report_data,
+            output_dir,
+        )
 
     # Compute overall result.
     report_data['overall_result'] = get_overall_result(
