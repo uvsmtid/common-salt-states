@@ -69,8 +69,8 @@ then
         "${RUNTIME_DIR}"/salt_pillar.yaml \
         --input_all_pom_files_per_repo_yaml_path \
         "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
-        --output_all_effective_poms_per_repo_dir \
-        "${RUNTIME_DIR}"/all_effective_poms_per_repo_dir \
+        --output_pom_data_dir \
+        "${RUNTIME_DIR}"/output_pom_data_dir \
         --output_initial_report_data_yaml_path \
         "${RUNTIME_DIR}"/initial_report_data.yaml \
 
@@ -99,8 +99,8 @@ then
         "${RUNTIME_DIR}"/salt_pillar.yaml \
         --input_all_pom_files_per_repo_yaml_path \
         "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
-        --output_all_effective_poms_per_repo_dir \
-        "${RUNTIME_DIR}"/all_effective_poms_per_repo_dir \
+        --output_pom_data_dir \
+        "${RUNTIME_DIR}"/output_pom_data_dir \
         --input_incremental_report_yaml_path \
         "${RUNTIME_DIR}"/incremental_report.yaml \
         --output_incremental_report_yaml_path \

@@ -136,7 +136,7 @@ def build_parser(
     )
     def_value = None
     get_initial_report_data_p.add_argument(
-        '--output_all_effective_poms_per_repo_dir',
+        '--output_pom_data_dir',
         default = def_value,
     )
     def_value = None
@@ -196,7 +196,7 @@ def build_parser(
     )
     def_value = None
     get_incremental_report_p.add_argument(
-        '--output_all_effective_poms_per_repo_dir',
+        '--output_pom_data_dir',
         default = def_value,
     )
     def_value = None
@@ -908,6 +908,7 @@ def get_maven_coords(
 #
 
 def verify_maven_coords(
+    artifact_key,
     left_artifact,
     left_artifact_src,
     right_artifact,
@@ -925,13 +926,11 @@ def verify_maven_coords(
     ]:
         if left_artifact[maven_coord] != right_artifact[maven_coord]:
 
-            msg = 'Artifact `' + artifact_key + '` has different '
-            + maven_coord + ' = `' + left_artifact[maven_coord] + '` in ' + left_artifact_sr + ' '
-            + maven_coord + ' = `' + right_artifact[maven_coord] + '` in ' + right_artifact_src + ' '
+            msg = 'Artifact `' + artifact_key + '` has different ' + maven_coord + ' = `' + left_artifact[maven_coord] + '` in ' + left_artifact_src + ' ' + maven_coord + ' = `' + right_artifact[maven_coord] + '` in ' + right_artifact_src + ' '
 
             logging.error(msg)
-            auto_verification_target['auto_verification_keys']['verification_result'] = False
-            auto_verification_target['auto_verification_keys']['error_messages'] += [ msg ]
+            auto_verification_target['verification_result'] = False
+            auto_verification_target['error_messages'] += [ msg ]
 
 #------------------------------------------------------------------------------
 #
@@ -984,15 +983,15 @@ def detect_ignorable_pom_file(
     if pom_file_data['is_exception']:
         msg = 'Artifact `' + artifact_key + '` refers to excepted pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
         logging.error(msg)
-        artifact_descriptor['auto_verification_keys']['verification_result'] = False
-        artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
+        artifact_descriptor['verification_result'] = False
+        artifact_descriptor['error_messages'] += [ msg ]
         return True
 
     if not pom_file_data['is_tracked']:
         msg = 'Artifact `' + artifact_key + '` refers to untracked pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
         logging.error(msg)
-        artifact_descriptor['auto_verification_keys']['verification_result'] = False
-        artifact_descriptor['auto_verification_keys']['error_messages'] += [ msg ]
+        artifact_descriptor['verification_result'] = False
+        artifact_descriptor['error_messages'] += [ msg ]
         return True
 
 #------------------------------------------------------------------------------
@@ -1130,7 +1129,7 @@ def get_single_pom_maven_coordinates(
 def load_pom_files_data(
     salt_pillar,
     report_data,
-    output_dir,
+    output_pom_data_dir,
 ):
 
     # Verify data from pom to descriptors.
@@ -1168,7 +1167,7 @@ def load_pom_files_data(
             pom_file_data = get_effective_pom_file_data(
                 repo_id,
                 pom_file_data,
-                output_dir,
+                output_pom_data_dir,
             )
 
             # Load effective pom XML data.
@@ -1209,7 +1208,7 @@ def load_pom_files_data(
                 salt_pillar,
                 repo_id,
                 pom_rel_path,
-                output_dir,
+                output_pom_data_dir,
             )
             pom_file_data['maven_dependency_list'] = dependency_items
 
@@ -1221,7 +1220,7 @@ def load_pom_files_data(
 def load_artifact_descriptors_data(
     salt_pillar,
     report_data,
-    output_dir,
+    output_pom_data_dir,
 ):
 
     # Verify data from descriptors to pom.
@@ -1283,7 +1282,7 @@ def load_artifact_descriptors_data(
             pom_file_data = get_effective_pom_file_data(
                 repo_id,
                 pom_file_data,
-                output_dir,
+                output_pom_data_dir,
             )
 
             # Load effective pom XML data.
@@ -1309,7 +1308,7 @@ def load_dependency_list_data(
     salt_pillar,
     repo_id,
     pom_rel_path,
-    output_dir,
+    output_pom_data_dir,
 ):
 
     pom_abs_path = os.path.join(
@@ -1324,11 +1323,11 @@ def load_dependency_list_data(
     logging.debug('pom_abs_path :' + str(pom_abs_path))
     assert(os.path.isabs(pom_abs_path))
 
-    logging.debug('output_dir :' + str(output_dir))
-    assert(os.path.isabs(output_dir))
+    logging.debug('output_pom_data_dir :' + str(output_pom_data_dir))
+    assert(os.path.isabs(output_pom_data_dir))
 
     output_dependency_list_txt_path = os.path.join(
-        output_dir,
+        output_pom_data_dir,
         repo_id,
         'dependency_list.txt',
     )
@@ -1446,18 +1445,18 @@ def get_overall_result(
     report_data,
 ):
 
-    # If any verification result is false, overall result is false.
+    # If any `last_stage_result` is false, overall result is false.
     overall_result = True
     total_counter = 0
     failed_conter = 0
-    for verification_result in get_key_values('verification_result', report_data):
+    for verification_result in get_key_values('last_stage_result', report_data):
         total_counter += 1
         if not verification_result:
             overall_result = False
             failed_conter += 1
 
     if not overall_result:
-        logging.error('get_overall_result: FAILED out of TOTAL: ' + str(failed_conter) + ' out of ' + str(total_counter))
+        logging.error('last_stage_result: FAILED out of TOTAL: ' + str(failed_conter) + ' out of ' + str(total_counter))
 
     return overall_result
 
@@ -1467,11 +1466,12 @@ def get_overall_result(
 def get_effective_pom_file_data(
     repo_id,
     pom_file_data,
-    output_dir,
+    output_pom_data_dir,
 ):
 
+    logging.debug('output_pom_data_dir: ' + str(output_pom_data_dir))
     effective_pom_abs_path = os.path.join(
-        output_dir,
+        output_pom_data_dir,
         repo_id,
         pom_file_data['relative_path'],
     )
@@ -1511,7 +1511,7 @@ def get_initial_report_data_wrapper(
     initial_report_data = get_initial_report_data(
         salt_pillar,
         all_pom_files_per_repo,
-        context.output_all_effective_poms_per_repo_dir,
+        context.output_pom_data_dir,
     )
 
     save_yaml_file(
@@ -1527,25 +1527,25 @@ def get_initial_report_data_wrapper(
 def get_initial_report_data(
     salt_pillar,
     all_pom_files_per_repo,
-    output_all_effective_poms_per_repo_dir,
+    output_pom_data_dir,
 ):
 
     # Root directory for effective pom files (in current dir).
-    output_dir = output_all_effective_poms_per_repo_dir
-    if not os.path.isabs(output_dir):
-        output_dir = os.path.join(
+    output_pom_data_dir = output_pom_data_dir
+    if not os.path.isabs(output_pom_data_dir):
+        output_pom_data_dir = os.path.join(
             os.getcwd(),
-            output_dir,
+            output_pom_data_dir,
         )
 
     # NOTE: Make sure output directory for effective pom files is absolute
     #       to avoid Maven writting effective pom files into subdirectories
     #       of original ones.
-    assert(os.path.isabs(output_dir))
-    logging.debug('output_dir: ' + str(output_dir))
+    assert(os.path.isabs(output_pom_data_dir))
+    logging.debug('output_pom_data_dir: ' + str(output_pom_data_dir))
 
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if not os.path.exists(output_pom_data_dir):
+        os.makedirs(output_pom_data_dir)
 
     # Initialize report object.
     report_data = {
@@ -1564,7 +1564,7 @@ def get_initial_report_data(
         load_artifact_descriptors_data(
             salt_pillar,
             report_data,
-            output_dir,
+            output_pom_data_dir,
         )
 
     # Load pom files data.
@@ -1572,7 +1572,7 @@ def get_initial_report_data(
         load_pom_files_data(
             salt_pillar,
             report_data,
-            output_dir,
+            output_pom_data_dir,
         )
 
     # Compute overall result.
@@ -1682,18 +1682,23 @@ def verify_referential_integrity_pom_file_to_artifact_descriptors(
                     #       also provides transitive dependencies.
                     # TODO: Should we check if it is really a transitive
                     #       dependency or error?
-                    dependency_data['auto_verification_keys']['warning_messages'] += [ msg ]
+                    dependency_data['warning_messages'] += [ msg ]
                 else:
                     # Verify Maven Coordinates with each
                     # XML entry corresponding to `artifact_key`.
+                    overall_verification_result = True
                     for xpath_key in pom_file_data['xml_referenced_dependencies'][artifact_key].keys():
-                        verify_maven_coords(
+                        verification_result = verify_maven_coords(
+                            artifact_key,
                             dependency_data,
                             'maven_dependency_list',
                             pom_file_data['xml_referenced_dependencies'][artifact_key][xpath_key],
                             'xml_referenced_dependencies',
                             dependency_data,
                         )
+                        if not verification_result:
+                            overall_verification_result = False
+                    return overall_verification_result
 
 #------------------------------------------------------------------------------
 #
@@ -1766,7 +1771,8 @@ def verify_referential_integrity_artifact_descriptors_to_pom_file(
             )
             pom_file_maven_coords = artifact_descriptor['pom_data']['maven_coordinates']
 
-            verify_maven_coords(
+            return verify_maven_coords(
+                artifact_key,
                 artifact_maven_coords,
                 'artifact_descriptors',
                 pom_file_maven_coords,
@@ -1841,6 +1847,12 @@ class ItemDescriptor:
         'verified',
     ]
 
+    # Shared Salt pillar among all objects.
+    salt_pillar = None
+
+    # Shared output directory.
+    output_pom_data_dir = None
+
     # Shared report among all objects.
     report_data = None
 
@@ -1852,15 +1864,30 @@ class ItemDescriptor:
 
     def __init__(
         self,
+        salt_pillar,
+        output_pom_data_dir,
         report_data,
-        data_item
+        data_item,
     ):
 
+        self.salt_pillar = salt_pillar
+        self.output_pom_data_dir = output_pom_data_dir
         self.report_data = report_data
         self.data_item = data_item
 
         # Descriptor coordinates in `report_data`.
         self.desc_coords = None
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_inited(
+        self,
+    ):
+        self.data_item['error_messages'] = []
+        self.data_item['warning_messages'] = []
+        self.data_item['info_messages'] = []
+        return True
 
     #--------------------------------------------------------------------------
     #
@@ -1881,10 +1908,12 @@ class ItemDescriptor:
         self,
         field_name,
     ):
+        logging.debug(self.get_desc_coords_string() + 'check field ' + field_name)
         assert(isinstance(self.data_item, dict))
 
         if field_name not in self.data_item:
             # Initialize field.
+            logging.debug(self.get_desc_coords_string() + 'init field ' + field_name)
             self.data_item[field_name] = False
 
         assert(isinstance(self.data_item[field_name], types.BooleanType))
@@ -1920,9 +1949,15 @@ class ItemDescriptor:
             # NOTE: Function already "remembers" its object
             #       (no need for `self` argument).
             function_object = getattr(self, function_name)
+            logging.debug('function_object: ' + str(function_object))
             stage_status = function_object()
 
-            # Record status.
+            # Record status boolean values.
+            if stage_status:
+                stage_status = True
+            else:
+                stage_status = False
+
             self.set_field(field_name, stage_status)
             self.set_field('last_stage_result', stage_status)
 
@@ -1955,12 +1990,12 @@ class ItemDescriptor:
 
             # Accept only "true" `False` (not `None` which means skipped).
             if stage_status == False:
-                logging.debug(self.get_desc_coords_string() + ' broken at ' + stage_id)
+                logging.debug(self.get_desc_coords_string() + 'broken at ' + stage_id)
                 is_broken = True
                 break
 
         if not is_broken:
-            logging.debug(self.get_desc_coords_string() + ' is fully completed')
+            logging.debug(self.get_desc_coords_string() + 'is fully completed')
 
     #--------------------------------------------------------------------------
     #
@@ -1997,12 +2032,16 @@ class ArtifactDescriptor(ItemDescriptor):
 
     def __init__(
         self,
+        salt_pillar,
+        output_pom_data_dir,
         report_data,
         artifact_key,
         artifact_descriptor,
     ):
         ItemDescriptor.__init__(
             self,
+            salt_pillar,
+            output_pom_data_dir,
             report_data,
             data_item = artifact_descriptor,
         )
@@ -2019,19 +2058,76 @@ class ArtifactDescriptor(ItemDescriptor):
     #--------------------------------------------------------------------------
     #
 
-    def get_inited(
-        self,
-    ):
-        logging.critical('NOT IMPLEMENTED')
-        return True
-
-    #--------------------------------------------------------------------------
-    #
-
     def get_loaded(
         self,
     ):
-        logging.critical('NOT IMPLEMENTED')
+
+        salt_pillar = self.salt_pillar
+        output_pom_data_dir = self.output_pom_data_dir
+        artifact_descriptor = self.data_item
+        artifact_key = self.desc_coords['artifact_key']
+        report_data = self.report_data
+
+        if not artifact_descriptor['used']:
+            logging.warning('Artifact descriptor is not used: ' + str(artifact_key))
+            return True
+
+        # Only internal artifacts are supposed to have
+        # `repository_id` and `pom_relative_path` keys
+        # (artifacts which are built from sources in project repositories).
+        # TODO: Add reference to docs.
+        if artifact_descriptor['source_type'] in [
+            'available-closed',
+            'modified-open',
+        ]:
+
+            repo_id = artifact_descriptor['repository_id']
+            pom_rel_path = artifact_descriptor['pom_relative_path']
+
+            # Get initial pom file info.
+            pom_file_data = get_pom_file_data(
+                repo_id,
+                pom_rel_path,
+                salt_pillar,
+            )
+
+            if 'auto_verification_keys' not in pom_file_data:
+                pom_file_data['auto_verification_keys'] = {
+                    'verification_result': True,
+                    'error_messages': [],
+                    'warning_messages': [],
+                }
+
+            if detect_ignorable_pom_file(
+                repo_id,
+                pom_rel_path,
+                pom_file_data,
+                artifact_descriptor,
+                artifact_key,
+            ):
+                return True
+
+            # Generate effective pom file.
+            pom_file_data = get_effective_pom_file_data(
+                repo_id,
+                pom_file_data,
+                output_pom_data_dir,
+            )
+
+            # Load effective pom XML data.
+            single_effective_pom_data = load_xml_file(
+                pom_file_data['effective_absolute_path'],
+            )
+
+            # Get Maven Coordinates.
+            maven_coords = get_single_pom_maven_coordinates(
+                single_effective_pom_data,
+            )
+            pom_file_data['maven_coordinates'] = maven_coords
+
+            # Record data loaded from pom into artifact descriptor.
+            artifact_descriptor['pom_data'] = pom_file_data
+
         return True
 
     #--------------------------------------------------------------------------
@@ -2040,7 +2136,77 @@ class ArtifactDescriptor(ItemDescriptor):
     def get_verified(
         self,
     ):
-        logging.critical('NOT IMPLEMENTED')
+
+        artifact_descriptor = self.data_item
+        artifact_key = self.desc_coords['artifact_key']
+        report_data = self.report_data
+
+        if not artifact_descriptor['used']:
+            logging.debug('Skip unused artifact: ' + str(artifact_key))
+            return True
+
+        # Only internal artifacts are supposed to have
+        # `repository_id` and `pom_relative_path` keys
+        # (artifacts which are built from sources in project repositories).
+        # TODO: Add reference to docs.
+        if artifact_descriptor['source_type'] in [
+            'available-closed',
+            'modified-open',
+        ]:
+
+            repo_id = artifact_descriptor['repository_id']
+            pom_rel_path = artifact_descriptor['pom_relative_path']
+
+            if repo_id not in report_data['pom_files']:
+                msg = 'Artifact `' + artifact_key + '` refers to non-existing repository id `' + repo_id + '`'
+                logging.error(msg)
+                artifact_descriptor['error_messages'] += [ msg ]
+                return False
+
+            if pom_rel_path not in report_data['pom_files'][repo_id]:
+                msg = 'Artifact `' + artifact_key + '` refers to non-existing pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
+                logging.error(msg)
+                artifact_descriptor['verification_result'] = False
+                artifact_descriptor['error_messages'] += [ msg ]
+                return False
+
+            # NOTE: There are two pom file information:
+            #       - one is loaded from pom files searched automatically
+            #       - one is loaded from pom files declared in artifact descriptor
+            #       The following verification is done
+            pom_file_data = report_data['pom_files'][repo_id][pom_rel_path]
+
+            if detect_ignorable_pom_file(
+                repo_id,
+                pom_rel_path,
+                pom_file_data,
+                artifact_descriptor,
+                artifact_key,
+            ):
+                return True
+
+            # Increment reference counter.
+            if 'reference_counter' not in pom_file_data:
+                pom_file_data['reference_counter'] = 0
+            pom_file_data['reference_counter'] += 1
+
+            # Verify Maven Coordinates
+
+            artifact_maven_coords = get_maven_coords(
+                artifact_key,
+                artifact_descriptor['current_version'],
+            )
+            pom_file_maven_coords = artifact_descriptor['pom_data']['maven_coordinates']
+
+            return verify_maven_coords(
+                artifact_key,
+                artifact_maven_coords,
+                'artifact_descriptors',
+                pom_file_maven_coords,
+                'pom file of artifact_descriptors',
+                artifact_descriptor,
+            )
+
         return True
 
     #--------------------------------------------------------------------------
@@ -2056,6 +2222,8 @@ class PomDescriptor(ItemDescriptor):
 
     def __init__(
         self,
+        salt_pillar,
+        output_pom_data_dir,
         report_data,
         repo_id,
         pom_rel_path,
@@ -2063,6 +2231,8 @@ class PomDescriptor(ItemDescriptor):
     ):
         ItemDescriptor.__init__(
             self,
+            salt_pillar,
+            output_pom_data_dir,
             report_data,
             data_item = pom_file,
         )
@@ -2077,15 +2247,6 @@ class PomDescriptor(ItemDescriptor):
             'repo_id': repo_id,
             'pom_rel_path': pom_rel_path,
         }
-
-    #--------------------------------------------------------------------------
-    #
-
-    def get_inited(
-        self,
-    ):
-        logging.critical('NOT IMPLEMENTED')
-        return True
 
     #--------------------------------------------------------------------------
     #
@@ -2112,6 +2273,8 @@ class PomDescriptor(ItemDescriptor):
 #
 
 def associate_report_data_item_descriptors(
+    salt_pillar,
+    output_pom_data_dir,
     report_data,
 ):
     item_descriptors = []
@@ -2123,6 +2286,8 @@ def associate_report_data_item_descriptors(
         artifact_descriptor = report_data['artifact_descriptors'][artifact_key]
 
         item_descriptor = ArtifactDescriptor(
+            salt_pillar,
+            output_pom_data_dir,
             report_data,
             artifact_key,
             artifact_descriptor,
@@ -2144,6 +2309,8 @@ def associate_report_data_item_descriptors(
 
             # TODO: Rename `pom_file` into `pom_descriptor`.
             item_descriptor = PomDescriptor(
+                salt_pillar,
+                output_pom_data_dir,
                 report_data,
                 repo_id,
                 pom_rel_path,
@@ -2192,7 +2359,7 @@ def get_incremental_report_wrapper(
     report_data = get_incremental_report(
         salt_pillar,
         all_pom_files_per_repo,
-        context.output_all_effective_poms_per_repo_dir,
+        context.output_pom_data_dir,
         context.input_incremental_report_yaml_path,
         context.output_incremental_report_yaml_path,
     )
@@ -2205,7 +2372,7 @@ def get_incremental_report_wrapper(
 def get_incremental_report(
     salt_pillar,
     all_pom_files_per_repo,
-    output_all_effective_poms_per_repo_dir,
+    output_pom_data_dir,
     input_incremental_report_yaml_path,
     output_incremental_report_yaml_path,
 ):
@@ -2234,7 +2401,11 @@ def get_incremental_report(
 
     # Associate specific descriptors
     # (either `pom_file` or `artifact_descriptor`).
-    item_descriptors = associate_report_data_item_descriptors(report_data)
+    item_descriptors = associate_report_data_item_descriptors(
+        salt_pillar,
+        output_pom_data_dir,
+        report_data,
+    )
 
     # Save initial report.
     save_yaml_file(
