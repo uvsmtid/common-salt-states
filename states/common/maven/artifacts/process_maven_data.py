@@ -522,6 +522,32 @@ def get_salt_pillar(
 
     return salt_pillar
 
+#------------------------------------------------------------------------------
+#
+
+def maven_reactor_root_clean(
+    salt_pillar,
+):
+
+    pom_file_data = get_pom_file_data(
+        repo_id = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['repository_id'],
+        rel_pom_path = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['pom_relative_path'],
+        salt_pillar = salt_pillar,
+    )
+
+    assert(pom_file_data['is_tracked'])
+    assert(os.path.isabs(pom_file_data['absolute_path']))
+    assert(not os.path.isabs(pom_file_data['relative_path']))
+
+    exit_data = call_subprocess(
+        command_args = [
+            'mvn',
+            '-f',
+            pom_file_data['absolute_path'],
+            'clean',
+        ],
+    )
+
 ###############################################################################
 #
 
@@ -589,6 +615,10 @@ def get_all_pom_files_per_repo_wrapper(
 
     salt_pillar = load_yaml_file(
         context.input_salt_pillar_yaml_path
+    )
+
+    maven_reactor_root_clean(
+        salt_pillar,
     )
 
     all_pom_files_per_repo = get_all_pom_files_per_repo(
