@@ -538,6 +538,7 @@ def get_single_effective_pom(
 
     # NOTE: If output is not absolute, Maven writes it into subdirectory
     #       of original pom file.
+    logging.debug('output_single_effective_pom_file_path: ' + str(output_single_effective_pom_file_path))
     assert(os.path.isabs(output_single_effective_pom_file_path))
 
     exit_data = call_subprocess(
@@ -668,8 +669,13 @@ def check_if_pom_is_tracked(
         cwd = repo_path,
         raise_on_error = False,
     )
+
+    abs_pom_file = os.path.join(
+        repo_path,
+        rel_pom_path,
+    )
     if exit_data['code'] != 0:
-        logging.warning('this file is not tracked: ' + str(abs_pom_file))
+        logging.warning('This pom file is not tracked: ' + str(abs_pom_file))
         return False
 
     return True
@@ -876,7 +882,7 @@ def get_maven_coordinate(
 ):
 
     maven_coords = get_xpath_elements(dependency_elem, './x:' + coordinate_tag_name)
-    logging.debug(coordinate_tag_name + ': ' + str(maven_coords))
+    logging.debug('maven_coordianates: ' + coordinate_tag_name + ': ' + str(maven_coords))
     if len(maven_coords) == 0:
         logging.debug('dependency_elem.tag: ' + str(dependency_elem.tag))
         assert(dependency_elem.tag in ignore_dependency_tags)
@@ -1182,8 +1188,10 @@ def load_dependency_list_data(
             pom_rel_path,
         ),
     )
+    logging.debug('pom_abs_path :' + str(pom_abs_path))
     assert(os.path.isabs(pom_abs_path))
 
+    logging.debug('output_dir :' + str(output_dir))
     assert(os.path.isabs(output_dir))
 
     output_dependency_list_txt_path = os.path.join(
@@ -1195,8 +1203,8 @@ def load_dependency_list_data(
     # NOTE: Make sure output path is absolute
     #       to avoid Maven writting into subdirectories
     #       of Maven projects.
-    assert(os.path.isabs(output_dependency_list_txt_path))
     logging.debug('output_dependency_list_txt_path: ' + str(output_dependency_list_txt_path))
+    assert(os.path.isabs(output_dependency_list_txt_path))
 
     # Resolve (download) all dependencies locally so that next command
     # can work offline.
