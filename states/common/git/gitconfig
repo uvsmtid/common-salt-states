@@ -39,7 +39,8 @@
 
     # "File log"
     # In addition to `glog` follow file's history beyond renames.
-    flog = log --decorate=full --graph --stat --follow
+    # Option `-m` shows merge commits as well.
+    flog = log --decorate=full --graph --stat --follow -m
 
     # "Long log" - one line commit with graph.
     # Useful for high level log overview long back in history.
