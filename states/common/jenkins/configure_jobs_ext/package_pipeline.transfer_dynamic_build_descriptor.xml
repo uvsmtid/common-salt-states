@@ -122,7 +122,10 @@
 
         # NOTE: Without `add --all` `diff-index` will not notice untracked files.
         git add --all
+
+        # Display status.
         git status
+
         # Commit only if there are changes.
         # Ignore dirty content in submodules because there is no way to
         # commit them from top-level repo anyway (and all dirty content

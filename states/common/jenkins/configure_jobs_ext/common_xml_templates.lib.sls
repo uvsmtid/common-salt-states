@@ -642,15 +642,29 @@ test "${CURRENT_BRANCH}" != "HEAD"
 BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_id }}")"
 test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
+# NOTE: Without `add --all` `diff-index` will not notice untracked files.
 git add --all
+
+# Display status.
 git status
-# NOTE: If commit is made to `build_history_role`, there will new changes
-#       (for example, new `latest_commit_ids`) for `build_history_role`
-#       inside to-be-updated dyn build desc and for top level repository
-#       as new commits were made.
-#       These changes are ignored as they do not bear information which
-#       has to be restored from parent dyn build desc.
-git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
+
+# NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
+#       there are supposed to be no changes to commit.
+if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+then
+
+    # NOTE: If commit is made to `build_history_role`, there will new changes
+    #       (for example, new `latest_commit_ids`) for `build_history_role`
+    #       inside to-be-updated dyn build desc and for top level repository
+    #       as new commits were made.
+    #       These changes are ignored as they do not bear information which
+    #       has to be restored from parent dyn build desc.
+    git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
+
+else
+    # Fail if there are any changes.
+    git diff-index --ignore-submodules=all --exit-code HEAD
+fi
 
 cd -
 
