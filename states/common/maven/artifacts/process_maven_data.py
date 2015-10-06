@@ -1041,6 +1041,14 @@ def load_dependency_list_data(
             '-f',
             pom_abs_path,
             'dependency:list',
+            # NOTE: At the moment only direct (not transitive)
+            #       dependencies are included.
+            #       If transitive dependencies are included,
+            #       verification with XML references fails (because
+            #       XML references are direct dependencies by definition).
+            # TODO: Create another list with transitive dependencies
+            #       which won't be checked agains references in XML file.
+            '-DexcludeTransitive=true',
             '-DoutputFile=' + output_dependency_list_txt_path,
         ],
     )
@@ -2157,6 +2165,15 @@ def get_incremental_report(
     # Verify that pom file is part of repository it is claimed to be.
     # For example, avoid searching top level repository result in list
     # of pom files pertaining to its submodules.
+    #
+    #--------------------------------------------------------------------------
+    #
+    # -
+    # Add list of transitive dependencies (default for `depenencies:list`).
+    # At the moment transitive dependencies are exluded for XML references
+    # to be able to match all (non-transitive) dependencies.
+    # However, it is good to have list of all dependencies for pom file
+    # inside `artifact_descriptors`.
     #
     #--------------------------------------------------------------------------
     # One-to-one pom-artifact match for internal components
