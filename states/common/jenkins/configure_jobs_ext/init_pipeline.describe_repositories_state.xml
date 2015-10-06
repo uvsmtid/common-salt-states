@@ -131,18 +131,30 @@
         LATEST_BRANCH="${REQUIRED_BRANCH}"
         LATEST_COMMIT_ID="${REQUIRED_COMMIT_ID}"
 
-        echo "$RECOVERY_BRANCH"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}"
-        echo "$RECOVERY_COMMIT_ID"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_commit_ids:{{ repo_name }}"
-        echo "$INITIAL_BRANCH"           | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
-        echo "$INITIAL_COMMIT_ID"        | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
-        echo "$INITIAL_SHORT_COMMIT_ID"  | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_short_commit_ids:{{ repo_name }}"
-        echo "$REQUIRED_BRANCH"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_branches:{{ repo_name }}"
-        echo "$REQUIRED_COMMIT_ID"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_commit_ids:{{ repo_name }}"
-        echo "$LATEST_BRANCH"            | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "latest_branches:{{ repo_name }}"
-        echo "$LATEST_COMMIT_ID"         | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}"
-        echo "$BUILD_BRANCH"             | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}"
-        echo "$UNTRACKED_ITEMS"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}"
-        echo "$MODIFIED_ITEMS"           | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}"
+        # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
+        #       there is nothing to do - operation stays read-only.
+        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        then
+
+            echo "$RECOVERY_BRANCH"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}"
+            echo "$RECOVERY_COMMIT_ID"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_commit_ids:{{ repo_name }}"
+            echo "$INITIAL_BRANCH"           | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_branches:{{ repo_name }}"
+            echo "$INITIAL_COMMIT_ID"        | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_commit_ids:{{ repo_name }}"
+            echo "$INITIAL_SHORT_COMMIT_ID"  | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "initial_short_commit_ids:{{ repo_name }}"
+            echo "$REQUIRED_BRANCH"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_branches:{{ repo_name }}"
+            echo "$REQUIRED_COMMIT_ID"       | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_commit_ids:{{ repo_name }}"
+            echo "$LATEST_BRANCH"            | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "latest_branches:{{ repo_name }}"
+            echo "$LATEST_COMMIT_ID"         | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}"
+            echo "$BUILD_BRANCH"             | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}"
+            echo "$UNTRACKED_ITEMS"          | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "untracked_items:{{ repo_name }}"
+            echo "$MODIFIED_ITEMS"           | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "modified_items:{{ repo_name }}"
+
+        else
+
+            # Skip any dynamic build descriptor changes.
+            true
+
+        fi
 
         cd -
 

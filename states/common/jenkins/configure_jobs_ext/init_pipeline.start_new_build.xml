@@ -33,22 +33,59 @@
 
         #######################################################################
         # Check that specified author is able to commit in every repository.
+        # In addition to that, verify other states of repositories
+        # depending on build type.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         cd "${REPO_PATH}"
-        TEMP_FILE_NAME="${SALT_PROFILE_NAME}-$(date "+%Y-%m-%dT%H-%M-%S.%N")"
-        touch "${TEMP_FILE_NAME}"
-        git add "${TEMP_FILE_NAME}"
-        set +e
-        git commit --dry-run --author="${AUTO_COMMIT_GIT_AUTHOR_EMAIL}"
-        RET_VAL="${?}"
-        set -e
-        git reset "${TEMP_FILE_NAME}"
-        rm "${TEMP_FILE_NAME}"
-        test "${RET_VAL}" == "0"
+
+        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        then
+            # Check ability to commit by the specified author.
+            TEMP_FILE_NAME="${SALT_PROFILE_NAME}-$(date "+%Y-%m-%dT%H-%M-%S.%N")"
+            touch "${TEMP_FILE_NAME}"
+            git add "${TEMP_FILE_NAME}"
+            set +e
+            git commit --dry-run --author="${AUTO_COMMIT_GIT_AUTHOR_EMAIL}"
+            RET_VAL="${?}"
+            set -e
+            git reset "${TEMP_FILE_NAME}"
+            rm "${TEMP_FILE_NAME}"
+            test "${RET_VAL}" == "0"
+        else
+            # In case of `RESTORE_PARENT_BUILD_ONLY`,
+            # there should be nothing to commit.
+            true
+        fi
+
+        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        then
+            # There is nothing to do for normal build.
+            # Any state of repositories is possible -
+            # restore points will be used.
+            # Display status.
+            git status
+        else
+            # Make sure repositories have no local modifications
+            # in case of `RESTORE_PARENT_BUILD_ONLY`.
+
+            # NOTE: Without `add --all` `diff-index` will not notice untracked files.
+            git add --all
+
+            # Display status.
+            git status
+
+            # Only "clean and dry" repositories are allowed.
+            # (except new commits in submodules).
+            git diff-index --ignore-submodules=all --exit-code HEAD
+
+            # Rest whatever was done by `git add`.
+            git reset
+        fi
+
         cd -
 
         {% endfor %}
@@ -58,6 +95,7 @@
 
         if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
         then
+            # Initialize new build title.
             BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
             SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
             export BUILD_TITLE="${BUILD_TIMESTAMP}-{{ job_environ['job_name'] }}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-${BUILD_LABEL}"
@@ -217,27 +255,20 @@
         if [ "${PARENT_BUILD_TITLE}" != '_' ]
         then
 
-            # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
-            #       there is nothing to restore - the same branch is used.
-            if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
-            then
+            # Export (the latest) dynamic build descriptor from
+            # specified parent build title (branch).
+            # See:
+            #    http://stackoverflow.com/a/5324532/441652
+            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'dynamic_build_descriptor.yaml'
+            mv 'dynamic_build_descriptor.yaml' "${PARENT_DYN_BUILD_DESC_PATH}"
 
-                # Export (the latest) dynamic build descriptor from
-                # specified parent build title (branch).
-                # See:
-                #    http://stackoverflow.com/a/5324532/441652
-                git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x 'dynamic_build_descriptor.yaml'
-                mv 'dynamic_build_descriptor.yaml' "${PARENT_DYN_BUILD_DESC_PATH}"
-
-                {% if 'restore_artifacts_from_parent_build' in job_config %}
-                # Restore artifacts which might be used as a fingerprint
-                # to link all jobs together.
-                {% for restored_artifact in job_config['restore_artifacts_from_parent_build'] %}
-                git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x '{{ restored_artifact }}'
-                {% endfor %}
-                {% endif %}
-
-            fi
+            {% if 'restore_artifacts_from_parent_build' in job_config %}
+            # Restore artifacts which might be used as a fingerprint
+            # to link all jobs together.
+            {% for restored_artifact in job_config['restore_artifacts_from_parent_build'] %}
+            git archive --remote="${REPO_DYN_BUILD_DESC_REPO_PATH}" "${PARENT_BUILD_TITLE}":"${PARENT_BUILD_TITLE}" | tar -x '{{ restored_artifact }}'
+            {% endfor %}
+            {% endif %}
 
         fi
 
@@ -304,7 +335,15 @@ HEREDOC_MARKER
         # `build_history_role` repository.
         # This is needed to be able to specify current build as
         # parent build in the future.
-        cp "{{ job_config['initial_dynamic_build_descriptor'] }}" "${REPO_DYN_BUILD_DESC_REPO_PATH}/${BUILD_TITLE}"
+        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        then
+            cp "{{ job_config['initial_dynamic_build_descriptor'] }}" "${REPO_DYN_BUILD_DESC_REPO_PATH}/${BUILD_TITLE}"
+        else
+            # In case of `RESTORE_PARENT_BUILD_ONLY`,
+            # do not copy anything (which makes `build_history_role` dirty).
+            # There is no need to rebuild `checkout_pipeline` builds.
+            true
+        fi
 
         {% endif %}
 
