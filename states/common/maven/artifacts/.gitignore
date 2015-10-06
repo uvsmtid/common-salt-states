@@ -5,9 +5,8 @@
 # Intermediate output files.
 /salt_pillar.yaml
 /all_pom_files_per_repo.yaml
-/all_effective_poms_per_repo_dir/
-/initial_report_data.yaml
-/verification_report.yaml
+/output_pom_data_dir/
+/incremental_report.yaml
 
 ###############################################################################
 # EOF

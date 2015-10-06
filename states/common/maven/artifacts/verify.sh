@@ -14,6 +14,15 @@ set -u
 # Debug.
 set -x
 
+# Set proper Java version.
+# TODO: Do not hardcode it - get from Salt pillar.
+export JAVA_HOME='/usr/java/jdk1.7.0_71'
+export PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Set Maven memory options.
+# TODO: Do not hardcode it - get from Salt pillar.
+export MAVEN_OPTS="-Xmx2048m -XX:MaxPermSize=512m"
+
 # Get directory the script is in.
 SCRIPT_DIR="$( dirname "${0}" )"
 if [ "${SCRIPT_DIR:0:1}" == '/' ]
@@ -50,33 +59,22 @@ then
 
 fi
 
-# Get initial report data.
+# Increment report.
 if true
 then
 
     "${RUNTIME_DIR}"/process_maven_data.py \
-        c get_initial_report_data \
+        c get_incremental_report \
         --input_salt_pillar_yaml_path \
         "${RUNTIME_DIR}"/salt_pillar.yaml \
         --input_all_pom_files_per_repo_yaml_path \
         "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
-        --output_all_effective_poms_per_repo_dir \
-        "${RUNTIME_DIR}"/all_effective_poms_per_repo_dir \
-        --output_initial_report_data_yaml_path \
-        "${RUNTIME_DIR}"/initial_report_data.yaml \
-
-fi
-
-# Get verification report.
-if true
-then
-
-    "${RUNTIME_DIR}"/process_maven_data.py \
-        c get_verification_report \
-        --input_initial_report_data_yaml_path \
-        "${RUNTIME_DIR}"/initial_report_data.yaml \
-        --output_verification_report_yaml_path \
-        "${RUNTIME_DIR}"/verification_report.yaml \
+        --output_pom_data_dir \
+        "${RUNTIME_DIR}"/output_pom_data_dir \
+        --input_incremental_report_yaml_path \
+        "${RUNTIME_DIR}"/incremental_report.yaml \
+        --output_incremental_report_yaml_path \
+        "${RUNTIME_DIR}"/incremental_report.yaml \
 
 fi
 
