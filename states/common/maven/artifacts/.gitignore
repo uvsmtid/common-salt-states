@@ -6,8 +6,6 @@
 /salt_pillar.yaml
 /all_pom_files_per_repo.yaml
 /output_pom_data_dir/
-/initial_report_data.yaml
-/verification_report.yaml
 /incremental_report.yaml
 
 ###############################################################################

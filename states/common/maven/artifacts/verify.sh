@@ -59,36 +59,6 @@ then
 
 fi
 
-# Get initial report data.
-if true
-then
-
-    "${RUNTIME_DIR}"/process_maven_data.py \
-        c get_initial_report_data \
-        --input_salt_pillar_yaml_path \
-        "${RUNTIME_DIR}"/salt_pillar.yaml \
-        --input_all_pom_files_per_repo_yaml_path \
-        "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
-        --output_pom_data_dir \
-        "${RUNTIME_DIR}"/output_pom_data_dir \
-        --output_initial_report_data_yaml_path \
-        "${RUNTIME_DIR}"/initial_report_data.yaml \
-
-fi
-
-# Get verification report.
-if true
-then
-
-    "${RUNTIME_DIR}"/process_maven_data.py \
-        c get_verification_report \
-        --input_initial_report_data_yaml_path \
-        "${RUNTIME_DIR}"/initial_report_data.yaml \
-        --output_verification_report_yaml_path \
-        "${RUNTIME_DIR}"/verification_report.yaml \
-
-fi
-
 # Increment report.
 if true
 then
