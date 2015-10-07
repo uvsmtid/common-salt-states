@@ -761,7 +761,15 @@ esac
 ###############################################################################
 {% macro add_job_environment_variables(job_config, job_environ) %}
 
-    {% if 'job_environment_variables' in job_config %}
+    <!--
+        NOTE: Inject both `job_environment_variables` and `preset_build_parameters`.
+        In fact, they have the same purpose.
+        The only difference is that `preset_build_parameters` are propagated
+        from the first job in the pipepline to others through dedicated
+        shared properties file.
+    -->
+
+    {% if 'job_environment_variables' in job_config or 'preset_build_parameters' in job_config %}
 
     <EnvInjectBuilder plugin="envinject@1.91.3">
       <info>
