@@ -1735,6 +1735,9 @@ class PomDescriptor(ItemDescriptor):
         pom_rel_path,
         pom_file,
     ):
+
+        logging.debug('pom_file: ' + str(pom_file))
+
         ItemDescriptor.__init__(
             self,
             salt_pillar,
@@ -1992,25 +1995,29 @@ def associate_report_data_item_descriptors(
     # into (stale) `report_data`.
     # This steps allows removing `pom_files` from report to
     # get them refreshed from Salt pillar.
+
     for repo_id in all_pom_files_per_repo.keys():
         if repo_id not in report_data['pom_files']:
             report_data['pom_files'][repo_id] = {}
 
-        pom_rel_paths = all_pom_files_per_repo[repo_id]
-        for pom_rel_path in pom_rel_paths.keys():
+        pom_rel_paths = all_pom_files_per_repo[repo_id].keys()
+        for pom_rel_path in pom_rel_paths:
             if pom_rel_path not in report_data['pom_files'][repo_id]:
-                report_data['pom_files'][repo_id] = all_pom_files_per_repo[repo_id][pom_rel_path]
+                pom_file = all_pom_files_per_repo[repo_id][pom_rel_path]
+                logging.debug('reload pom_file: ' + str(pom_file))
+                report_data['pom_files'][repo_id][pom_rel_path] = pom_file
 
     # Loop through unprocessed `pom_files`.
     for repo_id in report_data['pom_files'].keys():
         logging.debug('repo_id: ' + str(repo_id))
 
-        pom_rel_paths = report_data['pom_files'][repo_id]
+        pom_rel_paths = report_data['pom_files'][repo_id].keys()
+        logging.debug('pom_rel_paths: ' + str(pom_rel_paths))
 
-        for pom_rel_path in pom_rel_paths.keys():
+        for pom_rel_path in pom_rel_paths:
             logging.debug('pom_rel_path: ' + str(pom_rel_path))
 
-            pom_file = pom_rel_paths[pom_rel_path]
+            pom_file = report_data['pom_files'][repo_id][pom_rel_path]
 
             # TODO: Rename `pom_file` into `pom_descriptor`.
             item_descriptor = PomDescriptor(
@@ -2023,7 +2030,7 @@ def associate_report_data_item_descriptors(
             )
             item_descriptors.append(item_descriptor)
 
-        logging.debug(item_descriptor.get_desc_coords_string() + 'associated')
+            logging.debug(item_descriptor.get_desc_coords_string() + 'associated')
 
     return item_descriptors
 
