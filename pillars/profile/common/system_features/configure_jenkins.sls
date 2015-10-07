@@ -361,6 +361,10 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
+                preset_build_parameters:
+                    # NOTE: This variable is `true` only in `checkout_pipeline`.
+                    RESTORE_PARENT_BUILD_ONLY: 'false'
+
                 build_parameters:
                     BUILD_LABEL:
                         parameter_description: |
@@ -1401,6 +1405,10 @@ system_features:
                     {% set job_template_id = 'init_pipeline.start_new_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
+                preset_build_parameters:
+                    # NOTE: This variable is `true` only in `checkout_pipeline`.
+                    RESTORE_PARENT_BUILD_ONLY: 'false'
+
                 build_parameters:
                     TARGET_PROFILE_NAME:
                         parameter_description: |
@@ -1724,6 +1732,10 @@ system_features:
                     {% set job_template_id = 'init_pipeline.start_new_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
+                preset_build_parameters:
+                    # NOTE: This variable is `true` only in `checkout_pipeline`.
+                    RESTORE_PARENT_BUILD_ONLY: 'false'
+
                 build_parameters:
                     RELEASE_TYPE:
                         parameter_description: |
@@ -1860,12 +1872,13 @@ system_features:
                 # NOTE: Instead of using `build_parameters`,
                 #       `checkout_pipeline` fixes values of environment
                 #       variables without user interface options.
-                job_environment_variables:
+                preset_build_parameters:
                     # If `TARGET_PROFILE_NAME` is empty, `SALT_PROFILE_NAME`
                     # is used - exactly what we want.
                     TARGET_PROFILE_NAME: ''
                     # Use `_` as no existing commits should be authored
-                    # by this invalid email value.
+                    # by this invalid email value. There are not commits
+                    # in this pipeline - they should fail.
                     AUTO_COMMIT_GIT_AUTHOR_EMAIL: '_'
                     # NOTE: This variable is the reason why this entire
                     #       `checkout_pipeline` exists.
@@ -1925,22 +1938,6 @@ system_features:
                     {% set job_template_id = 'init_pipeline.reset_previous_build' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
-                # NOTE: `job_environment_variables` from initial job
-                #       in the pipeline is not automatically propagated
-                #       into other jobs.
-                #       Only `build_parameters` behave this way at the moment.
-                #       Define required variables explicitly.
-                job_environment_variables:
-                    # If `TARGET_PROFILE_NAME` is empty, `SALT_PROFILE_NAME`
-                    # is used - exactly what we want.
-                    TARGET_PROFILE_NAME: ''
-                    # Use `_` as no existing commits should be authored
-                    # by this invalid email value.
-                    AUTO_COMMIT_GIT_AUTHOR_EMAIL: '_'
-                    # NOTE: This variable is the reason why this entire
-                    #       `checkout_pipeline` exists.
-                    RESTORE_PARENT_BUILD_ONLY: 'true'
-
             {% set job_template_id = 'checkout_pipeline.describe_repositories_state' %}
             73.{{ job_template_id }}:
 
@@ -1972,22 +1969,6 @@ system_features:
                     # NOTE: We reuse `init_pipeline.describe_repositories_state` template.
                     {% set job_template_id = 'init_pipeline.describe_repositories_state' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
-
-                # NOTE: `job_environment_variables` from initial job
-                #       in the pipeline is not automatically propagated
-                #       into other jobs.
-                #       Only `build_parameters` behave this way at the moment.
-                #       Define required variables explicitly.
-                job_environment_variables:
-                    # If `TARGET_PROFILE_NAME` is empty, `SALT_PROFILE_NAME`
-                    # is used - exactly what we want.
-                    TARGET_PROFILE_NAME: ''
-                    # Use `_` as no existing commits should be authored
-                    # by this invalid email value.
-                    AUTO_COMMIT_GIT_AUTHOR_EMAIL: '_'
-                    # NOTE: This variable is the reason why this entire
-                    #       `checkout_pipeline` exists.
-                    RESTORE_PARENT_BUILD_ONLY: 'true'
 
             {% set job_template_id = 'checkout_pipeline.create_build_branches' %}
             74.{{ job_template_id }}:
@@ -2023,22 +2004,6 @@ system_features:
                     # NOTE: We reuse `init_pipeline.create_build_branches` template.
                     {% set job_template_id = 'init_pipeline.create_build_branches' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
-
-                # NOTE: `job_environment_variables` from initial job
-                #       in the pipeline is not automatically propagated
-                #       into other jobs.
-                #       Only `build_parameters` behave this way at the moment.
-                #       Define required variables explicitly.
-                job_environment_variables:
-                    # If `TARGET_PROFILE_NAME` is empty, `SALT_PROFILE_NAME`
-                    # is used - exactly what we want.
-                    TARGET_PROFILE_NAME: ''
-                    # Use `_` as no existing commits should be authored
-                    # by this invalid email value.
-                    AUTO_COMMIT_GIT_AUTHOR_EMAIL: '_'
-                    # NOTE: This variable is the reason why this entire
-                    #       `checkout_pipeline` exists.
-                    RESTORE_PARENT_BUILD_ONLY: 'true'
 
         #######################################################################
         #
