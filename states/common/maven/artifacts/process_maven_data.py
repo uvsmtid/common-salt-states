@@ -516,6 +516,7 @@ def maven_reactor_root_clean(
         repo_id,
         pom_rel_path,
         salt_pillar,
+        None,
     )
 
     assert(pom_file_data['is_file'])
@@ -676,6 +677,7 @@ def get_pom_file_data(
     repo_id,
     pom_rel_path,
     salt_pillar,
+    item_descriptor,
 ):
 
     pom_file_data = {
@@ -700,7 +702,19 @@ def get_pom_file_data(
         pom_rel_path,
     )
     logging.debug('abs_pom_file: ' + str(abs_pom_file))
-    assert(os.path.exists(abs_pom_file))
+
+    # Check if file exists.
+    if not os.path.exists(abs_pom_file):
+        if item_descriptor:
+            msg = item_descriptor.get_desc_coords_string() + 'abs_pom_file does not exist: ' + str(abs_pom_file)
+            logging.error(msg)
+            item_descriptor.add_step_log(
+                'missing_abs_pom_file_\'' + repo_id + '\':\'' + pom_rel_path + '\'',
+                False,
+                msg,
+            )
+        return None
+
     pom_file_data['absolute_path'] = abs_pom_file
 
     # NOTE: The `isfile` check follows symlinks as required.
@@ -773,6 +787,7 @@ def get_all_pom_files_per_repo(
                 repo_id,
                 pom_rel_path,
                 salt_pillar,
+                None,
             )
 
         all_pom_files_per_repo[repo_id] = pom_files_per_repo
@@ -1420,6 +1435,7 @@ class ItemDescriptor:
                 break
 
         if not is_broken:
+            assert(self.get_descriptor_status() == True)
             logging.debug(self.get_desc_coords_string() + 'is fully completed')
 
         # Return whether there were any progress.
@@ -1596,7 +1612,17 @@ class ArtifactDescriptor(ItemDescriptor):
                 repo_id,
                 pom_rel_path,
                 salt_pillar,
+                self,
             )
+            if not pom_file_data:
+                msg = self.get_desc_coords_string() + 'pom data cannot be loaded: ' + str(pom_file_data)
+                logging.error(msg)
+                self.add_step_log(
+                    'is_pom_data_loaded',
+                    False,
+                    msg,
+                )
+                return False
 
             if self.is_ignorable_pom_file(
                 repo_id,
@@ -1605,7 +1631,7 @@ class ArtifactDescriptor(ItemDescriptor):
                 artifact_descriptor,
                 artifact_key,
             ):
-                return
+                return True
 
             # Generate effective pom file.
             pom_file_data = get_effective_pom_file_data(
