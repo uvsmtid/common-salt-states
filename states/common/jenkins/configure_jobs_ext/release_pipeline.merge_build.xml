@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
+
+  <builders>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import add_job_environment_variables with context %}
+    {{ add_job_environment_variables(job_config, job_environ) }}
+
+    <hudson.tasks.Shell>
+      <command>
+
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
+
+        #######################################################################
+        # Locate dynamic build descriptor.
+
+        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # Load additional macros.
+
+        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+
+        #######################################################################
+        #
+
+        # This job is supposed to store (i.g. upload) package.
+        # TODO: Implement
+        exit 0
+
+        #######################################################################
+        # Update dynamic build descriptor.
+
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # Script footer
+
+        {{ common_build_script_footer(job_config, job_environ) }}
+
+        #######################################################################
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+
+  <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+  </publishers>
+
+  <buildWrappers>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.7.2"/>
+  </buildWrappers>
+
+</project>
+
