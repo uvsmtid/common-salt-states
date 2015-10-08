@@ -1134,6 +1134,7 @@ def get_key_values(req_key_id, input_data):
         values_list = []
 
         if req_key_id in input_data.keys():
+            logging.debug('input_data: ' + str(input_data))
             # Get value for `req_key_id`.
             values_list = [ input_data[req_key_id] ]
 
@@ -1284,14 +1285,6 @@ class ItemDescriptor:
     def get_inited(
         self,
     ):
-
-        # Initialize `step_logs`.
-        self.add_step_log(
-            'init_step_logs',
-            True,
-            datetime.datetime.now(),
-        )
-
         return True
 
     #--------------------------------------------------------------------------
@@ -1337,21 +1330,25 @@ class ItemDescriptor:
 
         field_name = 'is_' + stage_id
 
-        return self.is_field_true(field_name)
+        stage_result = self.is_field_true(field_name)
+        logging.debug('is_stage_done(): ' + str(stage_result))
+        return stage_result
 
     #--------------------------------------------------------------------------
     #
 
-    def do_stage(
+    def progress_stage(
         self,
         stage_id,
     ):
         field_name = 'is_' + stage_id
         function_name = 'get_' + stage_id
 
-        # Never repeat completed stages.
-        stage_result = self.is_field_true(field_name)
-        if not stage_result:
+        previous_stage_result = self.is_field_true(field_name)
+        logging.debug('previous_stage_result: ' + str(previous_stage_result))
+
+        # Never repeat successfully completed stages.
+        if not previous_stage_result:
 
             # NOTE: Function already "remembers" its object
             #       (no need for `self` argument).
@@ -1359,29 +1356,27 @@ class ItemDescriptor:
             logging.debug('function_object: ' + str(function_object))
             function_object()
 
+            # We don't care what function returns.
+            # We get results of all steps -
+            # any failed step makes stage failed.
             stage_result = self.get_descriptor_status()
-
-            # Record status boolean values (not `None`).
-            if stage_result:
-                stage_result = True
-            else:
-                stage_result = False
+            logging.debug('stage_result: ' + str(stage_result))
 
             self.set_field(field_name, stage_result)
             self.set_field('last_stage_result', stage_result)
 
             if stage_result:
-                # New stage completed successfuly -
-                # indicate progress.
-                self.set_field('is_progressed', True)
                 logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` succeeded')
+                # It is both success and progress.
+                return True
             else:
                 logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` failed')
+                return False
 
-            return stage_result
-
-        logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` skipped as competed')
-        return None
+        else:
+            logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` skipped as successfully competed')
+            # Stage result has not changed - indicate no progress.
+            return False
 
     #--------------------------------------------------------------------------
     #
@@ -1420,23 +1415,15 @@ class ItemDescriptor:
                 del self.data_item[field_name]
 
         # Run through all stages.
-        is_broken = False
         for stage_id in self.stage_order:
-            stage_status = self.do_stage(stage_id)
+            stage_progressed = self.progress_stage(stage_id)
 
-            # If not `None`, the stage has executed (progressed).
-            if stage_status != None:
-                self.set_field('is_progressed', True)
+            self.set_field('is_progressed', stage_progressed)
 
-            # Accept only "true" `False` (not `None` which means skipped).
-            if stage_status == False:
-                logging.debug(self.get_desc_coords_string() + 'broken at `' + stage_id + '`')
-                is_broken = True
+            # Do not continue on failure (`False`).
+            if stage_progressed == False:
+                logging.error(self.get_desc_coords_string() + ': stuck at stage ' + str(stage_id))
                 break
-
-        if not is_broken:
-            assert(self.get_descriptor_status() == True)
-            logging.debug(self.get_desc_coords_string() + 'is fully completed')
 
         # Return whether there were any progress.
         return self.is_field_true('is_progressed')
@@ -1477,6 +1464,8 @@ class ItemDescriptor:
         ):
             if not step_result:
                 descriptor_status = False
+
+        logging.debug('get_descriptor_status(): ' + str(descriptor_status))
 
         return descriptor_status
 
@@ -1526,7 +1515,7 @@ class ItemDescriptor:
             msg = self.get_desc_coords_string() + 'artifact ' + artifact_key + '` refers to excepted pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
             logging.error(msg)
             self.add_step_log(
-                'pom_is_not_exception',
+                'pom_`' + str(repo_id) + '`:`' + str(pom_rel_path) + '`_is_not_exception',
                 False,
                 msg,
             )
@@ -1536,7 +1525,7 @@ class ItemDescriptor:
             msg = self.get_desc_coords_string() + 'artifact ' + artifact_key + '` refers to untracked pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
             logging.error(msg)
             self.add_step_log(
-                'pom_is_tracked',
+                'pom_`' + str(repo_id) + '`:`' + str(pom_rel_path) + '`_is_tracked',
                 False,
                 msg,
             )
@@ -1750,7 +1739,7 @@ class ArtifactDescriptor(ItemDescriptor):
                 artifact_descriptor,
                 artifact_key,
             ):
-                return True
+                return False
 
             # Generate effective pom file.
             pom_file_data = get_effective_pom_file_data(
@@ -1810,7 +1799,7 @@ class ArtifactDescriptor(ItemDescriptor):
                     False,
                     msg,
                 )
-                return
+                return False
 
             if pom_rel_path not in report_data['pom_files'][repo_id]:
                 msg = self.get_desc_coords_string() + 'artifact ' + artifact_key + '` refers to non-existing pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
@@ -1827,15 +1816,6 @@ class ArtifactDescriptor(ItemDescriptor):
             #       - one is loaded from pom files declared in artifact descriptor
             #       The following verification is done
             pom_file_data = report_data['pom_files'][repo_id][pom_rel_path]
-
-            if self.is_ignorable_pom_file(
-                repo_id,
-                pom_rel_path,
-                pom_file_data,
-                artifact_descriptor,
-                artifact_key,
-            ):
-                return
 
             # Increment reference counter.
             if 'reference_counter' not in pom_file_data:
@@ -1908,6 +1888,7 @@ class PomDescriptor(ItemDescriptor):
     def get_inited(
         self,
     ):
+
         func_result = True
 
         if not ItemDescriptor.get_inited(self):
@@ -2025,6 +2006,7 @@ class PomDescriptor(ItemDescriptor):
             report_data,
             artifact_key,
             dependency_data,
+            key_source,
         ):
 
             derived_artifact_key = get_artifact_key(
@@ -2037,7 +2019,7 @@ class PomDescriptor(ItemDescriptor):
                 msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + ' is missing in `artifact_descriptors`'
                 logging.error(msg)
                 self.add_step_log(
-                    'is_artifact_descriptor_defined',
+                    'is_artifact_descriptor_`' + str(artifact_key) + '`_from_`' + key_source + '`_defined',
                     False,
                     msg,
                 )
@@ -2060,7 +2042,7 @@ class PomDescriptor(ItemDescriptor):
                 msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + ' is defined in `artifact_descriptors` but NOT declared as `used`'
                 logging.error(msg)
                 self.add_step_log(
-                    'is_artifact_descriptor_used',
+                    'is_artifact_descriptor_`' + str(artifact_key) + '`_from_`' + key_source + '`_used',
                     False,
                     msg,
                 )
@@ -2076,31 +2058,35 @@ class PomDescriptor(ItemDescriptor):
         pom_descriptor = self.data_item
 
         # Dependencies generated from parsed XML.
-        for artifact_key in pom_descriptor['xml_referenced_dependencies'].keys():
+        key_source = 'xml_referenced_dependencies'
+        for artifact_key in pom_descriptor[key_source].keys():
 
             logging.debug('artifact_key: ' + str(artifact_key))
 
-            for xpath_key in pom_descriptor['xml_referenced_dependencies'][artifact_key].keys():
+            for xpath_key in pom_descriptor[key_source][artifact_key].keys():
 
-                dependency_data = pom_descriptor['xml_referenced_dependencies'][artifact_key][xpath_key]
+                dependency_data = pom_descriptor[key_source][artifact_key][xpath_key]
 
                 populate_reference_data(
                     report_data,
                     artifact_key,
                     dependency_data,
+                    key_source + ':' + xpath_key,
                 )
 
         # Dependencies generated from `dependency:list`.
-        for artifact_key in pom_descriptor['maven_dependency_list'].keys():
+        key_source = 'maven_dependency_list'
+        for artifact_key in pom_descriptor[key_source].keys():
 
             logging.debug('artifact_key: ' + str(artifact_key))
 
-            dependency_data = pom_descriptor['maven_dependency_list'][artifact_key]
+            dependency_data = pom_descriptor[key_source][artifact_key]
 
             populate_reference_data(
                 report_data,
                 artifact_key,
                 dependency_data,
+                key_source,
             )
 
             # Make sure that each dependency from `dependency:list`
@@ -2326,19 +2312,27 @@ def get_incremental_report(
     # Loop while there are no more progress detected
     # (either `pom_file` or `artifact_descriptor`).
     progress_detected = True
+    run_counter = 0
     while progress_detected:
 
-        # Process each `item_descriptor` incrementally saving data.
-        for item_descriptor in item_descriptors:
+        run_counter += 1
 
-            # Record report only if there was any progress.
-            # This step is only for time efficiency.
-            if item_descriptor.process_all_stages():
-                logging.debug(item_descriptor.get_desc_coords_string() + 'saving incremental report')
-                save_yaml_file(
-                    report_data,
-                    output_incremental_report_yaml_path,
-                )
+        # Process each `item_descriptor` incrementally saving data.
+        total_descriptor_counter = len(item_descriptors)
+        descriptor_counter = 0
+
+        try:
+
+            for item_descriptor in item_descriptors:
+                descriptor_counter += 1
+                item_descriptor.process_all_stages()
+                logging.info('RUN #' + str(run_counter) + ': DESCRIPTOR #' + str(descriptor_counter) + ' of ' + str(total_descriptor_counter) + ': ' + item_descriptor.get_desc_coords_string())
+        finally:
+
+            save_yaml_file(
+                report_data,
+                output_incremental_report_yaml_path,
+            )
 
         # Check if there is any progress to start again.
         progress_detected = detect_progressed_descriptors(item_descriptors)
