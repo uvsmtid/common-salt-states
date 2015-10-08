@@ -12,6 +12,7 @@ import tempfile
 import argparse
 import datetime
 import subprocess
+import random
 
 # Without this line `salt.client` somehow prevents all subsequent output.
 logging.debug('initialize logging')
@@ -1363,6 +1364,7 @@ class ItemDescriptor:
             logging.debug('stage_result: ' + str(stage_result))
 
             self.set_field(field_name, stage_result)
+            self.set_field('last_stage_run', stage_id)
             self.set_field('last_stage_result', stage_result)
 
             if stage_result:
@@ -2048,6 +2050,10 @@ class PomDescriptor(ItemDescriptor):
                 )
                 return
 
+        # Do not verify exceptions.
+        if self.data_item['is_exception']:
+            return
+
         # TODO: Use `self` variables instead.
         #       These are just an adaptors for old code.
         salt_pillar = self.salt_pillar
@@ -2322,6 +2328,11 @@ def get_incremental_report(
         descriptor_counter = 0
 
         try:
+
+            # Shuffle descriptors to avoid running the same long list every time.
+            # The descriptors are already out of order anyway because they are
+            # loaded using lists of keys in a dictionary.
+            random.shuffle(item_descriptors)
 
             for item_descriptor in item_descriptors:
                 descriptor_counter += 1
