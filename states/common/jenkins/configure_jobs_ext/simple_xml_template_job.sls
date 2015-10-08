@@ -60,6 +60,7 @@
 {{ job_name }}_job_environment_variables_file:
     file.managed:
         - name: '{{ jenkins_dir_path }}/job_env_vars.{{ job_name }}.properties'
+        - makedirs: True
         - contents: |
 
             {% for job_config_key in [
