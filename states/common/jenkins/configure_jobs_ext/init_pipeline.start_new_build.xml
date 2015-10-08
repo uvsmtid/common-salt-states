@@ -93,6 +93,10 @@
         #######################################################################
         # Set build title.
 
+        # Quick fix:
+        # Only one of these three variables is supposed to be set.
+        export BUILD_LABEL="${BUILD_LABEL:-}${PACKAGE_LABEL:-}${RELEASE_LABEL:-}"
+
         if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
         then
             # Initialize new build title.
