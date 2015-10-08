@@ -34,6 +34,19 @@ else
     RUNTIME_DIR="$( realpath "$( pwd )/${SCRIPT_DIR}" )"
 fi
 
+# If `clean` parameter is specified, it start from scratch
+# (removing previous files with data).
+if [ "clean" == "${1:-}" ]
+then
+
+    rm -rf \
+        "${RUNTIME_DIR}"/salt_pillar.yaml \
+        "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
+        "${RUNTIME_DIR}"/output_pom_data_dir \
+        "${RUNTIME_DIR}"/incremental_report.yaml \
+
+fi
+
 # Get pillar.
 if true
 then
