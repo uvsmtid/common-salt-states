@@ -86,6 +86,9 @@ system_features:
                 - '{{ project_name }}-salt-pillars'
                 {% endif %}
 
+            project_states_role:
+                - '{{ project_name }}-salt-states'
+
             maven_project_container_role:
                 {% for maven_repo_name in maven_repo_names %}
                 - '{{ maven_repo_name }}'
