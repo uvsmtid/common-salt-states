@@ -1486,7 +1486,7 @@ class ItemDescriptor:
         ]:
             if left_artifact[maven_coord] != right_artifact[maven_coord]:
 
-                msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has different ' + maven_coord + ' = `' + left_artifact[maven_coord] + '` in ' + left_artifact_src + ' ' + maven_coord + ' = `' + right_artifact[maven_coord] + '` in ' + right_artifact_src
+                msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_artifact[maven_coord]) + '` in ' + str(left_artifact_src) + ' ' + str(maven_coord) + ' = `' + str(right_artifact[maven_coord]) + '` in ' + str(right_artifact_src)
                 logging.error(msg)
                 self.add_step_log(
                     '\'' + maven_coord + '\'_is_matched',
