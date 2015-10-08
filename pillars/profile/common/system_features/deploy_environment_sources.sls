@@ -70,6 +70,13 @@ system_features:
 
         repository_roles:
 
+            top_level_parent_role:
+                {% if props['parent_repo_name'] %}
+                - {{ props['parent_repo_name'] }}
+                {% else %}
+                []
+                {% endif %}
+
             build_history_role:
                 - '{{ project_name }}-build-history'
 
