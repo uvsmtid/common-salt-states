@@ -29,6 +29,16 @@
         {{ common_build_script_header(job_config, job_environ) }}
 
         #######################################################################
+        # Locate dynamic build descriptor.
+
+        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # Load additional macros.
+
+        # TODO
+
+        #######################################################################
         #
 
         # This job is supposed to store (i.g. upload) package.
