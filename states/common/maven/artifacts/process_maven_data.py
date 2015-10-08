@@ -1269,16 +1269,19 @@ class ItemDescriptor:
     ):
         step_logs = self.data_item['step_logs']
 
-        # Never write the `step_name` step again.
-        if step_name in step_logs:
-            logging.critical('Attempt to write same step_name = ' + step_name +': ' + str(locals()))
-            assert(step_name not in step_logs)
+        if step_name not in step_logs:
+            step_logs[step_name] = {
+                'step_result': step_result,
+                'step_messages': []
+            }
+        else:
+            # Never overwrite `False` result.
+            # It can only be deleted completely (at the start of new run).
+            if step_logs[step_name]['step_result']:
+                step_logs[step_name]['step_result'] = step_result
 
-        step_logs[step_name] = {
-            'step_result': step_result,
-        }
         if step_message:
-            step_logs[step_name]['step_message'] = str(step_message)
+            step_logs[step_name]['step_messages'].append(str(step_message))
 
     #--------------------------------------------------------------------------
     #
@@ -1405,6 +1408,7 @@ class ItemDescriptor:
                 # descriptor status must be False.
                 assert(not self.get_descriptor_status())
 
+                logging.debug('clear failed step_log: ' + str(step_name))
                 del step_logs[step_name]
 
         # Clean every `stage_id` which has `False` result.
@@ -1414,6 +1418,8 @@ class ItemDescriptor:
             if not self.is_stage_done(stage_id):
                 # TODO: Put stages into separate sub-dict.
                 field_name = 'is_' + stage_id
+
+                logging.debug('clear failed stage: ' + str(stage_id))
                 del self.data_item[field_name]
 
         # Run through all stages.
