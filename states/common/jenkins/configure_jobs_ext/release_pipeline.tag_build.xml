@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
+
+  <builders>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import add_job_environment_variables with context %}
+    {{ add_job_environment_variables(job_config, job_environ) }}
+
+    <hudson.tasks.Shell>
+      <command>
+
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
+
+        #######################################################################
+        # Locate dynamic build descriptor.
+
+        {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # Load additional macros.
+
+        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+
+        #######################################################################
+        # Make sure all repositories are clean.
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+        # NOTE: Without `add --all` `diff-index` will not notice untracked files.
+        git add --all
+        # NOTE: We ignore any changes in submodules for parent repo.
+        if ! git diff-index --ignore-submodules=all --exit-code HEAD
+        then
+            # Set job status to unstable (warning to check stash).
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                JOB_STATUS='2'
+            fi
+        fi
+
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
+        # Make sure HEADs of all repositories are at `latest_commit_ids`
+        # in dynamic build descriptor.
+        # The exceptions are only:
+        # - parent repository 
+        # - build history repository
+        # This is because each commit in these repositories diverge their
+        # `latest_commit_ids` in dyn build desc.
+        # Therefore, their `latest_commit_ids` should match to `HEAD^`.
+
+        {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${REPO_PATH}"
+
+        # Get required HEAD for `latest_commit_ids`.
+        {% if not repo_name %}
+        {% elif repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['top_level_parent_role'] %}
+        REQUIRED_HEAD="HEAD^"
+        {% elif repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+        REQUIRED_HEAD="HEAD^"
+        {% else %}
+        REQUIRED_HEAD="HEAD"
+        {% endif %}
+
+        REQUIRED_HEAD_COMMIT_ID="$(git rev-parse --verify "${REQUIRED_HEAD}")"
+        LATEST_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}")"
+        test "${REQUIRED_HEAD_COMMIT_ID}" == "${LATEST_COMMIT_ID}"
+
+        cd -
+
+        {% endfor %}
+
+        #######################################################################
+        # Make last pre-release commits.
+
+        # TODO
+
+        #######################################################################
+        # Tag repositories.
+
+        # TODO
+
+        #######################################################################
+        # Update dynamic build descriptor.
+
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
+
+        #######################################################################
+        # Script footer
+
+        {{ common_build_script_footer(job_config, job_environ) }}
+
+        #######################################################################
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+
+  <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+  </publishers>
+
+  <buildWrappers>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.7.2"/>
+  </buildWrappers>
+
+</project>
+
