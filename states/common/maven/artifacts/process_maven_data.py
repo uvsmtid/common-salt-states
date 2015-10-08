@@ -1581,6 +1581,125 @@ class ArtifactDescriptor(ItemDescriptor):
     #--------------------------------------------------------------------------
     #
 
+    def get_inited(
+        self,
+    ):
+
+        func_result = True
+
+        if not ItemDescriptor.get_inited(self):
+            func_result = False
+
+        # Verify existence of key fields.
+
+        if 'used' not in self.data_item:
+            msg = self.get_desc_coords_string() + 'field `used` is not present'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`used`_field_present',
+                False,
+                msg,
+            )
+            func_result = False
+
+        elif not isinstance(self.data_item['used'], types.BooleanType):
+            msg = self.get_desc_coords_string() + 'field `used` is not boolean'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`used`_field_boolean',
+                False,
+                msg,
+            )
+            func_result = False
+
+        if 'source_type' not in self.data_item:
+            msg = self.get_desc_coords_string() + 'field `source_type` is not present'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`source_type`_field_present',
+                False,
+                msg,
+            )
+            func_result = False
+
+
+        if self.data_item['source_type'] in [
+            'available-closed',
+            'modified-open',
+        ]:
+            if 'repository_id' not in self.data_item:
+                msg = self.get_desc_coords_string() + 'field `repository_id` is not present'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`repository_id`_field_present',
+                    False,
+                    msg,
+                )
+                func_result = False
+
+            if 'pom_relative_path' not in self.data_item:
+                msg = self.get_desc_coords_string() + 'field `pom_relative_path` is not present'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`pom_relative_path`_field_present',
+                    False,
+                    msg,
+                )
+                func_result = False
+            elif not isinstance(self.data_item['pom_relative_path'], basestring):
+                msg = self.get_desc_coords_string() + 'field `pom_relative_path` is not string'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`pom_relative_path`_field_string',
+                    False,
+                    msg,
+                )
+                func_result = False
+
+            if 'current_version' not in self.data_item:
+                msg = self.get_desc_coords_string() + 'field `current_version` is not present'
+
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`current_version`_field_present',
+                    False,
+                    msg,
+                )
+                func_result = False
+            elif not isinstance(self.data_item['current_version'], basestring):
+                msg = self.get_desc_coords_string() + 'field `current_version` is not string'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`current_version`_field_string',
+                    False,
+                    msg,
+                )
+                func_result = False
+
+        else:
+            if self.data_item['source_type'] not in [
+                'unmodified-open',
+                'unavailable-closed',
+            ]:
+                msg = self.get_desc_coords_string() + 'field `source_type` can only be: ' + str([
+                    'available-closed',
+                    'modified-open',
+                    'unmodified-open',
+                    'unavailable-closed',
+                ])
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`current_version`_valid',
+                    False,
+                    msg,
+                )
+                func_result = False
+
+        return func_result
+
+    #--------------------------------------------------------------------------
+    #
+
     def get_loaded(
         self,
     ):
@@ -1782,6 +1901,40 @@ class PomDescriptor(ItemDescriptor):
             'repo_id': repo_id,
             'pom_rel_path': pom_rel_path,
         }
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_inited(
+        self,
+    ):
+        func_result = True
+
+        if not ItemDescriptor.get_inited(self):
+            func_result = False
+
+        # Verify existence of key fields.
+
+        if 'relative_path' not in self.data_item:
+            msg = self.get_desc_coords_string() + 'field `relative_path` is not present'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`relative_path`_field_present',
+                False,
+                msg,
+            )
+            func_result = False
+        elif not isinstance(self.data_item['relative_path'], basestring):
+            msg = self.get_desc_coords_string() + 'field `relative_path` is not present'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`relative_path`_field_string',
+                False,
+                msg,
+            )
+            func_result = False
+
+        return False
 
     #--------------------------------------------------------------------------
     #
