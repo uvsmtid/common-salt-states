@@ -1713,15 +1713,11 @@ system_features:
                 # all downstream jobs (if they restore or copy it).
                 initial_dynamic_build_descriptor: initial.release_pipeline.dynamic_build_descriptor.yaml
 
-                # TODO: Implement.
-                #       This is the first and the final job at the moment.
-                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 62.release_pipeline.reset_previous_build
 
                 # NOTE: This job is promotable and uses another config.
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
@@ -1737,29 +1733,32 @@ system_features:
                 build_parameters:
                     RELEASE_TYPE:
                         parameter_description: |
-                            Release types affect versioning and tagging.
-                            It is embedded into release title.
+                            Release types affects versioning and tagging rules.
                         parameter_type: choice
                         parameter_value:
                             - INCREMENTAL_RELEASE
                             - SEMANTIC_RELEASE
+                    RELEASE_VERSION_NAME:
+                        parameter_description: |
+                            Name of the released product/project.
+                            It is embedded into release title (tag).
+                        parameter_type: string
+                        parameter_value: '_'
                     RELEASE_VERSION_NUMBER:
                         parameter_description: |
                             Version number should have format `X.Y.Z.N`.
-                            It is embedded into release title.
+                            It is embedded into release title (tag).
                         parameter_type: string
                         parameter_value: '_'
-                    BUILD_LABEL:
+                    RELEASE_LABEL:
                         parameter_description: |
-                            Short meaningful string to differentiate this build.
-                            It is embedded into package title.
-                            TODO: Should it be named `RELEASE_LABEL`?
+                            Short meaningful string to differentiate this release.
+                            It is embedded into release title (tag).
                         parameter_type: string
                         parameter_value: '_'
-                    BUILD_NOTES:
+                    RELEASE_NOTES:
                         parameter_description: |
-                            Any notes describing the build.
-                            TODO: Should it be named `RELEASE_NOTES`?
+                            Any notes describing the release.
                         parameter_type: text
                         parameter_value: '_'
                     AUTO_COMMIT_GIT_AUTHOR_EMAIL:
@@ -1789,6 +1788,197 @@ system_features:
 
                 use_promotions:
                     - 16.promotion.release_pipeline_passed
+
+            {% set job_template_id = 'release_pipeline.reset_previous_build' %}
+            62.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_RELEASE_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 63.release_pipeline.describe_repositories_state
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: We reuse `init_pipeline.reset_previous_build` template.
+                    {% set job_template_id = 'init_pipeline.reset_previous_build' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'release_pipeline.describe_repositories_state' %}
+            63.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_RELEASE_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 64.release_pipeline.create_build_branches
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: We reuse `init_pipeline.describe_repositories_state` template.
+                    {% set job_template_id = 'init_pipeline.describe_repositories_state' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'release_pipeline.create_build_branches' %}
+            64.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_RELEASE_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 65.release_pipeline.transfer_dynamic_build_descriptor
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: We reuse `init_pipeline.create_build_branches` template.
+                    {% set job_template_id = 'init_pipeline.create_build_branches' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'release_pipeline.transfer_dynamic_build_descriptor' %}
+            65.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_RELEASE_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 66.release_pipeline.build_bootstrap_package
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: We reuse `package_pipeline.transfer_dynamic_build_descriptor` template.
+                    {% set job_template_id = 'package_pipeline.transfer_dynamic_build_descriptor' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'release_pipeline.tag_build' %}
+            66.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_RELEASE_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            - 67.release_pipeline.merge_build
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'release_pipeline.merge_build' %}
+            67.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_RELEASE_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                input_fingerprinted_artifacts:
+                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+
+                # This is the final job in the pipeline.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             ###################################################################
             # The `checkout_pipeline`
