@@ -86,6 +86,13 @@ system_features:
                 - '{{ project_name }}-salt-pillars'
                 {% endif %}
 
+            taggable_repository_role:
+                - '{{ project_name }}-salt-states'
+                - '{{ project_name }}-build-history'
+                {% if props['parent_repo_name'] %}
+                - {{ props['parent_repo_name'] }}
+                {% endif %}
+
             project_states_role:
                 - '{{ project_name }}-salt-states'
 
