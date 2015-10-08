@@ -308,9 +308,9 @@ def check_generic_errors(
         if error_code != 0:
             # Print captured stderr and stdout (if any) before raising
             if "stderr" in exit_data.keys():
-                logging.debug("\'stderr' before failure:\n" + exit_data["stderr"])
+                logging.debug("`stderr' before failure:\n" + exit_data["stderr"])
             if "stdout" in exit_data.keys():
-                logging.debug("\'stdout' before failure:\n" + exit_data["stdout"])
+                logging.debug("`stdout' before failure:\n" + exit_data["stdout"])
 
             # Raise
             msg = format_msg % format_dict
@@ -709,7 +709,7 @@ def get_pom_file_data(
             msg = item_descriptor.get_desc_coords_string() + 'abs_pom_file does not exist: ' + str(abs_pom_file)
             logging.error(msg)
             item_descriptor.add_step_log(
-                'missing_abs_pom_file_\'' + repo_id + '\':\'' + pom_rel_path + '\'',
+                'missing_abs_pom_file_`' + repo_id + '`:`' + pom_rel_path + '`',
                 False,
                 msg,
             )
@@ -1313,15 +1313,15 @@ class ItemDescriptor:
         self,
         field_name,
     ):
-        logging.debug(self.get_desc_coords_string() + 'visit field \'' + field_name + '\'')
+        logging.debug(self.get_desc_coords_string() + 'visit field `' + field_name + '`')
         assert(isinstance(self.data_item, dict))
 
         if field_name not in self.data_item:
             # Initialize field.
-            logging.debug(self.get_desc_coords_string() + 'init field \'' + field_name + '\'')
+            logging.debug(self.get_desc_coords_string() + 'init field `' + field_name + '`')
             self.data_item[field_name] = False
         else:
-            logging.debug(self.get_desc_coords_string() + 'get field \'' + field_name + '\': ' + str(self.data_item[field_name]))
+            logging.debug(self.get_desc_coords_string() + 'get field `' + field_name + '`: ' + str(self.data_item[field_name]))
 
         assert(isinstance(self.data_item[field_name], types.BooleanType))
 
@@ -1374,13 +1374,13 @@ class ItemDescriptor:
                 # New stage completed successfuly -
                 # indicate progress.
                 self.set_field('is_progressed', True)
-                logging.debug(self.get_desc_coords_string() + 'stage \'' + stage_id + '\' succeeded')
+                logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` succeeded')
             else:
-                logging.debug(self.get_desc_coords_string() + 'stage \'' + stage_id + '\' failed')
+                logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` failed')
 
             return stage_result
 
-        logging.debug(self.get_desc_coords_string() + 'stage \'' + stage_id + '\' skipped as competed')
+        logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` skipped as competed')
         return None
 
     #--------------------------------------------------------------------------
@@ -1398,7 +1398,7 @@ class ItemDescriptor:
         step_logs = self.data_item['step_logs']
         step_names = step_logs.keys()
         for step_name in step_names:
-            logging.debug('step_logs[\'' + step_name + '\']: ' + str(step_logs[step_name]))
+            logging.debug('step_logs: ' + step_name + ': ' + str(step_logs[step_name]))
             if not step_logs[step_name]['step_result']:
 
                 # If there was a failed `step_name`,
@@ -1430,7 +1430,7 @@ class ItemDescriptor:
 
             # Accept only "true" `False` (not `None` which means skipped).
             if stage_status == False:
-                logging.debug(self.get_desc_coords_string() + 'broken at \'' + stage_id + '\'')
+                logging.debug(self.get_desc_coords_string() + 'broken at `' + stage_id + '`')
                 is_broken = True
                 break
 
@@ -1505,7 +1505,7 @@ class ItemDescriptor:
                 msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_artifact[maven_coord]) + '` in ' + str(left_artifact_src) + ' ' + str(maven_coord) + ' = `' + str(right_artifact[maven_coord]) + '` in ' + str(right_artifact_src)
                 logging.error(msg)
                 self.add_step_log(
-                    '\'' + maven_coord + '\'_is_matched',
+                    '`' + maven_coord + '`_is_matched',
                     False,
                     msg,
                 )
@@ -1962,7 +1962,7 @@ class PomDescriptor(ItemDescriptor):
                 #       dependency or error?
                 logging.error(msg)
                 self.add_step_log(
-                    '\'' + artifact_key + '\'_is_in_maven_dependency_list',
+                    '`' + artifact_key + '`_is_in_maven_dependency_list',
                     False,
                     msg,
                 )
