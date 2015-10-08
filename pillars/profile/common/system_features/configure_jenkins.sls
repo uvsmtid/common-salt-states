@@ -1413,7 +1413,7 @@ system_features:
                     TARGET_PROFILE_NAME:
                         parameter_description: |
                             Specify target profile for bootstrap package.
-                            It is embedded into build title.
+                            It is embedded into package title.
                             Note that SOURCE_PROFILE is determined automatically.
                         parameter_type: choice
                         parameter_value:
@@ -1421,17 +1421,15 @@ system_features:
                             - {{ target_profile_name }}
                             {% endfor %}
                             - {{ profile_name }}
-                    BUILD_LABEL:
+                    PACKAGE_LABEL:
                         parameter_description: |
                             Short meaningful string to differentiate this build.
                             It is embedded into package title.
-                            TODO: Should it be named `PACKAGE_LABEL`?
                         parameter_type: string
                         parameter_value: '_'
-                    BUILD_NOTES:
+                    PACKAGE_NOTES:
                         parameter_description: |
-                            Any notes describing the build.
-                            TODO: Should it be named `PACKAGE_NOTES`?
+                            Any notes describing the package.
                         parameter_type: text
                         parameter_value: '_'
                     AUTO_COMMIT_GIT_AUTHOR_EMAIL:
@@ -1475,7 +1473,7 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                skip_if_true: SKIP_INIT_PIPELINE
+                skip_if_true: SKIP_PACKAGE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -1507,7 +1505,7 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                skip_if_true: SKIP_INIT_PIPELINE
+                skip_if_true: SKIP_PACKAGE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -1539,7 +1537,7 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                skip_if_true: SKIP_INIT_PIPELINE
+                skip_if_true: SKIP_PACKAGE_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -1918,7 +1916,7 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                skip_if_true: SKIP_INIT_PIPELINE
+                skip_if_true: SKIP_CHECKOUT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -1950,7 +1948,7 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                skip_if_true: SKIP_INIT_PIPELINE
+                skip_if_true: SKIP_CHECKOUT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -1982,7 +1980,7 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                skip_if_true: SKIP_INIT_PIPELINE
+                skip_if_true: SKIP_CHECKOUT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
