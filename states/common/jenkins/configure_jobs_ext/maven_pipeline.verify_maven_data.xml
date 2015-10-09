@@ -37,7 +37,10 @@
         export COMMON_STATES_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         # Run `verify.sh` script.
-        "${COMMON_STATES_REPO_PATH}"/states/common/maven/artifacts/verify.sh
+        "${COMMON_STATES_REPO_PATH}"/states/common/maven/artifacts/verify.sh clean
+
+        # Show report:
+        cat "${COMMON_STATES_REPO_PATH}"/states/common/maven/artifacts/incremental_report.yaml
 
         #######################################################################
         # Script footer
