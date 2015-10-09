@@ -1135,7 +1135,6 @@ def get_key_values(req_key_id, input_data):
         values_list = []
 
         if req_key_id in input_data.keys():
-            logging.debug('input_data: ' + str(input_data))
             # Get value for `req_key_id`.
             values_list = [ input_data[req_key_id] ]
 
@@ -1345,6 +1344,18 @@ class ItemDescriptor:
         self,
         stage_id,
     ):
+
+        """
+        Try to excecute stage which failed before.
+
+        Results:
+            True:
+                There was an execution with successful result.
+            False:
+                Either old result was already successful or
+                new result has failed again.
+        """
+
         field_name = 'is_' + stage_id
         function_name = 'get_' + stage_id
 
@@ -1379,6 +1390,8 @@ class ItemDescriptor:
                 return False
 
         else:
+            self.set_field('last_stage_result', previous_stage_result)
+
             logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` skipped as successfully competed')
             # Stage result has not changed - indicate no progress.
             return False
@@ -1421,6 +1434,15 @@ class ItemDescriptor:
 
                 logging.debug('clear failed stage: ' + str(stage_id))
                 del self.data_item[field_name]
+
+        # Clean all `False` `last_stage_result`.
+        if not self.is_field_true('last_stage_result'):
+            del self.data_item['last_stage_result']
+        else:
+            assert(self.get_descriptor_status())
+
+        # Clean `is_progressed`.
+        del self.data_item['is_progressed']
 
         # Run through all stages.
         for stage_id in self.stage_order:
