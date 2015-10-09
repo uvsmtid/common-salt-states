@@ -2481,8 +2481,9 @@ def get_incremental_report(
     report_data['overall_result'] = get_overall_result(
         report_data,
     )
+    logging.info('COMPLETED: overall_result: ' + str(report_data['overall_result']))
 
-    return report_data
+    return report_data['overall_result']
 
 ###############################################################################
 # MAIN
