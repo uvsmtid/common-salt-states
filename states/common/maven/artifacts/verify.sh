@@ -34,6 +34,9 @@ else
     RUNTIME_DIR="$( realpath "$( pwd )/${SCRIPT_DIR}" )"
 fi
 
+OUT_FILE="${RUNTIME_DIR}/verify.sh.out"
+: > "${OUT_FILE}"
+
 # If `clean` parameter is specified, it start from scratch
 # (removing previous files with data).
 if [ "clean" == "${1:-}" ]
@@ -44,6 +47,7 @@ then
         "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
         "${RUNTIME_DIR}"/output_pom_data_dir \
         "${RUNTIME_DIR}"/incremental_report.yaml \
+        2>&1 | tee -a "${OUT_FILE}" \
 
 fi
 
@@ -56,6 +60,7 @@ then
         c get_salt_pillar \
         --output_salt_pillar_yaml_file_path \
         "${RUNTIME_DIR}"/salt_pillar.yaml \
+        2>&1 | tee -a "${OUT_FILE}" \
 
 fi
 
@@ -69,6 +74,7 @@ then
         "${RUNTIME_DIR}"/salt_pillar.yaml \
         --output_all_pom_files_per_repo_yaml_path \
         "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
+        2>&1 | tee -a "${OUT_FILE}" \
 
 fi
 
@@ -88,6 +94,7 @@ then
         "${RUNTIME_DIR}"/incremental_report.yaml \
         --output_incremental_report_yaml_path \
         "${RUNTIME_DIR}"/incremental_report.yaml \
+        2>&1 | tee -a "${OUT_FILE}" \
 
 fi
 

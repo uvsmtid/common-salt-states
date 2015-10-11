@@ -1326,20 +1326,6 @@ class ItemDescriptor:
     #--------------------------------------------------------------------------
     #
 
-    def is_stage_done(
-        self,
-        stage_id,
-    ):
-
-        field_name = 'is_' + stage_id
-
-        stage_result = self.is_field_true(field_name)
-        logging.debug('is_stage_done(): ' + str(stage_result))
-        return stage_result
-
-    #--------------------------------------------------------------------------
-    #
-
     def progress_stage(
         self,
         stage_id,
@@ -1428,7 +1414,8 @@ class ItemDescriptor:
         # This will make stage re-run again.
         # TODO: Put it in a separate function.
         for stage_id in self.stage_order:
-            if not self.is_stage_done(stage_id):
+            field_name = 'is_' + stage_id
+            if not self.is_field_true(field_name):
                 # TODO: Put stages into separate sub-dict.
                 field_name = 'is_' + stage_id
 
@@ -1448,12 +1435,15 @@ class ItemDescriptor:
         for stage_id in self.stage_order:
             stage_progressed = self.progress_stage(stage_id)
 
+            # Keep on updating progress flag.
             self.set_field('is_progressed', stage_progressed)
 
-            # Do not continue on failure (`False`).
             if stage_progressed == False:
-                logging.error(self.get_desc_coords_string() + ': stuck at stage ' + str(stage_id))
-                break
+                # Do not continue on failure.
+                field_name = 'is_' + stage_id
+                if not self.is_field_true(field_name):
+                    logging.error(self.get_desc_coords_string() + 'stuck at stage ' + str(stage_id))
+                    break
 
         # Return whether there were any progress.
         return self.is_field_true('is_progressed')
@@ -2483,7 +2473,7 @@ def get_incremental_report(
     )
     logging.info('COMPLETED: overall_result: ' + str(report_data['overall_result']))
 
-    return report_data['overall_result']
+    return report_data
 
 ###############################################################################
 # MAIN
