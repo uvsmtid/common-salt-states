@@ -1428,17 +1428,14 @@ class ItemDescriptor:
         else:
             assert(self.get_descriptor_status())
 
-        # Clean `is_progressed`.
-        del self.data_item['is_progressed']
-
         # Run through all stages.
         for stage_id in self.stage_order:
             stage_progressed = self.progress_stage(stage_id)
 
-            # Keep on updating progress flag.
-            self.set_field('is_progressed', stage_progressed)
-
-            if stage_progressed == False:
+            # Update progress flag when there is a progress.
+            if stage_progressed:
+                self.set_field('is_progressed', stage_progressed)
+            else:
                 # Do not continue on failure.
                 field_name = 'is_' + stage_id
                 if not self.is_field_true(field_name):
@@ -1492,6 +1489,53 @@ class ItemDescriptor:
     #--------------------------------------------------------------------------
     #
 
+    def is_coord_exists(
+        self,
+        artifact_key,
+        maven_coord,
+        side_artifact,
+        side_artifact_src,
+        side_str,
+    ):
+
+        # TODO: Make it configurable and generic.
+        # List of Maven cordinate which is allowed to be missing or not matched
+        # per `source_type` (applicable to `artifact_descriptor`).
+        excepted_maven_coords = {
+            'unmodified-open': [
+                'version',
+            ],
+        }
+
+        if maven_coord not in side_artifact:
+            msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has no field `' + str(maven_coord) + '` in ' + str(side_artifact_src)
+            result = False
+
+            # Check whether Maven coord is excepted.
+            for source_type in excepted_maven_coords.keys():
+                if source_type == self.report_data['artifact_descriptors'][artifact_key]['source_type']:
+                    if maven_coord in excepted_maven_coords[source_type]:
+                        # Result is true but keep all records.
+                        result = True
+                        msg += " - excepted: " + maven_coord + "!"
+
+            if not result:
+                logging.error('side_artifact: ' + str(side_artifact))
+                msg += " - NOT excepted!"
+
+            logging.error(msg)
+            self.add_step_log(
+                '`' + artifact_key + '`.`' + maven_coord + '`_exists_in_' + side_str,
+                result,
+                msg,
+            )
+            return False
+
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
     def verify_artifact_maven_coordinates(
         self,
         artifact_key,
@@ -1500,6 +1544,7 @@ class ItemDescriptor:
         right_artifact,
         right_artifact_src,
     ):
+
         # TODO: What if there are more than one version used?
         #       There is only one value in `current_version`.
         # TODO: If there are more than one version, there should also be
@@ -1510,31 +1555,29 @@ class ItemDescriptor:
             'version',
         ]:
 
-            if maven_coord not in left_artifact:
-                msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has no field `' + str(maven_coord) + '` in ' + (left_artifact_src)
-                logging.error(msg)
-                self.add_step_log(
-                    '`' + maven_coord + '`_exists_in_left',
-                    False,
-                    msg,
-                )
+            if not self.is_coord_exists(
+                artifact_key,
+                maven_coord,
+                left_artifact,
+                left_artifact_src,
+                'left',
+            ):
                 return
 
-            if maven_coord not in right_artifact:
-                msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has no field `' + str(maven_coord) + '` in ' + str(right_artifact_src)
-                logging.error(msg)
-                self.add_step_log(
-                    '`' + maven_coord + '`_exists_in_right',
-                    False,
-                    msg,
-                )
+            if not self.is_coord_exists(
+                artifact_key,
+                maven_coord,
+                right_artifact,
+                right_artifact_src,
+                'right',
+            ):
                 return
 
             if left_artifact[maven_coord] != right_artifact[maven_coord]:
                 msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_artifact[maven_coord]) + '` in ' + str(left_artifact_src) + ' ' + str(maven_coord) + ' = `' + str(right_artifact[maven_coord]) + '` in ' + str(right_artifact_src)
                 logging.error(msg)
                 self.add_step_log(
-                    '`' + maven_coord + '`_is_matched',
+                    '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
                     False,
                     msg,
                 )
@@ -1619,6 +1662,31 @@ class ArtifactDescriptor(ItemDescriptor):
         if not ItemDescriptor.get_inited(self):
             func_result = False
 
+        # Derive `artifactId` and `groupId` from `artifact_key`.
+        parts = self.desc_coords['artifact_key'].split(":")
+        if len(parts) != 2:
+            msg = self.get_desc_coords_string() + '`artifact_key` does not split in two parts by `:`: ' + str(self.desc_coords['artifact_key'])
+            logging.error(msg)
+            self.add_step_log(
+                'is_`artifact_key`_splittable',
+                False,
+                msg,
+            )
+            func_result = False
+        else:
+            derivedGroupId = parts[0]
+            derivedArtifactId = parts[1]
+
+            if derivedGroupId:
+                self.data_item['groupId'] = derivedGroupId
+            else:
+                self.data_item['groupId'] = None
+
+            if derivedArtifactId:
+                self.data_item['artifactId'] = derivedArtifactId
+            else:
+                self.data_item['artifactId'] = None
+
         # Verify existence of key fields.
 
         if 'used' not in self.data_item:
@@ -1650,7 +1718,6 @@ class ArtifactDescriptor(ItemDescriptor):
                 msg,
             )
             func_result = False
-
 
         if self.data_item['source_type'] in [
             'available-closed',
@@ -1704,6 +1771,13 @@ class ArtifactDescriptor(ItemDescriptor):
                     msg,
                 )
                 func_result = False
+
+            else:
+                # TODO: Should `current_version` be renamed to `version`
+                #       in the `artifact_descriptors` pillar?
+                # Adapt existing field as required one by function
+                # comparing Maven artifact version.
+                self.data_item['version'] = self.data_item['current_version']
 
         else:
             if self.data_item['source_type'] not in [
@@ -2258,14 +2332,12 @@ def associate_report_data_item_descriptors(
 
 def detect_progressed_descriptors(item_descriptors):
 
-    is_progressed = True
     for item_descriptor in item_descriptors:
         logging.debug(item_descriptor.get_desc_coords_string() + 'is_progressed = ' + str(item_descriptor.is_field_true('is_progressed')))
-        if not item_descriptor.is_field_true('is_progressed'):
-            is_progressed = False
-            break
+        if item_descriptor.is_field_true('is_progressed'):
+            return True
 
-    return is_progressed
+    return False
 
 ###############################################################################
 #
