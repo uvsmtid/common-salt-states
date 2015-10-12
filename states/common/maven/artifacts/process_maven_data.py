@@ -1511,17 +1511,24 @@ class ItemDescriptor:
             msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has no field `' + str(maven_coord) + '` in ' + str(side_artifact_src)
             result = False
 
+            # NOTE: If `artifact_key` exists, it shall have `source_type`
+            #       which is done by validation during loading.
+            if artifact_key in self.report_data['artifact_descriptors']:
+                source_type = self.report_data['artifact_descriptors'][artifact_key]['source_type']
+            else:
+                msg += " - artifact `" + str(artifact_key) + "` is NOT defined in `artifact_descriptors`"
+                source_type = None
+
             # Check whether Maven coord is excepted.
-            for source_type in excepted_maven_coords.keys():
-                if source_type == self.report_data['artifact_descriptors'][artifact_key]['source_type']:
-                    if maven_coord in excepted_maven_coords[source_type]:
-                        # Result is true but keep all records.
-                        result = True
-                        msg += " - excepted: " + maven_coord + "!"
+            if source_type in excepted_maven_coords.keys():
+                if maven_coord in excepted_maven_coords[source_type]:
+                    # Result is true but keep all records.
+                    result = True
+                    msg += " - BUT field `" + str(maven_coord) + "` is excepted for `" + str(source_type) + "`"
 
             if not result:
                 logging.error('side_artifact: ' + str(side_artifact))
-                msg += " - NOT excepted!"
+                msg += " - field `" + str(maven_coord) + "` is NOT excepted"
 
             logging.error(msg)
             self.add_step_log(
