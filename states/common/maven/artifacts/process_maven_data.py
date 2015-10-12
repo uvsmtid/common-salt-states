@@ -1773,8 +1773,6 @@ class ArtifactDescriptor(ItemDescriptor):
                 func_result = False
 
             else:
-                # TODO: Should `current_version` be renamed to `version`
-                #       in the `artifact_descriptors` pillar?
                 # Adapt existing field as required one by function
                 # comparing Maven artifact version.
                 self.data_item['version'] = self.data_item['current_version']
@@ -1792,7 +1790,7 @@ class ArtifactDescriptor(ItemDescriptor):
                 ])
                 logging.error(msg)
                 self.add_step_log(
-                    'is_`current_version`_valid',
+                    'is_`source_type`_valid',
                     False,
                     msg,
                 )
