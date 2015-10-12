@@ -65,20 +65,33 @@
         {% endif %} # use_promotions
 
 # Job environment variables file.
-{% if 'job_environment_variables' in job_config %}
+# TODO: Make it a common macro for `simple_xml_template_job.sls` and `promotable_xml_template_job.sls`.
+{% if 'job_environment_variables' in job_config or 'preset_build_parameters' in job_config %}
 {{ job_name }}_job_environment_variables_file:
     file.managed:
         - name: '{{ jenkins_dir_path }}/job_env_vars.{{ job_name }}.properties'
+        - makedirs: True
         - contents: |
-            {% for env_var_key in job_config['job_environment_variables'].keys() %}
-            {% set env_var_value = job_config['job_environment_variables'][env_var_key] %}
+
+            {% for job_config_key in [
+                   'job_environment_variables',
+                   'preset_build_parameters',
+               ]
+            %}
+            {% if job_config_key in job_config %}
+            {% for env_var_key in job_config[job_config_key].keys() %}
+            {% set env_var_value = job_config[job_config_key][env_var_key] %}
             {{ env_var_key }} = {{ env_var_value }}
             {% endfor %}
+            {% endif %}
+            {% endfor %}
+
 {% endif %}
 
 {% if 'is_promotion' not in job_config or not job_config['is_promotion'] %} # is_promotion
 
 # Make sure job configuration does not exist:
+# TODO: Make it a common macro for `simple_xml_template_job.sls` and `promotable_xml_template_job.sls`.
 add_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
         - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-job {{ job_name }}"
@@ -88,6 +101,7 @@ add_{{ job_name }}_job_configuration_to_jenkins:
             - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml'
 
 # Update job configuration.
+# TODO: Make it a common macro for `simple_xml_template_job.sls` and `promotable_xml_template_job.sls`.
 # The update won't happen (it will be the same) if job has just been created.
 update_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:

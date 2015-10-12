@@ -36,7 +36,7 @@
         #######################################################################
         # Load additional macros.
 
-        # TODO
+        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 
         #######################################################################
         #
@@ -44,6 +44,11 @@
         # This job is supposed to store (i.g. upload) package.
         # TODO: Implement
         exit 0
+
+        #######################################################################
+        # Update dynamic build descriptor.
+
+        {{ update_dynamic_build_descriptor(job_config, job_environ) }}
 
         #######################################################################
         # Script footer

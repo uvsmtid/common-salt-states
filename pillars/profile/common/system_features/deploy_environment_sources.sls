@@ -70,6 +70,13 @@ system_features:
 
         repository_roles:
 
+            top_level_parent_role:
+                {% if props['parent_repo_name'] %}
+                - {{ props['parent_repo_name'] }}
+                {% else %}
+                []
+                {% endif %}
+
             build_history_role:
                 - '{{ project_name }}-build-history'
 
@@ -85,6 +92,16 @@ system_features:
                 {% else %}
                 - '{{ project_name }}-salt-pillars'
                 {% endif %}
+
+            taggable_repository_role:
+                - '{{ project_name }}-salt-states'
+                - '{{ project_name }}-build-history'
+                {% if props['parent_repo_name'] %}
+                - {{ props['parent_repo_name'] }}
+                {% endif %}
+
+            project_states_role:
+                - '{{ project_name }}-salt-states'
 
             maven_project_container_role:
                 {% for maven_repo_name in maven_repo_names %}

@@ -93,6 +93,10 @@
         #######################################################################
         # Set build title.
 
+        # Quick fix:
+        # Only one of these three variables is supposed to be set.
+        export BUILD_LABEL="${BUILD_LABEL:-}${PACKAGE_LABEL:-}${RELEASE_LABEL:-}"
+
         if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
         then
             # Initialize new build title.
@@ -305,7 +309,13 @@ HEREDOC_MARKER
         echo > "$BUILD_PROPS_PATH"
 
         # Write each build parameter into the properties file.
-        {% for param_name in job_config['build_parameters'].keys() %}
+        {% for job_config_key in [
+                'build_parameters',
+                'preset_build_parameters',
+            ]
+        %}
+        {% if job_config_key in job_config %}
+        {% for param_name in job_config[job_config_key].keys() %}
 
         echo "{{ param_name }}=${{ param_name }}" >> "$BUILD_PROPS_PATH"
 
@@ -318,6 +328,8 @@ HEREDOC_MARKER
             echo "${{ param_name }}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_parameters:{{ param_name }}"
         fi
 
+        {% endfor %}
+        {% endif %}
         {% endfor %}
 
         # In addition to that, store BUILD_TITLE.
