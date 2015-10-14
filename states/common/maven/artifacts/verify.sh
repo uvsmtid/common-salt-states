@@ -55,12 +55,20 @@ fi
 if true
 then
 
+    # NOTE: If pillar has syntax issues, Salt won't report failed exit status.
+    #       Detect errors by removing original file and test existance
+    #       of the new one.
+    rm -f "${RUNTIME_DIR}"/salt_pillar.yaml
+
     sudo \
     "${RUNTIME_DIR}"/process_maven_data.py \
         c get_salt_pillar \
         --output_salt_pillar_yaml_file_path \
         "${RUNTIME_DIR}"/salt_pillar.yaml \
         2>&1 | tee -a "${OUT_FILE}" \
+
+    # NOTE: Test if Salt was able to generate the file.
+    test -f "${RUNTIME_DIR}"/salt_pillar.yaml
 
 fi
 
