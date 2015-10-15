@@ -317,7 +317,8 @@ HEREDOC_MARKER
         {% if job_config_key in job_config %}
         {% for param_name in job_config[job_config_key].keys() %}
 
-        echo "{{ param_name }}=${{ param_name }}" >> "$BUILD_PROPS_PATH"
+        # NOTE: If parameter is undefined, empty string is used.
+        echo "{{ param_name }}=${ {{- param_name -}} :-}" >> "$BUILD_PROPS_PATH"
 
         # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
         #       the operation is read-only.
