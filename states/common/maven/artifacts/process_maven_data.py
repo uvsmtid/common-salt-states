@@ -1543,6 +1543,7 @@ class ItemDescriptor:
         left_artifact_src,
         right_artifact,
         right_artifact_src,
+        force_result = None,
     ):
 
         # TODO: What if there are more than one version used?
@@ -1574,11 +1575,14 @@ class ItemDescriptor:
                 return
 
             if left_artifact[maven_coord] != right_artifact[maven_coord]:
+                step_result = False
+                if force_result is not None:
+                    step_result = force_result
                 msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_artifact[maven_coord]) + '` in ' + str(left_artifact_src) + ' ' + str(maven_coord) + ' = `' + str(right_artifact[maven_coord]) + '` in ' + str(right_artifact_src)
                 logging.error(msg)
                 self.add_step_log(
                     '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
-                    False,
+                    step_result,
                     msg,
                 )
 
@@ -2243,6 +2247,12 @@ class PomDescriptor(ItemDescriptor):
                         'maven_dependency_list',
                         pom_descriptor['xml_referenced_dependencies'][artifact_key][xpath_key],
                         'xml_referenced_dependencies',
+                        # TODO: This is too coarse-grained force of the result.
+                        #       Figure out solution when comparision still fails
+                        #       except when maven coordinates come from specific
+                        #       tag (like `inclusion`). Currently, it will be
+                        #       just a warning regrardless of the tag used.
+                        force_result = True,
                     )
 
     #--------------------------------------------------------------------------
