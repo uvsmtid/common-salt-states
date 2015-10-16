@@ -1285,7 +1285,10 @@ class ItemDescriptor:
                 step_logs[step_name]['step_result'] = step_result
 
         if step_message:
-            step_logs[step_name]['step_messages'].append(str(step_message))
+            step_message_str = str(step_message)
+            # Avoid duplicated `step_messages`.
+            if step_message_str not in step_logs[step_name]['step_messages']:
+                step_logs[step_name]['step_messages'].append(step_message_str)
 
     #--------------------------------------------------------------------------
     #
@@ -2464,6 +2467,14 @@ def get_incremental_report(
     # because it is about to be recomputed.
     report_data['overall_result'] = True
 
+    # Reduce size of the report by removing duplicate `step_messages`.
+    for message_list in get_key_values('step_messages', report_data):
+        assert(isinstance(message_list, list))
+        init_count = len(message_list)
+        message_list = list(set(message_list))
+        reduced_count = len(message_list)
+        logging.debug('init_count: ' + str(init_count) + ' ' + 'reduced_count: ' + str(reduced_count))
+
     # Associate specific descriptors
     # (either `pom_file` or `artifact_descriptor`).
     item_descriptors = associate_report_data_item_descriptors(
@@ -2501,7 +2512,8 @@ def get_incremental_report(
             for item_descriptor in item_descriptors:
                 descriptor_counter += 1
                 item_descriptor.process_all_stages()
-                logging.info('RUN #' + str(run_counter) + ': DESCRIPTOR #' + str(descriptor_counter) + ' of ' + str(total_descriptor_counter) + ': ' + item_descriptor.get_desc_coords_string())
+                logging.info('DONE: RUN #' + str(run_counter) + ': DESCRIPTOR #' + str(descriptor_counter) + ' of ' + str(total_descriptor_counter) + ': ' + item_descriptor.get_desc_coords_string())
+                logging.debug('NEXT...')
         finally:
 
             save_yaml_file(
