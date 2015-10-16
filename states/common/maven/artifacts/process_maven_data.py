@@ -1030,7 +1030,7 @@ def load_dependency_list_data(
     output_dependency_list_txt_path = os.path.join(
         output_pom_data_dir,
         repo_id,
-        'dependency_list.txt',
+        pom_rel_path + '.dependency_list.txt',
     )
 
     # NOTE: Make sure output path is absolute
@@ -1039,16 +1039,21 @@ def load_dependency_list_data(
     logging.debug('output_dependency_list_txt_path: ' + str(output_dependency_list_txt_path))
     assert(os.path.isabs(output_dependency_list_txt_path))
 
-    # Resolve (download) all dependencies locally so that next command
-    # can work offline.
-    call_subprocess(
-        command_args = [
-            'mvn',
-            '-f',
-            pom_abs_path,
-            'dependency:resolve',
-        ],
-    )
+
+    # NOTE: This step is not required (for efficiencey) because
+    #       next command will also be able to do resolve and
+    #       download dependencies but only if needed.
+    if False:
+        # Resolve (download) all dependencies locally so that next command
+        # can work offline.
+        call_subprocess(
+            command_args = [
+                'mvn',
+                '-f',
+                pom_abs_path,
+                'dependency:resolve',
+            ],
+        )
 
     # Get list of all dependencies.
     exit_data = call_subprocess(
@@ -2239,10 +2244,10 @@ class PomDescriptor(ItemDescriptor):
             # also exists in data from parsed XML.
             # NOTE: No need to check the other way around as parsed XML
             #       takes much more information (not true dependencies).
+            # NOTE: At the moment only direct (not transitive)
+            #       dependencies are included.
             if artifact_key not in pom_descriptor['xml_referenced_dependencies']:
                 msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + ' is part of `maven_dependency_list` but not part of `xml_referenced_dependencies`'
-                # NOTE: This is not a failure because `dependency:list`
-                #       also provides transitive dependencies.
                 # TODO: Should we check if it is really a transitive
                 #       dependency or error?
                 logging.error(msg)
