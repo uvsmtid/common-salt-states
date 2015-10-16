@@ -14,6 +14,10 @@ set -u
 # Debug.
 set -x
 
+# Return last non-zero exit code from piped command.
+# See: http://unix.stackexchange.com/a/14282/23886
+set -o pipefail
+
 # Set proper Java version.
 # TODO: Do not hardcode it - get from Salt pillar.
 export JAVA_HOME='/usr/java/jdk1.7.0_71'
