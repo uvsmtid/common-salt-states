@@ -2196,6 +2196,11 @@ class PomDescriptor(ItemDescriptor):
                 left_artifact_src = 'pom_file',
                 right_artifact = artifact_descriptor,
                 right_artifact_src = 'artifact_descriptor',
+                # TODO: Be able to filter those `xml_referenced_dependencies`
+                #       where version is not specified.
+                #       At the moment script simply forces `True` if pom
+                #       file does not specify version for artifact.
+                force_result = ('version' in dependency_data and dependency_data['version'] is not None),
             )
 
         # Do not verify exceptions.
