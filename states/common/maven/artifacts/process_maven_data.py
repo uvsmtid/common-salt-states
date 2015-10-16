@@ -2240,6 +2240,21 @@ class PomDescriptor(ItemDescriptor):
                 key_source,
             )
 
+            # TODO: The problem with `dependency:list` is that output
+            #       for parent pom.xml file gets overwrittent by the output
+            #       of the last child defined in `modules`.
+            #       In other words list of `artifact_key` from parent
+            #       may not exists in `xml_referenced_dependencies` (even if
+            #       it is listed as poper dependency in this pom.xml) because
+            #       `maven_dependency_list` is for a child (not for
+            #       this pom.xml).
+            #       This is a temporary solution to ignore this case.
+            #       TODO: This can be solved by generating output into
+            #             files with non-absolute path. Then Maven itself
+            #             splits things per pom.xml. However, this requires
+            #             many changes.
+            ignore_xml_ref_because_of_maven_bug = True
+
             # Make sure that each dependency from `dependency:list`
             # also exists in data from parsed XML.
             # NOTE: No need to check the other way around as parsed XML
@@ -2253,7 +2268,7 @@ class PomDescriptor(ItemDescriptor):
                 logging.error(msg)
                 self.add_step_log(
                     '`' + artifact_key + '`_is_in_maven_dependency_list',
-                    False,
+                    ignore_xml_ref_because_of_maven_bug,
                     msg,
                 )
             else:
