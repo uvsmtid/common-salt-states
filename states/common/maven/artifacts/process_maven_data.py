@@ -2145,12 +2145,12 @@ class PomDescriptor(ItemDescriptor):
         def populate_reference_data(
             report_data,
             artifact_key,
-            dependency_data,
+            dependency_item,
             key_source,
         ):
 
             derived_artifact_key = get_artifact_key(
-                dependency_data,
+                dependency_item,
             )
             assert(derived_artifact_key == artifact_key)
 
@@ -2188,19 +2188,27 @@ class PomDescriptor(ItemDescriptor):
                 )
                 return
 
-            # Verify Maven Coordinates between `dependency_data` of pom file
+            # TODO: Be able to filter those `xml_referenced_dependencies`
+            #       where version is not specified.
+            #       At the moment script uses coarse-grained `True` for all
+            #       cases when Maven coordinate does not specify version.
+            #       It still does compare versions when they are specifed.
+            if 'version' in dependency_item and dependency_item['version'] is not None:
+                # No forced value - compare versions.
+                force_result = None,
+            else:
+                # Ignore missing `version`.
+                force_result = True,
+
+            # Verify Maven Coordinates between `dependency_item` of pom file
             # `artifact_descriptor` specified by `artifact_key`
             self.verify_artifact_maven_coordinates(
                 artifact_key = artifact_key,
-                left_artifact = dependency_data,
+                left_artifact = dependency_item,
                 left_artifact_src = 'pom_file',
                 right_artifact = artifact_descriptor,
                 right_artifact_src = 'artifact_descriptor',
-                # TODO: Be able to filter those `xml_referenced_dependencies`
-                #       where version is not specified.
-                #       At the moment script simply forces `True` if pom
-                #       file does not specify version for artifact.
-                force_result = ('version' in dependency_data and dependency_data['version'] is not None),
+                force_result = force_result,
             )
 
         # Do not verify exceptions.
@@ -2224,12 +2232,12 @@ class PomDescriptor(ItemDescriptor):
 
             for xpath_key in pom_descriptor[key_source][artifact_key].keys():
 
-                dependency_data = pom_descriptor[key_source][artifact_key][xpath_key]
+                dependency_item = pom_descriptor[key_source][artifact_key][xpath_key]
 
                 populate_reference_data(
                     report_data,
                     artifact_key,
-                    dependency_data,
+                    dependency_item,
                     key_source + ':' + xpath_key,
                 )
 
@@ -2239,12 +2247,12 @@ class PomDescriptor(ItemDescriptor):
 
             logging.debug('artifact_key: ' + str(artifact_key))
 
-            dependency_data = pom_descriptor[key_source][artifact_key]
+            dependency_item = pom_descriptor[key_source][artifact_key]
 
             populate_reference_data(
                 report_data,
                 artifact_key,
-                dependency_data,
+                dependency_item,
                 key_source,
             )
 
@@ -2285,7 +2293,7 @@ class PomDescriptor(ItemDescriptor):
                 for xpath_key in pom_descriptor['xml_referenced_dependencies'][artifact_key].keys():
                     self.verify_artifact_maven_coordinates(
                         artifact_key,
-                        dependency_data,
+                        dependency_item,
                         'maven_dependency_list',
                         pom_descriptor['xml_referenced_dependencies'][artifact_key][xpath_key],
                         'xml_referenced_dependencies',
