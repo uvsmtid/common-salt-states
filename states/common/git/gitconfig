@@ -33,24 +33,27 @@
 
 [alias]
 
+    # Use `histogram` diff algorithm for all `log` commands.
+    # Tests showed that the difference tends to be minimal.
+
     # "Graph log"
     # Draw a history graph with full decoration and detailed info.
-    glog = log --decorate=full --graph --stat
+    glog = log --histogram --decorate=full --graph --stat
 
     # "File log"
     # In addition to `glog` follow file's history beyond renames.
     # Option `-m` shows merge commits as well.
-    flog = log --decorate=full --graph --stat --follow -m
+    flog = log --histogram --decorate=full --graph --stat --follow -m
 
     # "Long log" - one line commit with graph.
     # Useful for high level log overview long back in history.
-    llog = log --decorate=full --graph --pretty=oneline --abbrev-commit
+    llog = log --histogram --decorate=full --graph --pretty=oneline --abbrev-commit
 
     # "Branch log" - two line commit with graph of all references.
     # It is used for overview of branching - orphans are visually seen
     # due to the second line which always forces to draw graph connectors.
     #
-    blog = log --all --decorate=full --graph --abbrev-commit --format='%C(auto)%h%d %s\n        %Cgreen%an %Cblue%ad'
+    blog = log --histogram --all --decorate=full --graph --abbrev-commit --format='%C(auto)%h%d %s\n        %Cgreen%an %Cblue%ad'
 
     # "All log"
     # Displays any unreferenced commits (anything found in `reflog`) with
@@ -58,7 +61,7 @@
     # Credit: https://gist.github.com/matthewmccullough/988077
     # NOTE: Exclamation point (`!`) is used to use shell expansion
     #       for the command.
-    alog = !git log --decorate=full --graph --abbrev-commit --format='%C(auto)%h%d %s\n        %Cgreen%an %Cblue%ad' `git reflog --all | cut -d' ' -f 1`
+    alog = !git log --histogram --decorate=full --graph --abbrev-commit --format='%C(auto)%h%d %s\n        %Cgreen%an %Cblue%ad' `git reflog --all | cut -d' ' -f 1`
 
     # Merge using fast-forward only
     ffmerge = merge --ff-only
@@ -72,8 +75,11 @@
     # Pull mergint two branches into one (avoid fast-forward), allow review
     bbpull = pull --no-ff --no-commit
 
-    # Shod diff of staged changes
-    sdiff = diff --staged
+    # Show diff of local changes
+    ldiff = diff --diff-algorithm=histogram
+
+    # Show diff of staged changes
+    sdiff = diff --diff-algorithm=histogram --staged
 
 [push]
 
