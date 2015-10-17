@@ -7,12 +7,13 @@ import sys
 import yaml
 import sets
 import types
+import shutil
+import random
 import logging
 import tempfile
 import argparse
 import datetime
 import subprocess
-import random
 
 # Without this line `salt.client` somehow prevents all subsequent output.
 logging.debug('initialize logging')
@@ -1187,7 +1188,10 @@ def get_effective_pom_file_data(
     effective_pom_abs_path = os.path.join(
         output_pom_data_dir,
         repo_id,
-        pom_file_data['relative_path'],
+        os.path.join(
+            os.path.dirname(pom_file_data['relative_path']),
+            'effective.' + os.path.basename(pom_file_data['relative_path']),
+        ),
     )
 
     # Record information in captured report.
@@ -1224,6 +1228,7 @@ class ItemDescriptor:
     # In order to be processed, descriptor has to go through all stages.
     stage_order = [
         'inited',
+        'transferred',
         'loaded',
         'verified',
     ]
@@ -1294,6 +1299,14 @@ class ItemDescriptor:
     #
 
     def get_inited(
+        self,
+    ):
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_transferred(
         self,
     ):
         return True
@@ -2060,6 +2073,62 @@ class PomDescriptor(ItemDescriptor):
     #--------------------------------------------------------------------------
     #
 
+    def get_transferred(
+        self,
+    ):
+        # TODO: Use `self` variables instead.
+        #       These are just an adaptors for old code.
+        repo_id = self.desc_coords['repo_id']
+        pom_rel_path = self.desc_coords['pom_rel_path']
+        pom_abs_path = self.data_item['absolute_path']
+
+        if self.data_item['is_exception']:
+            msg = self.get_desc_coords_string() + 'pom is exception: ' + pom_abs_path
+            logging.warning(msg)
+            self.add_step_log(
+                'is_pom_excepted',
+                # NOTE: When loading pom file, this is not a failure.
+                #       Just note about known exception.
+                True,
+                msg,
+            )
+            return
+
+        if not self.data_item['is_tracked']:
+            msg = self.get_desc_coords_string() + 'pom is not tracked: ' + pom_abs_path
+            logging.error(msg)
+            self.add_step_log(
+                'is_pom_tracked',
+                False,
+                msg,
+            )
+            return
+
+        # Copy `pom.xml` file from original location to temporary one.
+        pom_copy_rel_path = os.path.join(
+            repo_id,
+            pom_rel_path,
+        )
+        pom_copy_abs_path = os.path.join(
+            self.output_pom_data_dir,
+            pom_copy_rel_path,
+        )
+        try:
+            os.makedirs(os.path.dirname(pom_copy_abs_path))
+        except OSError, e:
+            # 17: File exists.
+            if e.errno != 17:
+                raise
+        shutil.copyfile(
+            pom_abs_path,
+            pom_copy_abs_path,
+        )
+
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
     def get_loaded(
         self,
     ):
@@ -2076,25 +2145,9 @@ class PomDescriptor(ItemDescriptor):
         pom_abs_path = pom_descriptor['absolute_path']
 
         if pom_descriptor['is_exception']:
-            msg = self.get_desc_coords_string() + 'pom is exception: ' + pom_abs_path
-            logging.warning(msg)
-            self.add_step_log(
-                'is_pom_excepted',
-                # NOTE: When loading pom file, this is not a failure.
-                #       Just note about known exception.
-                True,
-                msg,
-            )
             return
 
         if not pom_descriptor['is_tracked']:
-            msg = self.get_desc_coords_string() + 'pom is not tracked: ' + pom_abs_path
-            logging.error(msg)
-            self.add_step_log(
-                'is_pom_tracked',
-                False,
-                msg,
-            )
             return
 
         # Generate effective pom file.
