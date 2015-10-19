@@ -1278,10 +1278,12 @@ class ItemDescriptor:
     ):
         step_logs = self.data_item['step_logs']
 
+        assert(isinstance(step_result, types.BooleanType))
+
         if step_name not in step_logs:
             step_logs[step_name] = {
                 'step_result': step_result,
-                'step_messages': []
+                'step_messages': [],
             }
         else:
             # Never overwrite `False` result.
@@ -2248,10 +2250,10 @@ class PomDescriptor(ItemDescriptor):
             #       It still does compare versions when they are specifed.
             if 'version' in dependency_item and dependency_item['version'] is not None:
                 # No forced value - compare versions.
-                force_result = None,
+                force_result = None
             else:
                 # Ignore missing `version`.
-                force_result = True,
+                force_result = True
 
             # Verify Maven Coordinates between `dependency_item` of pom file
             # `artifact_descriptor` specified by `artifact_key`
