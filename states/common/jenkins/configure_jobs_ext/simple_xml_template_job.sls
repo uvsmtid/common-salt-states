@@ -61,6 +61,8 @@
     file.managed:
         - name: '{{ jenkins_dir_path }}/job_env_vars.{{ job_name }}.properties'
         - makedirs: True
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
         - contents: |
 
             {% for job_config_key in [
