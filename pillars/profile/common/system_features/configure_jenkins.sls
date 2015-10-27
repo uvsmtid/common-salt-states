@@ -1807,7 +1807,7 @@ system_features:
 
                 input_fingerprinted_artifacts:
                     11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1839,7 +1839,7 @@ system_features:
 
                 input_fingerprinted_artifacts:
                     11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1871,7 +1871,7 @@ system_features:
 
                 input_fingerprinted_artifacts:
                     11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1903,7 +1903,7 @@ system_features:
 
                 input_fingerprinted_artifacts:
                     11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1935,7 +1935,7 @@ system_features:
 
                 input_fingerprinted_artifacts:
                     11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1965,7 +1965,7 @@ system_features:
 
                 input_fingerprinted_artifacts:
                     11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.create_new_package: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
