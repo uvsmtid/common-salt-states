@@ -1569,52 +1569,59 @@ class ItemDescriptor:
     def verify_artifact_maven_coordinates(
         self,
         artifact_key,
-        left_artifact,
+        left_artifacts,
         left_artifact_src,
-        right_artifact,
+        right_artifacts,
         right_artifact_src,
         force_result = None,
     ):
+        # Now we assume that `left_artifacts` and `right_artifacts`
+        # are _lists_ where (to avoid an error) at least one from left
+        # should match at least one from right.
 
-        # TODO: What if there are more than one version used?
-        #       There is only one value in `current_version`.
-        # TODO: If there are more than one version, there should also be
-        #       verification of unused versions in `artifact_descriptors`.
-        for maven_coord in [
-            'groupId',
-            'artifactId',
-            'version',
-        ]:
+        for left_artifact in left_artifacts:
 
-            if not self.is_coord_exists(
-                artifact_key,
-                maven_coord,
-                left_artifact,
-                left_artifact_src,
-                'left',
-            ):
-                return
+            for right_artifact in right_artifacts:
 
-            if not self.is_coord_exists(
-                artifact_key,
-                maven_coord,
-                right_artifact,
-                right_artifact_src,
-                'right',
-            ):
-                return
+                # TODO: What if there are more than one version used?
+                #       There is only one value in `current_version`.
+                # TODO: If there are more than one version, there should also be
+                #       verification of unused versions in `artifact_descriptors`.
+                for maven_coord in [
+                    'groupId',
+                    'artifactId',
+                    'version',
+                ]:
 
-            if left_artifact[maven_coord] != right_artifact[maven_coord]:
-                step_result = False
-                if force_result is not None:
-                    step_result = force_result
-                msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_artifact[maven_coord]) + '` in ' + str(left_artifact_src) + ' but ' + str(maven_coord) + ' = `' + str(right_artifact[maven_coord]) + '` in ' + str(right_artifact_src)
-                logging.error(msg)
-                self.add_step_log(
-                    '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
-                    step_result,
-                    msg,
-                )
+                    if not self.is_coord_exists(
+                        artifact_key,
+                        maven_coord,
+                        left_artifact,
+                        left_artifact_src,
+                        'left',
+                    ):
+                        break
+
+                    if not self.is_coord_exists(
+                        artifact_key,
+                        maven_coord,
+                        right_artifact,
+                        right_artifact_src,
+                        'right',
+                    ):
+                        break
+
+                    if left_artifact[maven_coord] != right_artifact[maven_coord]:
+                        step_result = False
+                        if force_result is not None:
+                            step_result = force_result
+                        msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_artifact[maven_coord]) + '` in ' + str(left_artifact_src) + ' but ' + str(maven_coord) + ' = `' + str(right_artifact[maven_coord]) + '` in ' + str(right_artifact_src)
+                        logging.error(msg)
+                        self.add_step_log(
+                            '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
+                            step_result,
+                            msg,
+                        )
 
     #--------------------------------------------------------------------------
     #
@@ -1987,9 +1994,9 @@ class ArtifactDescriptor(ItemDescriptor):
 
             self.verify_artifact_maven_coordinates(
                 artifact_key,
-                artifact_maven_coords,
+                [ artifact_maven_coords ],
                 'artifact_descriptors',
-                pom_file_maven_coords,
+                [ pom_file_maven_coords ],
                 'pom file of artifact_descriptors',
             )
 
@@ -2259,9 +2266,9 @@ class PomDescriptor(ItemDescriptor):
             # `artifact_descriptor` specified by `artifact_key`
             self.verify_artifact_maven_coordinates(
                 artifact_key = artifact_key,
-                left_artifact = dependency_item,
+                left_artifacts = [ dependency_item ],
                 left_artifact_src = 'pom_file',
-                right_artifact = artifact_descriptor,
+                right_artifacts = [ artifact_descriptor ],
                 right_artifact_src = 'artifact_descriptor',
                 force_result = force_result,
             )
@@ -2348,9 +2355,9 @@ class PomDescriptor(ItemDescriptor):
                 for xpath_key in pom_descriptor['xml_referenced_dependencies'][artifact_key].keys():
                     self.verify_artifact_maven_coordinates(
                         artifact_key,
-                        dependency_item,
+                        [ dependency_item ],
                         'maven_dependency_list',
-                        pom_descriptor['xml_referenced_dependencies'][artifact_key][xpath_key],
+                        [ pom_descriptor['xml_referenced_dependencies'][artifact_key][xpath_key] ],
                         'xml_referenced_dependencies',
                         # TODO: This is too coarse-grained force of the result.
                         #       Figure out solution when comparision still fails
