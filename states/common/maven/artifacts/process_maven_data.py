@@ -1753,10 +1753,10 @@ class ArtifactDescriptor(ItemDescriptor):
             )
             func_result = False
 
-        # Adaptor: set `version` (expected by Maven coords verification)
-        #          to the same value as `current_version`.
+        # Adaptor: change type of `current_version` field to list.
         if 'current_version' in self.data_item:
-            self.data_item['version'] = self.data_item['current_version']
+            if isinstance(self.data_item['current_version'], basestring):
+                self.data_item['current_version'] = [ self.data_item['current_version'] ]
 
         if self.data_item['source_type'] in [
             'available-closed',
@@ -1813,8 +1813,8 @@ class ArtifactDescriptor(ItemDescriptor):
                 )
                 func_result = False
 
-        # TODO: Normally, field `version` should always be supplied.
-        # Field `version` (= `current_version`) must exists in case of:
+        # TODO: Normally, field `current_version` should always be supplied.
+        # Field `current_version` must exists in case of:
         #   `unmodified-open`
         if 'source_type' in self.data_item and self.data_item['source_type'] not in [
             'unmodified-open'
@@ -1829,11 +1829,11 @@ class ArtifactDescriptor(ItemDescriptor):
                     msg,
                 )
                 func_result = False
-            elif not isinstance(self.data_item['current_version'], basestring):
-                msg = self.get_desc_coords_string() + 'field `current_version` is not string'
+            elif not isinstance(self.data_item['current_version'], list):
+                msg = self.get_desc_coords_string() + 'field `current_version` is not list'
                 logging.error(msg)
                 self.add_step_log(
-                    'is_`current_version`_field_string',
+                    'is_`current_version`_field_list',
                     False,
                     msg,
                 )
