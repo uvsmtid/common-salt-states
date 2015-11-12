@@ -858,7 +858,7 @@ def get_xpath_elements(
 #------------------------------------------------------------------------------
 #
 
-def get_maven_coordinate(
+def get_maven_coordinates(
     dependency_elem,
     coordinate_tag_name,
     ignore_dependency_tags,
@@ -935,7 +935,7 @@ def get_single_pom_dependencies(
             'artifactId',
             'version',
         ]:
-            pom_dependency[coordinate_tag_name] = get_maven_coordinate(
+            pom_dependency[coordinate_tag_name] = get_maven_coordinates(
                 dependency_elem,
                 coordinate_tag_name,
                 ignore_dependency_tags,
@@ -993,7 +993,7 @@ def get_single_pom_maven_coordinates(
         'artifactId',
         'version',
     ]:
-        pom_maven_coordinates[coordinate_tag_name] = get_maven_coordinate(
+        pom_maven_coordinates[coordinate_tag_name] = get_maven_coordinates(
             project_element,
             coordinate_tag_name,
             ignore_dependency_tags = [],
