@@ -815,7 +815,8 @@ def get_artifact_key(
 #------------------------------------------------------------------------------
 #
 
-def get_maven_coords(
+# TODO: Remove unused function
+def DELETEME_get_maven_coords(
     artifact_key,
     version,
 ):
@@ -1569,13 +1570,13 @@ class ItemDescriptor:
     def verify_artifact_maven_coordinates(
         self,
         artifact_key,
-        left_artifacts,
-        left_artifact_src,
-        right_artifacts,
-        right_artifact_src,
+        left_coords_list,
+        left_coords_src,
+        right_coords_list,
+        right_coords_src,
         force_result = None,
     ):
-        # Now we assume that `left_artifacts` and `right_artifacts`
+        # Now we assume that `left_coords_list` and `right_coords_list`
         # are _lists_ where (to avoid verification error)
         # at least one from left should match
         # at least one from right.
@@ -1584,9 +1585,9 @@ class ItemDescriptor:
 
         has_version_match = False
 
-        for left_artifact in left_artifacts:
+        for left_coords in left_coords_list:
 
-            for right_artifact in right_artifacts:
+            for right_coords in right_coords_list:
 
                 # TODO: What if there are more than one version used?
                 #       There is only one value in `current_version`.
@@ -1601,8 +1602,8 @@ class ItemDescriptor:
                     if not self.is_coord_exists(
                         artifact_key,
                         maven_coord,
-                        left_artifact,
-                        left_artifact_src,
+                        left_coords,
+                        left_coords_src,
                         'left',
                     ):
                         break
@@ -1610,8 +1611,8 @@ class ItemDescriptor:
                     if not self.is_coord_exists(
                         artifact_key,
                         maven_coord,
-                        right_artifact,
-                        right_artifact_src,
+                        right_coords,
+                        right_coords_src,
                         'right',
                     ):
                         break
@@ -1620,11 +1621,11 @@ class ItemDescriptor:
                         'groupId',
                         'artifactId',
                     ]:
-                        if left_artifact[maven_coord] != right_artifact[maven_coord]:
+                        if left_coords[maven_coord] != right_coords[maven_coord]:
                             step_result = False
                             if force_result is not None:
                                 step_result = force_result
-                            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_artifact[maven_coord]) + '` in ' + str(left_artifact_src) + ' but ' + str(maven_coord) + ' = `' + str(right_artifact[maven_coord]) + '` in ' + str(right_artifact_src)
+                            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_coords[maven_coord]) + '` in ' + str(left_coords_src) + ' but ' + str(maven_coord) + ' = `' + str(right_coords[maven_coord]) + '` in ' + str(right_coords_src)
                             logging.error(msg)
                             self.add_step_log(
                                 '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
@@ -1633,14 +1634,14 @@ class ItemDescriptor:
                             )
                     else:
                         assert(maven_coord == 'version')
-                        if left_artifact[maven_coord] == right_artifact[maven_coord]:
+                        if left_coords[maven_coord] == right_coords[maven_coord]:
                             has_version_match = True
 
         if not has_version_match:
             step_result = False
             if force_result is not None:
                 step_result = force_result
-            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has no version match in ' + str(left_artifact_src) + ' with any of ' + str(right_artifact_src)
+            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has no version match in ' + str(left_coords_src) + ' with any of ' + str(right_coords_src)
             logging.error(msg)
             self.add_step_log(
                 '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
@@ -1871,6 +1872,25 @@ class ArtifactDescriptor(ItemDescriptor):
                 )
                 func_result = False
 
+        # Adapt: use `maven_coordinates` key to keep them in list (as for pom).
+        # Transform multiple `current_version` into products:
+        # { groupId, artifactId, version_1 }
+        # { groupId, artifactid, version_2 }
+        # ...
+        # { groupId, artifactid, version_N }
+        maven_coords = []
+        for current_version in self.data_item['current_version']:
+            maven_coords += [
+                {
+                    'artifactId': self.data_item['artifactId']
+                    ,
+                    'groupId': self.data_item['groupId']
+                    ,
+                    'version': current_version
+                }
+            ]
+        self.data_item['maven_coordinates'] = maven_coords
+
         return func_result
 
     #--------------------------------------------------------------------------
@@ -1944,7 +1964,8 @@ class ArtifactDescriptor(ItemDescriptor):
             maven_coords = get_single_pom_maven_coordinates(
                 single_effective_pom_data,
             )
-            pom_file_data['maven_coordinates'] = maven_coords
+            # Record Maven Coordinates as a list to adapt fror processing.
+            pom_file_data['maven_coordinates'] = [ maven_coords ]
 
             # Record data loaded from pom into artifact descriptor.
             artifact_descriptor['pom_data'] = pom_file_data
@@ -2010,18 +2031,11 @@ class ArtifactDescriptor(ItemDescriptor):
             pom_file_data['reference_counter'] += 1
 
             # Verify Maven Coordinates
-
-            artifact_maven_coords = get_maven_coords(
-                artifact_key,
-                artifact_descriptor['current_version'],
-            )
-            pom_file_maven_coords = artifact_descriptor['pom_data']['maven_coordinates']
-
             self.verify_artifact_maven_coordinates(
                 artifact_key,
-                [ artifact_maven_coords ],
+                artifact_descriptor['maven_coordinates'],
                 'artifact_descriptors',
-                [ pom_file_maven_coords ],
+                artifact_descriptor['pom_data']['maven_coordinates'],
                 'pom file of artifact_descriptors',
             )
 
@@ -2200,6 +2214,7 @@ class PomDescriptor(ItemDescriptor):
         maven_coords = get_single_pom_maven_coordinates(
             single_effective_pom_data,
         )
+        # Record Maven Coordinates as a list to adapt fror processing.
         pom_descriptor['maven_coordinates'] = maven_coords
 
         # Get all dependencies.
@@ -2291,10 +2306,10 @@ class PomDescriptor(ItemDescriptor):
             # `artifact_descriptor` specified by `artifact_key`
             self.verify_artifact_maven_coordinates(
                 artifact_key = artifact_key,
-                left_artifacts = [ dependency_item ],
-                left_artifact_src = 'pom_file',
-                right_artifacts = [ artifact_descriptor ],
-                right_artifact_src = 'artifact_descriptor',
+                left_coords_list = [ dependency_item ],
+                left_coords_src = 'pom_file',
+                right_coords_list = artifact_descriptor['maven_coordinates'],
+                right_coords_src = 'artifact_descriptor_maven_coordinates',
                 force_result = force_result,
             )
 
