@@ -1644,7 +1644,7 @@ class ItemDescriptor:
             msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has no version match in ' + str(left_coords_src) + ' with any of ' + str(right_coords_src)
             logging.error(msg)
             self.add_step_log(
-                '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
+                '`' + artifact_key + '`.version_is_matched',
                 step_result,
                 msg,
             )
