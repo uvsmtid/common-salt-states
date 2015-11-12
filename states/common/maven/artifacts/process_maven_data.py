@@ -1786,13 +1786,26 @@ class ArtifactDescriptor(ItemDescriptor):
             )
             func_result = False
 
-        # Adaptor: change type of `current_version` field to list.
+        # Adaptor: change type of `current_version` field to list of strings.
         if 'current_version' in self.data_item:
-            if isinstance(self.data_item['current_version'], basestring):
+            if isinstance(self.data_item['current_version'], dict):
+                # For dictionary use only keys.
+                self.data_item['current_version'] = self.data_item['current_version'].keys()
+            # NOTE: This is not `elif` - process list of keys from the `dict` above (if it was).
+            if isinstance(self.data_item['current_version'], list):
+                # Take all items as is - nothing to do.
+                pass
+            elif isinstance(self.data_item['current_version'], basestring):
                 self.data_item['current_version'] = [ self.data_item['current_version'] ]
+            elif isinstance(self.data_item['current_version'], None):
+                self.data_item['current_version'] = [ self.data_item['current_version'] ]
+            else:
+                # Catch all approach (works at least for a number).
+                self.data_item['current_version'] = [ str(self.data_item['current_version']) ]
         else:
-            # Use empty list.
-            self.data_item['current_version'] = []
+            # Use list with None value. This is required to generate
+            # at least one full set of Maven coordinates later.
+            self.data_item['current_version'] = [ None ]
 
         if self.data_item['source_type'] in [
             'available-closed',
