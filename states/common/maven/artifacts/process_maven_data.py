@@ -1576,8 +1576,13 @@ class ItemDescriptor:
         force_result = None,
     ):
         # Now we assume that `left_artifacts` and `right_artifacts`
-        # are _lists_ where (to avoid an error) at least one from left
-        # should match at least one from right.
+        # are _lists_ where (to avoid verification error)
+        # at least one from left should match
+        # at least one from right.
+        # More specifically, it applies only to `version` value.
+        # All `groupId` and `artifactId` should match.
+
+        has_version_match = False
 
         for left_artifact in left_artifacts:
 
@@ -1611,17 +1616,37 @@ class ItemDescriptor:
                     ):
                         break
 
-                    if left_artifact[maven_coord] != right_artifact[maven_coord]:
-                        step_result = False
-                        if force_result is not None:
-                            step_result = force_result
-                        msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_artifact[maven_coord]) + '` in ' + str(left_artifact_src) + ' but ' + str(maven_coord) + ' = `' + str(right_artifact[maven_coord]) + '` in ' + str(right_artifact_src)
-                        logging.error(msg)
-                        self.add_step_log(
-                            '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
-                            step_result,
-                            msg,
-                        )
+                    if maven_coord in [
+                        'groupId',
+                        'artifactId',
+                    ]:
+                        if left_artifact[maven_coord] != right_artifact[maven_coord]:
+                            step_result = False
+                            if force_result is not None:
+                                step_result = force_result
+                            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_artifact[maven_coord]) + '` in ' + str(left_artifact_src) + ' but ' + str(maven_coord) + ' = `' + str(right_artifact[maven_coord]) + '` in ' + str(right_artifact_src)
+                            logging.error(msg)
+                            self.add_step_log(
+                                '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
+                                step_result,
+                                msg,
+                            )
+                    else:
+                        assert(maven_coord == 'version')
+                        if left_artifact[maven_coord] == right_artifact[maven_coord]:
+                            has_version_match = True
+
+        if not has_version_match:
+            step_result = False
+            if force_result is not None:
+                step_result = force_result
+            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has no version match in ' + str(left_artifact_src) + ' with any of ' + str(right_artifact_src)
+            logging.error(msg)
+            self.add_step_log(
+                '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
+                step_result,
+                msg,
+            )
 
     #--------------------------------------------------------------------------
     #
