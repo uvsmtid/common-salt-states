@@ -1790,6 +1790,9 @@ class ArtifactDescriptor(ItemDescriptor):
         if 'current_version' in self.data_item:
             if isinstance(self.data_item['current_version'], basestring):
                 self.data_item['current_version'] = [ self.data_item['current_version'] ]
+        else:
+            # Use empty list.
+            self.data_item['current_version'] = []
 
         if self.data_item['source_type'] in [
             'available-closed',
@@ -2022,8 +2025,18 @@ class ArtifactDescriptor(ItemDescriptor):
             # NOTE: There are two pom file information:
             #       - one is loaded from pom files searched automatically
             #       - one is loaded from pom files declared in artifact descriptor
-            #       The following verification is done
+            #       The following verification is done against
+            #       the former one (the one searched automatically).
             pom_file_data = report_data['pom_files'][repo_id][pom_rel_path]
+            if 'is_inited' not in pom_file_data or not pom_file_data['is_inited']:
+                msg = self.get_desc_coords_string() + 'pom_file ' + str(repo_id) + '-' + str(pom_rel_path) + ' is not yet inited'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_pom_file_`' + str(repo_id) + '-' + str(pom_rel_path) + '`_inited',
+                    False,
+                    msg,
+                )
+                return
 
             # Increment reference counter.
             if 'reference_counter' not in pom_file_data:
@@ -2269,6 +2282,15 @@ class PomDescriptor(ItemDescriptor):
 
             # Get artifact descriptor object.
             artifact_descriptor = report_data['artifact_descriptors'][artifact_key]
+            if 'is_inited' not in artifact_descriptor or not artifact_descriptor['is_inited']:
+                msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + ' is not yet inited'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_artifact_descriptor_`' + str(artifact_key) + '`_inited',
+                    False,
+                    msg,
+                )
+                return
 
             # NOTE: The counter includes both (not fair counter):
             #       - data generated from parsed XML
@@ -2626,6 +2648,22 @@ def get_incremental_report(
 
             for item_descriptor in item_descriptors:
                 descriptor_counter += 1
+
+                # Debug only: process selected descriptors only.
+                if False:
+                    selected = False
+                    selector = item_descriptor.desc_coords
+                    if isinstance(item_descriptor, ArtifactDescriptor):
+                        if selector['artifact_key'] == 'com.thalesgroup.border.cde:cde-dao':
+                            selected = True
+                    if isinstance(item_descriptor, PomDescriptor):
+                        if selector['repo_id'] == 'cde' and selector['pom_rel_path'] == 'cde-dao/pom.xml':
+                            selected = True
+                    if not selected:
+                        # Indicate no progress to have a chance to exit the loop.
+                        item_descriptor.set_field('is_progressed', False)
+                        continue
+
                 item_descriptor.process_all_stages()
                 logging.info('DONE: RUN #' + str(run_counter) + ': DESCRIPTOR #' + str(descriptor_counter) + ' of ' + str(total_descriptor_counter) + ': ' + item_descriptor.get_desc_coords_string())
                 logging.debug('NEXT...')
