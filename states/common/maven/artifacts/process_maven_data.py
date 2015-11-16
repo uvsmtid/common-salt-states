@@ -815,32 +815,6 @@ def get_artifact_key(
 #------------------------------------------------------------------------------
 #
 
-# TODO: Remove unused function
-def DELETEME_get_maven_coords(
-    artifact_key,
-    version,
-):
-    logging.debug('artifact_key: ' + str(artifact_key))
-
-    artifact_key_parts = artifact_key.split(':')
-    assert(len(artifact_key_parts) == 2)
-
-    groupId = artifact_key_parts[0].strip()
-    if not groupId:
-        groupId = None
-
-    artifactId = artifact_key_parts[1].strip()
-
-    maven_coords = {}
-    maven_coords['groupId'] = groupId
-    maven_coords['artifactId'] = artifactId
-    maven_coords['version'] = version
-
-    return maven_coords
-
-#------------------------------------------------------------------------------
-#
-
 def get_xpath_elements(
     # NOTE: The elements must be prefixed by `x:` namespece.
     #       For example, `x:artifactId`.
