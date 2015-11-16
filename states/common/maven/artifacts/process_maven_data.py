@@ -1641,7 +1641,7 @@ class ItemDescriptor:
             step_result = False
             if force_result is not None:
                 step_result = force_result
-            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has no version match in ' + str(left_coords_src) + ' with any of ' + str(right_coords_src)
+            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has no version match in `' + str(left_coords_src) + '` = `' + str(left_coords_list) + '` with any of `' + str(right_coords_src) + '` = `' + str(right_coords_list) + '`'
             logging.error(msg)
             self.add_step_log(
                 '`' + artifact_key + '`.version_is_matched',
