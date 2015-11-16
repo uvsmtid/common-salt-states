@@ -12,16 +12,20 @@ def provide_os_platform_type():
         pass
     elif platform.system() == 'Linux':
         uname_release = platform.uname()[2]
+
         # Example string to select from:
-        #   - CentOS 7.0:
+        #   - Fedora 21:
         #       3.18.9-200.fc21.x86_64
+        #   - CentOS 7.0:
+        #       3.10.0-229.7.2.el7.x86_64
         #   - CentOS 5.5:
         #       2.6.18-194.el5
 
         # Try various patterns until the first match.
         re_match = None
         for distrib_string_regex in [
-            '^\d*\.\d*\.\d*-\d*\.(\w*)\.\w*$', # CentOS 7.0
+            '^\d*\.\d*\.\d*-\d*\.(\w*)\.\w*$', # Fedora 21
+            '^\d*\.\d*\.\d*-\d*\.\d*\.\d*\.(\w*)\.\w*$', # CentOS 7.0
             '^\d*\.\d*\.\d*-\d*\.(\w*)$', # CentOS 5.5
         ]:
             re_match = re.match(distrib_string_regex, uname_release)

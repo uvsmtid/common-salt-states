@@ -7,6 +7,8 @@ import sys
 import yaml
 import sets
 import types
+import shutil
+import random
 import logging
 import tempfile
 import argparse
@@ -308,9 +310,9 @@ def check_generic_errors(
         if error_code != 0:
             # Print captured stderr and stdout (if any) before raising
             if "stderr" in exit_data.keys():
-                logging.debug("\'stderr' before failure:\n" + exit_data["stderr"])
+                logging.debug("`stderr' before failure:\n" + exit_data["stderr"])
             if "stdout" in exit_data.keys():
-                logging.debug("\'stdout' before failure:\n" + exit_data["stdout"])
+                logging.debug("`stdout' before failure:\n" + exit_data["stdout"])
 
             # Raise
             msg = format_msg % format_dict
@@ -516,6 +518,7 @@ def maven_reactor_root_clean(
         repo_id,
         pom_rel_path,
         salt_pillar,
+        None,
     )
 
     assert(pom_file_data['is_file'])
@@ -676,6 +679,7 @@ def get_pom_file_data(
     repo_id,
     pom_rel_path,
     salt_pillar,
+    item_descriptor,
 ):
 
     pom_file_data = {
@@ -700,7 +704,19 @@ def get_pom_file_data(
         pom_rel_path,
     )
     logging.debug('abs_pom_file: ' + str(abs_pom_file))
-    assert(os.path.exists(abs_pom_file))
+
+    # Check if file exists.
+    if not os.path.exists(abs_pom_file):
+        if item_descriptor:
+            msg = item_descriptor.get_desc_coords_string() + 'abs_pom_file does not exist: ' + str(abs_pom_file)
+            logging.error(msg)
+            item_descriptor.add_step_log(
+                'missing_abs_pom_file_`' + repo_id + '`:`' + pom_rel_path + '`',
+                False,
+                msg,
+            )
+        return None
+
     pom_file_data['absolute_path'] = abs_pom_file
 
     # NOTE: The `isfile` check follows symlinks as required.
@@ -773,6 +789,7 @@ def get_all_pom_files_per_repo(
                 repo_id,
                 pom_rel_path,
                 salt_pillar,
+                None,
             )
 
         all_pom_files_per_repo[repo_id] = pom_files_per_repo
@@ -798,31 +815,6 @@ def get_artifact_key(
 #------------------------------------------------------------------------------
 #
 
-def get_maven_coords(
-    artifact_key,
-    version,
-):
-    logging.debug('artifact_key: ' + str(artifact_key))
-
-    artifact_key_parts = artifact_key.split(':')
-    assert(len(artifact_key_parts) == 2)
-
-    groupId = artifact_key_parts[0].strip()
-    if not groupId:
-        groupId = None
-
-    artifactId = artifact_key_parts[1].strip()
-
-    maven_coords = {}
-    maven_coords['groupId'] = groupId
-    maven_coords['artifactId'] = artifactId
-    maven_coords['version'] = version
-
-    return maven_coords
-
-#------------------------------------------------------------------------------
-#
-
 def get_xpath_elements(
     # NOTE: The elements must be prefixed by `x:` namespece.
     #       For example, `x:artifactId`.
@@ -841,7 +833,7 @@ def get_xpath_elements(
 #------------------------------------------------------------------------------
 #
 
-def get_maven_coordinate(
+def get_maven_coordinates(
     dependency_elem,
     coordinate_tag_name,
     ignore_dependency_tags,
@@ -918,7 +910,7 @@ def get_single_pom_dependencies(
             'artifactId',
             'version',
         ]:
-            pom_dependency[coordinate_tag_name] = get_maven_coordinate(
+            pom_dependency[coordinate_tag_name] = get_maven_coordinates(
                 dependency_elem,
                 coordinate_tag_name,
                 ignore_dependency_tags,
@@ -976,7 +968,7 @@ def get_single_pom_maven_coordinates(
         'artifactId',
         'version',
     ]:
-        pom_maven_coordinates[coordinate_tag_name] = get_maven_coordinate(
+        pom_maven_coordinates[coordinate_tag_name] = get_maven_coordinates(
             project_element,
             coordinate_tag_name,
             ignore_dependency_tags = [],
@@ -1014,7 +1006,7 @@ def load_dependency_list_data(
     output_dependency_list_txt_path = os.path.join(
         output_pom_data_dir,
         repo_id,
-        'dependency_list.txt',
+        pom_rel_path + '.dependency_list.txt',
     )
 
     # NOTE: Make sure output path is absolute
@@ -1023,16 +1015,21 @@ def load_dependency_list_data(
     logging.debug('output_dependency_list_txt_path: ' + str(output_dependency_list_txt_path))
     assert(os.path.isabs(output_dependency_list_txt_path))
 
-    # Resolve (download) all dependencies locally so that next command
-    # can work offline.
-    call_subprocess(
-        command_args = [
-            'mvn',
-            '-f',
-            pom_abs_path,
-            'dependency:resolve',
-        ],
-    )
+
+    # NOTE: This step is not required (for efficiencey) because
+    #       next command will also be able to do resolve and
+    #       download dependencies but only if needed.
+    if False:
+        # Resolve (download) all dependencies locally so that next command
+        # can work offline.
+        call_subprocess(
+            command_args = [
+                'mvn',
+                '-f',
+                pom_abs_path,
+                'dependency:resolve',
+            ],
+        )
 
     # Get list of all dependencies.
     exit_data = call_subprocess(
@@ -1041,6 +1038,14 @@ def load_dependency_list_data(
             '-f',
             pom_abs_path,
             'dependency:list',
+            # NOTE: At the moment only direct (not transitive)
+            #       dependencies are included.
+            #       If transitive dependencies are included,
+            #       verification with XML references fails (because
+            #       XML references are direct dependencies by definition).
+            # TODO: Create another list with transitive dependencies
+            #       which won't be checked agains references in XML file.
+            '-DexcludeTransitive=true',
             '-DoutputFile=' + output_dependency_list_txt_path,
         ],
     )
@@ -1158,7 +1163,10 @@ def get_effective_pom_file_data(
     effective_pom_abs_path = os.path.join(
         output_pom_data_dir,
         repo_id,
-        pom_file_data['relative_path'],
+        os.path.join(
+            os.path.dirname(pom_file_data['relative_path']),
+            'effective.' + os.path.basename(pom_file_data['relative_path']),
+        ),
     )
 
     # Record information in captured report.
@@ -1195,6 +1203,7 @@ class ItemDescriptor:
     # In order to be processed, descriptor has to go through all stages.
     stage_order = [
         'inited',
+        'transferred',
         'loaded',
         'verified',
     ]
@@ -1244,16 +1253,24 @@ class ItemDescriptor:
     ):
         step_logs = self.data_item['step_logs']
 
-        # Never write the `step_name` step again.
-        if step_name in step_logs:
-            logging.critical('Attempt to write same step_name = ' + step_name +': ' + str(locals()))
-            assert(step_name not in step_logs)
+        assert(isinstance(step_result, types.BooleanType))
 
-        step_logs[step_name] = {
-            'step_result': step_result,
-        }
+        if step_name not in step_logs:
+            step_logs[step_name] = {
+                'step_result': step_result,
+                'step_messages': [],
+            }
+        else:
+            # Never overwrite `False` result.
+            # It can only be deleted completely (at the start of new run).
+            if step_logs[step_name]['step_result']:
+                step_logs[step_name]['step_result'] = step_result
+
         if step_message:
-            step_logs[step_name]['step_message'] = str(step_message)
+            step_message_str = str(step_message)
+            # Avoid duplicated `step_messages`.
+            if step_message_str not in step_logs[step_name]['step_messages']:
+                step_logs[step_name]['step_messages'].append(step_message_str)
 
     #--------------------------------------------------------------------------
     #
@@ -1261,14 +1278,14 @@ class ItemDescriptor:
     def get_inited(
         self,
     ):
+        return True
 
-        # Initialize `step_logs`.
-        self.add_step_log(
-            'init_step_logs',
-            True,
-            datetime.datetime.now(),
-        )
+    #--------------------------------------------------------------------------
+    #
 
+    def get_transferred(
+        self,
+    ):
         return True
 
     #--------------------------------------------------------------------------
@@ -1290,15 +1307,15 @@ class ItemDescriptor:
         self,
         field_name,
     ):
-        logging.debug(self.get_desc_coords_string() + 'visit field \'' + field_name + '\'')
+        logging.debug(self.get_desc_coords_string() + 'visit field `' + field_name + '`')
         assert(isinstance(self.data_item, dict))
 
         if field_name not in self.data_item:
             # Initialize field.
-            logging.debug(self.get_desc_coords_string() + 'init field \'' + field_name + '\'')
+            logging.debug(self.get_desc_coords_string() + 'init field `' + field_name + '`')
             self.data_item[field_name] = False
         else:
-            logging.debug(self.get_desc_coords_string() + 'get field \'' + field_name + '\': ' + str(self.data_item[field_name]))
+            logging.debug(self.get_desc_coords_string() + 'get field `' + field_name + '`: ' + str(self.data_item[field_name]))
 
         assert(isinstance(self.data_item[field_name], types.BooleanType))
 
@@ -1307,28 +1324,30 @@ class ItemDescriptor:
     #--------------------------------------------------------------------------
     #
 
-    def is_stage_done(
+    def progress_stage(
         self,
         stage_id,
     ):
 
-        field_name = 'is_' + stage_id
+        """
+        Try to excecute stage which failed before.
 
-        return self.is_field_true(field_name)
+        Results:
+            True:
+                There was an execution with successful result.
+            False:
+                Either old result was already successful or
+                new result has failed again.
+        """
 
-    #--------------------------------------------------------------------------
-    #
-
-    def do_stage(
-        self,
-        stage_id,
-    ):
         field_name = 'is_' + stage_id
         function_name = 'get_' + stage_id
 
-        # Never repeat completed stages.
-        stage_result = self.is_field_true(field_name)
-        if not stage_result:
+        previous_stage_result = self.is_field_true(field_name)
+        logging.debug('previous_stage_result: ' + str(previous_stage_result))
+
+        # Never repeat successfully completed stages.
+        if not previous_stage_result:
 
             # NOTE: Function already "remembers" its object
             #       (no need for `self` argument).
@@ -1336,29 +1355,30 @@ class ItemDescriptor:
             logging.debug('function_object: ' + str(function_object))
             function_object()
 
+            # We don't care what function returns.
+            # We get results of all steps -
+            # any failed step makes stage failed.
             stage_result = self.get_descriptor_status()
-
-            # Record status boolean values (not `None`).
-            if stage_result:
-                stage_result = True
-            else:
-                stage_result = False
+            logging.debug('stage_result: ' + str(stage_result))
 
             self.set_field(field_name, stage_result)
+            self.set_field('last_stage_run', stage_id)
             self.set_field('last_stage_result', stage_result)
 
             if stage_result:
-                # New stage completed successfuly -
-                # indicate progress.
-                self.set_field('is_progressed', True)
-                logging.debug(self.get_desc_coords_string() + 'stage \'' + stage_id + '\' succeeded')
+                logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` succeeded')
+                # It is both success and progress.
+                return True
             else:
-                logging.debug(self.get_desc_coords_string() + 'stage \'' + stage_id + '\' failed')
+                logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` failed')
+                return False
 
-            return stage_result
+        else:
+            self.set_field('last_stage_result', previous_stage_result)
 
-        logging.debug(self.get_desc_coords_string() + 'stage \'' + stage_id + '\' skipped as competed')
-        return None
+            logging.debug(self.get_desc_coords_string() + 'stage `' + stage_id + '` skipped as successfully competed')
+            # Stage result has not changed - indicate no progress.
+            return False
 
     #--------------------------------------------------------------------------
     #
@@ -1375,7 +1395,7 @@ class ItemDescriptor:
         step_logs = self.data_item['step_logs']
         step_names = step_logs.keys()
         for step_name in step_names:
-            logging.debug('step_logs[\'' + step_name + '\']: ' + str(step_logs[step_name]))
+            logging.debug('step_logs: ' + step_name + ': ' + str(step_logs[step_name]))
             if not step_logs[step_name]['step_result']:
 
                 # If there was a failed `step_name`,
@@ -1385,34 +1405,40 @@ class ItemDescriptor:
                 # descriptor status must be False.
                 assert(not self.get_descriptor_status())
 
+                logging.debug('clear failed step_log: ' + str(step_name))
                 del step_logs[step_name]
 
         # Clean every `stage_id` which has `False` result.
         # This will make stage re-run again.
         # TODO: Put it in a separate function.
         for stage_id in self.stage_order:
-            if not self.is_stage_done(stage_id):
+            field_name = 'is_' + stage_id
+            if not self.is_field_true(field_name):
                 # TODO: Put stages into separate sub-dict.
                 field_name = 'is_' + stage_id
+
+                logging.debug('clear failed stage: ' + str(stage_id))
                 del self.data_item[field_name]
 
+        # Clean all `False` `last_stage_result`.
+        if not self.is_field_true('last_stage_result'):
+            del self.data_item['last_stage_result']
+        else:
+            assert(self.get_descriptor_status())
+
         # Run through all stages.
-        is_broken = False
         for stage_id in self.stage_order:
-            stage_status = self.do_stage(stage_id)
+            stage_progressed = self.progress_stage(stage_id)
 
-            # If not `None`, the stage has executed (progressed).
-            if stage_status != None:
-                self.set_field('is_progressed', True)
-
-            # Accept only "true" `False` (not `None` which means skipped).
-            if stage_status == False:
-                logging.debug(self.get_desc_coords_string() + 'broken at \'' + stage_id + '\'')
-                is_broken = True
-                break
-
-        if not is_broken:
-            logging.debug(self.get_desc_coords_string() + 'is fully completed')
+            # Update progress flag when there is a progress.
+            if stage_progressed:
+                self.set_field('is_progressed', stage_progressed)
+            else:
+                # Do not continue on failure.
+                field_name = 'is_' + stage_id
+                if not self.is_field_true(field_name):
+                    logging.error(self.get_desc_coords_string() + 'stuck at stage ' + str(stage_id))
+                    break
 
         # Return whether there were any progress.
         return self.is_field_true('is_progressed')
@@ -1454,7 +1480,63 @@ class ItemDescriptor:
             if not step_result:
                 descriptor_status = False
 
+        logging.debug('get_descriptor_status(): ' + str(descriptor_status))
+
         return descriptor_status
+
+    #--------------------------------------------------------------------------
+    #
+
+    def is_coord_exists(
+        self,
+        artifact_key,
+        maven_coord,
+        side_artifact,
+        side_artifact_src,
+        side_str,
+    ):
+
+        # TODO: Make it configurable and generic.
+        # List of Maven cordinate which is allowed to be missing or not matched
+        # per `source_type` (applicable to `artifact_descriptor`).
+        excepted_maven_coords = {
+            'unmodified-open': [
+                'version',
+            ],
+        }
+
+        if maven_coord not in side_artifact:
+            msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has no field `' + str(maven_coord) + '` in ' + str(side_artifact_src)
+            result = False
+
+            # NOTE: If `artifact_key` exists, it shall have `source_type`
+            #       which is done by validation during loading.
+            if artifact_key in self.report_data['artifact_descriptors']:
+                source_type = self.report_data['artifact_descriptors'][artifact_key]['source_type']
+            else:
+                msg += " - artifact `" + str(artifact_key) + "` is NOT defined in `artifact_descriptors`"
+                source_type = None
+
+            # Check whether Maven coord is excepted.
+            if source_type in excepted_maven_coords.keys():
+                if maven_coord in excepted_maven_coords[source_type]:
+                    # Result is true but keep all records.
+                    result = True
+                    msg += " - BUT field `" + str(maven_coord) + "` is excepted for `" + str(source_type) + "`"
+
+            if not result:
+                logging.error('side_artifact: ' + str(side_artifact))
+                msg += " - field `" + str(maven_coord) + "` is NOT excepted"
+
+            logging.error(msg)
+            self.add_step_log(
+                '`' + artifact_key + '`.`' + maven_coord + '`_exists_in_' + side_str,
+                result,
+                msg,
+            )
+            return False
+
+        return True
 
     #--------------------------------------------------------------------------
     #
@@ -1462,29 +1544,84 @@ class ItemDescriptor:
     def verify_artifact_maven_coordinates(
         self,
         artifact_key,
-        left_artifact,
-        left_artifact_src,
-        right_artifact,
-        right_artifact_src,
+        left_coords_list,
+        left_coords_src,
+        right_coords_list,
+        right_coords_src,
+        force_result = None,
     ):
-        # TODO: What if there are more than one version used?
-        #       There is only one value in `current_version`.
-        # TODO: If there are more than one version, there should also be
-        #       verification of unused versions in `artifact_descriptors`.
-        for maven_coord in [
-            'groupId',
-            'artifactId',
-            'version',
-        ]:
-            if left_artifact[maven_coord] != right_artifact[maven_coord]:
+        # Now we assume that `left_coords_list` and `right_coords_list`
+        # are _lists_ where (to avoid verification error)
+        # at least one from left should match
+        # at least one from right.
+        # More specifically, it applies only to `version` value.
+        # All `groupId` and `artifactId` should match.
 
-                msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + '` has different ' + maven_coord + ' = `' + left_artifact[maven_coord] + '` in ' + left_artifact_src + ' ' + maven_coord + ' = `' + right_artifact[maven_coord] + '` in ' + right_artifact_src
-                logging.error(msg)
-                self.add_step_log(
-                    '\'' + maven_coord + '\'_is_matched',
-                    False,
-                    msg,
-                )
+        has_version_match = False
+
+        for left_coords in left_coords_list:
+
+            for right_coords in right_coords_list:
+
+                # TODO: What if there are more than one version used?
+                #       There is only one value in `current_version`.
+                # TODO: If there are more than one version, there should also be
+                #       verification of unused versions in `artifact_descriptors`.
+                for maven_coord in [
+                    'groupId',
+                    'artifactId',
+                    'version',
+                ]:
+
+                    if not self.is_coord_exists(
+                        artifact_key,
+                        maven_coord,
+                        left_coords,
+                        left_coords_src,
+                        'left',
+                    ):
+                        break
+
+                    if not self.is_coord_exists(
+                        artifact_key,
+                        maven_coord,
+                        right_coords,
+                        right_coords_src,
+                        'right',
+                    ):
+                        break
+
+                    if maven_coord in [
+                        'groupId',
+                        'artifactId',
+                    ]:
+                        if left_coords[maven_coord] != right_coords[maven_coord]:
+                            step_result = False
+                            if force_result is not None:
+                                step_result = force_result
+                            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has different ' + str(maven_coord) + ' = `' + str(left_coords[maven_coord]) + '` in ' + str(left_coords_src) + ' but ' + str(maven_coord) + ' = `' + str(right_coords[maven_coord]) + '` in ' + str(right_coords_src)
+                            logging.error(msg)
+                            self.add_step_log(
+                                '`' + artifact_key + '`.`' + maven_coord + '`_is_matched',
+                                step_result,
+                                msg,
+                            )
+                    else:
+                        assert(maven_coord == 'version')
+                        if left_coords[maven_coord] == right_coords[maven_coord]:
+                            has_version_match = True
+
+        if not has_version_match:
+            step_result = False
+            if force_result is not None:
+                step_result = force_result
+            msg = self.get_desc_coords_string() + 'artifact `' + str(artifact_key) + '` has no version match in `' + str(left_coords_src) + '` = `' + str(left_coords_list) + '` with any of `' + str(right_coords_src) + '` = `' + str(right_coords_list) + '`'
+            logging.error(msg)
+            self.add_step_log(
+                '`' + artifact_key + '`.version_is_matched',
+                step_result,
+                msg,
+            )
 
     #--------------------------------------------------------------------------
     #
@@ -1502,7 +1639,7 @@ class ItemDescriptor:
             msg = self.get_desc_coords_string() + 'artifact ' + artifact_key + '` refers to excepted pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
             logging.error(msg)
             self.add_step_log(
-                'pom_is_not_exception',
+                'pom_`' + str(repo_id) + '`:`' + str(pom_rel_path) + '`_is_not_exception',
                 False,
                 msg,
             )
@@ -1512,7 +1649,7 @@ class ItemDescriptor:
             msg = self.get_desc_coords_string() + 'artifact ' + artifact_key + '` refers to untracked pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
             logging.error(msg)
             self.add_step_log(
-                'pom_is_tracked',
+                'pom_`' + str(repo_id) + '`:`' + str(pom_rel_path) + '`_is_tracked',
                 False,
                 msg,
             )
@@ -1557,6 +1694,198 @@ class ArtifactDescriptor(ItemDescriptor):
     #--------------------------------------------------------------------------
     #
 
+    def get_inited(
+        self,
+    ):
+
+        func_result = True
+
+        if not ItemDescriptor.get_inited(self):
+            func_result = False
+
+        # Derive `artifactId` and `groupId` from `artifact_key`.
+        parts = self.desc_coords['artifact_key'].split(":")
+        if len(parts) != 2:
+            msg = self.get_desc_coords_string() + '`artifact_key` does not split in two parts by `:`: ' + str(self.desc_coords['artifact_key'])
+            logging.error(msg)
+            self.add_step_log(
+                'is_`artifact_key`_splittable',
+                False,
+                msg,
+            )
+            func_result = False
+        else:
+            derivedGroupId = parts[0]
+            derivedArtifactId = parts[1]
+
+            if derivedGroupId:
+                self.data_item['groupId'] = derivedGroupId
+            else:
+                self.data_item['groupId'] = None
+
+            if derivedArtifactId:
+                self.data_item['artifactId'] = derivedArtifactId
+            else:
+                self.data_item['artifactId'] = None
+
+        # Verify existence of key fields.
+
+        if 'used' not in self.data_item:
+            msg = self.get_desc_coords_string() + 'field `used` is not present'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`used`_field_present',
+                False,
+                msg,
+            )
+            func_result = False
+
+        elif not isinstance(self.data_item['used'], types.BooleanType):
+            msg = self.get_desc_coords_string() + 'field `used` is not boolean'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`used`_field_boolean',
+                False,
+                msg,
+            )
+            func_result = False
+
+        if 'source_type' not in self.data_item:
+            msg = self.get_desc_coords_string() + 'field `source_type` is not present'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`source_type`_field_present',
+                False,
+                msg,
+            )
+            func_result = False
+
+        # Adaptor: change type of `current_version` field to list of strings.
+        if 'current_version' in self.data_item:
+            if isinstance(self.data_item['current_version'], dict):
+                # For dictionary use only keys.
+                self.data_item['current_version'] = self.data_item['current_version'].keys()
+            # NOTE: This is not `elif` - process list of keys from the `dict` above (if it was).
+            if isinstance(self.data_item['current_version'], list):
+                # Take all items as is - nothing to do.
+                pass
+            elif isinstance(self.data_item['current_version'], basestring):
+                self.data_item['current_version'] = [ self.data_item['current_version'] ]
+            elif isinstance(self.data_item['current_version'], None):
+                self.data_item['current_version'] = [ self.data_item['current_version'] ]
+            else:
+                # Catch all approach (works at least for a number).
+                self.data_item['current_version'] = [ str(self.data_item['current_version']) ]
+        else:
+            # Use list with None value. This is required to generate
+            # at least one full set of Maven coordinates later.
+            self.data_item['current_version'] = [ None ]
+
+        if self.data_item['source_type'] in [
+            'available-closed',
+            'modified-open',
+        ]:
+
+            # Make sure pom file is properly configured.
+
+            if 'repository_id' not in self.data_item:
+                msg = self.get_desc_coords_string() + 'field `repository_id` is not present'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`repository_id`_field_present',
+                    False,
+                    msg,
+                )
+                func_result = False
+
+            if 'pom_relative_path' not in self.data_item:
+                msg = self.get_desc_coords_string() + 'field `pom_relative_path` is not present'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`pom_relative_path`_field_present',
+                    False,
+                    msg,
+                )
+                func_result = False
+            elif not isinstance(self.data_item['pom_relative_path'], basestring):
+                msg = self.get_desc_coords_string() + 'field `pom_relative_path` is not string'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`pom_relative_path`_field_string',
+                    False,
+                    msg,
+                )
+                func_result = False
+
+        else:
+            if self.data_item['source_type'] not in [
+                'unmodified-open',
+                'unavailable-closed',
+            ]:
+                msg = self.get_desc_coords_string() + 'field `source_type` can only be: ' + str([
+                    'available-closed',
+                    'modified-open',
+                    'unmodified-open',
+                    'unavailable-closed',
+                ])
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`source_type`_valid',
+                    False,
+                    msg,
+                )
+                func_result = False
+
+        # TODO: Normally, field `current_version` should always be supplied.
+        # Field `current_version` must exists in case of:
+        #   `unmodified-open`
+        if 'source_type' in self.data_item and self.data_item['source_type'] not in [
+            'unmodified-open'
+        ]:
+            if 'current_version' not in self.data_item:
+                msg = self.get_desc_coords_string() + 'field `current_version` is not present'
+
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`current_version`_field_present',
+                    False,
+                    msg,
+                )
+                func_result = False
+            elif not isinstance(self.data_item['current_version'], list):
+                msg = self.get_desc_coords_string() + 'field `current_version` is not list'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_`current_version`_field_list',
+                    False,
+                    msg,
+                )
+                func_result = False
+
+        # Adapt: use `maven_coordinates` key to keep them in list (as for pom).
+        # Transform multiple `current_version` into products:
+        # { groupId, artifactId, version_1 }
+        # { groupId, artifactid, version_2 }
+        # ...
+        # { groupId, artifactid, version_N }
+        maven_coords = []
+        for current_version in self.data_item['current_version']:
+            maven_coords += [
+                {
+                    'artifactId': self.data_item['artifactId']
+                    ,
+                    'groupId': self.data_item['groupId']
+                    ,
+                    'version': current_version
+                }
+            ]
+        self.data_item['maven_coordinates'] = maven_coords
+
+        return func_result
+
+    #--------------------------------------------------------------------------
+    #
+
     def get_loaded(
         self,
     ):
@@ -1588,7 +1917,17 @@ class ArtifactDescriptor(ItemDescriptor):
                 repo_id,
                 pom_rel_path,
                 salt_pillar,
+                self,
             )
+            if not pom_file_data:
+                msg = self.get_desc_coords_string() + 'pom data cannot be loaded: ' + str(pom_file_data)
+                logging.error(msg)
+                self.add_step_log(
+                    'is_pom_data_loaded',
+                    False,
+                    msg,
+                )
+                return False
 
             if self.is_ignorable_pom_file(
                 repo_id,
@@ -1597,7 +1936,7 @@ class ArtifactDescriptor(ItemDescriptor):
                 artifact_descriptor,
                 artifact_key,
             ):
-                return
+                return False
 
             # Generate effective pom file.
             pom_file_data = get_effective_pom_file_data(
@@ -1615,7 +1954,8 @@ class ArtifactDescriptor(ItemDescriptor):
             maven_coords = get_single_pom_maven_coordinates(
                 single_effective_pom_data,
             )
-            pom_file_data['maven_coordinates'] = maven_coords
+            # Record Maven Coordinates as a list to adapt fror processing.
+            pom_file_data['maven_coordinates'] = [ maven_coords ]
 
             # Record data loaded from pom into artifact descriptor.
             artifact_descriptor['pom_data'] = pom_file_data
@@ -1657,7 +1997,7 @@ class ArtifactDescriptor(ItemDescriptor):
                     False,
                     msg,
                 )
-                return
+                return False
 
             if pom_rel_path not in report_data['pom_files'][repo_id]:
                 msg = self.get_desc_coords_string() + 'artifact ' + artifact_key + '` refers to non-existing pom file `' + pom_rel_path + '` in `' + repo_id + '` repository'
@@ -1672,16 +2012,17 @@ class ArtifactDescriptor(ItemDescriptor):
             # NOTE: There are two pom file information:
             #       - one is loaded from pom files searched automatically
             #       - one is loaded from pom files declared in artifact descriptor
-            #       The following verification is done
+            #       The following verification is done against
+            #       the former one (the one searched automatically).
             pom_file_data = report_data['pom_files'][repo_id][pom_rel_path]
-
-            if self.is_ignorable_pom_file(
-                repo_id,
-                pom_rel_path,
-                pom_file_data,
-                artifact_descriptor,
-                artifact_key,
-            ):
+            if 'is_inited' not in pom_file_data or not pom_file_data['is_inited']:
+                msg = self.get_desc_coords_string() + 'pom_file ' + str(repo_id) + '-' + str(pom_rel_path) + ' is not yet inited'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_pom_file_`' + str(repo_id) + '-' + str(pom_rel_path) + '`_inited',
+                    False,
+                    msg,
+                )
                 return
 
             # Increment reference counter.
@@ -1690,18 +2031,11 @@ class ArtifactDescriptor(ItemDescriptor):
             pom_file_data['reference_counter'] += 1
 
             # Verify Maven Coordinates
-
-            artifact_maven_coords = get_maven_coords(
-                artifact_key,
-                artifact_descriptor['current_version'],
-            )
-            pom_file_maven_coords = artifact_descriptor['pom_data']['maven_coordinates']
-
             self.verify_artifact_maven_coordinates(
                 artifact_key,
-                artifact_maven_coords,
+                artifact_descriptor['maven_coordinates'],
                 'artifact_descriptors',
-                pom_file_maven_coords,
+                artifact_descriptor['pom_data']['maven_coordinates'],
                 'pom file of artifact_descriptors',
             )
 
@@ -1727,6 +2061,9 @@ class PomDescriptor(ItemDescriptor):
         pom_rel_path,
         pom_file,
     ):
+
+        logging.debug('pom_file: ' + str(pom_file))
+
         ItemDescriptor.__init__(
             self,
             salt_pillar,
@@ -1749,6 +2086,97 @@ class PomDescriptor(ItemDescriptor):
     #--------------------------------------------------------------------------
     #
 
+    def get_inited(
+        self,
+    ):
+
+        func_result = True
+
+        if not ItemDescriptor.get_inited(self):
+            func_result = False
+
+        # Verify existence of key fields.
+
+        if 'relative_path' not in self.data_item:
+            msg = self.get_desc_coords_string() + 'field `relative_path` is not present'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`relative_path`_field_present',
+                False,
+                msg,
+            )
+            func_result = False
+        elif not isinstance(self.data_item['relative_path'], basestring):
+            msg = self.get_desc_coords_string() + 'field `relative_path` is not present'
+            logging.error(msg)
+            self.add_step_log(
+                'is_`relative_path`_field_string',
+                False,
+                msg,
+            )
+            func_result = False
+
+        return False
+
+    #--------------------------------------------------------------------------
+    #
+
+    def get_transferred(
+        self,
+    ):
+        # TODO: Use `self` variables instead.
+        #       These are just an adaptors for old code.
+        repo_id = self.desc_coords['repo_id']
+        pom_rel_path = self.desc_coords['pom_rel_path']
+        pom_abs_path = self.data_item['absolute_path']
+
+        if self.data_item['is_exception']:
+            msg = self.get_desc_coords_string() + 'pom is exception: ' + pom_abs_path
+            logging.warning(msg)
+            self.add_step_log(
+                'is_pom_excepted',
+                # NOTE: When loading pom file, this is not a failure.
+                #       Just note about known exception.
+                True,
+                msg,
+            )
+            return
+
+        if not self.data_item['is_tracked']:
+            msg = self.get_desc_coords_string() + 'pom is not tracked: ' + pom_abs_path
+            logging.error(msg)
+            self.add_step_log(
+                'is_pom_tracked',
+                False,
+                msg,
+            )
+            return
+
+        # Copy `pom.xml` file from original location to temporary one.
+        pom_copy_rel_path = os.path.join(
+            repo_id,
+            pom_rel_path,
+        )
+        pom_copy_abs_path = os.path.join(
+            self.output_pom_data_dir,
+            pom_copy_rel_path,
+        )
+        try:
+            os.makedirs(os.path.dirname(pom_copy_abs_path))
+        except OSError, e:
+            # 17: File exists.
+            if e.errno != 17:
+                raise
+        shutil.copyfile(
+            pom_abs_path,
+            pom_copy_abs_path,
+        )
+
+        return True
+
+    #--------------------------------------------------------------------------
+    #
+
     def get_loaded(
         self,
     ):
@@ -1765,25 +2193,9 @@ class PomDescriptor(ItemDescriptor):
         pom_abs_path = pom_descriptor['absolute_path']
 
         if pom_descriptor['is_exception']:
-            msg = self.get_desc_coords_string() + 'pom is exception: ' + pom_abs_path
-            logging.warning(msg)
-            self.add_step_log(
-                'is_pom_excepted',
-                # NOTE: When loading pom file, this is not a failure.
-                #       Just note about known exception.
-                True,
-                msg,
-            )
             return
 
         if not pom_descriptor['is_tracked']:
-            msg = self.get_desc_coords_string() + 'pom is not tracked: ' + pom_abs_path
-            logging.error(msg)
-            self.add_step_log(
-                'is_pom_tracked',
-                False,
-                msg,
-            )
             return
 
         # Generate effective pom file.
@@ -1802,6 +2214,7 @@ class PomDescriptor(ItemDescriptor):
         maven_coords = get_single_pom_maven_coordinates(
             single_effective_pom_data,
         )
+        # Record Maven Coordinates as a list to adapt fror processing.
         pom_descriptor['maven_coordinates'] = maven_coords
 
         # Get all dependencies.
@@ -1834,11 +2247,12 @@ class PomDescriptor(ItemDescriptor):
         def populate_reference_data(
             report_data,
             artifact_key,
-            dependency_data,
+            dependency_item,
+            key_source,
         ):
 
             derived_artifact_key = get_artifact_key(
-                dependency_data,
+                dependency_item,
             )
             assert(derived_artifact_key == artifact_key)
 
@@ -1847,7 +2261,7 @@ class PomDescriptor(ItemDescriptor):
                 msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + ' is missing in `artifact_descriptors`'
                 logging.error(msg)
                 self.add_step_log(
-                    'is_artifact_descriptor_defined',
+                    'is_artifact_descriptor_`' + str(artifact_key) + '`_from_`' + key_source + '`_defined',
                     False,
                     msg,
                 )
@@ -1855,6 +2269,15 @@ class PomDescriptor(ItemDescriptor):
 
             # Get artifact descriptor object.
             artifact_descriptor = report_data['artifact_descriptors'][artifact_key]
+            if 'is_inited' not in artifact_descriptor or not artifact_descriptor['is_inited']:
+                msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + ' is not yet inited'
+                logging.error(msg)
+                self.add_step_log(
+                    'is_artifact_descriptor_`' + str(artifact_key) + '`_inited',
+                    False,
+                    msg,
+                )
+                return
 
             # NOTE: The counter includes both (not fair counter):
             #       - data generated from parsed XML
@@ -1870,11 +2293,38 @@ class PomDescriptor(ItemDescriptor):
                 msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + ' is defined in `artifact_descriptors` but NOT declared as `used`'
                 logging.error(msg)
                 self.add_step_log(
-                    'is_artifact_descriptor_used',
+                    'is_artifact_descriptor_`' + str(artifact_key) + '`_from_`' + key_source + '`_used',
                     False,
                     msg,
                 )
                 return
+
+            # TODO: Be able to filter those `xml_referenced_dependencies`
+            #       where version is not specified.
+            #       At the moment script uses coarse-grained `True` for all
+            #       cases when Maven coordinate does not specify version.
+            #       It still does compare versions when they are specifed.
+            if 'version' in dependency_item and dependency_item['version'] is not None:
+                # No forced value - compare versions.
+                force_result = None
+            else:
+                # Ignore missing `version`.
+                force_result = True
+
+            # Verify Maven Coordinates between `dependency_item` of pom file
+            # `artifact_descriptor` specified by `artifact_key`
+            self.verify_artifact_maven_coordinates(
+                artifact_key = artifact_key,
+                left_coords_list = [ dependency_item ],
+                left_coords_src = 'pom_file',
+                right_coords_list = artifact_descriptor['maven_coordinates'],
+                right_coords_src = 'artifact_descriptor_maven_coordinates',
+                force_result = force_result,
+            )
+
+        # Do not verify exceptions.
+        if self.data_item['is_exception']:
+            return
 
         # TODO: Use `self` variables instead.
         #       These are just an adaptors for old code.
@@ -1886,47 +2336,66 @@ class PomDescriptor(ItemDescriptor):
         pom_descriptor = self.data_item
 
         # Dependencies generated from parsed XML.
-        for artifact_key in pom_descriptor['xml_referenced_dependencies'].keys():
+        key_source = 'xml_referenced_dependencies'
+        for artifact_key in pom_descriptor[key_source].keys():
 
             logging.debug('artifact_key: ' + str(artifact_key))
 
-            for xpath_key in pom_descriptor['xml_referenced_dependencies'][artifact_key].keys():
+            for xpath_key in pom_descriptor[key_source][artifact_key].keys():
 
-                dependency_data = pom_descriptor['xml_referenced_dependencies'][artifact_key][xpath_key]
+                dependency_item = pom_descriptor[key_source][artifact_key][xpath_key]
 
                 populate_reference_data(
                     report_data,
                     artifact_key,
-                    dependency_data,
+                    dependency_item,
+                    key_source + ':' + xpath_key,
                 )
 
         # Dependencies generated from `dependency:list`.
-        for artifact_key in pom_descriptor['maven_dependency_list'].keys():
+        key_source = 'maven_dependency_list'
+        for artifact_key in pom_descriptor[key_source].keys():
 
             logging.debug('artifact_key: ' + str(artifact_key))
 
-            dependency_data = pom_descriptor['maven_dependency_list'][artifact_key]
+            dependency_item = pom_descriptor[key_source][artifact_key]
 
             populate_reference_data(
                 report_data,
                 artifact_key,
-                dependency_data,
+                dependency_item,
+                key_source,
             )
+
+            # TODO: The problem with `dependency:list` is that output
+            #       for parent pom.xml file gets overwrittent by the output
+            #       of the last child defined in `modules`.
+            #       In other words list of `artifact_key` from parent
+            #       may not exists in `xml_referenced_dependencies` (even if
+            #       it is listed as poper dependency in this pom.xml) because
+            #       `maven_dependency_list` is for a child (not for
+            #       this pom.xml).
+            #       This is a temporary solution to ignore this case.
+            #       TODO: This can be solved by generating output into
+            #             files with non-absolute path. Then Maven itself
+            #             splits things per pom.xml. However, this requires
+            #             many changes.
+            ignore_xml_ref_because_of_maven_bug = True
 
             # Make sure that each dependency from `dependency:list`
             # also exists in data from parsed XML.
             # NOTE: No need to check the other way around as parsed XML
             #       takes much more information (not true dependencies).
+            # NOTE: At the moment only direct (not transitive)
+            #       dependencies are included.
             if artifact_key not in pom_descriptor['xml_referenced_dependencies']:
                 msg = self.get_desc_coords_string() + 'artifact ' + str(artifact_key) + ' is part of `maven_dependency_list` but not part of `xml_referenced_dependencies`'
-                # NOTE: This is not a failure because `dependency:list`
-                #       also provides transitive dependencies.
                 # TODO: Should we check if it is really a transitive
                 #       dependency or error?
                 logging.error(msg)
                 self.add_step_log(
-                    '\'' + artifact_key + '\'_is_in_maven_dependency_list',
-                    False,
+                    '`' + artifact_key + '`_is_in_maven_dependency_list',
+                    ignore_xml_ref_because_of_maven_bug,
                     msg,
                 )
             else:
@@ -1935,10 +2404,16 @@ class PomDescriptor(ItemDescriptor):
                 for xpath_key in pom_descriptor['xml_referenced_dependencies'][artifact_key].keys():
                     self.verify_artifact_maven_coordinates(
                         artifact_key,
-                        dependency_data,
+                        [ dependency_item ],
                         'maven_dependency_list',
-                        pom_descriptor['xml_referenced_dependencies'][artifact_key][xpath_key],
+                        [ pom_descriptor['xml_referenced_dependencies'][artifact_key][xpath_key] ],
                         'xml_referenced_dependencies',
+                        # TODO: This is too coarse-grained force of the result.
+                        #       Figure out solution when comparision still fails
+                        #       except when maven coordinates come from specific
+                        #       tag (like `inclusion`). Currently, it will be
+                        #       just a warning regrardless of the tag used.
+                        force_result = True,
                     )
 
     #--------------------------------------------------------------------------
@@ -1984,25 +2459,29 @@ def associate_report_data_item_descriptors(
     # into (stale) `report_data`.
     # This steps allows removing `pom_files` from report to
     # get them refreshed from Salt pillar.
+
     for repo_id in all_pom_files_per_repo.keys():
         if repo_id not in report_data['pom_files']:
             report_data['pom_files'][repo_id] = {}
 
-        pom_rel_paths = all_pom_files_per_repo[repo_id]
-        for pom_rel_path in pom_rel_paths.keys():
+        pom_rel_paths = all_pom_files_per_repo[repo_id].keys()
+        for pom_rel_path in pom_rel_paths:
             if pom_rel_path not in report_data['pom_files'][repo_id]:
-                report_data['pom_files'][repo_id] = all_pom_files_per_repo[repo_id][pom_rel_path]
+                pom_file = all_pom_files_per_repo[repo_id][pom_rel_path]
+                logging.debug('reload pom_file: ' + str(pom_file))
+                report_data['pom_files'][repo_id][pom_rel_path] = pom_file
 
     # Loop through unprocessed `pom_files`.
     for repo_id in report_data['pom_files'].keys():
         logging.debug('repo_id: ' + str(repo_id))
 
-        pom_rel_paths = report_data['pom_files'][repo_id]
+        pom_rel_paths = report_data['pom_files'][repo_id].keys()
+        logging.debug('pom_rel_paths: ' + str(pom_rel_paths))
 
-        for pom_rel_path in pom_rel_paths.keys():
+        for pom_rel_path in pom_rel_paths:
             logging.debug('pom_rel_path: ' + str(pom_rel_path))
 
-            pom_file = pom_rel_paths[pom_rel_path]
+            pom_file = report_data['pom_files'][repo_id][pom_rel_path]
 
             # TODO: Rename `pom_file` into `pom_descriptor`.
             item_descriptor = PomDescriptor(
@@ -2015,7 +2494,7 @@ def associate_report_data_item_descriptors(
             )
             item_descriptors.append(item_descriptor)
 
-        logging.debug(item_descriptor.get_desc_coords_string() + 'associated')
+            logging.debug(item_descriptor.get_desc_coords_string() + 'associated')
 
     return item_descriptors
 
@@ -2024,14 +2503,12 @@ def associate_report_data_item_descriptors(
 
 def detect_progressed_descriptors(item_descriptors):
 
-    is_progressed = True
     for item_descriptor in item_descriptors:
         logging.debug(item_descriptor.get_desc_coords_string() + 'is_progressed = ' + str(item_descriptor.is_field_true('is_progressed')))
-        if not item_descriptor.is_field_true('is_progressed'):
-            is_progressed = False
-            break
+        if item_descriptor.is_field_true('is_progressed'):
+            return True
 
-    return is_progressed
+    return False
 
 ###############################################################################
 #
@@ -2114,6 +2591,14 @@ def get_incremental_report(
     # because it is about to be recomputed.
     report_data['overall_result'] = True
 
+    # Reduce size of the report by removing duplicate `step_messages`.
+    for message_list in get_key_values('step_messages', report_data):
+        assert(isinstance(message_list, list))
+        init_count = len(message_list)
+        message_list = list(set(message_list))
+        reduced_count = len(message_list)
+        logging.debug('init_count: ' + str(init_count) + ' ' + 'reduced_count: ' + str(reduced_count))
+
     # Associate specific descriptors
     # (either `pom_file` or `artifact_descriptor`).
     item_descriptors = associate_report_data_item_descriptors(
@@ -2132,19 +2617,49 @@ def get_incremental_report(
     # Loop while there are no more progress detected
     # (either `pom_file` or `artifact_descriptor`).
     progress_detected = True
+    run_counter = 0
     while progress_detected:
 
-        # Process each `item_descriptor` incrementally saving data.
-        for item_descriptor in item_descriptors:
+        run_counter += 1
 
-            # Record report only if there was any progress.
-            # This step is only for time efficiency.
-            if item_descriptor.process_all_stages():
-                logging.debug(item_descriptor.get_desc_coords_string() + 'saving incremental report')
-                save_yaml_file(
-                    report_data,
-                    output_incremental_report_yaml_path,
-                )
+        # Process each `item_descriptor` incrementally saving data.
+        total_descriptor_counter = len(item_descriptors)
+        descriptor_counter = 0
+
+        try:
+
+            # Shuffle descriptors to avoid running the same long list every time.
+            # The descriptors are already out of order anyway because they are
+            # loaded using lists of keys in a dictionary.
+            random.shuffle(item_descriptors)
+
+            for item_descriptor in item_descriptors:
+                descriptor_counter += 1
+
+                # Debug only: process selected descriptors only.
+                if False:
+                    selected = False
+                    selector = item_descriptor.desc_coords
+                    if isinstance(item_descriptor, ArtifactDescriptor):
+                        if selector['artifact_key'] == 'com.thalesgroup.border.cde:cde-dao':
+                            selected = True
+                    if isinstance(item_descriptor, PomDescriptor):
+                        if selector['repo_id'] == 'cde' and selector['pom_rel_path'] == 'cde-dao/pom.xml':
+                            selected = True
+                    if not selected:
+                        # Indicate no progress to have a chance to exit the loop.
+                        item_descriptor.set_field('is_progressed', False)
+                        continue
+
+                item_descriptor.process_all_stages()
+                logging.info('DONE: RUN #' + str(run_counter) + ': DESCRIPTOR #' + str(descriptor_counter) + ' of ' + str(total_descriptor_counter) + ': ' + item_descriptor.get_desc_coords_string())
+                logging.debug('NEXT...')
+        finally:
+
+            save_yaml_file(
+                report_data,
+                output_incremental_report_yaml_path,
+            )
 
         # Check if there is any progress to start again.
         progress_detected = detect_progressed_descriptors(item_descriptors)
@@ -2157,6 +2672,15 @@ def get_incremental_report(
     # Verify that pom file is part of repository it is claimed to be.
     # For example, avoid searching top level repository result in list
     # of pom files pertaining to its submodules.
+    #
+    #--------------------------------------------------------------------------
+    #
+    # -
+    # Add list of transitive dependencies (default for `depenencies:list`).
+    # At the moment transitive dependencies are exluded for XML references
+    # to be able to match all (non-transitive) dependencies.
+    # However, it is good to have list of all dependencies for pom file
+    # inside `artifact_descriptors`.
     #
     #--------------------------------------------------------------------------
     # One-to-one pom-artifact match for internal components
@@ -2215,6 +2739,7 @@ def get_incremental_report(
     report_data['overall_result'] = get_overall_result(
         report_data,
     )
+    logging.info('COMPLETED: overall_result: ' + str(report_data['overall_result']))
 
     return report_data
 

@@ -14,6 +14,10 @@ set -u
 # Debug.
 set -x
 
+# Return last non-zero exit code from piped command.
+# See: http://unix.stackexchange.com/a/14282/23886
+set -o pipefail
+
 # Set proper Java version.
 # TODO: Do not hardcode it - get from Salt pillar.
 export JAVA_HOME='/usr/java/jdk1.7.0_71'
@@ -34,15 +38,41 @@ else
     RUNTIME_DIR="$( realpath "$( pwd )/${SCRIPT_DIR}" )"
 fi
 
+OUT_FILE="${RUNTIME_DIR}/verify.sh.out"
+: > "${OUT_FILE}"
+
+# If `clean` parameter is specified, it start from scratch
+# (removing previous files with data).
+if [ "clean" == "${1:-}" ]
+then
+
+    rm -rf \
+        "${RUNTIME_DIR}"/salt_pillar.yaml \
+        "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
+        "${RUNTIME_DIR}"/output_pom_data_dir \
+        "${RUNTIME_DIR}"/incremental_report.yaml \
+        2>&1 | tee -a "${OUT_FILE}" \
+
+fi
+
 # Get pillar.
 if true
 then
+
+    # NOTE: If pillar has syntax issues, Salt won't report failed exit status.
+    #       Detect errors by removing original file and test existance
+    #       of the new one.
+    rm -f "${RUNTIME_DIR}"/salt_pillar.yaml
 
     sudo \
     "${RUNTIME_DIR}"/process_maven_data.py \
         c get_salt_pillar \
         --output_salt_pillar_yaml_file_path \
         "${RUNTIME_DIR}"/salt_pillar.yaml \
+        2>&1 | tee -a "${OUT_FILE}" \
+
+    # NOTE: Test if Salt was able to generate the file.
+    test -f "${RUNTIME_DIR}"/salt_pillar.yaml
 
 fi
 
@@ -56,6 +86,7 @@ then
         "${RUNTIME_DIR}"/salt_pillar.yaml \
         --output_all_pom_files_per_repo_yaml_path \
         "${RUNTIME_DIR}"/all_pom_files_per_repo.yaml \
+        2>&1 | tee -a "${OUT_FILE}" \
 
 fi
 
@@ -75,6 +106,7 @@ then
         "${RUNTIME_DIR}"/incremental_report.yaml \
         --output_incremental_report_yaml_path \
         "${RUNTIME_DIR}"/incremental_report.yaml \
+        2>&1 | tee -a "${OUT_FILE}" \
 
 fi
 

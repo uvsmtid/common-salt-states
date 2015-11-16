@@ -39,16 +39,19 @@
         # Run `verify.sh` script.
         # TODO: Fail build when Maven configuration is fixed.
         set +e
-        "${COMMON_STATES_REPO_PATH}"/states/common/maven/artifacts/verify.sh
+        "${COMMON_STATES_REPO_PATH}"/states/common/maven/artifacts/verify.sh clean
         RET_VAL="${?}"
         set -e
         if [ "${RET_VAL}" != "0" ]
         then
-            if [ "${JOB_STATUS}" -lt '1' ]
+            if [ "${JOB_STATUS}" -lt '2' ]
             then
-                JOB_STATUS='1'
+                JOB_STATUS='2'
             fi
         fi
+
+        # Show report:
+        cat "${COMMON_STATES_REPO_PATH}"/states/common/maven/artifacts/incremental_report.yaml
 
         #######################################################################
         # Script footer

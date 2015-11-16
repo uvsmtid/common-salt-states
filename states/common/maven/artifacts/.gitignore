@@ -7,6 +7,11 @@
 /all_pom_files_per_repo.yaml
 /output_pom_data_dir/
 /incremental_report.yaml
+/verify.sh.out
+
+# Eclipse PyDev:
+/.project
+/.pydevproject
 
 ###############################################################################
 # EOF
