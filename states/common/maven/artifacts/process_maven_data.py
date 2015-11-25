@@ -1781,6 +1781,17 @@ class ArtifactDescriptor(ItemDescriptor):
             # at least one full set of Maven coordinates later.
             self.data_item['current_version'] = [ None ]
 
+        # Adaptor: change every item in `current_version` to string value
+        #          except `None`.
+        version_items = []
+        for version_item in self.data_item['current_version']:
+            if version_item is not None:
+                version_items.append(str(version_item))
+            else:
+                version_items.append(version_item)
+        self.data_item['current_version'] = version_items
+
+        # Check validity of `source_type`.
         if self.data_item['source_type'] in [
             'available-closed',
             'modified-open',
