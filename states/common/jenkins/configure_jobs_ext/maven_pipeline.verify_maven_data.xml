@@ -50,8 +50,10 @@
             fi
         fi
 
-        # Show report:
-        cat "${COMMON_STATES_REPO_PATH}"/states/common/maven/artifacts/incremental_report.yaml
+        # NOTE: Report is not shown in the job output because it is huge.
+        #       If there any problem, it also pushes away from the possible
+        #       error output shown at the bottom when script stops.
+        echo See also report: "${COMMON_STATES_REPO_PATH}"/states/common/maven/artifacts/incremental_report.yaml
 
         #######################################################################
         # Script footer
