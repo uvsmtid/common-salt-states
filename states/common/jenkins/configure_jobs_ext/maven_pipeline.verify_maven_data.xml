@@ -30,9 +30,24 @@
 
         #######################################################################
 
-        # Get location of `verify.sh` script.
+        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
         {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
-        {% set repo_id = 'common-salt-states' %}             
+
+        # Get (project states) repository of `compare_order.sh` script.
+        {% set project_states_repo_id = get_repository_id_by_role('project_states_role') %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][project_states_repo_id]['git'] %}
+        export PROJECT_STATES_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        # Compare order of of listed artifacts.
+        # NOTE: The order is checked in project _states_ repository rather
+        #       than _pillars_. This is not exactly correct as `verify.sh`
+        #       script later verifies (compiled) _pillars_. However, this
+        #       is still acceptable because _states_ are eventually supposed
+        #       to contain consistent list of artifacts.
+        "${PROJECT_STATES_REPO_PATH}"/pillars/profile/common/system_maven_artifacts/compare_order.sh
+
+        # Get repository of `verify.sh` script.
+        {% set repo_id = 'common-salt-states' %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
         export COMMON_STATES_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
