@@ -131,10 +131,14 @@ def set_salt_states_and_pillars_symlinks(
     )
 
     ###########################################################################
-    # Make sure `pillars` symlink points to `pillars` repository.
+    # Make sure both `defaults` and `overrides` symlinks point
+    # to `pillars` repositories.
 
     # Note that in case of generic profile instead of `pillars_repo_abs_path`
     # `states` repo of the project is used instead.
+
+    # TODO: OBS-1780: Reconsider using `effective_pillars`.
+    #                 Should it always be only `defaults` and `overrides`?
     effective_pillars_repo_abs_path = None
     if use_pillars_from_states_repo:
         if project_name != 'common':
@@ -146,19 +150,49 @@ def set_salt_states_and_pillars_symlinks(
         # Use conventional pillars location (as normal)
         effective_pillars_repo_abs_path = pillars_repo_abs_path
 
-    assert(os.path.isabs(effective_pillars_repo_abs_path))
+    overrides_pillars_repo_abs_path = effective_pillars_repo_abs_path
+    defaults_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
+
+    # Create base `/srv/pillars` directory.
     command_args = [
-        'ln',
-        '-snf',
-        os.path.join(
-            effective_pillars_repo_abs_path,
-            'pillars',
-        ),
+        'mkdir',
+        '-p',
         '/srv/pillars',
     ]
     call_subprocess(
         command_args,
     )
+
+    # Make symlinks.
+    for pillars_repo_map_item in [
+        {
+            'symlink_name': 'overrides'
+            ,
+            'symlink_target': overrides_pillars_repo_abs_path
+        }
+        ,
+        {
+            'symlink_name': 'defaults'
+            ,
+            'symlink_target': defaults_pillars_repo_abs_path
+        }
+    ]:
+        assert(os.path.isabs(pillars_repo_map_item['symlink_target']))
+        command_args = [
+            'ln',
+            '-snf',
+            os.path.join(
+                pillars_repo_map_item['symlink_target'],
+                'pillars',
+            ),
+            os.path.join(
+                '/srv/pillars',
+                pillars_repo_map_item['symlink_name'],
+            )
+        ]
+        call_subprocess(
+            command_args,
+        )
 
     ###########################################################################
     # Make sure `pillars` contains symlinks to all bootstrap profiles.
@@ -182,6 +216,9 @@ def set_salt_states_and_pillars_symlinks(
     #       On the other hand, when the function is called outside
     #       of bootstrap process, do not substitute bootstrap target
     #       profile pillars repository.
+
+    # TODO: OBS-1781: Add two symlinks per bootstrap profile -
+    #                 one for `defaults` and the other is for `overrides`.
     if run_use_case is not None:
         # Inside bootstrap process.
         # Re-use the same pillars repository for bootstrap targets.
@@ -226,7 +263,9 @@ def set_salt_states_and_pillars_symlinks(
                 'profile',
             ),
             os.path.join(
-                '/srv/pillars/bootstrap/profiles',
+                # TODO: OBS-1781: There should be both "overrides"
+                #                 and "defaults" for bootstrap profiles.
+                '/srv/pillars/overrides/bootstrap/profiles',
                 profile_name,
             ),
         ]

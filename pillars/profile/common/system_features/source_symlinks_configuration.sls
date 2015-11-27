@@ -61,16 +61,16 @@ system_features:
                 # Path relative to checked out sources' root:
                 rel_target_path: 'states'
 
-            salt_pillars_roots:
-                # Note that pillars for generic profile are taken
-                # from `states` repository under its `pillars` directory
-                # with generic profile template in it.
-            {% if use_pillars_from_states_repo %}
+            # TODO: OBS-1781, OBS-1779: Review after pillars are finally
+            #       split to "defaults" and "overrides".
+            salt_defaults_pillars_roots:
                 repo_name: '{{ project_name }}-salt-states'
-            {% else %}
+                abs_link_base_path: '/srv/pillars/defaults'
+                rel_target_path: 'pillars'
+
+            salt_overrides_pillars_roots:
                 repo_name: '{{ project_name }}-salt-pillars'
-            {% endif %}
-                abs_link_base_path: '/srv/pillars'
+                abs_link_base_path: '/srv/pillars/overrides'
                 rel_target_path: 'pillars'
 
             # Project-specific states.
@@ -90,9 +90,11 @@ system_features:
 
             {% else %}
 
+            # TODO: OBS-1781: There should be both "overrides" and
+            #                 "defaults" bootstraps.
             {{ project_name }}.{{ profile_name }}_bootstrap_profiles:
                 repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
-                abs_link_base_path: '/srv/pillars/bootstrap/profiles/{{ profile_name }}'
+                abs_link_base_path: '/srv/pillars/overrides/bootstrap/profiles/{{ profile_name }}'
                 rel_target_path: 'pillars/profile'
 
             {% endif %} # use_pillars_from_states_repo

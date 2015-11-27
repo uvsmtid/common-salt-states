@@ -56,6 +56,7 @@ so that Salt can access them.
 
         sudo ln -sfn /home/${default_username}/Works/${project_name}-salt-pillars.git/pillars /srv/pillars
         ```
+        TODO: Update when pillars are split to "defaults" and "overrides".
 
         There is only one active profile and it is defined by contents of
         `pillars` directory of `${project_name}-salt-pillars` repository.
@@ -106,6 +107,7 @@ pillar_roots:
         # Conventionally, the following directory is a symlink pointing to
         # `/home/${default_username}/Works/${project_name}-salt-pillars.git/pillars`
         - /srv/pillars
+        TODO: Update when pillars are split to "defaults" and "overrides".
 
 # ...
 ```

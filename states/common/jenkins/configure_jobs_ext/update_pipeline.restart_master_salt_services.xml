@@ -31,7 +31,7 @@
         #######################################################################
 
         # Use script for Salt configuration:
-        sudo /srv/states/bootstrap/bootstrap.dir/configure_salt.py /srv/pillars/profile/properties.yaml
+        sudo /srv/states/bootstrap/bootstrap.dir/configure_salt.py /srv/pillars/overrides/profile/properties.yaml
 
         #######################################################################
         # Script footer

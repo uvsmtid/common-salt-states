@@ -130,6 +130,7 @@ in addition to those mentioned in [Salt configuration][7] document
     ```
     ~/Works/${project_name}-salt-pillars.git
     ```
+    TODO: Update after pillars are split into "defaults" and "overrides".
 
     Make repository is switched to correct branch name.
 
@@ -143,6 +144,7 @@ in addition to those mentioned in [Salt configuration][7] document
     ```
     ~/Works/${project_name}-salt-pillars.git/pillars
     ```
+    TODO: Update after pillars are split into "defaults" and "overrides".
 
     Make repository is switched to correct branch name.
 
@@ -154,6 +156,7 @@ in addition to those mentioned in [Salt configuration][7] document
     ```
     ~/Works/${project_name}-salt-pillars.git/pillars/profile
     ```
+    TODO: Update after pillars are split into "defaults" and "overrides".
 
     Make repository is switched to correct branch name.
 

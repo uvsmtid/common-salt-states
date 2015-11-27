@@ -16,6 +16,7 @@ TODO
   * The `/srv/pillars` and `/srv/states` should only be symlinked to
     the `common` repository. A project_name is plugged in by adding symlinks
     from within `common` repository to the plugged project_name.
+    TODO: Update after pillars are split into "defaults" and "overrides".
   * The best part whould be ability to put entire source code of
     plugable repository under single directory of `common` repository
     so that they can be developed as single entity via Git submodules.
