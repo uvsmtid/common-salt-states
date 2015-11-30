@@ -133,12 +133,9 @@ def set_salt_states_and_pillars_symlinks(
     # Make sure both `defaults` and `overrides` symlinks point
     # to `pillars` repositories.
 
-    # TODO: OBS-1780: Reconsider using `effective_pillars`.
-    #                 Should it always be only `defaults` and `overrides`?
-    effective_pillars_repo_abs_path = None
-    effective_pillars_repo_abs_path = pillars_repo_abs_path
+    pillars_repo_abs_path = pillars_repo_abs_path
 
-    overrides_pillars_repo_abs_path = effective_pillars_repo_abs_path
+    overrides_pillars_repo_abs_path = pillars_repo_abs_path
     defaults_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
 
     # Create base `/srv/pillars` directory.
@@ -198,7 +195,7 @@ def set_salt_states_and_pillars_symlinks(
     #       names will not contain loadable pillars. In order to
     #       avoid failures while loading pillars, create symlink
     #       named after bootstrap target profile pillars repository
-    #       pointing into effective pillars repository.
+    #       pointing into pillars repository.
     #       On the other hand, when the function is called outside
     #       of bootstrap process, do not substitute bootstrap target
     #       profile pillars repository.
@@ -221,7 +218,7 @@ def set_salt_states_and_pillars_symlinks(
         command_args = [
             'ln',
             '-snf',
-            effective_pillars_repo_abs_path,
+            pillars_repo_abs_path,
             bootstrap_target_pillars_repo_abs_path,
         ]
         call_subprocess(

@@ -85,9 +85,6 @@ system_features:
             target_profile_pillars_role:
                 - '{{ project_name }}-salt-pillars.bootstrap-target'
 
-            effective_pillars_role:
-                - '{{ project_name }}-salt-pillars'
-
             taggable_repository_role:
                 - '{{ project_name }}-salt-states'
                 - '{{ project_name }}-build-history'
