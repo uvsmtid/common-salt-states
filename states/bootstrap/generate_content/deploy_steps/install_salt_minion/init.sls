@@ -28,8 +28,6 @@
     )
 %}
 
-{% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
-
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
 
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
@@ -77,7 +75,6 @@
         - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/minion.{{ minion_type }}.conf'
         - source: '{{ deploy_step_config[salt_minion_template] }}'
         - context:
-            use_pillars_from_states_repo: '{{ use_pillars_from_states_repo }}'
             project_name: '{{ project_name }}'
             profile_name: '{{ profile_name }}'
             selected_host_name: '{{ selected_host_name }}'

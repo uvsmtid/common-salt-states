@@ -68,7 +68,6 @@ def set_salt_states_and_pillars_symlinks(
     pillars_repo_abs_path,
     projects_states_repo_abs_paths,
     bootstrap_target_pillars_repo_abs_path,
-    use_pillars_from_states_repo,
     load_bootstrap_target_envs,
     project_name,
     profile_name,
@@ -134,21 +133,10 @@ def set_salt_states_and_pillars_symlinks(
     # Make sure both `defaults` and `overrides` symlinks point
     # to `pillars` repositories.
 
-    # Note that in case of generic profile instead of `pillars_repo_abs_path`
-    # `states` repo of the project is used instead.
-
     # TODO: OBS-1780: Reconsider using `effective_pillars`.
     #                 Should it always be only `defaults` and `overrides`?
     effective_pillars_repo_abs_path = None
-    if use_pillars_from_states_repo:
-        if project_name != 'common':
-            effective_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
-        else:
-            # common
-            effective_pillars_repo_abs_path = states_repo_abs_path
-    else:
-        # Use conventional pillars location (as normal)
-        effective_pillars_repo_abs_path = pillars_repo_abs_path
+    effective_pillars_repo_abs_path = pillars_repo_abs_path
 
     overrides_pillars_repo_abs_path = effective_pillars_repo_abs_path
     defaults_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
@@ -198,8 +186,6 @@ def set_salt_states_and_pillars_symlinks(
     # Make sure `pillars` contains symlinks to all bootstrap profiles.
     # NOTE: It is assumed that single repository contains branches with
     #       pillars for all bootstrap target profiles.
-    # NOTE: None of the `pillars` repositories is considered
-    #       when generic profile from `states` repository is used.
 
     # NOTE: When `run_use_case` is not specified, the function is used
     #       to run states oustide of bootstrap process.
@@ -316,7 +302,6 @@ def do(action_context):
         pillars_repo_abs_path = pillars_destination_dir,
         projects_states_repo_abs_paths = action_context.conf_m.link_sources['projects_states_repo_abs_paths'],
         bootstrap_target_pillars_repo_abs_path = action_context.conf_m.link_sources['bootstrap_target_pillars_repo_abs_path'],
-        use_pillars_from_states_repo = action_context.conf_m.link_sources['use_pillars_from_states_repo'],
         load_bootstrap_target_envs = action_context.conf_m.link_sources['load_bootstrap_target_envs'],
         project_name = action_context.conf_m.project_name,
         profile_name = action_context.conf_m.profile_name,

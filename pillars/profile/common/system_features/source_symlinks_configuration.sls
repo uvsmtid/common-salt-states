@@ -8,7 +8,6 @@
 
 {% set project_name = props['project_name'] %}
 {% set master_minion_id = props['master_minion_id'] %}
-{% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
 {% set profile_name = props['profile_name'] %}
 
 system_features:
@@ -84,20 +83,12 @@ system_features:
 
             # Pillars for bootstrap environments.
 
-            # NOTE: None of the `pillars` repositories is considered
-            #       when generic profile from `states` repository is used.
-            {% if use_pillars_from_states_repo %}
-
-            {% else %}
-
             # TODO: OBS-1781: There should be both "overrides" and
             #                 "defaults" bootstraps.
             {{ project_name }}.{{ profile_name }}_bootstrap_profiles:
                 repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
                 abs_link_base_path: '/srv/pillars/overrides/bootstrap/profiles/{{ profile_name }}'
                 rel_target_path: 'pillars/profile'
-
-            {% endif %} # use_pillars_from_states_repo
 
             # NOTE: In order to access the following paths from Salt master,
             #       Salt master should be configured to use additional path

@@ -8,7 +8,6 @@
 
 {% set project_name = props['project_name'] %}
 {% set master_minion_id = props['master_minion_id'] %}
-{% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
 {% set profile_name = props['profile_name'] %}
 
 # Import `maven_repo_names`.
@@ -87,11 +86,7 @@ system_features:
                 - '{{ project_name }}-salt-pillars.bootstrap-target'
 
             effective_pillars_role:
-                {% if use_pillars_from_states_repo %}
-                - '{{ project_name }}-salt-states'
-                {% else %}
                 - '{{ project_name }}-salt-pillars'
-                {% endif %}
 
             taggable_repository_role:
                 - '{{ project_name }}-salt-states'
@@ -137,17 +132,7 @@ system_features:
 
             # Salt pillars.
 
-            # NOTE: The main `pillars` repository is NOT considered
-            #       when generic profile from `states` repository is used.
-            #       However, `bootstrap-target` is still used to generate
-            #       bootstrap target pillar.
-            {% if use_pillars_from_states_repo %}
-
-            {% else %}
-
             '{{ project_name }}-salt-pillars': git
-
-            {% endif %} # use_pillars_from_states_repo
 
             '{{ project_name }}-salt-pillars.bootstrap-target': git
 
@@ -202,17 +187,7 @@ system_features:
 
             # Salt pillars.
 
-            # NOTE: The main `pillars` repository is NOT considered
-            #       when generic profile from `states` repository is used.
-            #       However, `bootstrap-target` is still used to generate
-            #       bootstrap target pillar.
-            {% if use_pillars_from_states_repo %}
-
-            {% else %}
-
             '{{ project_name }}-salt-pillars': '/environment.sources/{{ project_name }}-salt-pillars.git'
-
-            {% endif %} # use_pillars_from_states_repo
 
             '{{ project_name }}-salt-pillars.bootstrap-target': '/environment.sources/{{ project_name }}-salt-pillars.bootstrap-target.git'
 
@@ -305,21 +280,11 @@ system_features:
 
             # Salt pillars.
 
-            # NOTE: The main `pillars` repository is NOT considered
-            #       when generic profile from `states` repository is used.
-            #       However, `bootstrap-target` is still used to generate
-            #       bootstrap target pillar.
-            {% if use_pillars_from_states_repo %}
-
-            {% else %}
-
             '{{ project_name }}-salt-pillars':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
                     origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.git'
-
-            {% endif %} # use_pillars_from_states_repo
 
             '{{ project_name }}-salt-pillars.bootstrap-target':
                 git:

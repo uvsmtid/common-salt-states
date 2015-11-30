@@ -62,11 +62,10 @@
                 #       on it's data type:
                 #       - dicts go without quotes
                 #       - strings go witht quotes
-                #       Lucily default renderring syntax in Jinja
+                #       Luckily default renderring syntax in Jinja
                 #       for None and booleans match Python one.
                 'projects_states_repo_abs_paths': {{ target_env_pillar['projects_states_repo_paths'] }},
                 'bootstrap_target_pillars_repo_abs_path': '{{ target_env_pillar['repo_path_bootstrap_target_pillars'] }}',
-                'use_pillars_from_states_repo': {{ target_env_pillar['use_pillars_from_states_repo'] }},
                 'load_bootstrap_target_envs': {{ target_env_pillar['load_bootstrap_target_envs'] }},
 
                 # Configure each extracted respository.
