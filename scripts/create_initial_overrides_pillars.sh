@@ -7,8 +7,18 @@
 set -e
 set -u
 
-# Destination directory.
-DST_REPO_DIR="${1}"
+# Get project name.
+if [ -z "${1:-}" ]
+then
+    echo "Enter project name (single keyword) to name pillars repository:"
+    read PROJECT_NAME
+    # TODO: Sanitize input.
+else
+    PROJECT_NAME="${1}"
+fi
+
+# Repository should follow naming convention.
+DST_REPO_DIR="${PROJECT_NAME}-salt-pillars.git"
 
 # Hardcoded relative path to `common-salt-states` repository root.
 COMMON_SALT_STATES_REPO_ROOT_DIR='..'
@@ -29,15 +39,6 @@ if [ -e "${DST_REPO_DIR}" ]
 then
     echo "ERROR: Destination directory exists: ${DST_REPO_DIR}" 1>&2
     exit 1
-fi
-
-# Enforce `*.git` naming convention.
-if echo "${DST_REPO_DIR}" | grep -v '[.]git$'
-then
-    echo "ERROR: Destination directory should have \`.git\` extension by convention: ${DST_REPO_DIR}" 1>&2
-    exit 1
-else
-    git init "${DST_REPO_DIR}"
 fi
 
 # Create directory layout.
