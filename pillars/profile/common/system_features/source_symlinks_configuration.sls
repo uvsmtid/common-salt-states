@@ -60,16 +60,14 @@ system_features:
                 # Path relative to checked out sources' root:
                 rel_target_path: 'states'
 
-            # TODO: OBS-1781, OBS-1779: Review after pillars are finally
-            #       split to "defaults" and "overrides".
-            salt_defaults_pillars_roots:
-                repo_name: '{{ project_name }}-salt-states'
-                abs_link_base_path: '/srv/pillars/defaults'
-                rel_target_path: 'pillars'
-
-            salt_overrides_pillars_roots:
+            salt_pillars_roots_overrides:
                 repo_name: '{{ project_name }}-salt-pillars'
                 abs_link_base_path: '/srv/pillars/overrides'
+                rel_target_path: 'pillars'
+
+            salt_pillars_roots_defaults:
+                repo_name: '{{ project_name }}-salt-states'
+                abs_link_base_path: '/srv/pillars/defaults'
                 rel_target_path: 'pillars'
 
             # Project-specific states.
@@ -83,11 +81,14 @@ system_features:
 
             # Pillars for bootstrap environments.
 
-            # TODO: OBS-1781: There should be both "overrides" and
-            #                 "defaults" bootstraps.
-            {{ project_name }}.{{ profile_name }}_bootstrap_profiles:
+            {{ project_name }}.{{ profile_name }}_bootstrap_profiles_overrides:
                 repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
                 abs_link_base_path: '/srv/pillars/overrides/bootstrap/profiles/{{ profile_name }}'
+                rel_target_path: 'pillars/profile'
+
+            {{ project_name }}.{{ profile_name }}_bootstrap_profiles_defaults:
+                repo_name: '{{ project_name }}-salt-states'
+                abs_link_base_path: '/srv/pillars/defaults/bootstrap/profiles/{{ profile_name }}'
                 rel_target_path: 'pillars/profile'
 
             # NOTE: In order to access the following paths from Salt master,

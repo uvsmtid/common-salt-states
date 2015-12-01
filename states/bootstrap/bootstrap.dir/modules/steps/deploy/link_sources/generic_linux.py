@@ -65,9 +65,9 @@ def set_salt_states_and_pillars_symlinks(
     #       than None)?
     run_use_case,
     states_repo_abs_path,
-    pillars_repo_abs_path,
+    overrides_pillars_repo_abs_path,
     projects_states_repo_abs_paths,
-    bootstrap_target_pillars_repo_abs_path,
+    overrides_bootstrap_target_pillars_repo_abs_path,
     load_bootstrap_target_envs,
     project_name,
     profile_name,
@@ -133,9 +133,6 @@ def set_salt_states_and_pillars_symlinks(
     # Make sure both `defaults` and `overrides` symlinks point
     # to `pillars` repositories.
 
-    pillars_repo_abs_path = pillars_repo_abs_path
-
-    overrides_pillars_repo_abs_path = pillars_repo_abs_path
     defaults_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
 
     # Create base `/srv/pillars` directory.
@@ -200,16 +197,15 @@ def set_salt_states_and_pillars_symlinks(
     #       of bootstrap process, do not substitute bootstrap target
     #       profile pillars repository.
 
-    # TODO: OBS-1781: Add two symlinks per bootstrap profile -
-    #                 one for `defaults` and the other is for `overrides`.
     if run_use_case is not None:
         # Inside bootstrap process.
-        # Re-use the same pillars repository for bootstrap targets.
+        # Re-use the same pillars repository for bootstrap targets -
+        # target pillars are symlinked to source pillars.
         # Make sure parent directory for symlink exists.
         command_args = [
             'mkdir',
             '-p',
-            os.path.dirname(bootstrap_target_pillars_repo_abs_path),
+            os.path.dirname(overrides_bootstrap_target_pillars_repo_abs_path),
         ]
         call_subprocess(
             command_args,
@@ -218,8 +214,8 @@ def set_salt_states_and_pillars_symlinks(
         command_args = [
             'ln',
             '-snf',
-            pillars_repo_abs_path,
-            bootstrap_target_pillars_repo_abs_path,
+            overrides_pillars_repo_abs_path,
+            overrides_bootstrap_target_pillars_repo_abs_path,
         ]
         call_subprocess(
             command_args,
@@ -234,21 +230,37 @@ def set_salt_states_and_pillars_symlinks(
     #       data).
     profile_names = [ profile_name ] + load_bootstrap_target_envs.keys()
 
-    assert(os.path.isabs(bootstrap_target_pillars_repo_abs_path))
+    assert(os.path.isabs(overrides_bootstrap_target_pillars_repo_abs_path))
 
     for profile_name in profile_names:
+        # Set `overrides` symlink which point to "pillars" repository.
         command_args = [
             'ln',
             '-snf',
             os.path.join(
-                bootstrap_target_pillars_repo_abs_path,
+                overrides_bootstrap_target_pillars_repo_abs_path,
                 'pillars',
                 'profile',
             ),
             os.path.join(
-                # TODO: OBS-1781: There should be both "overrides"
-                #                 and "defaults" for bootstrap profiles.
                 '/srv/pillars/overrides/bootstrap/profiles',
+                profile_name,
+            ),
+        ]
+        call_subprocess(
+            command_args,
+        )
+        # Set `defaults` symlink which point to project "states" repository.
+        command_args = [
+            'ln',
+            '-snf',
+            os.path.join(
+                defaults_pillars_repo_abs_path,
+                'pillars',
+                'profile',
+            ),
+            os.path.join(
+                '/srv/pillars/defaults/bootstrap/profiles',
                 profile_name,
             ),
         ]
@@ -296,9 +308,9 @@ def do(action_context):
         #       than None)?
         run_use_case = action_context.run_use_case,
         states_repo_abs_path = states_destination_dir,
-        pillars_repo_abs_path = pillars_destination_dir,
+        overrides_pillars_repo_abs_path = pillars_destination_dir,
         projects_states_repo_abs_paths = action_context.conf_m.link_sources['projects_states_repo_abs_paths'],
-        bootstrap_target_pillars_repo_abs_path = action_context.conf_m.link_sources['bootstrap_target_pillars_repo_abs_path'],
+        overrides_bootstrap_target_pillars_repo_abs_path = action_context.conf_m.link_sources['overrides_bootstrap_target_pillars_repo_abs_path'],
         load_bootstrap_target_envs = action_context.conf_m.link_sources['load_bootstrap_target_envs'],
         project_name = action_context.conf_m.project_name,
         profile_name = action_context.conf_m.profile_name,
