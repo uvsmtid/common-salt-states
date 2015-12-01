@@ -61,7 +61,7 @@
         # This case is used for `deploy_pipeline` and `release_pipeline`.
 
         # Get location of pillars (source profile) repo.
-        {% set source_profile_repo_id = pillars['project_name'] + '-salt-pillars' %}
+        {% set source_profile_repo_id = pillar['project_name'] + '-salt-pillars' %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][source_profile_repo_id]['git'] %}
         export SOURCE_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
