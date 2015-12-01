@@ -65,10 +65,9 @@ def set_salt_states_and_pillars_symlinks(
     #       than None)?
     run_use_case,
     states_repo_abs_path,
-    pillars_repo_abs_path,
+    overrides_pillars_repo_abs_path,
     projects_states_repo_abs_paths,
-    bootstrap_target_pillars_repo_abs_path,
-    use_pillars_from_states_repo,
+    overrides_bootstrap_target_pillars_repo_abs_path,
     load_bootstrap_target_envs,
     project_name,
     profile_name,
@@ -131,41 +130,56 @@ def set_salt_states_and_pillars_symlinks(
     )
 
     ###########################################################################
-    # Make sure `pillars` symlink points to `pillars` repository.
+    # Make sure both `defaults` and `overrides` symlinks point
+    # to `pillars` repositories.
 
-    # Note that in case of generic profile instead of `pillars_repo_abs_path`
-    # `states` repo of the project is used instead.
-    effective_pillars_repo_abs_path = None
-    if use_pillars_from_states_repo:
-        if project_name != 'common':
-            effective_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
-        else:
-            # common
-            effective_pillars_repo_abs_path = states_repo_abs_path
-    else:
-        # Use conventional pillars location (as normal)
-        effective_pillars_repo_abs_path = pillars_repo_abs_path
+    defaults_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
 
-    assert(os.path.isabs(effective_pillars_repo_abs_path))
+    # Create base `/srv/pillars` directory.
     command_args = [
-        'ln',
-        '-snf',
-        os.path.join(
-            effective_pillars_repo_abs_path,
-            'pillars',
-        ),
+        'mkdir',
+        '-p',
         '/srv/pillars',
     ]
     call_subprocess(
         command_args,
     )
 
+    # Make symlinks.
+    for pillars_repo_map_item in [
+        {
+            'symlink_name': 'overrides'
+            ,
+            'symlink_target': overrides_pillars_repo_abs_path
+        }
+        ,
+        {
+            'symlink_name': 'defaults'
+            ,
+            'symlink_target': defaults_pillars_repo_abs_path
+        }
+    ]:
+        assert(os.path.isabs(pillars_repo_map_item['symlink_target']))
+        command_args = [
+            'ln',
+            '-snf',
+            os.path.join(
+                pillars_repo_map_item['symlink_target'],
+                'pillars',
+            ),
+            os.path.join(
+                '/srv/pillars',
+                pillars_repo_map_item['symlink_name'],
+            )
+        ]
+        call_subprocess(
+            command_args,
+        )
+
     ###########################################################################
     # Make sure `pillars` contains symlinks to all bootstrap profiles.
     # NOTE: It is assumed that single repository contains branches with
     #       pillars for all bootstrap target profiles.
-    # NOTE: None of the `pillars` repositories is considered
-    #       when generic profile from `states` repository is used.
 
     # NOTE: When `run_use_case` is not specified, the function is used
     #       to run states oustide of bootstrap process.
@@ -178,18 +192,20 @@ def set_salt_states_and_pillars_symlinks(
     #       names will not contain loadable pillars. In order to
     #       avoid failures while loading pillars, create symlink
     #       named after bootstrap target profile pillars repository
-    #       pointing into effective pillars repository.
+    #       pointing into pillars repository.
     #       On the other hand, when the function is called outside
     #       of bootstrap process, do not substitute bootstrap target
     #       profile pillars repository.
+
     if run_use_case is not None:
         # Inside bootstrap process.
-        # Re-use the same pillars repository for bootstrap targets.
+        # Re-use the same pillars repository for bootstrap targets -
+        # target pillars are symlinked to source pillars.
         # Make sure parent directory for symlink exists.
         command_args = [
             'mkdir',
             '-p',
-            os.path.dirname(bootstrap_target_pillars_repo_abs_path),
+            os.path.dirname(overrides_bootstrap_target_pillars_repo_abs_path),
         ]
         call_subprocess(
             command_args,
@@ -198,8 +214,8 @@ def set_salt_states_and_pillars_symlinks(
         command_args = [
             'ln',
             '-snf',
-            effective_pillars_repo_abs_path,
-            bootstrap_target_pillars_repo_abs_path,
+            overrides_pillars_repo_abs_path,
+            overrides_bootstrap_target_pillars_repo_abs_path,
         ]
         call_subprocess(
             command_args,
@@ -214,19 +230,37 @@ def set_salt_states_and_pillars_symlinks(
     #       data).
     profile_names = [ profile_name ] + load_bootstrap_target_envs.keys()
 
-    assert(os.path.isabs(bootstrap_target_pillars_repo_abs_path))
+    assert(os.path.isabs(overrides_bootstrap_target_pillars_repo_abs_path))
 
     for profile_name in profile_names:
+        # Set `overrides` symlink which point to "pillars" repository.
         command_args = [
             'ln',
             '-snf',
             os.path.join(
-                bootstrap_target_pillars_repo_abs_path,
+                overrides_bootstrap_target_pillars_repo_abs_path,
                 'pillars',
                 'profile',
             ),
             os.path.join(
-                '/srv/pillars/bootstrap/profiles',
+                '/srv/pillars/overrides/bootstrap/profiles',
+                profile_name,
+            ),
+        ]
+        call_subprocess(
+            command_args,
+        )
+        # Set `defaults` symlink which point to project "states" repository.
+        command_args = [
+            'ln',
+            '-snf',
+            os.path.join(
+                defaults_pillars_repo_abs_path,
+                'pillars',
+                'profile',
+            ),
+            os.path.join(
+                '/srv/pillars/defaults/bootstrap/profiles',
                 profile_name,
             ),
         ]
@@ -274,10 +308,9 @@ def do(action_context):
         #       than None)?
         run_use_case = action_context.run_use_case,
         states_repo_abs_path = states_destination_dir,
-        pillars_repo_abs_path = pillars_destination_dir,
+        overrides_pillars_repo_abs_path = pillars_destination_dir,
         projects_states_repo_abs_paths = action_context.conf_m.link_sources['projects_states_repo_abs_paths'],
-        bootstrap_target_pillars_repo_abs_path = action_context.conf_m.link_sources['bootstrap_target_pillars_repo_abs_path'],
-        use_pillars_from_states_repo = action_context.conf_m.link_sources['use_pillars_from_states_repo'],
+        overrides_bootstrap_target_pillars_repo_abs_path = action_context.conf_m.link_sources['overrides_bootstrap_target_pillars_repo_abs_path'],
         load_bootstrap_target_envs = action_context.conf_m.link_sources['load_bootstrap_target_envs'],
         project_name = action_context.conf_m.project_name,
         profile_name = action_context.conf_m.profile_name,

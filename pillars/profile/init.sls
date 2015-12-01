@@ -55,6 +55,12 @@ include:
             this_pillar: {{ this_pillar }}.common.properties
             profile_root: {{ profile_root }}
 
+    # Load overrides of defaults.
+    - {{ this_pillar }}.overrides:
+        defaults:
+            this_pillar: {{ this_pillar }}.overrides
+            profile_root: {{ profile_root }}
+
 ###############################################################################
 # EOF
 ###############################################################################

@@ -8,7 +8,6 @@
 
 {% set project_name = props['project_name'] %}
 {% set master_minion_id = props['master_minion_id'] %}
-{% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
 {% set profile_name = props['profile_name'] %}
 
 system_features:
@@ -61,16 +60,14 @@ system_features:
                 # Path relative to checked out sources' root:
                 rel_target_path: 'states'
 
-            salt_pillars_roots:
-                # Note that pillars for generic profile are taken
-                # from `states` repository under its `pillars` directory
-                # with generic profile template in it.
-            {% if use_pillars_from_states_repo %}
-                repo_name: '{{ project_name }}-salt-states'
-            {% else %}
+            salt_pillars_roots_overrides:
                 repo_name: '{{ project_name }}-salt-pillars'
-            {% endif %}
-                abs_link_base_path: '/srv/pillars'
+                abs_link_base_path: '/srv/pillars/overrides'
+                rel_target_path: 'pillars'
+
+            salt_pillars_roots_defaults:
+                repo_name: '{{ project_name }}-salt-states'
+                abs_link_base_path: '/srv/pillars/defaults'
                 rel_target_path: 'pillars'
 
             # Project-specific states.
@@ -84,18 +81,15 @@ system_features:
 
             # Pillars for bootstrap environments.
 
-            # NOTE: None of the `pillars` repositories is considered
-            #       when generic profile from `states` repository is used.
-            {% if use_pillars_from_states_repo %}
-
-            {% else %}
-
-            {{ project_name }}.{{ profile_name }}_bootstrap_profiles:
+            {{ project_name }}.{{ profile_name }}_bootstrap_profiles_overrides:
                 repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
-                abs_link_base_path: '/srv/pillars/bootstrap/profiles/{{ profile_name }}'
+                abs_link_base_path: '/srv/pillars/overrides/bootstrap/profiles/{{ profile_name }}'
                 rel_target_path: 'pillars/profile'
 
-            {% endif %} # use_pillars_from_states_repo
+            {{ project_name }}.{{ profile_name }}_bootstrap_profiles_defaults:
+                repo_name: '{{ project_name }}-salt-states'
+                abs_link_base_path: '/srv/pillars/defaults/bootstrap/profiles/{{ profile_name }}'
+                rel_target_path: 'pillars/profile'
 
             # NOTE: In order to access the following paths from Salt master,
             #       Salt master should be configured to use additional path

@@ -9,7 +9,6 @@
 {% set project_name = props['project_name'] %}
 {% set profile_name = props['profile_name'] %}
 {% set master_minion_id = props['master_minion_id'] %}
-{% set use_pillars_from_states_repo = props['use_pillars_from_states_repo'] %}
 {% set default_username = props['default_username'] %}
 
 # Import `maven_repo_names`.
@@ -32,11 +31,7 @@ system_features:
         #       is specified (which bootstraps the rest).
         bootstrap_sources:
             states: common-salt-states
-            {% if use_pillars_from_states_repo %}
-            pillars: {{ project_name }}-salt-states
-            {% else %}
             pillars: {{ project_name }}-salt-pillars
-            {% endif %}
 
         # Repositories which actually get exported.
         export_sources:
@@ -64,28 +59,14 @@ system_features:
 
             {% set repo_name = 'common-salt-states' %}
             {{ repo_name }}:
-                # NOTE: In case of `use_pillars_from_states_repo` is True,
-                #       this repo is substituted by `bootstrap-target` clone.
-                #       No need to export in this case
-                {% if use_pillars_from_states_repo and project_name == 'common' %}
-                export_enabled: False
-                {% else %}
                 export_enabled: True
-                {% endif %}
                 export_method: clone
                 export_format: dir
 
             {% if project_name != 'common' %}
             {% set repo_name = project_name + '-salt-states' %}
             {{ repo_name }}:
-                # NOTE: In case of `use_pillars_from_states_repo` is True,
-                #       this repo is substituted by `bootstrap-target` clone.
-                #       No need to export in this case
-                {% if use_pillars_from_states_repo and project_name != 'common' %}
-                export_enabled: False
-                {% else %}
                 export_enabled: True
-                {% endif %}
                 export_method: clone
                 export_format: dir
             {% endif %}
@@ -123,22 +104,12 @@ system_features:
 
             # Salt pillars.
 
-            # NOTE: The main `pillars` repository is NOT considered
-            #       when generic profile from `states` repository is used.
-            #       However, `bootstrap-target` is still used to generate
-            #       bootstrap target pillar.
-            {% if use_pillars_from_states_repo %}
-
-            {% else %}
-
             {% set repo_name = project_name + '-salt-pillars' %}
             {{ repo_name }}:
                 # This repo is replaced by "target" pillar repository.
                 export_enabled: False
                 export_method: clone
                 export_format: dir
-
-            {% endif %} # use_pillars_from_states_repo
 
             # We only need to export pillars for target environment
             # but rename them.
@@ -150,16 +121,7 @@ system_features:
                 export_enabled: True
                 export_method: clone
                 export_format: dir
-                # NOTE: In case of `use_pillars_from_states_repo` is True,
-                #       `states` repositoriy is used.
-                # This is required.
-                # Pillars repository considered as "target" in the "source" environment
-                # becomes "source" configuration in the "target" environment.
-                {% if use_pillars_from_states_repo %}
-                target_repo_name: {{ project_name }}-salt-states
-                {% else %}
                 target_repo_name: {{ project_name }}-salt-pillars
-                {% endif %}
 
             # Repository with build history.
 

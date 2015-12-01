@@ -30,15 +30,6 @@ use_internet_http_proxy: False
 
 offline_mode: False
 
-# Use generic profile (saved in project's `states` repository).
-# NOTE: This is only for convenience of development when both states
-#       and pillars (template pillars) are changed in the same
-#       `states` repository.
-# NOTE: The main `pillars` repository is NOT considered
-#       when generic profile from `states` repository is used.
-#       Normally profile is not generic, and this value is set to `False`.
-use_pillars_from_states_repo: True
-
 project_name: common
 
 # Profile name specifies default branch name for configuration
@@ -82,8 +73,6 @@ symlinks_map:
 # known by Salt (in `/srv` directory) to the required data in repositories.
 repo_path_states: '/home/username/Works/common-salt-states.git'
 
-# Note that in case of generic profile, `states` repository for the project is
-# used instead of `pillars` one. And it ignores the main `pillars` repository.
 repo_path_pillars: '/home/username/Works/common-salt-pillars.git'
 
 # The `bootstrap-target` pillars repository is always used if

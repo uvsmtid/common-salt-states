@@ -179,10 +179,9 @@ def main():
         #       than None)?
         run_use_case = None,
         states_repo_abs_path = props['repo_path_states'],
-        pillars_repo_abs_path = props['repo_path_pillars'],
+        overrides_pillars_repo_abs_path = props['repo_path_pillars'],
         projects_states_repo_abs_paths = props['projects_states_repo_paths'],
-        bootstrap_target_pillars_repo_abs_path = props['repo_path_bootstrap_target_pillars'],
-        use_pillars_from_states_repo = props['use_pillars_from_states_repo'],
+        overrides_bootstrap_target_pillars_repo_abs_path = props['repo_path_bootstrap_target_pillars'],
         load_bootstrap_target_envs = props['load_bootstrap_target_envs'],
         project_name = props['project_name'],
         profile_name = props['profile_name'],
@@ -232,7 +231,8 @@ def main():
 
     # - Set `pillar_roots`.
     salt_master_conf['pillar_roots']['base'] = [
-        '/srv/pillars',
+        '/srv/pillars/overrides',
+        '/srv/pillars/defaults',
     ]
 
     # - Set additional configuration.
