@@ -3,8 +3,10 @@
 # This is a helper script to generate required and existing order
 # of items inside `artifact_descriptors.sls` file.
 
-set -e
+# Fail on undefined variable.
 set -u
+# Fail on non-zero exit code.
+set -e
 
 # Get directory the script is in.
 SCRIPT_DIR="$( dirname "${0}" )"
