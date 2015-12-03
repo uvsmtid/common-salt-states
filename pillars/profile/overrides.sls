@@ -3,8 +3,17 @@
 # This file is supposed to load pillars from separate "pillars" rository
 # which override defaults set in pillars provided in "states" repository.
 
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
 ###############################################################################
 # Overrides per file.
+
+# NOTE: Overrides per file don not need to be listed UNLESS this file
+#       is new and exits in "overrides" only (does not exists in "defaults").
+#       If file path matches those in "overrides", it overrides "defaults"
+#       without referening it here.
 
 # Example syntax of loading an `*.sls` file with overrides.
 {% if False %}
