@@ -135,11 +135,24 @@
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
+        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}" "NOT_AVAILABLE")"
 
-        cd "${REPO_PATH}"
-        git checkout "${RECOVERY_BRANCH}"
-        cd -
+        if [ "${RECOVERY_BRANCH}" != "NOT_AVAILABLE" ]
+        then
+
+            cd "${REPO_PATH}"
+            git checkout "${RECOVERY_BRANCH}"
+            cd -
+
+        else
+
+            # This is rather unexpected, but should not fail now.
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                echo "ERROR: Missing key in build descriptor."
+                JOB_STATUS='2'
+            fi
+        fi
 
         {% endif %}
 
@@ -173,47 +186,60 @@
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
-        RECOVERY_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_commit_ids:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
-
+        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}" "NOT_AVAILABLE")"
+        RECOVERY_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_commit_ids:{{ repo_name }}" "NOT_AVAILABLE")"
         RESTORE_POINT_COMMIT="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "restore_point_commit_ids:{{ repo_name }}" "NOT_AVAILABLE")"
 
-        cd "${REPO_PATH}"
-
-        # The case of unavailable restore point may happen
-        # when previous `init_pipeline` failed even before preparation
-        # to making any changes.
-        if [ "${RESTORE_POINT_COMMIT}" != "NOT_AVAILABLE" ]
+        if [ "${RECOVERY_BRANCH}" != "NOT_AVAILABLE" ] &amp;&amp; [ "${RECOVERY_COMMIT_ID}" != "NOT_AVAILABLE" ] &amp;&amp; [ "${RESTORE_POINT_COMMIT}" != "NOT_AVAILABLE" ]
         then
 
-            # This step restores all local changes committed at the beginning.
-            git checkout "${RESTORE_POINT_COMMIT}"
+            test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
+
+            cd "${REPO_PATH}"
+
+            # The case of unavailable restore point may happen
+            # when previous `init_pipeline` failed even before preparation
+            # to making any changes.
+            if [ "${RESTORE_POINT_COMMIT}" != "NOT_AVAILABLE" ]
+            then
+
+                # This step restores all local changes committed at the beginning.
+                git checkout "${RESTORE_POINT_COMMIT}"
+
+            else
+
+                # This is rather unexpected, but not critical.
+                if [ "${JOB_STATUS}" -lt '1' ]
+                then
+                    echo "WARNING: No restore point. Did last build fail before restore points were created?"
+                    JOB_STATUS='1'
+                fi
+
+            fi
+
+            # This step resets HEAD to the commit before the beginning
+            # while leaving all local files as they are at restore point.
+            # We cannot simply checkout the branch as this would also set
+            # local files into recovery commits instead of restore point.
+            git reset "${RECOVERY_COMMIT_ID}"
+
+            # This step moves away from detached HEAD to specified branch.
+            # All modifications to local files produced by checking out
+            # restore point and resetting to recovery commit are
+            # left untouched ("rebased" on top of RECOVERY branch).
+            git checkout "${RECOVERY_BRANCH}"
+
+            cd -
 
         else
 
-            # This is rather unexpected, but not critical.
-            if [ "${JOB_STATUS}" -lt '1' ]
+            # This is rather unexpected, but should not fail now.
+            if [ "${JOB_STATUS}" -lt '2' ]
             then
-                echo "WARNING: No restore point. Did last build fail before restore points were created?"
-                JOB_STATUS='1'
+                echo "ERROR: Missing key in build descriptor."
+                JOB_STATUS='2'
             fi
-
         fi
-
-        # This step resets HEAD to the commit before the beginning
-        # while leaving all local files as they are at restore point.
-        # We cannot simply checkout the branch as this would also set
-        # local files into recovery commits instead of restore point.
-        git reset "${RECOVERY_COMMIT_ID}"
-
-        # This step moves away from detached HEAD to specified branch.
-        # All modifications to local files produced by checking out
-        # restore point and resetting to recovery commit are
-        # left untouched ("rebased" on top of RECOVERY branch).
-        git checkout "${RECOVERY_BRANCH}"
-
-        cd -
 
         {% endif %}
 
@@ -250,29 +276,43 @@
         test "${CURRENT_BRANCH}" != "HEAD"
         cd -
 
-        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}")"
-        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
-        test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
+        RECOVERY_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "recovery_branches:{{ repo_name }}" "NOT_AVAILABLE")"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}" "NOT_AVAILABLE")"
 
-        cd "${REPO_PATH}"
-        # We need to force the deletion because branches may contain
-        # unmerges changes - pipeline designed so that changes are saved.
-        # Even if forced command fails, let's continue and indicate
-        # cleanup as unstable - the old build branch leftover
-        # is not critical.
-        set +e
-        git branch -vv -D "${BUILD_BRANCH}"
-        RET_VAL="${?}"
-        set -e
-        if [ "${RET_VAL}" != "0" ]
+        if [ "${RECOVERY_BRANCH}" != "NOT_AVAILABLE" ] &amp;&amp; [ "${BUILD_BRANCH}" != "NOT_AVAILABLE" ]
         then
-            if [ "${JOB_STATUS}" -lt '1' ]
+
+            test "${CURRENT_BRANCH}" == "${RECOVERY_BRANCH}"
+
+            cd "${REPO_PATH}"
+            # We need to force the deletion because branches may contain
+            # unmerges changes - pipeline designed so that changes are saved.
+            # Even if forced command fails, let's continue and indicate
+            # cleanup as unstable - the old build branch leftover
+            # is not critical.
+            set +e
+            git branch -vv -D "${BUILD_BRANCH}"
+            RET_VAL="${?}"
+            set -e
+            if [ "${RET_VAL}" != "0" ]
             then
-                echo "WARNING: Cannot delete build branch ${BUILD_BRANCH}."
-                JOB_STATUS='1'
+                if [ "${JOB_STATUS}" -lt '1' ]
+                then
+                    echo "WARNING: Cannot delete build branch ${BUILD_BRANCH}."
+                    JOB_STATUS='1'
+                fi
+            fi
+            cd -
+
+        else
+
+            # This is rather unexpected, but should not fail now.
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                echo "ERROR: Missing key in build descriptor."
+                JOB_STATUS='2'
             fi
         fi
-        cd -
 
         {% endif %}
 
