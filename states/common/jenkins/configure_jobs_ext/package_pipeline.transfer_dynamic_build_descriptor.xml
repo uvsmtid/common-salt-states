@@ -208,7 +208,7 @@
             test "${CURRENT_SOURCE_PILLAR_BRANCH}" == "${BUILD_BRANCH}"
 
             # Update target profile pillars repo from source profile pillars repo.
-            git pull --ff-only "${TARGET_PROFILE_REPO_PATH}" "${CURRENT_SOURCE_PILLAR_BRANCH}"
+            git pull --ff-only "${TARGET_PROFILE_REPO_PATH}" "${CURRENT_TARGET_PILLAR_BRANCH}"
 
         fi
         cd -
