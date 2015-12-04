@@ -39,12 +39,20 @@
         {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 
         #######################################################################
-        # Make sure target bootstrap profile pillars repo is on required branch.
+        # Get necessary info.
+
+        # Get location of pillars (source profile) repo.
+        {% set source_profile_repo_id = pillar['project_name'] + '-salt-pillars' %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][source_profile_repo_id]['git'] %}
+        export SOURCE_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
         # Get location of target bootstrap profile pillars repo.
         {% set target_profile_repo_id = get_repository_id_by_role('target_profile_pillars_role') %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][target_profile_repo_id]['git'] %}
         export TARGET_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        #######################################################################
+        # Make sure target bootstrap profile pillars repo is on required branch.
 
         cd "${TARGET_PROFILE_REPO_PATH}"
 
@@ -55,15 +63,11 @@
         cd -
 
         #######################################################################
-        # Special case when `TARGET_PROFILE_NAME` is undefined.
-        # Update (fast-forward merge) target pillars repo from
-        # source pillars repo.
-        # This case is used for `deploy_pipeline` and `release_pipeline`.
-
-        # Get location of pillars (source profile) repo.
-        {% set source_profile_repo_id = pillar['project_name'] + '-salt-pillars' %}
-        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][source_profile_repo_id]['git'] %}
-        export SOURCE_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+        # PART 1: Special case when `TARGET_PROFILE_NAME` is undefined.
+        # This case defines both `deploy_pipeline` and `release_pipeline`.
+        # FORWARD: Update (fast-forward merge)
+        #          target pillars repo from
+        #          source pillars repo.
 
         cd "${SOURCE_PROFILE_REPO_PATH}"
 
@@ -91,9 +95,15 @@
         cd -
 
         #######################################################################
-        # This job has two dynamic build descriptor transfer modes:
-        # - `package_pipeline`
+        # This job has several dynamic build descriptor transfer modes:
+        # - `deploy_pipeline` or `package_pipeline`
         #       In this case the transfer is done to target pillar repository.
+        #       This is to be able to build bootstrap package.
+        #       NOTE: The `deploy_pipeline` deploys everything into
+        #             source environment and needs transfer of dynamic
+        #             build descriptor into source pillar repository.
+        #             This is done in below by pulling changes from
+        #             the target pillar into source pillar repository.
         # - `release_pipeline`
         #       In this case the transfer is done to project states repository
         #       (to provide released dynamic build descriptor).
@@ -136,7 +146,7 @@
         #       However, any new pipeline which uses this job template
         #       leaves changes in the build descriptor making clean
         #       repository state impossible.
-        if git diff-index --ignore-submodules=dirty --exit-code HEAD
+        if ! git diff-index --ignore-submodules=dirty --exit-code HEAD
         then
             if [ "${JOB_STATUS}" -lt '2' ]
             then
@@ -166,6 +176,44 @@
         fi
 
         cd -
+
+        #######################################################################
+        # PART 2: Special case when `TARGET_PROFILE_NAME` is undefined
+        #         AND transfer was done to target pillars (not states repo).
+        # This case defines ONLY `deploy_pipeline`.
+        # BACKWARD: Update (fast-forward merge)
+        #           source pillars repo from
+        #           target pillars repo.
+
+        if [ "${TRANSFER_DESTINATION_REPO_PATH}" == "${TARGET_PROFILE_REPO_PATH}" ]
+        then
+
+        cd "${TARGET_PROFILE_REPO_PATH}"
+
+        CURRENT_TARGET_PILLAR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ target_profile_repo_id }}")"
+        test "${CURRENT_TARGET_PILLAR_BRANCH}" == "${BUILD_BRANCH}"
+
+        cd -
+
+        # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`.
+        #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
+        #       it should match (source) `SALT_PROFILE_NAME`.
+        cd "${SOURCE_PROFILE_REPO_PATH}"
+        if [ -z "${TARGET_PROFILE_NAME:-}" ]
+        then
+
+            CURRENT_SOURCE_PILLAR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+            BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ source_profile_repo_id }}")"
+            test "${CURRENT_SOURCE_PILLAR_BRANCH}" == "${BUILD_BRANCH}"
+
+            # Update target profile pillars repo from source profile pillars repo.
+            git pull --ff-only "${TARGET_PROFILE_REPO_PATH}" "${CURRENT_TARGET_PILLAR_BRANCH}"
+
+        fi
+        cd -
+
+        fi
 
         #######################################################################
         # Update dynamic build descriptor.

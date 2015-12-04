@@ -3,8 +3,10 @@
 # This is a helper script to generate required and existing order
 # of items inside `artifact_descriptors.sls` file.
 
-set -e
+# Fail on undefined variable.
 set -u
+# Fail on non-zero exit code.
+set -e
 
 # Get directory the script is in.
 SCRIPT_DIR="$( dirname "${0}" )"
@@ -26,10 +28,10 @@ grep -r '^[^:][^:]*:[^:][^:]*:[[:space:]]*$' \
     "${RUNTIME_DIR}/"artifact_descriptors.sls | sort -u > \
     "${RUNTIME_DIR}/"required.order.txt
 
-set -e
+set +e
 diff "${RUNTIME_DIR}/"existing.order.txt "${RUNTIME_DIR}/"required.order.txt 1>&2
 RET_VAL="$?"
-set +e
+set -e
 
 if [ "${RET_VAL}" != "0" ]
 then

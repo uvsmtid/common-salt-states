@@ -67,7 +67,7 @@
         # Make sure HEADs of all repositories are at `latest_commit_ids`
         # in dynamic build descriptor.
         # The exceptions are only:
-        # - parent repository 
+        # - parent repository
         # - build history repository
         # This is because each commit in these repositories diverge their
         # `latest_commit_ids` in dyn build desc.

@@ -177,7 +177,7 @@
                 cp -r "${PARENT_BUILD_TITLE}" "${BUILD_TITLE}"
             else
                 # In case of `RESTORE_PARENT_BUILD_ONLY`,
-                # check out parent build title branch nad do nothing else.
+                # check out parent build title branch and do nothing else.
                 git checkout "${PARENT_BUILD_TITLE}"
             fi
 
@@ -195,13 +195,19 @@
             mkdir -p "$(dirname "${REPO_DYN_BUILD_DESC_PATH}")"
         fi
 
-        # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
-        #       the operation is read-only.
         if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
         then
 
-            # Initialize with empty dict for dyn build desc.
-            echo "{}" > "${REPO_DYN_BUILD_DESC_PATH}"
+            # Reuse previous dynamic build descriptor.
+            # Update initial data.
+            # All other data will be updated in subsequent jobs.
+
+            # Initialize file (if empty) with unique key `${BUILD_TITLE}`.
+            # The unique key is needed to make sure that adding new key
+            # does not create duplicate keys in dictionary.
+            echo                     "" >> "${REPO_DYN_BUILD_DESC_PATH}"
+            echo "${BUILD_TITLE}: init" >> "${REPO_DYN_BUILD_DESC_PATH}"
+            echo                     "" >> "${REPO_DYN_BUILD_DESC_PATH}"
 
             echo "${BUILD_TIMESTAMP}"     | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_timestamp"
             echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_title"
@@ -218,7 +224,8 @@
             echo "${CURRENT_COMMIT_ID}"  | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_commit_ids:{{ build_history_repo_id }}"
 
         fi
-
+            # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
+            #       the operation is read-only.
         cd -
 
         #######################################################################

@@ -684,8 +684,13 @@ wget http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/jnlpJars/jenki
 ###############################################################################
 {% macro common_build_script_header(job_config, job_environ) %}
 
+# Fail on non-zero exit code.
 set -e
+# Fail on undefined variables.
 set -u
+# Profide better debug output.
+set -x
+PS4="+$LINENO: "
 
 # Set minimal job duration.
 # Otherwise, if there are short jobs in the queue, the build history

@@ -133,7 +133,11 @@ def set_salt_states_and_pillars_symlinks(
     # Make sure both `defaults` and `overrides` symlinks point
     # to `pillars` repositories.
 
-    defaults_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
+    if project_name != 'common':
+        defaults_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
+    else:
+        # common
+        defaults_pillars_repo_abs_path = states_repo_abs_path
 
     # Create base `/srv/pillars` directory.
     command_args = [

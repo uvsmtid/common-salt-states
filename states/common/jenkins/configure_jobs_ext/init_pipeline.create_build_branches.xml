@@ -61,9 +61,22 @@
 
         # TODO: Use repository roles instead of `parent_repo_name`.
         # TODO: Create macros to provide commit order everything then parent.
+        #       IMPORTANT:
+        #       *   If we don't create restore points for parent
+        #           before children, then the restore point for
+        #           parent will contain changes in children commit ids.
+        #           Then resore point is not exactly as parent was before build.
+        #       *   If we list parent before full list of other repositories,
+        #           then parent will be listed twice. In this case,
+        #           one restore point will override another.
+        #           This is worse - parent won't be restored.
+        #       Out of two cases, we allow the first one to avoid the second.
         {% if pillar['parent_repo_name'] %}
+        {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% if False %} # DISABLED: See comment above.
         # Parent repo is defined and it is the first.
         {% set repo_list = [ pillar['parent_repo_name'] ] + pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% endif %}
         {% else %}
         # This profile does not define parent repo.
         {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}

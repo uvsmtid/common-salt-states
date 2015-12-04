@@ -9,6 +9,7 @@ system_features:
     offline_yum_repo:
         feature_enabled: False
         ip: '192.168.1.12'
+        url: 'http://yum.example.com/repository'
 
 ###############################################################################
 # EOF
