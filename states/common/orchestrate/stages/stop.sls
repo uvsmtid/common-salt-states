@@ -37,6 +37,9 @@ run_highstate_on_all_minions:
         - tgt: '*'
         # DO not run `highstate` because default is test=True.
         # TODO: How to force this `highstate` to run with test=False?
+        # See:
+        #   https://github.com/saltstack/salt/issues/24209
+        #   https://groups.google.com/forum/#!topic/salt-users/pKt_1m9Y40Q
         - highstate: False
         - sls:
             - common.dummy
