@@ -690,7 +690,7 @@ set -e
 set -u
 # Profide better debug output.
 set -x
-PS4="+$LINENO: "
+PS4='+${LINENO}: '
 
 # Set minimal job duration.
 # Otherwise, if there are short jobs in the queue, the build history
