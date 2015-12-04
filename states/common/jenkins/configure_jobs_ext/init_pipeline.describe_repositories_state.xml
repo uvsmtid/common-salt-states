@@ -98,33 +98,31 @@
             REQUIRED_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "latest_branches:{{ repo_name }}")"
             REQUIRED_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}")"
         else
-            # Trivial case.
+            # Trivial case - required are current branches and commits.
             REQUIRED_BRANCH="${CURRENT_BRANCH}"
             REQUIRED_COMMIT_ID="${CURRENT_COMMIT_ID}"
-
-            {% set target_profile_repo_id = get_repository_id_by_role('target_profile_pillars_role') %}
-            {% if target_profile_repo_id == repo_name %}
-            # Override variables in special case of target profile repo.
-            # Point them to correct profile:
-            # - `REQUIRED_BRANCH`
-            # - `REQUIRED_COMMIT_ID`
-            # - `BUILD_BRANCH`
-            # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`.
-            #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
-            #       it should match (source) `SALT_PROFILE_NAME`.
-            if [ -n "${TARGET_PROFILE_NAME:-}" ]
-            then
-                REQUIRED_BRANCH="${TARGET_PROFILE_NAME}"
-            else
-                REQUIRED_BRANCH="${SALT_PROFILE_NAME}"
-            fi
-            REQUIRED_COMMIT_ID="$(git rev-parse --verify "${REQUIRED_BRANCH}")"
-            REQUIRED_SHORT_COMMIT_ID="$(git rev-parse --short --verify "${REQUIRED_BRANCH}")"
-            BUILD_BRANCH="${REQUIRED_BRANCH}-${REQUIRED_SHORT_COMMIT_ID}-${BUILD_TITLE}"
-
-            {% endif %}
-
         fi
+
+        {% set target_profile_repo_id = get_repository_id_by_role('target_profile_pillars_role') %}
+        {% if target_profile_repo_id == repo_name %}
+        # Override variables in special case of target profile repo.
+        # Point them to correct profile:
+        # - `REQUIRED_BRANCH`
+        # - `REQUIRED_COMMIT_ID`
+        # - `BUILD_BRANCH`
+        # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`.
+        #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
+        #       it should match (source) `SALT_PROFILE_NAME`.
+        if [ -n "${TARGET_PROFILE_NAME:-}" ]
+        then
+            REQUIRED_BRANCH="${TARGET_PROFILE_NAME}"
+        else
+            REQUIRED_BRANCH="${SALT_PROFILE_NAME}"
+        fi
+        REQUIRED_COMMIT_ID="$(git rev-parse --verify "${REQUIRED_BRANCH}")"
+        REQUIRED_SHORT_COMMIT_ID="$(git rev-parse --short --verify "${REQUIRED_BRANCH}")"
+        BUILD_BRANCH="${REQUIRED_BRANCH}-${REQUIRED_SHORT_COMMIT_ID}-${BUILD_TITLE}"
+        {% endif %}
 
         # Regardles of whether there is parent build or not,
         # latest ones are those where the build should continue from.
