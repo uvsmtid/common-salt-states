@@ -691,6 +691,8 @@ set -u
 # Profide better debug output.
 set -x
 PS4='+${LINENO}: '
+# Also print every line as in script (including comments).
+set -v
 
 # Set minimal job duration.
 # Otherwise, if there are short jobs in the queue, the build history
