@@ -146,7 +146,7 @@
         #       However, any new pipeline which uses this job template
         #       leaves changes in the build descriptor making clean
         #       repository state impossible.
-        if ! git diff-index --ignore-submodules=dirty --exit-code HEAD
+        if git diff-index --ignore-submodules=dirty --exit-code HEAD
         then
             if [ "${JOB_STATUS}" -lt '2' ]
             then
