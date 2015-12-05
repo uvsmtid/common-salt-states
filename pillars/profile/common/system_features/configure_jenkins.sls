@@ -601,12 +601,12 @@ system_features:
                     {% endfor %}
 
                 condition_type: downstream_passed
-                accept_unstable: True
+                accept_unstable: False
                 promotion_icon: star-gold
 
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
+                        condition: SUCCESS
                         trigger_jobs:
                             - 04.01.deploy_pipeline.register_generated_resources
 
@@ -639,7 +639,7 @@ system_features:
                 {% endif %}
 
                 condition_type: downstream_passed
-                accept_unstable: True
+                accept_unstable: False
                 promotion_icon: star-green
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
@@ -915,8 +915,8 @@ system_features:
 
                 parameterized_job_triggers:
                     build_always:
-                        # NOTE: Try to build individual Maven jobs
-                        #       to update their status as well.
+                        # NOTE: Run Maven artifact verifications regardless
+                        #       of build status as it is independent check.
                         condition: ALWAYS
                         trigger_jobs:
                             - 03.02.maven_pipeline.verify_maven_data
@@ -941,6 +941,8 @@ system_features:
                 #   https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError
                 MAVEN_OPTS: '-Xmx2048m -XX:MaxPermSize=512m'
 
+                # TODO: Actually, this does not select JDK properly because
+                #       started JVM (java executable) is still different.
                 # NOTE: This variables has to be synced with deployment
                 #       of specific JDK refered here.
                 job_environment_variables:
@@ -988,6 +990,8 @@ system_features:
 
                 parameterized_job_triggers:
                     build_always:
+                        # NOTE: Try to build individual Maven jobs
+                        #       to update their status as well.
                         condition: ALWAYS
                         trigger_jobs:
                             {% for maven_repo_name in maven_repo_names %}
@@ -1034,6 +1038,19 @@ system_features:
                 {% endif %}
 
                 disable_archiving: True
+
+                # Similar to `maven_build_all`, use more memory.
+                # See also:
+                #   https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError
+                MAVEN_OPTS: '-Xmx2048m -XX:MaxPermSize=512m'
+
+                # TODO: Actually, this does not select JDK properly because
+                #       started JVM (java executable) is still different.
+                # NOTE: This variables has to be synced with deployment
+                #       of specific JDK refered here.
+                job_environment_variables:
+                    JAVA_HOME: '/usr/java/jdk1.7.0_71'
+                    PATH: '/usr/java/jdk1.7.0_71/bin:${PATH}'
 
                 # This is the final job in the pipeline.
                 {% if False %}
