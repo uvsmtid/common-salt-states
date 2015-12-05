@@ -115,6 +115,21 @@ system_resources:
         item_content_hash: md5=c88936fb6d5885d3aef93439ead9ae76
         plugin_name: parameterized-trigger
 
+    # Jenkins: Build Trigger Badge Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Build+Trigger+Badge+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/download/plugins/buildtriggerbadge/2.2/buildtriggerbadge.hpi
+    jenkins_buildtriggerbadge_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: buildtriggerbadge.v2.2.hpi
+        item_content_hash: md5=5d2d422780511f3cccf65cffed2e4107
+        plugin_name: buildtriggerbadge
+
     # Jenkins: Rebuild Plugin
     # Downloadable from:
     #   https://wiki.jenkins-ci.org/display/JENKINS/Rebuild+Plugin
