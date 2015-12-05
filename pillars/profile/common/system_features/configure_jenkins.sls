@@ -81,8 +81,8 @@ system_features:
         #
 
             # If set to `-1`, keep forever.
-            {% set discard_build_days = 7 %}
-            {% set discard_build_num = 9 %}
+            {% set discard_build_days = 32 %}
+            {% set discard_build_num = 32 %}
 
             ###################################################################
             # Triggers
