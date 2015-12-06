@@ -31,6 +31,24 @@
         #######################################################################
         # Run orchestrate to make sure states across minions
         # are executed in proper order.
+
+        # NOTE: We run orchestrate 2 times
+        #       (due to issues with some RPM-related states):
+        #       * 1st time without error detection
+        #       * 2nd time with error detection
+        # TODO: Fix Orchestrate maybe by trying to configure YUM/DNF
+        #       before running any other installation.
+
+        # 1st time without error detection
+        # This is supposed to show failed states in cleaner (non-JSON) output.
+        sudo salt-run \
+            -l debug \
+            state.orchestrate common.orchestrate.run_all_stages \
+            test=fasle | tee salt.output.yaml
+
+        # 2nd time with error detection
+        # This is not supposed to fail -
+        # therefore, salt.output.json gets verified subsequently.
         sudo salt-run \
             --out json \
             -l debug \
