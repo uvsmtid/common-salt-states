@@ -1776,6 +1776,11 @@ system_features:
                             The build title can be found in dynamic build descriptor in the value of `build_title` key.
                         parameter_type: string
                         parameter_value: '_'
+                    DO_NOT_TAG_RELEASE:
+                        parameter_description: |
+                            If set to `True`, tag and push tag to `origin`.
+                        parameter_type: boolean
+                        parameter_value: False
 
                     SKIP_RELEASE_PIPELINE:
                         parameter_description: |
