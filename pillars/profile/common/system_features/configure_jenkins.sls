@@ -1329,14 +1329,11 @@ system_features:
                 input_fingerprinted_artifacts:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
-                # This is the final job in the pipeline.
-                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 05.01.package_pipeline.create_new_package
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1651,14 +1648,11 @@ system_features:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
-                # This is the final job in the pipeline.
-                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 06.01.package_pipeline.create_new_package
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1930,7 +1924,7 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 06.06.release_pipeline.build_bootstrap_package
+                            - 06.06.release_pipeline.tag_build
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
