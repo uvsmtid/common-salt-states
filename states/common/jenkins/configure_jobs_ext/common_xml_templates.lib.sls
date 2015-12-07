@@ -708,6 +708,7 @@ unset https_proxy
 env
 
 {% if 'skip_script_execution' in job_config and job_config['skip_script_execution'] %}
+# Skip execution because `skip_script_execution` is `True`.
 exit 0
 {% endif %}
 

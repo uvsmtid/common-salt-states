@@ -81,8 +81,8 @@ system_features:
         #
 
             # If set to `-1`, keep forever.
-            {% set discard_build_days = 7 %}
-            {% set discard_build_num = 9 %}
+            {% set discard_build_days = 32 %}
+            {% set discard_build_num = 32 %}
 
             ###################################################################
             # Triggers
@@ -90,7 +90,7 @@ system_features:
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'init_pipeline.clean_old_build' %}
-            +_.{{ job_template_id }}:
+            __.__.{{ job_template_id }}:
 
                 enabled: True
 
@@ -126,7 +126,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'poll_pipeline.propose_build' %}
-            +_.{{ job_template_id }}:
+            __.__.{{ job_template_id }}:
 
                 enabled: True
 
@@ -164,7 +164,7 @@ system_features:
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'poll_pipeline.verify_approval' %}
-            01.{{ job_template_id }}:
+            00.01.{{ job_template_id }}:
 
                 enabled: True
 
@@ -189,14 +189,14 @@ system_features:
                     job_not_faild:
                         condition: SUCCESS
                         trigger_jobs:
-                            - 02.poll_pipeline.reset_previous_build
+                            - 00.02.poll_pipeline.reset_previous_build
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'poll_pipeline.reset_previous_build' %}
-            02.{{ job_template_id }}:
+            00.02.{{ job_template_id }}:
 
                 enabled: True
 
@@ -217,7 +217,7 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 03.poll_pipeline.update_sources
+                            - 00.03.poll_pipeline.update_sources
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -227,7 +227,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'poll_pipeline.update_sources' %}
-            03.{{ job_template_id }}:
+            00.03.{{ job_template_id }}:
 
                 enabled: True
 
@@ -248,14 +248,14 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 04.poll_pipeline.propose_build
+                            - 00.04.poll_pipeline.propose_build
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'poll_pipeline.propose_build' %}
-            04.{{ job_template_id }}:
+            00.04.{{ job_template_id }}:
 
                 enabled: True
 
@@ -291,7 +291,7 @@ system_features:
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'init_pipeline.start_new_build' %}
-            11.{{ job_template_id }}:
+            01.01.{{ job_template_id }}:
 
                 enabled: True
 
@@ -336,7 +336,7 @@ system_features:
                 #       see associations of downstream jobs with this one.
                 {% if False %}
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                 {% endif %}
 
                 # This list combined with value of
@@ -353,7 +353,7 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 12.init_pipeline.reset_previous_build
+                            - 01.02.init_pipeline.reset_previous_build
 
                 # NOTE: This job is promotable and uses another config.
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
@@ -427,20 +427,17 @@ system_features:
                         parameter_value: False
 
                 use_promotions:
-                    - 11.promotion.init_pipeline_passed
-                    - 12.promotion.update_pipeline_passed
-                    - 13.promotion.maven_pipeline_passed
-                    - 14.promotion.deploy_pipeline_passed
-
-                    - 150.promotion.package_pipeline_passed
-                    - 151.promotion.bootstrap_package_approved
-
-                    - 16.promotion.release_pipeline_passed
-
-                    - 17.promotion.checkout_pipeline_passed
+                    - P.01.promotion.init_pipeline_passed
+                    - P.02.promotion.update_pipeline_passed
+                    - P.03.promotion.maven_pipeline_passed
+                    - P.04.promotion.deploy_pipeline_passed
+                    - P.05.promotion.package_pipeline_passed
+                    - P.06.promotion.release_pipeline_passed
+                    - P.07.promotion.checkout_pipeline_passed
+                    - P.__.promotion.bootstrap_package_approved
 
             {% set job_template_id = 'init_pipeline.reset_previous_build' %}
-            12.{{ job_template_id }}:
+            01.02.{{ job_template_id }}:
 
                 enabled: True
 
@@ -456,20 +453,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 13.init_pipeline.describe_repositories_state
+                            - 01.03.init_pipeline.describe_repositories_state
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'init_pipeline.describe_repositories_state' %}
-            13.{{ job_template_id }}:
+            01.03.{{ job_template_id }}:
 
                 enabled: True
 
@@ -485,20 +482,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 14.init_pipeline.create_build_branches
+                            - 01.04.init_pipeline.create_build_branches
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'init_pipeline.create_build_branches' %}
-            14.{{ job_template_id }}:
+            01.04.{{ job_template_id }}:
 
                 enabled: True
 
@@ -514,7 +511,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -533,7 +530,7 @@ system_features:
             #------------------------------------------------------------------
 
             {% set job_template_id = 'promotion.init_pipeline_passed' %}
-            11.{{ job_template_id }}:
+            P.01.{{ job_template_id }}:
 
                 enabled: True
 
@@ -543,7 +540,7 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    - 14.init_pipeline.create_build_branches
+                    - 01.04.init_pipeline.create_build_branches
 
                 condition_type: downstream_passed
                 accept_unstable: True
@@ -553,14 +550,14 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 21.update_pipeline.restart_master_salt_services
+                            - 02.01.update_pipeline.restart_master_salt_services
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.update_pipeline_passed' %}
-            12.{{ job_template_id }}:
+            P.02.{{ job_template_id }}:
 
                 enabled: True
 
@@ -570,7 +567,7 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    - 24.update_pipeline.reconnect_jenkins_slaves
+                    - 02.04.update_pipeline.reconnect_jenkins_slaves
 
                 condition_type: downstream_passed
                 accept_unstable: True
@@ -580,14 +577,14 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 31.maven_pipeline.maven_build_all
+                            - 03.01.maven_pipeline.maven_build_all
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.maven_pipeline_passed' %}
-            13.{{ job_template_id }}:
+            P.03.{{ job_template_id }}:
 
                 enabled: True
 
@@ -597,28 +594,28 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    - 31.maven_pipeline.maven_build_all
-                    - 32.maven_pipeline.verify_maven_data
+                    - 03.01.maven_pipeline.maven_build_all
+                    - 03.02.maven_pipeline.verify_maven_data
                     {% for maven_repo_name in maven_repo_names %}
-                    - 33.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                    - 03.03.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
                     {% endfor %}
 
                 condition_type: downstream_passed
-                accept_unstable: True
+                accept_unstable: False
                 promotion_icon: star-gold
 
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
+                        condition: SUCCESS
                         trigger_jobs:
-                            - 401.deploy_pipeline.register_generated_resources
+                            - 04.01.deploy_pipeline.register_generated_resources
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.deploy_pipeline_passed' %}
-            14.{{ job_template_id }}:
+            P.04.{{ job_template_id }}:
 
                 enabled: True
 
@@ -628,7 +625,7 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    - 409.deploy_pipeline.run_salt_highstate
+                    - 04.09.deploy_pipeline.run_salt_highstate
 
                 # This is the last automatic pipeline -
                 # `package_pipeline` and `release_pipeline` are
@@ -642,7 +639,7 @@ system_features:
                 {% endif %}
 
                 condition_type: downstream_passed
-                accept_unstable: True
+                accept_unstable: False
                 promotion_icon: star-green
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
@@ -650,7 +647,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.package_pipeline_passed' %}
-            150.{{ job_template_id }}:
+            P.05.{{ job_template_id }}:
 
                 enabled: True
 
@@ -660,7 +657,7 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    - 57.package_pipeline.store_bootstrap_package
+                    - 05.07.package_pipeline.store_bootstrap_package
 
                 condition_type: downstream_passed
                 accept_unstable: True
@@ -680,25 +677,8 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
-            {% set job_template_id = 'promotion.bootstrap_package_approved' %}
-            151.{{ job_template_id }}:
-
-                enabled: True
-
-                is_promotion: True
-
-                restrict_to_system_role:
-                    - controller_role
-
-                condition_type: manual_approval
-                promotion_icon: star-orange-e
-
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
-
             {% set job_template_id = 'promotion.release_pipeline_passed' %}
-            16.{{ job_template_id }}:
+            P.06.{{ job_template_id }}:
 
                 enabled: True
 
@@ -708,7 +688,8 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    - 61.release_pipeline.release_build
+                    # TODO: Update promotion to the latest job in the pipeline.
+                    - 06.01.release_pipeline.release_build
 
                 condition_type: downstream_passed
                 accept_unstable: True
@@ -729,7 +710,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             {% set job_template_id = 'promotion.checkout_pipeline_passed' %}
-            17.{{ job_template_id }}:
+            P.07.{{ job_template_id }}:
 
                 enabled: True
 
@@ -739,7 +720,7 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    - 74.checkout_pipeline.create_build_branches
+                    - 07.04.checkout_pipeline.create_build_branches
 
                 condition_type: downstream_passed
                 accept_unstable: True
@@ -759,13 +740,30 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
+            {% set job_template_id = 'promotion.bootstrap_package_approved' %}
+            P.__.{{ job_template_id }}:
+
+                enabled: True
+
+                is_promotion: True
+
+                restrict_to_system_role:
+                    - controller_role
+
+                condition_type: manual_approval
+                promotion_icon: star-orange-e
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
+
             ###################################################################
             # The `update_pipeline`
 
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'update_pipeline.restart_master_salt_services' %}
-            21.{{ job_template_id }}:
+            02.01.{{ job_template_id }}:
 
                 enabled: True
 
@@ -781,20 +779,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 22.update_pipeline.configure_jenkins_jobs
+                            - 02.02.update_pipeline.configure_jenkins_jobs
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'update_pipeline.configure_jenkins_jobs' %}
-            22.{{ job_template_id }}:
+            02.02.{{ job_template_id }}:
 
                 enabled: True
 
@@ -810,20 +808,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 23.update_pipeline.run_salt_highstate
+                            - 02.03.update_pipeline.run_salt_highstate
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'update_pipeline.run_salt_highstate' %}
-            23.{{ job_template_id }}:
+            02.03.{{ job_template_id }}:
 
                 enabled: True
 
@@ -839,20 +837,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 24.update_pipeline.reconnect_jenkins_slaves
+                            - 02.04.update_pipeline.reconnect_jenkins_slaves
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'update_pipeline.reconnect_jenkins_slaves' %}
-            24.{{ job_template_id }}:
+            02.04.{{ job_template_id }}:
 
                 enabled: True
 
@@ -875,7 +873,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -896,7 +894,7 @@ system_features:
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'maven_pipeline.maven_build_all' %}
-            31.{{ job_template_id }}:
+            03.01.{{ job_template_id }}:
 
                 enabled: True
 
@@ -913,15 +911,15 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     build_always:
-                        # NOTE: Try to build individual Maven jobs
-                        #       to update their status as well.
+                        # NOTE: Run Maven artifact verifications regardless
+                        #       of build status as it is independent check.
                         condition: ALWAYS
                         trigger_jobs:
-                            - 32.maven_pipeline.verify_maven_data
+                            - 03.02.maven_pipeline.verify_maven_data
 
                 # Specific goals and options.
                 # Note that we run initial build - all repositories are
@@ -943,6 +941,8 @@ system_features:
                 #   https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError
                 MAVEN_OPTS: '-Xmx2048m -XX:MaxPermSize=512m'
 
+                # TODO: Actually, this does not select JDK properly because
+                #       started JVM (java executable) is still different.
                 # NOTE: This variables has to be synced with deployment
                 #       of specific JDK refered here.
                 job_environment_variables:
@@ -954,7 +954,7 @@ system_features:
                 # and draws duplicated chains after each job to be joined.
                 {% if False %}
                 trigger_jobs_on_downstream_join:
-                    - 401.deploy_pipeline.register_generated_resources
+                    - 04.01.deploy_pipeline.register_generated_resources
                 {% endif %}
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
@@ -969,7 +969,7 @@ system_features:
                 disable_archiving: True
 
             {% set job_template_id = 'maven_pipeline.verify_maven_data' %}
-            32.{{ job_template_id }}:
+            03.02.{{ job_template_id }}:
 
                 enabled: True
 
@@ -986,14 +986,16 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     build_always:
+                        # NOTE: Try to build individual Maven jobs
+                        #       to update their status as well.
                         condition: ALWAYS
                         trigger_jobs:
                             {% for maven_repo_name in maven_repo_names %}
-                            - 33.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                            - 03.03.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
                             {% endfor %}
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
@@ -1002,7 +1004,7 @@ system_features:
 
             {% for maven_repo_name in maven_repo_names %}
 
-            33.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}:
+            03.03.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}:
 
                 enabled: True
 
@@ -1019,7 +1021,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1036,6 +1038,19 @@ system_features:
                 {% endif %}
 
                 disable_archiving: True
+
+                # Similar to `maven_build_all`, use more memory.
+                # See also:
+                #   https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError
+                MAVEN_OPTS: '-Xmx2048m -XX:MaxPermSize=512m'
+
+                # TODO: Actually, this does not select JDK properly because
+                #       started JVM (java executable) is still different.
+                # NOTE: This variables has to be synced with deployment
+                #       of specific JDK refered here.
+                job_environment_variables:
+                    JAVA_HOME: '/usr/java/jdk1.7.0_71'
+                    PATH: '/usr/java/jdk1.7.0_71/bin:${PATH}'
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -1054,7 +1069,7 @@ system_features:
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'deploy_pipeline.register_generated_resources' %}
-            401.{{ job_template_id }}:
+            04.01.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1070,13 +1085,13 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 402.deploy_pipeline.transfer_dynamic_build_descriptor
+                            - 04.02.deploy_pipeline.transfer_dynamic_build_descriptor
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1089,7 +1104,7 @@ system_features:
                     {% endif %}
 
             {% set job_template_id = 'deploy_pipeline.transfer_dynamic_build_descriptor' %}
-            402.{{ job_template_id }}:
+            04.02.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1105,13 +1120,13 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 403.deploy_pipeline.build_bootstrap_package
+                            - 04.03.deploy_pipeline.build_bootstrap_package
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1120,7 +1135,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'deploy_pipeline.build_bootstrap_package' %}
-            403.{{ job_template_id }}:
+            04.03.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1136,13 +1151,13 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 404.deploy_pipeline.configure_vagrant
+                            - 04.04.deploy_pipeline.configure_vagrant
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1151,7 +1166,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'deploy_pipeline.configure_vagrant' %}
-            404.{{ job_template_id }}:
+            04.04.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1167,20 +1182,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 405.deploy_pipeline.destroy_vagrant_hosts
+                            - 04.05.deploy_pipeline.destroy_vagrant_hosts
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'deploy_pipeline.destroy_vagrant_hosts' %}
-            405.{{ job_template_id }}:
+            04.05.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1196,20 +1211,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 406.deploy_pipeline.remove_salt_minion_keys
+                            - 04.06.deploy_pipeline.remove_salt_minion_keys
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'deploy_pipeline.remove_salt_minion_keys' %}
-            406.{{ job_template_id }}:
+            04.06.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1225,20 +1240,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 407.deploy_pipeline.instantiate_vagrant_hosts
+                            - 04.07.deploy_pipeline.instantiate_vagrant_hosts
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'deploy_pipeline.instantiate_vagrant_hosts' %}
-            407.{{ job_template_id }}:
+            04.07.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1254,20 +1269,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 408.deploy_pipeline.run_salt_orchestrate
+                            - 04.08.deploy_pipeline.run_salt_orchestrate
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'deploy_pipeline.run_salt_orchestrate' %}
-            408.{{ job_template_id }}:
+            04.08.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1283,20 +1298,20 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 409.deploy_pipeline.run_salt_highstate
+                            - 04.09.deploy_pipeline.run_salt_highstate
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'deploy_pipeline.run_salt_highstate' %}
-            409.{{ job_template_id }}:
+            04.09.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1312,7 +1327,7 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -1333,7 +1348,7 @@ system_features:
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'package_pipeline.create_new_package' %}
-            51.{{ job_template_id }}:
+            05.01.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1378,7 +1393,7 @@ system_features:
                 #       see associations of downstream jobs with this one.
                 {% if False %}
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                 {% endif %}
 
                 # This list combined with value of
@@ -1395,7 +1410,7 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 52.package_pipeline.reset_previous_build
+                            - 05.02.package_pipeline.reset_previous_build
 
                 # NOTE: This job is promotable and uses another config.
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
@@ -1457,11 +1472,11 @@ system_features:
                         parameter_value: False
 
                 use_promotions:
-                    - 150.promotion.package_pipeline_passed
-                    - 151.promotion.bootstrap_package_approved
+                    - P.05.promotion.package_pipeline_passed
+                    - P.__.promotion.bootstrap_package_approved
 
             {% set job_template_id = 'package_pipeline.reset_previous_build' %}
-            52.{{ job_template_id }}:
+            05.02.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1477,14 +1492,14 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 53.package_pipeline.describe_repositories_state
+                            - 05.03.package_pipeline.describe_repositories_state
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1493,7 +1508,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'package_pipeline.describe_repositories_state' %}
-            53.{{ job_template_id }}:
+            05.03.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1509,14 +1524,14 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 54.package_pipeline.create_build_branches
+                            - 05.04.package_pipeline.create_build_branches
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1525,7 +1540,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'package_pipeline.create_build_branches' %}
-            54.{{ job_template_id }}:
+            05.04.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1541,14 +1556,14 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 55.package_pipeline.transfer_dynamic_build_descriptor
+                            - 05.05.package_pipeline.transfer_dynamic_build_descriptor
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1557,7 +1572,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'package_pipeline.transfer_dynamic_build_descriptor' %}
-            55.{{ job_template_id }}:
+            05.05.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1573,21 +1588,21 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 56.package_pipeline.build_bootstrap_package
+                            - 05.06.package_pipeline.build_bootstrap_package
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'package_pipeline.build_bootstrap_package' %}
-            56.{{ job_template_id }}:
+            05.06.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1603,21 +1618,21 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 57.package_pipeline.store_bootstrap_package
+                            - 05.07.package_pipeline.store_bootstrap_package
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'package_pipeline.store_bootstrap_package' %}
-            57.{{ job_template_id }}:
+            05.07.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1633,8 +1648,8 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    51.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -1655,7 +1670,7 @@ system_features:
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'release_pipeline.release_build' %}
-            61.{{ job_template_id }}:
+            06.01.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1699,7 +1714,7 @@ system_features:
                 #       see associations of downstream jobs with this one.
                 {% if False %}
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                 {% endif %}
 
                 # This list combined with value of
@@ -1716,7 +1731,7 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 62.release_pipeline.reset_previous_build
+                            - 06.02.release_pipeline.reset_previous_build
 
                 # NOTE: This job is promotable and uses another config.
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
@@ -1778,6 +1793,11 @@ system_features:
                             The build title can be found in dynamic build descriptor in the value of `build_title` key.
                         parameter_type: string
                         parameter_value: '_'
+                    DO_NOT_TAG_RELEASE:
+                        parameter_description: |
+                            If set to `True`, tag and push tag to `origin`.
+                        parameter_type: boolean
+                        parameter_value: False
 
                     SKIP_RELEASE_PIPELINE:
                         parameter_description: |
@@ -1786,10 +1806,10 @@ system_features:
                         parameter_value: False
 
                 use_promotions:
-                    - 16.promotion.release_pipeline_passed
+                    - P.06.promotion.release_pipeline_passed
 
             {% set job_template_id = 'release_pipeline.reset_previous_build' %}
-            62.{{ job_template_id }}:
+            06.02.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1805,14 +1825,14 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    06.01.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 63.release_pipeline.describe_repositories_state
+                            - 06.03.release_pipeline.describe_repositories_state
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1821,7 +1841,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'release_pipeline.describe_repositories_state' %}
-            63.{{ job_template_id }}:
+            06.03.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1837,14 +1857,14 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    06.01.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 64.release_pipeline.create_build_branches
+                            - 06.04.release_pipeline.create_build_branches
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1853,7 +1873,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'release_pipeline.create_build_branches' %}
-            64.{{ job_template_id }}:
+            06.04.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1869,14 +1889,14 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    06.01.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 65.release_pipeline.transfer_dynamic_build_descriptor
+                            - 06.05.release_pipeline.transfer_dynamic_build_descriptor
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1885,7 +1905,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'release_pipeline.transfer_dynamic_build_descriptor' %}
-            65.{{ job_template_id }}:
+            06.05.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1901,14 +1921,14 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    06.01.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 66.release_pipeline.build_bootstrap_package
+                            - 06.06.release_pipeline.build_bootstrap_package
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1917,7 +1937,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'release_pipeline.tag_build' %}
-            66.{{ job_template_id }}:
+            06.06.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1933,21 +1953,21 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    06.01.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 67.release_pipeline.merge_build
+                            - 06.07.release_pipeline.merge_build
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'release_pipeline.merge_build' %}
-            67.{{ job_template_id }}:
+            06.07.{{ job_template_id }}:
 
                 enabled: True
 
@@ -1963,8 +1983,8 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    61.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    06.01.release_pipeline.release_build: initial.release_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -1985,7 +2005,7 @@ system_features:
             {% set skip_script_execution = False %}
 
             {% set job_template_id = 'checkout_pipeline.checkout_build_branches' %}
-            71.{{ job_template_id }}:
+            07.01.{{ job_template_id }}:
 
                 enabled: True
 
@@ -2030,7 +2050,7 @@ system_features:
                 #       see associations of downstream jobs with this one.
                 {% if False %}
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                 {% endif %}
 
                 # This list combined with value of
@@ -2047,7 +2067,7 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 72.checkout_pipeline.reset_previous_build
+                            - 07.02.checkout_pipeline.reset_previous_build
 
                 # NOTE: This job is promotable and uses another config.
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
@@ -2091,10 +2111,10 @@ system_features:
                         parameter_value: False
 
                 use_promotions:
-                    - 17.promotion.checkout_pipeline_passed
+                    - P.07.promotion.checkout_pipeline_passed
 
             {% set job_template_id = 'checkout_pipeline.reset_previous_build' %}
-            72.{{ job_template_id }}:
+            07.02.{{ job_template_id }}:
 
                 enabled: True
 
@@ -2110,14 +2130,14 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    71.checkout_pipeline.checkout_build_branches: initial.checkout_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    07.01.checkout_pipeline.checkout_build_branches: initial.checkout_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 73.checkout_pipeline.describe_repositories_state
+                            - 07.03.checkout_pipeline.describe_repositories_state
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -2126,7 +2146,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'checkout_pipeline.describe_repositories_state' %}
-            73.{{ job_template_id }}:
+            07.03.{{ job_template_id }}:
 
                 enabled: True
 
@@ -2142,14 +2162,14 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    71.checkout_pipeline.checkout_build_branches: initial.checkout_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    07.01.checkout_pipeline.checkout_build_branches: initial.checkout_pipeline.dynamic_build_descriptor.yaml
 
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 74.checkout_pipeline.create_build_branches
+                            - 07.04.checkout_pipeline.create_build_branches
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -2158,7 +2178,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'checkout_pipeline.create_build_branches' %}
-            74.{{ job_template_id }}:
+            07.04.{{ job_template_id }}:
 
                 enabled: True
 
@@ -2174,8 +2194,8 @@ system_features:
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
-                    11.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
-                    71.checkout_pipeline.checkout_build_branches: initial.checkout_pipeline.dynamic_build_descriptor.yaml
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                    07.01.checkout_pipeline.checkout_build_branches: initial.checkout_pipeline.dynamic_build_descriptor.yaml
 
                 # This is the final job in the pipeline.
                 {% if False %}
@@ -2206,13 +2226,13 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
 
                     job_list:
-                        - +_.init_pipeline.clean_old_build
-                        - +_.poll_pipeline.propose_build
-                        - 01.poll_pipeline.verify_approval
-                        - 11.init_pipeline.start_new_build
-                        - 51.package_pipeline.create_new_package
-                        - 61.release_pipeline.release_build
-                        - 71.checkout_pipeline.checkout_build_branches
+                        - __.__.init_pipeline.clean_old_build
+                        - __.__.poll_pipeline.propose_build
+                        - 00.01.poll_pipeline.verify_approval
+                        - 01.01.init_pipeline.start_new_build
+                        - 05.01.package_pipeline.create_new_package
+                        - 06.01.release_pipeline.release_build
+                        - 07.01.checkout_pipeline.checkout_build_branches
 
             {% if False %} # DISABLED: Not so useful list.
             maven:
@@ -2224,14 +2244,14 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
 
                     job_list:
-                        - 31.maven_pipeline.maven_build_all
-                        - 32.maven_pipeline.verify_maven_data
+                        - 03.01.maven_pipeline.maven_build_all
+                        - 03.02.maven_pipeline.verify_maven_data
                         {% for maven_repo_name in maven_repo_names %}
-                        - 33.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                        - 03.03.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
                         {% endfor %}
             {% endif %}
 
-            0.poll_pipeline:
+            00.poll_pipeline:
 
                 enabled: True
 
@@ -2239,19 +2259,9 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 01.poll_pipeline.verify_approval
+                    first_job_name: 00.01.poll_pipeline.verify_approval
 
-            1.init_pipeline:
-
-                enabled: True
-
-                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
-                view_config_data:
-                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
-
-                    first_job_name: 11.init_pipeline.start_new_build
-
-            2.update_pipeline:
+            01.init_pipeline:
 
                 enabled: True
 
@@ -2259,19 +2269,9 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 21.update_pipeline.restart_master_salt_services
+                    first_job_name: 01.01.init_pipeline.start_new_build
 
-            3.maven_pipeline:
-
-                enabled: True
-
-                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
-                view_config_data:
-                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
-
-                    first_job_name: 31.maven_pipeline.maven_build_all
-
-            4.deploy_pipeline:
+            02.update_pipeline:
 
                 enabled: True
 
@@ -2279,19 +2279,9 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 401.deploy_pipeline.register_generated_resources
+                    first_job_name: 02.01.update_pipeline.restart_master_salt_services
 
-            5.package_pipeline:
-
-                enabled: True
-
-                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
-                view_config_data:
-                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
-
-                    first_job_name: 51.package_pipeline.create_new_package
-
-            6.release_pipeline:
+            03.maven_pipeline:
 
                 enabled: True
 
@@ -2299,9 +2289,9 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 61.release_pipeline.release_build
+                    first_job_name: 03.01.maven_pipeline.maven_build_all
 
-            7.checkout_pipeline:
+            04.deploy_pipeline:
 
                 enabled: True
 
@@ -2309,7 +2299,37 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 71.checkout_pipeline.checkout_build_branches
+                    first_job_name: 04.01.deploy_pipeline.register_generated_resources
+
+            05.package_pipeline:
+
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: 05.01.package_pipeline.create_new_package
+
+            06.release_pipeline:
+
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: 06.01.release_pipeline.release_build
+
+            07.checkout_pipeline:
+
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: 07.01.checkout_pipeline.checkout_build_branches
 
 ###############################################################################
 # EOF

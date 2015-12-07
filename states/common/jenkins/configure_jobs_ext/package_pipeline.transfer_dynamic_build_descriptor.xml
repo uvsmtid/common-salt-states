@@ -140,22 +140,22 @@
 
         cd "${TRANSFER_DESTINATION_REPO_PATH}"
 
+        # NOTE: Without `add --all` `diff-index` will not notice untracked files.
+        git add --all
+
         # Make sure repository became dirty, otherwise fail.
         # NOTE: The only known reason why repository is not dirty can be
         #       if this dyn build desc was already transfered before.
         #       However, any new pipeline which uses this job template
         #       leaves changes in the build descriptor making clean
         #       repository state impossible.
-        if ! git diff-index --ignore-submodules=dirty --exit-code HEAD
+        if git diff-index --ignore-submodules=dirty --exit-code HEAD
         then
             if [ "${JOB_STATUS}" -lt '2' ]
             then
                 JOB_STATUS='2'
             fi
         fi
-
-        # NOTE: Without `add --all` `diff-index` will not notice untracked files.
-        git add --all
 
         # Display status.
         git status

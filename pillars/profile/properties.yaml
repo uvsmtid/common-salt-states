@@ -116,6 +116,8 @@ primary_network:
 #         be re-configured accordingly so that `*` actually means this list.
 enabled_minion_hosts:
     master_minion_id: 192.168.40.1
+    rhel5_minion: 192.168.40.10
+    rhel7_minion: 192.168.40.20
 
 ###############################################################################
 # EOF
