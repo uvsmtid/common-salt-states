@@ -19,7 +19,7 @@ system_features:
             - 'initial-online-node'
             - 'offline-minion-installer'
 
-        generate_packages: False
+        generate_packages: True
 
 ###############################################################################
 # EOF

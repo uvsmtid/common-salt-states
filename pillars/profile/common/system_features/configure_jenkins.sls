@@ -688,8 +688,7 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    # TODO: Update promotion to the latest job in the pipeline.
-                    - 06.01.release_pipeline.release_build
+                    - 06.07.release_pipeline.merge_build
 
                 condition_type: downstream_passed
                 accept_unstable: True
