@@ -51,7 +51,10 @@
         #######################################################################
         # Quiet down Jenkins (block builds until user completes the merge).
 
-        eval "${JENKINS_CLI_TOOL_INVOKE_STRING} quiet-down  {{ node_name }}"
+        if [ "${RELEASE_PIPELINE_DRY_RUN}" != "true" ]
+        then
+            eval "${JENKINS_CLI_TOOL_INVOKE_STRING} quiet-down"
+        fi
 
         #######################################################################
         # Update dynamic build descriptor.

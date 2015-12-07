@@ -106,7 +106,7 @@
         #######################################################################
         # Tag repositories.
 
-        if [ "${DO_NOT_TAG_RELEASE}" != "true" ]
+        if [ "${RELEASE_PIPELINE_DRY_RUN}" != "true" ]
         then
             git tag -a "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}" -m "Auto-tag: ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
             git push origin "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"

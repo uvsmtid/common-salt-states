@@ -1793,9 +1793,10 @@ system_features:
                             The build title can be found in dynamic build descriptor in the value of `build_title` key.
                         parameter_type: string
                         parameter_value: '_'
-                    DO_NOT_TAG_RELEASE:
+                    RELEASE_PIPELINE_DRY_RUN:
                         parameter_description: |
-                            If set to `True`, tag and push tag to `origin`.
+                            Specify whether it is a dry run for release or not.
+                            For example, if set to `True`, tag is not created and pushed `origin`.
                         parameter_type: boolean
                         parameter_value: False
 
