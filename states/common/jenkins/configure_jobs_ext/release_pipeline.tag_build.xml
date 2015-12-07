@@ -57,7 +57,7 @@
         # NOTE: We ignore any changes in submodules for parent repo.
         if ! git diff-index --ignore-submodules=all --exit-code HEAD
         then
-            # Set job status to unstable (warning to check stash).
+            # Set job status to failed.
             if [ "${JOB_STATUS}" -lt '2' ]
             then
                 JOB_STATUS='2'
@@ -71,12 +71,14 @@
         #######################################################################
         # Make sure HEADs of all repositories are at `latest_commit_ids`
         # in dynamic build descriptor.
-        # The exceptions are only:
-        # - parent repository
-        # - build history repository
-        # This is because each commit in these repositories diverge their
+        # The exceptions is only build history repository.
+        # This is because each commit in this repository diverge their
         # `latest_commit_ids` in dyn build desc.
         # Therefore, their `latest_commit_ids` should match to `HEAD^`.
+        # NOTE: Parent repository is a different case. Each commit inside
+        #       its children submodules makes it dirty but we ignore
+        #       new commits in submodules. And each commit inside parent
+        #       itself is simply the same as in any other repository.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -87,8 +89,6 @@
 
         # Get required HEAD for `latest_commit_ids`.
         {% if not repo_name %}
-        {% elif repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['top_level_parent_role'] %}
-        REQUIRED_HEAD="HEAD^"
         {% elif repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
         REQUIRED_HEAD="HEAD^"
         {% else %}
@@ -96,7 +96,7 @@
         {% endif %}
 
         REQUIRED_HEAD_COMMIT_ID="$(git rev-parse --verify "${REQUIRED_HEAD}")"
-        LATEST_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}")"
+        LATEST_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}")"
         test "${REQUIRED_HEAD_COMMIT_ID}" == "${LATEST_COMMIT_ID}"
 
         cd -
@@ -120,13 +120,20 @@
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
         # Add release symlink to current build title direcotyr.
-        ln -snf "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}" "${BUILD_TITLE}"
+        ln -snf "${BUILD_TITLE}" "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
 
         # NOTE: Without `add --all` `diff-index` will not notice untracked files.
         git add --all
 
         # Make sure repository became dirty, otherwise fail.
-        test ! git diff-index --ignore-submodules=dirty --exit-code HEAD
+        if git diff-index --ignore-submodules=dirty --exit-code HEAD
+        then
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                # ERROR: Fail = repository is NOT dirty.
+                JOB_STATUS='2'
+            fi
+        fi
 
         # Display status.
         git status
@@ -143,7 +150,7 @@
         #######################################################################
         # Commit all submodules' commit ids in the parent repository.
 
-        TODO
+        # TODO
 
         #######################################################################
         # Last update of dynamic build descriptor in build history.
@@ -154,9 +161,9 @@
         #       recorded in dynamic build descriptor because we commit
         #       build history repository first and than parent repository.
 
-        TODO: Commit dynamic build descriptor to build history.
+        # TODO: Commit dynamic build descriptor to build history.
 
-        TODO: Commit all changes in parent repsository (all submodules ids).
+        # TODO: Commit all changes in parent repsository (all submodules ids).
 
         #######################################################################
         # Tag parent repository.

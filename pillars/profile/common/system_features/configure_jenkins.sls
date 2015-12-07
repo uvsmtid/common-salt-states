@@ -1793,7 +1793,7 @@ system_features:
                             Specify whether it is a dry run for release or not.
                             For example, if set to `True`, tag is not created and pushed `origin`.
                         parameter_type: boolean
-                        parameter_value: False
+                        parameter_value: True
 
                     SKIP_RELEASE_PIPELINE:
                         parameter_description: |
