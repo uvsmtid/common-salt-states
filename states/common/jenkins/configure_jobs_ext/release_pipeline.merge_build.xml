@@ -49,6 +49,11 @@
             salt.output.json
 
         #######################################################################
+        # Run report itself
+
+        ~/jenkins/release_scripts/pre_merge_report.sh
+
+        #######################################################################
         # Quiet down Jenkins (block builds until user completes the merge).
 
         if [ "${RELEASE_PIPELINE_DRY_RUN}" != "true" ]
