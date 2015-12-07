@@ -175,11 +175,28 @@
         #       However, the tagged commit of the parent cannot be garbage
         #       collected because it is tagged anyway.
 
+        {% if pillar['parent_repo_name'] %}
+        {% set parent_repo_id = pillar['parent_repo_name'] %}
+
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][parent_repo_id]['git'] %}
+        export PARENT_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${PARENT_REPO_PATH}"
+
         if [ "${RELEASE_PIPELINE_DRY_RUN}" != "true" ]
         then
             git tag -a "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}" -m "Auto-tag: ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
             git push origin "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
         fi
+
+        {% else %}
+
+        # ERROR: Systems without parent repository are not supported.
+        exit 1
+
+        {% endif %}
+
+        cd -
 
         #######################################################################
         # Update dynamic build descriptor.
