@@ -199,6 +199,24 @@
         cd -
 
         #######################################################################
+        # Tag build history repository.
+        # Tagging for build history also serves the same purpose as branch.
+
+        {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][build_history_repo_id]['git'] %}
+        export BUILD_HISTORY_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${BUILD_HISTORY_REPO_PATH}"
+
+        if [ "${RELEASE_PIPELINE_DRY_RUN}" != "true" ]
+        then
+            git tag -a "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}" -m "Auto-tag: ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+            git push origin "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+        fi
+
+        cd -
+
+        #######################################################################
         # Update dynamic build descriptor.
 
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
