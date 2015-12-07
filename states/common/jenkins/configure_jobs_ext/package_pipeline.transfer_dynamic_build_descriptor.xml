@@ -77,7 +77,9 @@
 
         cd -
 
-        # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`.
+        # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`
+        #       where it should be updated by latest commits from
+        #       source pillars.
         #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
         #       it should match (source) `SALT_PROFILE_NAME`.
         cd "${TARGET_PROFILE_REPO_PATH}"
