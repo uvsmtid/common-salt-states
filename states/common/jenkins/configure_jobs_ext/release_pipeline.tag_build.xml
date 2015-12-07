@@ -104,7 +104,8 @@
         {% endfor %}
 
         #######################################################################
-        # Create a symlink in build history from `name-number` to build title.
+        # Create a copy of build title directory in build history
+        # named as version `name-number`.
         # This provides shortened release `name-number` parent build
         # to specify before building bootstrap packages.
 
@@ -119,8 +120,8 @@
         BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ build_history_repo_id }}")"
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
-        # Add release symlink to current build title direcotyr.
-        ln -snf "${BUILD_TITLE}" "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+        # Add release directory - a copy current build title directory.
+        cp -rp "${BUILD_TITLE}" "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
 
         # NOTE: Without `add --all` `diff-index` will not notice untracked files.
         git add --all
@@ -139,7 +140,7 @@
         git status
 
         # Commit only if there are changes.
-        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: add release symlink: ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: add release dir: ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
 
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
@@ -155,7 +156,7 @@
         #######################################################################
         # Last update of dynamic build descriptor in build history.
         # This is to record:
-        # - commit id in build history with symlink
+        # - commit id in build history with release directory
         # - commit id in parent repository with all submodule commit ids
         # NOTE: The commit id of parent which will be tagged later is not
         #       recorded in dynamic build descriptor because we commit
