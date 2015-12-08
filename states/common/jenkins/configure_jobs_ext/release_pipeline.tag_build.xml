@@ -39,6 +39,11 @@
         {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 
         #######################################################################
+        # This job should only be part of `release_pipeline` (at the moment).
+
+        test -n "${RELEASE_TYPE:-}"
+
+        #######################################################################
         # Make sure all repositories are clean.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
@@ -52,7 +57,7 @@
         # NOTE: We ignore any changes in submodules for parent repo.
         if ! git diff-index --ignore-submodules=all --exit-code HEAD
         then
-            # Set job status to unstable (warning to check stash).
+            # Set job status to failed.
             if [ "${JOB_STATUS}" -lt '2' ]
             then
                 JOB_STATUS='2'
@@ -66,12 +71,14 @@
         #######################################################################
         # Make sure HEADs of all repositories are at `latest_commit_ids`
         # in dynamic build descriptor.
-        # The exceptions are only:
-        # - parent repository
-        # - build history repository
-        # This is because each commit in these repositories diverge their
+        # The exceptions is only build history repository.
+        # This is because each commit in this repository diverge their
         # `latest_commit_ids` in dyn build desc.
         # Therefore, their `latest_commit_ids` should match to `HEAD^`.
+        # NOTE: Parent repository is a different case. Each commit inside
+        #       its children submodules makes it dirty but we ignore
+        #       new commits in submodules. And each commit inside parent
+        #       itself is simply the same as in any other repository.
 
         {% for repo_name in pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
@@ -82,8 +89,6 @@
 
         # Get required HEAD for `latest_commit_ids`.
         {% if not repo_name %}
-        {% elif repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['top_level_parent_role'] %}
-        REQUIRED_HEAD="HEAD^"
         {% elif repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
         REQUIRED_HEAD="HEAD^"
         {% else %}
@@ -91,7 +96,7 @@
         {% endif %}
 
         REQUIRED_HEAD_COMMIT_ID="$(git rev-parse --verify "${REQUIRED_HEAD}")"
-        LATEST_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${PARENT_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}")"
+        LATEST_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "latest_commit_ids:{{ repo_name }}")"
         test "${REQUIRED_HEAD_COMMIT_ID}" == "${LATEST_COMMIT_ID}"
 
         cd -
@@ -99,18 +104,118 @@
         {% endfor %}
 
         #######################################################################
-        # Make last pre-release commits.
+        # Create a copy of build title directory in build history
+        # named as version `name-number`.
+        # This provides shortened release `name-number` parent build
+        # to specify before building bootstrap packages.
+
+        # Get location of build history repo.
+        {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][build_history_repo_id]['git'] %}
+        export BUILD_HISTORY_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${BUILD_HISTORY_REPO_PATH}"
+
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ build_history_repo_id }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
+
+        # Add release directory - a copy current build title directory.
+        cp -rp "${BUILD_TITLE}" "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+
+        # NOTE: Without `add --all` `diff-index` will not notice untracked files.
+        git add --all
+
+        # Make sure repository became dirty, otherwise fail.
+        if git diff-index --ignore-submodules=dirty --exit-code HEAD
+        then
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                # ERROR: Fail = repository is NOT dirty.
+                JOB_STATUS='2'
+            fi
+        fi
+
+        # Display status.
+        git status
+
+        # Commit only if there are changes.
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: add release dir: ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+
+        # Record `latest_commit_ids`.
+        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+        echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ build_history_repo_id }}"
+
+        cd -
+
+        #######################################################################
+        # Commit all submodules' commit ids in the parent repository.
 
         # TODO
 
         #######################################################################
-        # Tag repositories.
+        # Last update of dynamic build descriptor in build history.
+        # This is to record:
+        # - commit id in build history with release directory
+        # - commit id in parent repository with all submodule commit ids
+        # NOTE: The commit id of parent which will be tagged later is not
+        #       recorded in dynamic build descriptor because we commit
+        #       build history repository first and than parent repository.
 
-        if [ "${DO_NOT_TAG_RELEASE}" != "true" ]
+        # TODO: Commit dynamic build descriptor to build history.
+
+        # TODO: Commit all changes in parent repsository (all submodules ids).
+
+        #######################################################################
+        # Tag parent repository.
+        # NOTE: The tagged commit is not recorded in dynamic build descriptor
+        #       (see notes above). This is not crucial. The crucial condition
+        #       is that all HEAD commits of release branches are part of
+        #       dynamic build descriptor so that they can be merged into
+        #       trunk to be kept forever (without being garbage collected).
+        #       However, the tagged commit of the parent cannot be garbage
+        #       collected because it is tagged anyway.
+
+        {% if pillar['parent_repo_name'] %}
+        {% set parent_repo_id = pillar['parent_repo_name'] %}
+
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][parent_repo_id]['git'] %}
+        export PARENT_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${PARENT_REPO_PATH}"
+
+        if [ "${RELEASE_PIPELINE_DRY_RUN}" != "true" ]
         then
             git tag -a "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}" -m "Auto-tag: ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
             git push origin "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
         fi
+
+        {% else %}
+
+        # ERROR: Systems without parent repository are not supported.
+        exit 1
+
+        {% endif %}
+
+        cd -
+
+        #######################################################################
+        # Tag build history repository.
+        # Tagging for build history also serves the same purpose as branch.
+
+        {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][build_history_repo_id]['git'] %}
+        export BUILD_HISTORY_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${BUILD_HISTORY_REPO_PATH}"
+
+        if [ "${RELEASE_PIPELINE_DRY_RUN}" != "true" ]
+        then
+            git tag -a "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}" -m "Auto-tag: ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+            git push origin "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+        fi
+
+        cd -
 
         #######################################################################
         # Update dynamic build descriptor.

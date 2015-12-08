@@ -319,7 +319,8 @@ system_features:
                 #       `init_pipeline.start_new_build` for association,
                 #       the approach is to re-create this artifact
                 #       (get from parent build) and archive it again instead
-                #       of using Copy Artifact plugin.
+                #       of using Copy Artifact plugin
+                #       (see `archive_artifacts`).
                 #       Because we re-use existing artifact, the fingerprint
                 #       will be the same and association with
                 #       `init_pipeline.start_new_build` will happen again.
@@ -688,8 +689,7 @@ system_features:
                     - controller_role
 
                 condition_job_list:
-                    # TODO: Update promotion to the latest job in the pipeline.
-                    - 06.01.release_pipeline.release_build
+                    - 06.07.release_pipeline.merge_build
 
                 condition_type: downstream_passed
                 accept_unstable: True
@@ -1329,14 +1329,11 @@ system_features:
                 input_fingerprinted_artifacts:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
-                # This is the final job in the pipeline.
-                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
+                        condition: ALWAYS
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 05.01.package_pipeline.create_new_package
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1651,14 +1648,11 @@ system_features:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
-                # This is the final job in the pipeline.
-                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
+                        condition: ALWAYS
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 06.01.package_pipeline.create_new_package
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1697,7 +1691,8 @@ system_features:
                 #       `init_pipeline.start_new_build` for association,
                 #       the approach is to re-create this artifact
                 #       (get from parent build) and archive it again instead
-                #       of using Copy Artifact plugin.
+                #       of using Copy Artifact plugin
+                #       (see `archive_artifacts`).
                 #       Because we re-use existing artifact, the fingerprint
                 #       will be the same and association with
                 #       `init_pipeline.start_new_build` will happen again.
@@ -1793,11 +1788,12 @@ system_features:
                             The build title can be found in dynamic build descriptor in the value of `build_title` key.
                         parameter_type: string
                         parameter_value: '_'
-                    DO_NOT_TAG_RELEASE:
+                    RELEASE_PIPELINE_DRY_RUN:
                         parameter_description: |
-                            If set to `True`, tag and push tag to `origin`.
+                            Specify whether it is a dry run for release or not.
+                            For example, if set to `True`, tag is not created and pushed `origin`.
                         parameter_type: boolean
-                        parameter_value: False
+                        parameter_value: True
 
                     SKIP_RELEASE_PIPELINE:
                         parameter_description: |
@@ -1928,7 +1924,7 @@ system_features:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 06.06.release_pipeline.build_bootstrap_package
+                            - 06.06.release_pipeline.tag_build
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:

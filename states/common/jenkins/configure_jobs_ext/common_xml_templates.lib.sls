@@ -615,23 +615,31 @@ cp "${LATEST_DYN_BUILD_DESC_PATH}" "${JOB_DYN_BUILD_DESC_PATH}"
 ###############################################################################
 {% macro update_dynamic_build_descriptor(job_config, job_environ) %}
 
-# Update the latest dynamic build desciptor by
-# the one generated for this during job.
-cp "${JOB_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
-
-{% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
-{{ locate_repository_dynamic_build_descriptor(job_config, job_environ) }}
-
-cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
-
 {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 {% set repo_id = get_repository_id_by_role('build_history_role') %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
+REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+{% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
+{{ locate_repository_dynamic_build_descriptor(job_config, job_environ) }}
+
+# Record `latest_commit_ids` in build history unless it is read-only restore.
+if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+then
+    cd "${REPO_PATH}"
+    CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+    echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ repo_id }}"
+    cd -
+fi
+
+# Update the latest dynamic build desciptor by
+# the one generated for this during job.
+cp "${JOB_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
+
+cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
 
 export JOB_NAME="{{ job_environ['job_name'] }}"
-
-REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
 cd "${REPO_PATH}"
 

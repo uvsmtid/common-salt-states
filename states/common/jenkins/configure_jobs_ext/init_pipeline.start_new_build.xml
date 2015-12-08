@@ -373,8 +373,19 @@ HEREDOC_MARKER
 
         # Make sure all other artifacts producible by this first job
         # (for fingerprinting) are present.
+        # NOTE: When parent build title is not provided, some artifacts
+        #       for associations through fingerprints cannot be recovered.
+        #       Fail only if both artifact and parent build title are absent.
         {% for produced_artifact in job_config['restore_artifacts_from_parent_build'] %}
-        ls -l "{{ produced_artifact }}"
+        if ! ls -l "{{ produced_artifact }}"
+        then
+            if [ "${PARENT_BUILD_TITLE}" != '_' ]
+            then
+                # Parent build title present but required artifact is not
+                # "produced" from this old parent build. Fail.
+                ls -l "{{ produced_artifact }}"
+            fi
+        fi
         {% endfor %}
 
         {% endif %}

@@ -50,10 +50,8 @@ include:
 #       starting from root key.
 
 system_features:
-    source_bootstrap_configuration:
-        enable_bootstrap_target_envs:
-            # Additional profile to build bootstrap package for.
-            production-pillars: ~
+    bash_prompt_info_config:
+        enable_ssh_style_paths: False
 
 system_features:
     tmux_custom_configuration:

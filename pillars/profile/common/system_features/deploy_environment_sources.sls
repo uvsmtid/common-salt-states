@@ -96,6 +96,9 @@ system_features:
                 - '{{ project_name }}-salt-states'
 
             maven_project_container_role:
+                # NOTE: We ignore the fact that there can be parent pom
+                #       file which spans all others for multi-module
+                #       reactor build.
                 {% for maven_repo_name in maven_repo_names %}
                 - '{{ maven_repo_name }}'
                 {% endfor %}

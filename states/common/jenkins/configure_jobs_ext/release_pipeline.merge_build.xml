@@ -34,16 +34,32 @@
         {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
 
         #######################################################################
-        # Load additional macros.
+        # Deploy the pre-merge report script.
 
-        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+        # Run views configuration state on Salt master minion only.
+        sudo salt-call \
+            --out json \
+            state.sls common.jenkins.release_scripts \
+            test=False | tee salt.output.json
+
+        # Capture errors from Salt.
+        # At the moment salt does not return exit/error code.
+        # See: https://github.com/saltstack/salt/issues/18510
+        /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
+            salt.output.json
 
         #######################################################################
-        #
+        # Run report itself
 
-        # This job is supposed to store (i.g. upload) package.
-        # TODO: Implement
-        exit 0
+        ~/jenkins/release_scripts/pre_merge_report.sh
+
+        #######################################################################
+        # Quiet down Jenkins (block builds until user completes the merge).
+
+        if [ "${RELEASE_PIPELINE_DRY_RUN}" != "true" ]
+        then
+            eval "${JENKINS_CLI_TOOL_INVOKE_STRING} quiet-down"
+        fi
 
         #######################################################################
         # Update dynamic build descriptor.
