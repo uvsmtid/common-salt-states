@@ -1331,7 +1331,7 @@ system_features:
 
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
+                        condition: ALWAYS
                         trigger_jobs:
                             - 05.01.package_pipeline.create_new_package
 
@@ -1650,7 +1650,7 @@ system_features:
 
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
+                        condition: ALWAYS
                         trigger_jobs:
                             - 06.01.package_pipeline.create_new_package
 
