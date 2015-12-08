@@ -179,7 +179,7 @@ in addition to those mentioned in [Salt configuration][7] document
 
     Make sure all these keys set correctly:
 
-    *   `properties.yaml` => `load_bootstrap_target_envs`
+    *   `system_features:source_bootstrap_configuration:enable_bootstrap_target_envs`
 
         It should list at least target profile `TRG_env_profile`.
 
@@ -193,7 +193,7 @@ in addition to those mentioned in [Salt configuration][7] document
 
     Make sure all these keys set correctly:
 
-    *   `properties.yaml` => `load_bootstrap_target_envs`
+    *   `system_features:source_bootstrap_configuration:enable_bootstrap_target_envs`
 
         It should list at least target profile `TRG_env_profile`.
 
