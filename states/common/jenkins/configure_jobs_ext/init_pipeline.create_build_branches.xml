@@ -234,7 +234,7 @@
 
             {% else %}
 
-            echo "Skip fast-forward merge to restore point to build package for ${TARGET_PROFILE_NAME} cleanly."
+            echo "Skip fast-forward merge to restore point to build package cleanly. TARGET_PROFILE_NAME=${TARGET_PROFILE_NAME:-}"
 
             {% endif %}
 
