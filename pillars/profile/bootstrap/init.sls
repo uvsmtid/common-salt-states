@@ -9,6 +9,8 @@
 include:
 
 {% for sub_item in [
+        'main'
+        ,
         'system_resources'
         ,
         'system_features'
