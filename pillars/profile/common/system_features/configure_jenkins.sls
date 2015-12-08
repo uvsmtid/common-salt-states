@@ -1652,7 +1652,7 @@ system_features:
                     job_not_faild:
                         condition: ALWAYS
                         trigger_jobs:
-                            - 06.01.package_pipeline.create_new_package
+                            - 06.01.release_pipeline.release_build
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
