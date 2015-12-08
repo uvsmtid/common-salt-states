@@ -21,7 +21,7 @@ include:
 # is also placed by `enable_bootstrap_target_envs` key in pillar.
 # See:
 #   * docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
-#   * docs/pillars/{# project_name #}/system_features/source_bootstrap_configuration/enable_bootstrap_target_envs/readme.md
+#   * docs/pillars/{# project_name #}/enable_bootstrap_target_envs/readme.md
 {% set load_bootstrap_target_envs = props['load_bootstrap_target_envs'] %}
 {% set project_name = props['project_name'] %}
 
@@ -37,7 +37,7 @@ pretty_yaml2json_script:
 
 {% for profile_name in load_bootstrap_target_envs.keys() %} # profile_name
 
-{% if profile_name in pillar['system_features']['source_bootstrap_configuration']['enable_bootstrap_target_envs'].keys() %} # enabled profile_name
+{% if profile_name in pillar['enable_bootstrap_target_envs'] %} # enabled profile_name
 
 # Define root for pillar data.
 # Note that currently selected profile_name for currently selected project

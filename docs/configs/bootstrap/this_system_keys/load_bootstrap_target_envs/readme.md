@@ -42,5 +42,5 @@ this_system_keys:
 [3]: /docs/configs/common/this_system_keys/profile_name/readme.md
 [4]: #example
 [5]: /docs/pillars/bootstrap/bootstrap_target_envs/readme.md
-[6]: /docs/pillars/bootstrap/system_features/source_bootstrap_configuration/enable_bootstrap_target_envs/readme.md
+[6]: /docs/pillars/bootstrap/enable_bootstrap_target_envs/readme.md
 

@@ -35,7 +35,7 @@
         sudo salt-call \
             --out json \
             state.sls bootstrap.generate_content \
-            pillar="{ system_features: { source_bootstrap_configuration: { enable_bootstrap_target_envs: [ ${TARGET_PROFILE_NAME} ] } } }" \
+            pillar="{ enable_bootstrap_target_envs: [ ${TARGET_PROFILE_NAME} ] }" \
             test=False | tee salt.output.json
 
         # Capture errors from Salt.
