@@ -1,4 +1,7 @@
 
+TODO: This is outdated - `this_system_keys` in configuration
+      is not used anymore.
+
 Key `load_bootstrap_target_envs` is the root key which lists available
 `profile_name`s enabled for building [bootstrap packages][1].
 

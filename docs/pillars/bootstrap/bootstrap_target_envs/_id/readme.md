@@ -1,5 +1,7 @@
 
-The id under `bootstrap_target_envs` is a strings of
+TODO: This is outdated `this_system_keys` is not used anymore.
+
+The id under `bootstrap_target_envs` is a string of
 project_name and profile_name concatenated through `.` (dot), for example:
 ```
 pillar['bootstrap_target_envs']['project_name.profile_name']

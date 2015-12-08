@@ -6,14 +6,22 @@
 {% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
 {% import_yaml properties_path as props %}
 
-{% set profile_name = props['profile_name'] %}
+{% set bootstrap_target_envs = props['load_bootstrap_target_envs'].keys() %}
+{% set bootstrap_target_envs = bootstrap_target_envs + [ props['profile_name'] ] %}
 
 system_features:
 
     source_bootstrap_configuration:
 
-        enable_bootstrap_target_envs:
-            {{ profile_name }}: ~
+        # NOTE: By default all bootstrap target environments are enabled.
+        #       However, there is only one bootstrap target pillars repository.
+        #       Therefore, the same bootstrap package is generated as many
+        #       times as there are enabled environments.
+        #       In order to optimize, bootstrap generation should be run
+        #       with option to override this pillar:
+        #         salt-call state.sls bootstrap.generate_content \
+        #           pillar="{ system_features: { source_bootstrap_configuration: { enable_bootstrap_target_envs: [ REQUIRED_TARGET ] } } }"
+        enable_bootstrap_target_envs: {{ bootstrap_target_envs|json }}
 
         bootstrap_package_use_cases:
             - 'initial-online-node'
