@@ -40,6 +40,11 @@ set -u
 
 REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
+# Visual marker.
+echo "################################################################################"
+echo "######################################## {{ repo_name }}"
+echo "######################################## -> ${REPO_PATH}"
+
 cd "${REPO_PATH}"
 
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
@@ -60,24 +65,25 @@ export TARGET_UPSTREAM_BRANCH="develop"
 export TARGET_UPSTREAM_BRANCH="{{ pillar['dynamic_build_descriptor']['required_branches'][repo_name] }}"
 {% endif %}
 
+# Report branches to be compared.
+echo "BUILD_BRANCH:          ${BUILD_BRANCH}"
+echo "TARGET_UPSTREM_BRANCH: ${TARGET_UPSTREAM_BRANCH}"
+
 # Reset repositories and test that there is no local modifications.
 # NOTE: Without `add --all` `diff-index` will not notice untracked files.
 git add --all
 # NOTE: We ignore any changes in submodules for parent repo.
 git diff-index --ignore-submodules=all --exit-code HEAD
 # Reset any staged data.
-git reset
+git reset 1> /dev/null
 
-# Switch to the branch.
-git checkout "${TARGET_UPSTREAM_BRANCH}"
-
-git rev-parse --verify "${BUILD_BRANCH}"
+git rev-parse --verify "${BUILD_BRANCH}" 1> /dev/null
 
 # Check if there is BUILD_BRANCH is not merged into TARGET_UPSTREAM_BRANCH.
 # The `--no-merged` option lists branches which are not merged and we
 # simply look for them in the output.
 set +e
-git branch --no-merged "${TARGET_UPSTREAM_BRANCH}" | grep "${BUILD_BRANCH}"
+git branch --no-merged "${TARGET_UPSTREAM_BRANCH}" | grep "${BUILD_BRANCH}" 1> /dev/null
 RET_VAL="${?}"
 set -e
 
@@ -85,14 +91,17 @@ set -e
 if [ "${RET_VAL}" == "0" ]
 then
     echo TO_BE_MERGED
+    echo "    Instructions:"
+    echo "        cd '${REPO_PATH}'"
+    echo "        git checkout '${TARGET_UPSTREAM_BRANCH}'"
+    echo "        git merge --no-ff --no-commit '${BUILD_BRANCH}'"
+    echo "        # Review merged content."
+    echo "        git commit --author=YOUR_EMAIL"
 else
     echo SKIP
 fi
 
-# Switch back.
-git checkout "${CURRENT_BRANCH}"
-
-cd -
+cd - 1> /dev/null
 
 {% endfor %}
 
