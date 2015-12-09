@@ -9,6 +9,11 @@ system_features:
         # Location of directory with bootstrap relative to primary users' home.
         bootstrap_files_dir: 'bootstrap.dir'
 
+        # TODO: It doesn't seem right that package type (archive type)
+        #       depends on any platform. What if there are multiple
+        #       platforms within a system, will there be multiple packages?
+        #       The whole idea about bootstrap is to have single package
+        #       per system instance.
         os_platform_package_types:
             fc21: tar.gz
             fc22: tar.gz
