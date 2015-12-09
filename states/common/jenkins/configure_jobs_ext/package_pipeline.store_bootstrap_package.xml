@@ -39,11 +39,54 @@
         # TODO
 
         #######################################################################
-        #
+        # Select target.
+
+        BOOTSTRAP_TARGET_ENVIRONMENT="${TARGET_PROFILE_NAME:-}"
+        if [ -z "${BOOTSTRAP_TARGET_ENVIRONMENT}" ]
+        then
+            # No selected target environment. Use local environment then.
+            BOOTSTRAP_TARGET_ENVIRONMENT="${SALT_PROFILE_NAME}"
+        fi
+
+        #######################################################################
+        # Store bootstrap package.
 
         # This job is supposed to store (i.g. upload) package.
-        # TODO: Implement
-        exit 0
+        # Currently, it only saves it in specified directory.
+
+        # Select source directory or file. This depends on whether only
+        # content directory exists or package file was generated.
+        # TODO: It doesn't seem right that package type (archive type)
+        #       depends on any platform. What if there are multiple
+        #       platforms within a system, will there be multiple packages?
+        #       The whole idea about bootstrap is to have single package
+        #       per system instance.
+        {% set selected_host_name = grains['id'] %}
+        {% set package_type = pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][pillar['system_hosts'][selected_host_name]['os_platform']] %}
+        {% set bootstrap_dir_basename = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
+        {% if not pillar['system_features']['source_bootstrap_configuration']['generate_packages'] %} # generate_packages
+        {% set bootstrap_source_path = bootstrap_dir_basename + '/targets/' + pillar['project_name'] %}
+        # Source is bootstrap package file.
+        BOOTSTRAP_SOURCE_PATH="{{ bootstrap_source_path }}/${BOOTSTRAP_TARGET_ENVIRONMENT}/salt-auto-install.{{package_type}}"
+        {% else %} # generate_packages
+        {% set bootstrap_source_path = bootstrap_dir_basename + '/packages/' + pillar['project_name'] %}
+        # Source is bootstrap content directory.
+        BOOTSTRAP_SOURCE_PATH="{{ bootstrap_source_path }}/${BOOTSTRAP_TARGET_ENVIRONMENT}"
+        {% endif %} # generate_packages
+
+        BOOTSTRAP_DESTINATION_PATH="{{ pillar['system_features']['jenkins_generated_bootstrap']['rel_path_to_generated_bootstrap_packages'] }}/${BOOTSTRAP_TARGET_ENVIRONMENT}/${BUILD_TITLE}"
+
+        # The paths are relative to user's home dir.
+        cd ~
+
+        # Make sure source directory exists.
+        ls -lrtd "${BOOTSTRAP_SOURCE_PATH}"
+
+        # Make sure destination directory exists.
+        mkdir -p "${BOOTSTRAP_DESTINATION_PATH}"
+
+        # Copy bootstrap content/package to destination.
+        cp -rp "${BOOTSTRAP_SOURCE_PATH}" "${BOOTSTRAP_DESTINATION_PATH}"
 
         #######################################################################
         # Script footer

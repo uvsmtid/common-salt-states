@@ -780,9 +780,11 @@ esac
     <!--
         NOTE: Inject both `job_environment_variables` and `preset_build_parameters`.
         In fact, they have the same purpose.
-        The only difference is that `preset_build_parameters` are propagated
-        from the first job in the pipepline to others through dedicated
-        shared properties file.
+        The only difference is that `preset_build_parameters` are _also_
+        propagated from the first job in the pipepline to others through
+        dedicated shared properties file which is given to current job
+        from previous job via Parameterized Trigger Plugin
+        (rather than EnvInject Plugin).
     -->
 
     {% if 'job_environment_variables' in job_config or 'preset_build_parameters' in job_config %}

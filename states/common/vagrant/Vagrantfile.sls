@@ -90,6 +90,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     {% set vagrant_bootstrap_use_case = pillar['system_features']['vagrant_configuration']['vagrant_bootstrap_use_case'] %}
 
+    # TODO: It doesn't seem right that package type (archive type)
+    #       depends on any platform. What if there are multiple
+    #       platforms within a system, will there be multiple packages?
+    #       The whole idea about bootstrap is to have single package
+    #       per system instance.
     {% set package_type = pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][pillar['system_hosts'][selected_host_name]['os_platform']] %}
     {% if not pillar['system_features']['source_bootstrap_configuration']['generate_packages'] %} # generate_packages
     {% set src_sync_dir = bootstrap_dir_basename + '/targets/' + project_name + '/' + profile_name %}
