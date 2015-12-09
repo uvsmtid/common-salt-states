@@ -74,7 +74,7 @@
         BOOTSTRAP_SOURCE_PATH="{{ bootstrap_source_path }}/${BOOTSTRAP_TARGET_ENVIRONMENT}"
         {% endif %} # generate_packages
 
-        BOOTSTRAP_DESTINATION_PATH="{{ pillar['system_features']['jenkins_generated_bootstrap']['rel_path_to_generated_bootstrap_packages'] }}/${BOOTSTRAP_TARGET_ENVIRONMENT}/${BUILD_TITLE}"
+        BOOTSTRAP_DESTINATION_PATH="{{ pillar['system_features']['jenkins_generated_bootstrap']['rel_path_to_generated_bootstrap_packages'] }}/${BUILD_TITLE}"
 
         # The paths are relative to user's home dir.
         cd ~
