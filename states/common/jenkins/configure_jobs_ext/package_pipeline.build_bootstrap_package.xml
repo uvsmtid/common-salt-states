@@ -29,13 +29,24 @@
         {{ common_build_script_header(job_config, job_environ) }}
 
         #######################################################################
+        # Select target.
+
+        BOOTSTRAP_TARGET_ENVIRONMENT="${TARGET_PROFILE_NAME:-}"
+        if [ -z "${BOOTSTRAP_TARGET_ENVIRONMENT}" ]
+        then
+            # No selected target environment. Use local environment then.
+            BOOTSTRAP_TARGET_ENVIRONMENT="${SALT_PROFILE_NAME}"
+        fi
+
+        #######################################################################
+        # Build bootstrap package.
 
         # NOTE: Overwrite `enable_bootstrap_target_envs` to limit to
         #       specific profile only.
         sudo salt-call \
             --out json \
             state.sls bootstrap.generate_content \
-            pillar="{ enable_bootstrap_target_envs: [ ${TARGET_PROFILE_NAME} ] }" \
+            pillar="{ enable_bootstrap_target_envs: [ ${BOOTSTRAP_TARGET_ENVIRONMENT} ] }" \
             test=False | tee salt.output.json
 
         # Capture errors from Salt.
