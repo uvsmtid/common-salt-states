@@ -27,6 +27,8 @@ include:
         ,
         'configure_jenkins'
         ,
+        'jenkins_generated_bootstrap'
+        ,
         'deploy_environment_sources'
         ,
         'resource_repositories_configuration'
