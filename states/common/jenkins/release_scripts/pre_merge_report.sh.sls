@@ -37,8 +37,10 @@ set -u
 # Make sure source pillars do not override dynamic build descriptor.
 # This is required because merge report uses its information to
 # see what branches hasn't been merged yet.
-
-# TODO
+{% set override_pillars_repo_id = 'source_profile_pillars_role' %}
+{% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][override_pillars_repo_id]['git'] %}
+REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+! ls -lrt "${REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
 
 {#############################################################################}
 
@@ -53,11 +55,12 @@ CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 # HEAD value means that repository is at detached head.
 test "${CURRENT_BRANCH}" != "HEAD"
 
-# Isn't it better to use build branches (instead of latest commits).
+# It is better to use build branches (instead of latest commits).
 # The problem is that latest commits are only updated until transfer
-# of dynamic bulid descriptor is done. After that, updates continue
-# to build history repository while copy in the pillars stays the same.
-export LATEST_COMMIT_ID="{{ pillar['dynamic_build_descriptor']['latest_commit_ids'][repo_name] }}"
+# of dynamic bulid descriptor is done. After that, updates to dynamic build
+# descriptor continue inside build history repository while
+# copy in the pillars stays the same.
+export BUILD_BRANCH="{{ pillar['dynamic_build_descriptor']['build_branches'][repo_name] }}"
 
 {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
 # Use hardcoded default branch `develop` for `build_history_role`.
@@ -67,23 +70,30 @@ export TARGET_UPSTREAM_BRANCH="{{ pillar['dynamic_build_descriptor']['required_b
 {% endif %}
 
 # Reset repositories and test that there is no local modifications.
-# TODO
+# NOTE: Without `add --all` `diff-index` will not notice untracked files.
+git add --all
+# NOTE: We ignore any changes in submodules for parent repo.
+git diff-index --ignore-submodules=all --exit-code HEAD
+# Reset any staged data.
+git reset
 
 # Switch to the branch.
 git checkout "${TARGET_UPSTREAM_BRANCH}"
 
-git rev-parse --verify "${LATEST_COMMIT_ID}"
+git rev-parse --verify "${BUILD_BRANCH}"
 
-# Check if there is anything to merge from LATEST_COMMIT_ID to TARGET_UPSTREAM_BRANCH.
+# Check if there is BUILD_BRANCH is not merged into TARGET_UPSTREAM_BRANCH.
+# The `--no-merged` option lists branches which are not merged and we
+# simply look for them in the output.
 set +e
-git branch --no-merged "${TARGET_UPSTREAM_BRANCH}" "${LATEST_COMMIT_ID}" | grep "${LATEST_COMMIT_ID}"
+git branch --no-merged "${TARGET_UPSTREAM_BRANCH}" | grep "${BUILD_BRANCH}"
 RET_VAL="${?}"
 set -e
 
 # Report if there is anything to merge.
 if [ "${RET_VAL}" == "0" ]
 then
-    echo TOBEMERGED
+    echo TO_BE_MERGED
 else
     echo SKIP
 fi
