@@ -217,10 +217,25 @@
             export TRANSFER_DESTINATION_REPO_PATH="${PROJECT_STATES_REPO_PATH}"
         fi
 
-        # Transfer dynamic build descriptor.
-        cp "${BUILD_TITLE}/dynamic_build_descriptor.yaml" "${TRANSFER_DESTINATION_REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
-
         cd -
+
+        # Transfer dynamic build descriptor with recorded `latest_commit_ids`
+        # of target repository before transfer and after transfer.
+        # IMPORTANT: Note how copy is done first (before changes in
+        #            target repositry can be committed) - this leaves
+        #            transferred dynamic build descriptor with
+        #            previous `latest_commit_ids` (as commit id cannot be
+        #            known until commit is done). Then second transfer
+        #            is done and committed dynamic build descriptor
+        #            points to the required commits ids.
+
+        for COMMENT_CASE in \
+            "with previous latest_commit_ids" \
+            "with latest_commit_ids containing updated dynamic build descriptor" \
+
+        do
+
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${TRANSFER_DESTINATION_REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
 
         cd "${TRANSFER_DESTINATION_REPO_PATH}"
 
@@ -248,7 +263,7 @@
         # Ignore dirty content in submodules because there is no way to
         # commit them from top-level repo anyway (and all dirty content
         # will be committed by children).
-        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m 'Auto-commit: provide dynamic build descriptor at ${JOB_NAME}'
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: provide dynamic build descriptor at ${JOB_NAME} ${COMMENT_CASE}"
 
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
@@ -262,6 +277,8 @@
         git reset
 
         cd -
+
+        done
 
         #######################################################################
         # Update dynamic build descriptor.
