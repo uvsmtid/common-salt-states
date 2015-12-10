@@ -364,6 +364,8 @@ system_features:
                 preset_build_parameters:
                     # NOTE: This variable is `true` only in `checkout_pipeline`.
                     RESTORE_PARENT_BUILD_ONLY: 'false'
+                    # Set default version name.
+                    RELEASE_VERSION_NAME: 'common'
 
                 build_parameters:
                     BUILD_LABEL:
@@ -1023,18 +1025,13 @@ system_features:
                 input_fingerprinted_artifacts:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
-                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
-                job_config_data:
-                    xml_config_template: 'common/jenkins/configure_jobs_ext/maven_pipeline.maven_project_job.xml'
-                    repository_name: {{ maven_repo_name }}
-
-                # Some repositories do not have `pom.xml` in default location.
-                # Note that at the moment all repo's roots
-                # were supplied with pom.xml.
-                {% if not maven_repo_name %}
-                    {{ FAIL_here }}
-                {% else %}
-                    component_pom_path: 'pom.xml'
+                # This is the final job in the pipeline.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
                 {% endif %}
 
                 disable_archiving: True
@@ -1052,14 +1049,18 @@ system_features:
                     JAVA_HOME: '/usr/java/jdk1.7.0_71'
                     PATH: '/usr/java/jdk1.7.0_71/bin:${PATH}'
 
-                # This is the final job in the pipeline.
-                {% if False %}
-                parameterized_job_triggers:
-                    job_not_faild:
-                        condition: UNSTABLE_OR_BETTER
-                        trigger_jobs:
-                            []
-                {% endif %}
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/maven_pipeline.maven_project_job.xml'
+                    repository_name: {{ maven_repo_name }}
+                    # Some repositories do not have `pom.xml` in default location.
+                    # Note that at the moment all repo's roots
+                    # were supplied with pom.xml.
+                    {% if not maven_repo_name %}
+                    {{ FAIL_here }}
+                    {% else %}
+                    component_pom_path: 'pom.xml'
+                    {% endif %}
 
             {% endfor %}
 
@@ -1419,6 +1420,8 @@ system_features:
                 preset_build_parameters:
                     # NOTE: This variable is `true` only in `checkout_pipeline`.
                     RESTORE_PARENT_BUILD_ONLY: 'false'
+                    # Set default version name.
+                    RELEASE_VERSION_NAME: 'common'
 
                 build_parameters:
                     TARGET_PROFILE_NAME:
@@ -1431,7 +1434,6 @@ system_features:
                             {% for target_profile_name in props['load_bootstrap_target_envs'].keys() %}
                             - {{ target_profile_name }}
                             {% endfor %}
-                            - {{ profile_name }}
                     PACKAGE_LABEL:
                         parameter_description: |
                             Short meaningful string to differentiate this build.
@@ -1752,7 +1754,8 @@ system_features:
                             Name of the released product/project.
                             It is embedded into release title (tag).
                         parameter_type: string
-                        parameter_value: '_'
+                        # Default version name.
+                        parameter_value: 'common'
                     RELEASE_VERSION_NUMBER:
                         parameter_description: |
                             Version number should have format `X.Y.Z.N`.
