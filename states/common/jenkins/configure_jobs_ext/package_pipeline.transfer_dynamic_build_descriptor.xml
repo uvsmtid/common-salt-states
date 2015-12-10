@@ -143,8 +143,10 @@
         cd -
 
         #######################################################################
-        # PART 1: Special case when `TARGET_PROFILE_NAME` is undefined.
-        # This case defines both `deploy_pipeline` and `release_pipeline`.
+        # Fast-forward merge source and target pillars.
+        # This is a special case when `TARGET_PROFILE_NAME` is undefined.
+        # This case applies to both `deploy_pipeline` and `release_pipeline`.
+        # It does not apply to `package_pipeline`.
         # FORWARD: Update (fast-forward merge)
         #          target pillars repo from
         #          source pillars repo.
@@ -158,10 +160,10 @@
         cd -
 
         # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`
-        #       where it should be updated by latest commits from
-        #       source pillars.
-        #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
-        #       it should match (source) `SALT_PROFILE_NAME`.
+        #       in which case nothing needs to be done.
+        #       For `deploy_pipeline` and `release_pipeline`
+        #       (when `TARGET_PROFILE_NAME` is undefined)
+        #       it should fast-forward into `SALT_PROFILE_NAME`.
         cd "${TARGET_PROFILE_REPO_PATH}"
         if [ -z "${TARGET_PROFILE_NAME:-}" ]
         then
@@ -181,20 +183,16 @@
         cd -
 
         #######################################################################
-        # This job has several dynamic build descriptor transfer modes:
-        # - `deploy_pipeline` or `package_pipeline`
+        # This job has two dynamic build descriptor transfer modes:
+        # - `package_pipeline`
         #       In this case the transfer is done to target pillar repository.
-        #       This is to be able to build bootstrap package.
-        #       NOTE: The `deploy_pipeline` deploys everything into
-        #             source environment and needs transfer of dynamic
-        #             build descriptor into source pillar repository.
-        #             This is done in below by pulling changes from
-        #             the target pillar into source pillar repository.
-        # - `release_pipeline`
+        #       This is to embed dynamic build descriptor into
+        #       "overrides" pillars for the selected target environment.
+        # - `deploy_pipeline` or `release_pipeline`
         #       In this case the transfer is done to project states repository
-        #       (to provide released dynamic build descriptor).
+        #       (to provide released dynamic build descriptor in "defaults").
         # To tell the difference between the two modes,
-        # `RELEASE_TYPE` build parameter.
+        # `TARGET_PROFILE_NAME` build parameter.
 
         # Get location of build history repo.
         {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
@@ -212,11 +210,11 @@
         BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ build_history_repo_id }}")"
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
-        if [ -n "${RELEASE_TYPE:-}" ]
+        if [ -n "${TARGET_PROFILE_NAME:-}" ]
         then
-            export TRANSFER_DESTINATION_REPO_PATH="${PROJECT_STATES_REPO_PATH}"
-        else
             export TRANSFER_DESTINATION_REPO_PATH="${TARGET_PROFILE_REPO_PATH}"
+        else
+            export TRANSFER_DESTINATION_REPO_PATH="${PROJECT_STATES_REPO_PATH}"
         fi
 
         # Transfer dynamic build descriptor.
@@ -254,58 +252,16 @@
 
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
-        if [ -n "${RELEASE_TYPE:-}" ]
+        if [ -n "${TARGET_PROFILE_NAME:-}" ]
         then
-            echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ project_states_repo_id }}"
-        else
             echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ target_profile_repo_id }}"
+        else
+            echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ project_states_repo_id }}"
         fi
 
         git reset
 
         cd -
-
-        #######################################################################
-        # PART 2: Special case when `TARGET_PROFILE_NAME` is undefined
-        #         AND transfer was done to target pillars (not states repo).
-        # This case defines ONLY `deploy_pipeline`.
-        # BACKWARD: Update (fast-forward merge)
-        #           source pillars repo from
-        #           target pillars repo.
-
-        if [ "${TRANSFER_DESTINATION_REPO_PATH}" == "${TARGET_PROFILE_REPO_PATH}" ]
-        then
-
-        cd "${TARGET_PROFILE_REPO_PATH}"
-
-        CURRENT_TARGET_PILLAR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ target_profile_repo_id }}")"
-        test "${CURRENT_TARGET_PILLAR_BRANCH}" == "${BUILD_BRANCH}"
-
-        cd -
-
-        # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`.
-        #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
-        #       it should match (source) `SALT_PROFILE_NAME`.
-        cd "${SOURCE_PROFILE_REPO_PATH}"
-        if [ -z "${TARGET_PROFILE_NAME:-}" ]
-        then
-
-            CURRENT_SOURCE_PILLAR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-            BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ source_profile_repo_id }}")"
-            test "${CURRENT_SOURCE_PILLAR_BRANCH}" == "${BUILD_BRANCH}"
-
-            # Update target profile pillars repo from source profile pillars repo.
-            git pull --ff-only "${TARGET_PROFILE_REPO_PATH}" "${CURRENT_TARGET_PILLAR_BRANCH}"
-
-            # Record `latest_commit_ids`.
-            CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
-            echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ source_profile_repo_id }}"
-
-        fi
-        cd -
-
-        fi
 
         #######################################################################
         # Update dynamic build descriptor.
