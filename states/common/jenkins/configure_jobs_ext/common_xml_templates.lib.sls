@@ -674,6 +674,8 @@ else
     git diff-index --ignore-submodules=all --exit-code HEAD
 fi
 
+git reset
+
 cd -
 
 {% endmacro %}

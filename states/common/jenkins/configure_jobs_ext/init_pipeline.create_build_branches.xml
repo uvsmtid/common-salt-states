@@ -158,6 +158,8 @@
 
         fi
 
+        git reset
+
         cd -
 
         {% endif %}

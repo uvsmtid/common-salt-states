@@ -82,9 +82,9 @@
             # (except new commits in submodules).
             git diff-index --ignore-submodules=all --exit-code HEAD
 
-            # Rest whatever was done by `git add`.
-            git reset
         fi
+
+        git reset
 
         cd -
 
@@ -223,9 +223,16 @@
             CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
             echo "${CURRENT_COMMIT_ID}"  | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_commit_ids:{{ build_history_repo_id }}"
 
-        fi
+        else
+
             # NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
             #       the operation is read-only.
+
+            echo "Nothing to do."
+        fi
+
+        git reset
+
         cd -
 
         #######################################################################
