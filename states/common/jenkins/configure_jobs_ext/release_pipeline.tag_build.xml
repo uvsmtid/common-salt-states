@@ -53,7 +53,7 @@
         {% set override_pillars_repo_id = get_repository_id_by_role('source_profile_pillars_role') %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][override_pillars_repo_id]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
-        ! ls -lrt "${REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
+        test ! -e "${REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
 
         #######################################################################
         # Make sure all repositories are clean.
@@ -75,6 +75,8 @@
                 JOB_STATUS='2'
             fi
         fi
+
+        git reset
 
         cd -
 
@@ -157,6 +159,8 @@
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
         echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ build_history_repo_id }}"
+
+        git reset
 
         cd -
 

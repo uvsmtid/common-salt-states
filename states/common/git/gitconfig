@@ -36,14 +36,16 @@
     # Use `histogram` diff algorithm for all `log` commands.
     # Tests showed that the difference tends to be minimal.
 
+    # Provide `--stat` with width parameter (to avoid path truncating).
+
     # "Graph log"
     # Draw a history graph with full decoration and detailed info.
-    glog = log --histogram --decorate=full --graph --stat
+    glog = log --histogram --decorate=full --graph --stat=1024
 
     # "File log"
     # In addition to `glog` follow file's history beyond renames.
     # Option `-m` shows merge commits as well.
-    flog = log --histogram --decorate=full --graph --stat --follow -m
+    flog = log --histogram --decorate=full --graph --stat=1024 --follow -m
 
     # "Long log" - one line commit with graph.
     # Useful for high level log overview long back in history.
