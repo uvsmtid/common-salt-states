@@ -18,6 +18,7 @@ jenkins_release_scripts-{{ script_name }}:
         - template: jinja
         - name: '{{ jenkins_dir_path }}/release_scripts/{{ script_name }}'
         - makedirs: True
+        - user: {{ account_conf['username'] }}
         - mode: 755
 {% endfor %}
 
