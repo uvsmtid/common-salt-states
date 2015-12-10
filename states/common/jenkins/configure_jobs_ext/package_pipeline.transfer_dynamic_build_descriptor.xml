@@ -74,7 +74,7 @@
 
         # Version number is different.
         # It is only set when variable `RELEASE_VERSION_NUMBER` is set.
-        if [ -n "${RELEASE_VERSION_NUMBER}" ]
+        if [ -n "${RELEASE_VERSION_NUMBER:-}" ]
         then
             echo "${RELEASE_VERSION_NUMBER}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_number"
         else
