@@ -170,7 +170,7 @@
         # Ignore dirty content in submodules because there is no way to
         # commit them from top-level repo anyway (and all dirty content
         # will be committed by children).
-        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m 'Auto-commit: provide dynamic build descriptor'
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m 'Auto-commit: provide dynamic build descriptor at ${JOB_NAME}'
 
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
