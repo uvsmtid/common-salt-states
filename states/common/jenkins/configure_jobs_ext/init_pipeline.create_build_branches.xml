@@ -39,6 +39,9 @@
         # in the dyn build desc - use it as initial recovery descriptor.
         cp "${LATEST_DYN_BUILD_DESC_PATH}" "${RECOVERY_DYN_BUILD_DESC_PATH}"
 
+        #######################################################################
+        # Locate dynamic build descriptor in build history repo.
+
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
         {{ locate_repository_dynamic_build_descriptor(job_config, job_environ) }}
         ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"

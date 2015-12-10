@@ -34,6 +34,13 @@
         {{ locate_dynamic_build_descriptor(job_config, job_environ) }}
 
         #######################################################################
+        # Locate dynamic build descriptor in build history repo.
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
+        {{ locate_repository_dynamic_build_descriptor(job_config, job_environ) }}
+        ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
+
+        #######################################################################
         # Load additional macros.
 
         {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
