@@ -83,7 +83,8 @@ jenkins_configuration_file:
 # TODO: This is supposed to be refactored to be done through configuration.
 # Deploy configuration files for plugins which need them (in advance).
 {% for plugin_config_file in [
-        'sidebar-link.xml'
+        'sidebar-link.xml',
+        'jenkins.advancedqueue.PriorityConfiguration.xml',
     ]
 %}
 

@@ -343,10 +343,24 @@
       <scanQueueFor>ALL</scanQueueFor>
       <!--
         NOTE: Jobs cannot be run until any other job is running.
+              Except for jobs which specify (non-default) priority.
       -->
+      {% if 'job_group_name' in job_config and job_config['job_group_name'] %}
+      <blockingJobs>THIS_JOB_DOES_NOT_EXIST</blockingJobs>
+      {% else %}
       <blockingJobs>.*</blockingJobs>
+      {% endif %}
     </hudson.plugins.buildblocker.BuildBlockerProperty>
     {% endif %}
+
+    <jenkins.advancedqueue.jobinclusion.strategy.JobInclusionJobProperty plugin="PrioritySorter@3.4">
+      <useJobGroup>true</useJobGroup>
+      {% if 'job_group_name' in job_config and job_config['job_group_name'] %}
+      <jobGroupName>{{ job_config['job_group_name'] }}</jobGroupName>
+      {% else %}
+      <jobGroupName>default_group</jobGroupName>
+      {% endif %}
+    </jenkins.advancedqueue.jobinclusion.strategy.JobInclusionJobProperty>
 
   </properties>
 

@@ -168,6 +168,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: poll_pipeline_starter_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -294,6 +296,8 @@ system_features:
             01.01.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: init_pipeline_starter_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1350,6 +1354,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: package_pipeline_starter_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1669,6 +1675,8 @@ system_features:
             06.01.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: release_pipeline_starter_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -2008,6 +2016,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: checkout_pipeline_starter_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -2329,6 +2339,58 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
                     first_job_name: 07.01.checkout_pipeline.checkout_build_branches
+
+        #######################################################################
+        #
+
+        job_group_configs:
+
+            #
+
+            # The lower the priority number the higher the priority.
+
+            # This group exists simply to shift `group_id`
+            # to match `priority_value`.
+            unused_group:
+                group_id: 0
+                priority_value: 100
+
+            #------------------------------------------------------------------
+            # Default priority is the highest and used by majority of jobs.
+            # This means that normal jobs has to complete before
+            # other can be started.
+            # If no `job_group_name` key is set in job configuration,
+            # `default_group` is used.
+
+            default_group:
+                group_id: 1
+                priority_value: 1
+
+            #------------------------------------------------------------------
+            # Other priorities are sorted in the order opposite
+            # to the pipeline list.
+
+            #------------------------------------------------------------------
+
+            checkout_pipeline_starter_group:
+                group_id: 2
+                priority_value: 2
+
+            release_pipeline_starter_group:
+                group_id: 3
+                priority_value: 3
+
+            package_pipeline_starter_group:
+                group_id: 4
+                priority_value: 4
+
+            init_pipeline_starter_group:
+                group_id: 5
+                priority_value: 5
+
+            poll_pipeline_starter_group:
+                group_id: 6
+                priority_value: 6
 
 ###############################################################################
 # EOF
