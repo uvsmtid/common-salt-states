@@ -77,7 +77,7 @@
         #       descriptor captured at the start of `release_pipeline`.
         #       For other pipelines some defaults are expected to be set.
 
-        echo "${RELEASE_VERSION_NAME}"   | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_name"
+        echo "${RELEASE_VERSION_NAME}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_name"
 
         # Version number is different.
         # It is only set when variable `RELEASE_VERSION_NUMBER` is set.
@@ -118,6 +118,11 @@
         # NOTE: Without `add --all` `diff-index` will not notice untracked files.
         git add --all
 
+        # DISABLE: The repository may still stay clean if both version
+        #          name and number do not change. For example,
+        #          during `package_pipeline` for the released build
+        #          both values stay the same.
+        {% if False %}
         # Make sure repository became dirty, otherwise fail.
         if git diff-index --ignore-submodules=dirty --exit-code HEAD
         then
@@ -127,6 +132,7 @@
                 JOB_STATUS='2'
             fi
         fi
+        {% endif %}
 
         # Display status.
         git status
