@@ -152,8 +152,13 @@
 
         else
 
-            # Just make sure there is no local modifications.
-            git diff-index --ignore-submodules=all --exit-code HEAD
+            # NOTE: Restore parent build only does not run any
+            #       subsequent build. And it is fine (supported)
+            #       that there are some local modifications.
+            #       In any other case (when build is to be run after)
+            #       these local modifications would simply be stored
+            #       inside restore points.
+            git status
 
             # And switch back to `CURRENT_BRANCH`.
             git checkout "${CURRENT_BRANCH}"
@@ -172,10 +177,11 @@
         #######################################################################
         # Update recovery descriptor.
 
-        # The subsequent steps generate new commits to repositories.
-        # It is important to save captured restore points now without
-        # waiting until end of the script because script may fail
-        # and no captured restore points will be available for recovery.
+        # The subsequent steps within the job may generate new commits
+        # to the repositories. It is important to commit captured restore
+        # points now without waiting until end of the script because script
+        # may fail and no captured restore points will be available
+        # for recovery.
         # Use current job dyn build desc as updated recovery descriptor.
         cp "${JOB_DYN_BUILD_DESC_PATH}" "${RECOVERY_DYN_BUILD_DESC_PATH}"
 
@@ -203,7 +209,11 @@
         BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ repo_name }}")"
         REQUIRED_COMMIT_ID="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "required_commit_ids:{{ repo_name }}")"
         test "${CURRENT_BRANCH}" != "${BUILD_BRANCH}"
-        git checkout -b "${BUILD_BRANCH}" "${REQUIRED_COMMIT_ID}"
+        # NOTE: We reset (overwrite) build branch to its required commit.
+        #       This is important as this build branch may already exist,
+        #       for example, when checking out previous (parent) build
+        #       branches is being done.
+        git checkout -B "${BUILD_BRANCH}" "${REQUIRED_COMMIT_ID}"
 
         if [ "${PARENT_BUILD_TITLE}" != "_" ]
         then

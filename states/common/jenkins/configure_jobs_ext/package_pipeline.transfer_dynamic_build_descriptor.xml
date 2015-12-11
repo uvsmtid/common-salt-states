@@ -77,7 +77,7 @@
         #       descriptor captured at the start of `release_pipeline`.
         #       For other pipelines some defaults are expected to be set.
 
-        echo "${RELEASE_VERSION_NAME}"   | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_name"
+        echo "${RELEASE_VERSION_NAME}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_name"
 
         # Version number is different.
         # It is only set when variable `RELEASE_VERSION_NUMBER` is set.
@@ -118,6 +118,11 @@
         # NOTE: Without `add --all` `diff-index` will not notice untracked files.
         git add --all
 
+        # DISABLE: The repository may still stay clean if both version
+        #          name and number do not change. For example,
+        #          during `package_pipeline` for the released build
+        #          both values stay the same.
+        {% if False %}
         # Make sure repository became dirty, otherwise fail.
         if git diff-index --ignore-submodules=dirty --exit-code HEAD
         then
@@ -127,6 +132,7 @@
                 JOB_STATUS='2'
             fi
         fi
+        {% endif %}
 
         # Display status.
         git status
@@ -143,8 +149,10 @@
         cd -
 
         #######################################################################
-        # PART 1: Special case when `TARGET_PROFILE_NAME` is undefined.
-        # This case defines both `deploy_pipeline` and `release_pipeline`.
+        # Fast-forward merge source and target pillars.
+        # This is a special case when `TARGET_PROFILE_NAME` is undefined.
+        # This case applies to both `deploy_pipeline` and `release_pipeline`.
+        # It does not apply to `package_pipeline`.
         # FORWARD: Update (fast-forward merge)
         #          target pillars repo from
         #          source pillars repo.
@@ -158,10 +166,10 @@
         cd -
 
         # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`
-        #       where it should be updated by latest commits from
-        #       source pillars.
-        #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
-        #       it should match (source) `SALT_PROFILE_NAME`.
+        #       in which case nothing needs to be done.
+        #       For `deploy_pipeline` and `release_pipeline`
+        #       (when `TARGET_PROFILE_NAME` is undefined)
+        #       it should fast-forward into `SALT_PROFILE_NAME`.
         cd "${TARGET_PROFILE_REPO_PATH}"
         if [ -z "${TARGET_PROFILE_NAME:-}" ]
         then
@@ -181,20 +189,16 @@
         cd -
 
         #######################################################################
-        # This job has several dynamic build descriptor transfer modes:
-        # - `deploy_pipeline` or `package_pipeline`
+        # This job has two dynamic build descriptor transfer modes:
+        # - `package_pipeline`
         #       In this case the transfer is done to target pillar repository.
-        #       This is to be able to build bootstrap package.
-        #       NOTE: The `deploy_pipeline` deploys everything into
-        #             source environment and needs transfer of dynamic
-        #             build descriptor into source pillar repository.
-        #             This is done in below by pulling changes from
-        #             the target pillar into source pillar repository.
-        # - `release_pipeline`
+        #       This is to embed dynamic build descriptor into
+        #       "overrides" pillars for the selected target environment.
+        # - `deploy_pipeline` or `release_pipeline`
         #       In this case the transfer is done to project states repository
-        #       (to provide released dynamic build descriptor).
+        #       (to provide released dynamic build descriptor in "defaults").
         # To tell the difference between the two modes,
-        # `RELEASE_TYPE` build parameter.
+        # `TARGET_PROFILE_NAME` build parameter.
 
         # Get location of build history repo.
         {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
@@ -212,17 +216,32 @@
         BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ build_history_repo_id }}")"
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
-        if [ -n "${RELEASE_TYPE:-}" ]
+        if [ -n "${TARGET_PROFILE_NAME:-}" ]
         then
-            export TRANSFER_DESTINATION_REPO_PATH="${PROJECT_STATES_REPO_PATH}"
-        else
             export TRANSFER_DESTINATION_REPO_PATH="${TARGET_PROFILE_REPO_PATH}"
+        else
+            export TRANSFER_DESTINATION_REPO_PATH="${PROJECT_STATES_REPO_PATH}"
         fi
 
-        # Transfer dynamic build descriptor.
-        cp "${BUILD_TITLE}/dynamic_build_descriptor.yaml" "${TRANSFER_DESTINATION_REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
-
         cd -
+
+        # Transfer dynamic build descriptor with recorded `latest_commit_ids`
+        # of target repository before transfer and after transfer.
+        # IMPORTANT: Note how copy is done first (before changes in
+        #            target repositry can be committed) - this leaves
+        #            transferred dynamic build descriptor with
+        #            previous `latest_commit_ids` (as commit id cannot be
+        #            known until commit is done). Then second transfer
+        #            is done and committed dynamic build descriptor
+        #            points to the required commits ids.
+
+        for COMMENT_CASE in \
+            "with previous latest_commit_ids" \
+            "with latest_commit_ids containing updated dynamic build descriptor" \
+
+        do
+
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${TRANSFER_DESTINATION_REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
 
         cd "${TRANSFER_DESTINATION_REPO_PATH}"
 
@@ -250,62 +269,22 @@
         # Ignore dirty content in submodules because there is no way to
         # commit them from top-level repo anyway (and all dirty content
         # will be committed by children).
-        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m 'Auto-commit: provide dynamic build descriptor at ${JOB_NAME}'
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: provide dynamic build descriptor at ${JOB_NAME} ${COMMENT_CASE}"
 
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
-        if [ -n "${RELEASE_TYPE:-}" ]
+        if [ -n "${TARGET_PROFILE_NAME:-}" ]
         then
-            echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ project_states_repo_id }}"
-        else
             echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ target_profile_repo_id }}"
+        else
+            echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ project_states_repo_id }}"
         fi
 
         git reset
 
         cd -
 
-        #######################################################################
-        # PART 2: Special case when `TARGET_PROFILE_NAME` is undefined
-        #         AND transfer was done to target pillars (not states repo).
-        # This case defines ONLY `deploy_pipeline`.
-        # BACKWARD: Update (fast-forward merge)
-        #           source pillars repo from
-        #           target pillars repo.
-
-        if [ "${TRANSFER_DESTINATION_REPO_PATH}" == "${TARGET_PROFILE_REPO_PATH}" ]
-        then
-
-        cd "${TARGET_PROFILE_REPO_PATH}"
-
-        CURRENT_TARGET_PILLAR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ target_profile_repo_id }}")"
-        test "${CURRENT_TARGET_PILLAR_BRANCH}" == "${BUILD_BRANCH}"
-
-        cd -
-
-        # NOTE: `TARGET_PROFILE_NAME` is only defined for `package_pipeline`.
-        #       For all other cases (when `TARGET_PROFILE_NAME` is undefined)
-        #       it should match (source) `SALT_PROFILE_NAME`.
-        cd "${SOURCE_PROFILE_REPO_PATH}"
-        if [ -z "${TARGET_PROFILE_NAME:-}" ]
-        then
-
-            CURRENT_SOURCE_PILLAR_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-            BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ source_profile_repo_id }}")"
-            test "${CURRENT_SOURCE_PILLAR_BRANCH}" == "${BUILD_BRANCH}"
-
-            # Update target profile pillars repo from source profile pillars repo.
-            git pull --ff-only "${TARGET_PROFILE_REPO_PATH}" "${CURRENT_TARGET_PILLAR_BRANCH}"
-
-            # Record `latest_commit_ids`.
-            CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
-            echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ source_profile_repo_id }}"
-
-        fi
-        cd -
-
-        fi
+        done
 
         #######################################################################
         # Update dynamic build descriptor.

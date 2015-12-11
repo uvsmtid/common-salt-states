@@ -637,7 +637,12 @@ fi
 # the one generated for this during job.
 cp "${JOB_DYN_BUILD_DESC_PATH}" "${LATEST_DYN_BUILD_DESC_PATH}"
 
-cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
+# NOTE: In case of `RESTORE_PARENT_BUILD_ONLY`,
+#       do not keep track of dynamic build descriptor in history.
+if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+then
+    cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
+fi
 
 export JOB_NAME="{{ job_environ['job_name'] }}"
 
