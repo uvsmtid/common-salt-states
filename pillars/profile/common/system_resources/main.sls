@@ -340,6 +340,21 @@ system_resources:
         item_content_hash: md5=ff33db98be4d85726daf5ba46e6a4603
         plugin_name: sidebar-link
 
+    # Jenkins: Priority-Sorter Plugin                                              
+    # Downloadable from:                                                        
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin         
+    # Direct link:                                                              
+    #   http://updates.jenkins-ci.org/download/plugins/PrioritySorter/3.4                   
+    jenkins_priority-sorter_plugin:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: priority-sorter.v3.4.hpi
+        item_content_hash: md5=bbdc48c60946e5cc98f3554f67abff72
+        plugin_name: priority-sorter
+
     # Nexus maven repository manager (community edition).
     # Downloadable from:
     #   http://www.sonatype.org/nexus/go/
