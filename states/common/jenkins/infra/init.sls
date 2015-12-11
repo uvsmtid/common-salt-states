@@ -27,6 +27,7 @@ include:
         'jenkins_modernstatus_plugin',
         'jenkins_buildtriggerbadge_plugin',
         'jenkins_sidebar-link_plugin',
+        'jenkins_priority-sorter_plugin',
     ]
 %}
 
