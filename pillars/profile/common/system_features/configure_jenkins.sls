@@ -531,7 +531,6 @@ system_features:
                             []
                 {% endif %}
 
-
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
@@ -636,16 +635,15 @@ system_features:
                 condition_job_list:
                     - 04.09.deploy_pipeline.run_salt_highstate
 
-                # This is the last automatic pipeline -
-                # `package_pipeline` and `release_pipeline` are
-                # manually triggered.
-                {% if False %}
+                # The `package_pipeline` is needed for manual triggering
+                # when new package has to be generated.
+                # However, it is executed anyway for testing purposes
+                # with default parameters.
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 05.01.package_pipeline.create_new_package
 
                 condition_type: downstream_passed
                 accept_unstable: False
@@ -672,15 +670,15 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-silver-e
 
-                # The `package_pipeline` is manually triggered
-                # and does not trigger any other pipelines.
-                {% if False %}
+                # The `release_pipeline` is needed for manual triggering
+                # when new package has to be generated.
+                # However, it is executed anyway for testing purposes
+                # with default parameters.
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 06.01.release_pipeline.release_build
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
@@ -703,15 +701,15 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-red-e
 
-                # The `release_pipeline` is manually triggered
-                # and does not trigger any other pipelines.
-                {% if False %}
+                # The `checkout_pipeline` is needed for manual triggering
+                # when new package has to be generated.
+                # However, it is executed anyway for testing purposes
+                # with default parameters.
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 07.01.checkout_pipeline.checkout_build_branches
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
@@ -734,8 +732,8 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-blue-e
 
-                # The `checkout_pipeline` is manually triggered
-                # and does not trigger any other pipelines.
+                # The `checkout_pipeline` does not trigger
+                # any other pipelines.
                 {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
@@ -1336,11 +1334,14 @@ system_features:
                 input_fingerprinted_artifacts:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
+                # This is the final job in the pipeline.
+                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: ALWAYS
+                        condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 05.01.package_pipeline.create_new_package
+                            []
+                {% endif %}
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1478,9 +1479,16 @@ system_features:
                         parameter_type: boolean
                         parameter_value: False
 
+                # DISABLED: Do not use promotions designed for `init_pipeline`
+                #           because they are configured to trigger subsequent
+                #           pipeline for testing purposes.
+                #           If promotions are required, create new ones
+                #           specific for this job/pipeline.
+                {% if False %}
                 use_promotions:
                     - P.05.promotion.package_pipeline_passed
                     - P.__.promotion.bootstrap_package_approved
+                {% endif %}
 
             {% set job_template_id = 'package_pipeline.reset_previous_build' %}
             05.02.{{ job_template_id }}:
@@ -1658,11 +1666,14 @@ system_features:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
+                # This is the final job in the pipeline.
+                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: ALWAYS
+                        condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 06.01.release_pipeline.release_build
+                            []
+                {% endif %}
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1814,8 +1825,15 @@ system_features:
                         parameter_type: boolean
                         parameter_value: False
 
+                # DISABLED: Do not use promotions designed for `init_pipeline`
+                #           because they are configured to trigger subsequent
+                #           pipeline for testing purposes.
+                #           If promotions are required, create new ones
+                #           specific for this job/pipeline.
+                {% if False %}
                 use_promotions:
                     - P.06.promotion.release_pipeline_passed
+                {% endif %}
 
             {% set job_template_id = 'release_pipeline.reset_previous_build' %}
             06.02.{{ job_template_id }}:
@@ -2121,8 +2139,15 @@ system_features:
                         parameter_type: boolean
                         parameter_value: False
 
+                # DISABLED: Do not use promotions designed for `init_pipeline`
+                #           because they are configured to trigger subsequent
+                #           pipeline for testing purposes.
+                #           If promotions are required, create new ones
+                #           specific for this job/pipeline.
+                {% if False %}
                 use_promotions:
                     - P.07.promotion.checkout_pipeline_passed
+                {% endif %}
 
             {% set job_template_id = 'checkout_pipeline.reset_previous_build' %}
             07.02.{{ job_template_id }}:
