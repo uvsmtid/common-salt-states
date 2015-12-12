@@ -125,6 +125,8 @@
 #        https://issues.jenkins-ci.org/browse/JENKINS-13576
 {% macro job_multiple_scm_configuration(job_config, job_environ) %}
 
+{% if 'track_scm_changes' in job_config and job_config['track_scm_changes'] %}
+
 {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
 
@@ -214,6 +216,8 @@
 
     </scms>
   </scm>
+
+{% endif %}
 
 {% endmacro %}
 

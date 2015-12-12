@@ -4,7 +4,6 @@
   {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
   {{ common_job_configuration(job_config, job_environ) }}
 
-  # NOTE: This import is specific for this template.
   {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import job_multiple_scm_configuration with context %}
   {{ job_multiple_scm_configuration(job_config, job_environ) }}
 

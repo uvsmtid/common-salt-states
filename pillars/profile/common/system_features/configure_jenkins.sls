@@ -297,6 +297,8 @@ system_features:
 
                 enabled: True
 
+                track_scm_changes: True
+
                 job_group_name: init_pipeline_starter_group
 
                 discard_old_builds:
