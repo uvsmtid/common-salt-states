@@ -434,7 +434,7 @@
 ###############################################################################
 {% macro copy_artifacts(job_config, job_environ) %}
 
-{% if not 'is_standalone' in job_config or not job_config['is_standalone'] %}
+{% if not 'is_associated_by_fingerprints' in job_config or not job_config['is_associated_by_fingerprints'] %}
 
     <!--
         Copy fingerprinted and archived artifact just for the sake
