@@ -562,6 +562,9 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-blue
 
+                # Pass build paramters to `update_pipeline`.
+                propagate_build_paramterers: True
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
@@ -588,6 +591,9 @@ system_features:
                 condition_type: downstream_passed
                 accept_unstable: True
                 promotion_icon: star-purple
+
+                # Pass build paramters to `maven_pipeline`.
+                propagate_build_paramterers: True
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -620,6 +626,9 @@ system_features:
                 accept_unstable: False
                 promotion_icon: star-gold
 
+                # Pass build paramters to `deploy_pipeline`.
+                propagate_build_paramterers: True
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: SUCCESS
@@ -642,6 +651,10 @@ system_features:
 
                 condition_job_list:
                     - 04.09.deploy_pipeline.run_salt_highstate
+
+                # Do NOT pass build paramters to `package_pipeline` -
+                # the pipeline is started with its own default paramters.
+                propagate_build_paramterers: False
 
                 # The `package_pipeline` is needed for manual triggering
                 # when new package has to be generated.
@@ -678,6 +691,10 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-silver-e
 
+                # Do NOT pass build paramters to `release_pipeline` -
+                # the pipeline is started with its own default paramters.
+                propagate_build_paramterers: False
+
                 # The `release_pipeline` is needed for manual triggering
                 # when new package has to be generated.
                 # However, it is executed anyway for testing purposes
@@ -708,6 +725,10 @@ system_features:
                 condition_type: downstream_passed
                 accept_unstable: True
                 promotion_icon: star-red-e
+
+                # Do NOT pass build paramters to `checkout_pipeline` -
+                # the pipeline is started with its own default paramters.
+                propagate_build_paramterers: False
 
                 # The `checkout_pipeline` is needed for manual triggering
                 # when new package has to be generated.

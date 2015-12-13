@@ -10,6 +10,10 @@
     {% for trigger_config_name in job_config['parameterized_job_triggers'].keys() %}
     {% set trigger_config = job_config['parameterized_job_triggers'][trigger_config_name] %}
         <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+          #{# NOTE: By default `propagate_build_paramterers` is `False` #}#
+          {% if 'propagate_build_paramterers' in job_config and not job_config['propagate_build_paramterers'] %}
+          <configs class="empty-list"/>
+          {% else %}
           <configs>
             <hudson.plugins.parameterizedtrigger.FileBuildParameters>
               <propertiesFile>{{ job_environ['jenkins_dir_path'] }}/build_pipeline/build.properties</propertiesFile>
@@ -18,6 +22,7 @@
               <onlyExactRuns>false</onlyExactRuns>
             </hudson.plugins.parameterizedtrigger.FileBuildParameters>
           </configs>
+          {% endif %}
           <projects>{{ trigger_config['trigger_jobs']|join(',') }}</projects>
           <condition>{{ trigger_config['condition'] }}</condition>
           <triggerWithNoParameters>true</triggerWithNoParameters>
