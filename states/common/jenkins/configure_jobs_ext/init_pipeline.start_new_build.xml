@@ -61,6 +61,7 @@
             true
         fi
 
+        # Check for local modifications.
         if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
         then
             # There is nothing to do for normal build.
@@ -97,6 +98,22 @@
         # Only one of these three variables is supposed to be set.
         export BUILD_LABEL="${BUILD_LABEL:-}${PACKAGE_LABEL:-}${RELEASE_LABEL:-}"
 
+        {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+        {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][build_history_repo_id]['git'] %}
+        export REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+        cd "${REPO_PATH}"
+
+        # There are three types of builds:
+        # - Build which starts the initial build
+        #   (initial dynamic build descriptor).
+        #   This is only `init_pipeline.start_new_build`.
+        # - Build which continue from where the previous build stop
+        #   using parent build title to copy dynamic build descriptor.
+        #   Example is `package_pipeline.create_new_package`.
+        # - Build which continue from _some_ previous build
+        #   by guessing any parent build title
+        #   Example is `checkout_pipeline.checkout_build_branches`.
         if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
         then
             # Initialize new build title.
@@ -105,10 +122,35 @@
             export BUILD_TITLE="${BUILD_TIMESTAMP}-{{ job_environ['job_name'] }}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-${BUILD_LABEL}"
         else
             # In case of `RESTORE_PARENT_BUILD_ONLY`,
-            # make sure that `PARENT_BUILD_TITLE` is set.
-            test "${PARENT_BUILD_TITLE}" != '_'
+            # make sure that `PARENT_BUILD_TITLE` is set
+            # (otherwise pick the latest build title as parent one).
+            if [ "${PARENT_BUILD_TITLE}" == '_' ]
+            then
+                # NOTE: Branches named after build title must conform to
+                #       convention where root of the tree has to have
+                #       a directory named after this branch (build title).
+                #       If the selected branch somehow does not have
+                #       required directory in its root, the process will
+                #       fail because dynamic build descriptor won't be
+                #       found (in this directory). This shouldn't happen
+                #       often because cases when PARENT_BUILD_TITLE is not
+                #       specified mostly run automatically _after_ regular
+                #       build which creates proper build-titled branch.
+                # Select branch name by the most recent commit
+                # which belongs to `init_pipeline.start_new_build` which
+                # has to have dynamic build descriptors listed in
+                # `restore_artifacts_from_parent_build` for the case
+                # `RESTORE_PARENT_BUILD_ONLY==true` which is belongs only
+                # to `checkout_pipeline`.
+                # See:
+                #   http://stackoverflow.com/a/5972362/441652
+                export PARENT_BUILD_TITLE="$(git for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short)' | grep 'init_pipeline.start_new_build' | head -n 1)"
+            fi
+
             export BUILD_TITLE="${PARENT_BUILD_TITLE}"
         fi
+
+        cd -
 
         #######################################################################
         # Set env vars.
@@ -144,7 +186,6 @@
         #######################################################################
         # Initialize repository build descriptor.
 
-        {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
 
         cd "${REPO_DYN_BUILD_DESC_REPO_PATH}"
 
