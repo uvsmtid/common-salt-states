@@ -310,6 +310,10 @@ system_features:
 
                 block_build: True
 
+                # NOTE: Build once a day after office hours.
+                #       This is in addition to SCM trigger.
+                timer_spec: 'H 22 * * *'
+
                 scm_poll_timer_spec: '*/1 * * * *'
 
                 skip_if_true: SKIP_INIT_PIPELINE
@@ -903,6 +907,64 @@ system_features:
 
             {% set skip_script_execution = False %}
 
+            {% set job_template_id = 'maven_pipeline.full_test_report' %}
+            __.__.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                block_build: True
+
+                # NOTE: Build once a day after office hours.
+                timer_spec: 'H 22 * * *'
+
+                # TODO: At the moment Maven jobs cannot be scipped.
+                skip_if_true: SKIP_MAVEN_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job.
+                #input_fingerprinted_artifacts:
+                #    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+
+                # This is a standalone job which runs outside of the pipeline.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                disable_archiving: True
+
+                # Similar to `maven_build_all`, use more memory.
+                # See also:
+                #   https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError
+                MAVEN_OPTS: '-Xmx2048m -XX:MaxPermSize=512m'
+
+                # TODO: Actually, this does not select JDK properly because
+                #       started JVM (java executable) is still different.
+                # NOTE: This variables has to be synced with deployment
+                #       of specific JDK refered here.
+                job_environment_variables:
+                    JAVA_HOME: '/usr/java/jdk1.7.0_71'
+                    PATH: '/usr/java/jdk1.7.0_71/bin:${PATH}'
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/maven_pipeline.maven_project_job.xml'
+                    # Specify root pom.xml file which triggers full
+                    # multi-module reactor build.
+                    repository_name: 'maven-demo'
+                    component_pom_path: 'pom.xml'
+
             {% set job_template_id = 'maven_pipeline.maven_build_all' %}
             03.01.{{ job_template_id }}:
 
@@ -930,6 +992,8 @@ system_features:
                         condition: ALWAYS
                         trigger_jobs:
                             - 03.02.maven_pipeline.verify_maven_data
+
+                disable_archiving: True
 
                 # Specific goals and options.
                 # Note that we run initial build - all repositories are
@@ -975,8 +1039,6 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/maven_pipeline.maven_project_job.xml'
                     repository_name: 'maven-demo'
                     component_pom_path: 'pom.xml'
-
-                disable_archiving: True
 
             {% set job_template_id = 'maven_pipeline.verify_maven_data' %}
             03.02.{{ job_template_id }}:
