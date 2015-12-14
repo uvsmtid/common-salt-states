@@ -38,8 +38,10 @@
 {% set URI_prefix = pillar['system_features']['deploy_central_control_directory']['URI_prefix'] %}
 
 # Put job configuration:
-'{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml':
+{% set jenkins_job_config_file_path = pillar['posix_config_temp_dir'] + '/jenkins/jenkins.job.config.' + job_name + '.xml' %}
+jenkins_job_config_{{ job_name }}:
     file.managed:
+        - name: '{{ jenkins_job_config_file_path }}'
         - source: 'salt://{{ job_config['job_config_data']['xml_config_template'] }}'
         - template: jinja
         - context:
@@ -96,24 +98,24 @@
 # TODO: Make it a common macro for `simple_xml_template_job.sls` and `promotable_xml_template_job.sls`.
 add_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-job {{ job_name }}"
+        - name: "cat {{ jenkins_job_config_file_path }} | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-job {{ job_name }}"
         - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
         - require:
             - cmd: download_jenkins_cli_jar
-            - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml'
+            - file: jenkins_job_config_{{ job_name }}
 
 # Update job configuration.
 # TODO: Make it a common macro for `simple_xml_template_job.sls` and `promotable_xml_template_job.sls`.
 # The update won't happen (it will be the same) if job has just been created.
 update_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-job {{ job_name }}"
+        - name: "cat {{ jenkins_job_config_file_path }} | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-job {{ job_name }}"
 {% if not pillar['system_features']['configure_jenkins']['rewrite_jenkins_configuration_for_jobs'] %}
         - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
 {% endif %}
         - require:
             - cmd: download_jenkins_cli_jar
-            - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml'
+            - file: jenkins_job_config_{{ job_name }}
             - cmd: add_{{ job_name }}_job_configuration_to_jenkins
 
 {% endif %} # is_promotion

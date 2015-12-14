@@ -57,7 +57,7 @@
 # Job environment variables file.
 # TODO: Make it a common macro for `simple_xml_template_job.sls` and `promotable_xml_template_job.sls`.
 {% if 'job_environment_variables' in job_config or 'preset_build_parameters' in job_config %}
-{{ job_name }}_job_environment_variables_file:
+managed_{{ job_name }}_job_environment_variables_file:
     file.managed:
         - name: '{{ jenkins_dir_path }}/job_env_vars.{{ job_name }}.properties'
         - makedirs: True
