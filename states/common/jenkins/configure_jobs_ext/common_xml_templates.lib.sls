@@ -10,6 +10,10 @@
     {% for trigger_config_name in job_config['parameterized_job_triggers'].keys() %}
     {% set trigger_config = job_config['parameterized_job_triggers'][trigger_config_name] %}
         <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
+          #{# NOTE: By default `propagate_build_paramterers` is `False` #}#
+          {% if 'propagate_build_paramterers' in job_config and not job_config['propagate_build_paramterers'] %}
+          <configs class="empty-list"/>
+          {% else %}
           <configs>
             <hudson.plugins.parameterizedtrigger.FileBuildParameters>
               <propertiesFile>{{ job_environ['jenkins_dir_path'] }}/build_pipeline/build.properties</propertiesFile>
@@ -18,6 +22,7 @@
               <onlyExactRuns>false</onlyExactRuns>
             </hudson.plugins.parameterizedtrigger.FileBuildParameters>
           </configs>
+          {% endif %}
           <projects>{{ trigger_config['trigger_jobs']|join(',') }}</projects>
           <condition>{{ trigger_config['condition'] }}</condition>
           <triggerWithNoParameters>true</triggerWithNoParameters>
@@ -125,6 +130,8 @@
 #        https://issues.jenkins-ci.org/browse/JENKINS-13576
 {% macro job_multiple_scm_configuration(job_config, job_environ) %}
 
+{% if 'track_scm_changes' in job_config and job_config['track_scm_changes'] %}
+
 {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
 {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
 
@@ -214,6 +221,8 @@
 
     </scms>
   </scm>
+
+{% endif %}
 
 {% endmacro %}
 
@@ -343,10 +352,24 @@
       <scanQueueFor>ALL</scanQueueFor>
       <!--
         NOTE: Jobs cannot be run until any other job is running.
+              Except for jobs which specify (non-default) priority.
       -->
+      {% if 'job_group_name' in job_config and job_config['job_group_name'] %}
+      <blockingJobs>THIS_JOB_DOES_NOT_EXIST</blockingJobs>
+      {% else %}
       <blockingJobs>.*</blockingJobs>
+      {% endif %}
     </hudson.plugins.buildblocker.BuildBlockerProperty>
     {% endif %}
+
+    <jenkins.advancedqueue.jobinclusion.strategy.JobInclusionJobProperty plugin="PrioritySorter@3.4">
+      <useJobGroup>true</useJobGroup>
+      {% if 'job_group_name' in job_config and job_config['job_group_name'] %}
+      <jobGroupName>{{ job_config['job_group_name'] }}</jobGroupName>
+      {% else %}
+      <jobGroupName>default_group</jobGroupName>
+      {% endif %}
+    </jenkins.advancedqueue.jobinclusion.strategy.JobInclusionJobProperty>
 
   </properties>
 
@@ -416,7 +439,7 @@
 ###############################################################################
 {% macro copy_artifacts(job_config, job_environ) %}
 
-{% if not 'is_standalone' in job_config or not job_config['is_standalone'] %}
+{% if not 'is_associated_by_fingerprints' in job_config or not job_config['is_associated_by_fingerprints'] %}
 
     <!--
         Copy fingerprinted and archived artifact just for the sake

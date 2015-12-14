@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jenkins.advancedqueue.PriorityConfiguration plugin="PrioritySorter@3.4">
+  <jobGroups class="linked-list">
+
+    {% for group_name in pillar['system_features']['configure_jenkins']['job_group_configs'].keys() %}
+
+    {% set group_config = pillar['system_features']['configure_jenkins']['job_group_configs'][group_name] %}
+
+    <jenkins.advancedqueue.JobGroup>
+      <id>{{ group_config['group_id'] }}</id>
+      <priority>{{ group_config['priority_value'] }}</priority>
+      <jobGroupStrategy class="jenkins.advancedqueue.jobinclusion.strategy.PropertyBasedJobInclusionStrategy">
+        <name>{{ group_name }}</name>
+      </jobGroupStrategy>
+      <description></description>
+      <runExclusive>false</runExclusive>
+      <useJobFilter>false</useJobFilter>
+      <jobPattern>.*</jobPattern>
+      <usePriorityStrategies>false</usePriorityStrategies>
+      <priorityStrategies/>
+    </jenkins.advancedqueue.JobGroup>
+
+    {% endfor %}
+
+  </jobGroups>
+</jenkins.advancedqueue.PriorityConfiguration>

@@ -105,7 +105,7 @@ system_features:
 
                 skip_if_true: SKIP_INIT_PIPELINE
 
-                is_standalone: True
+                is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -141,7 +141,7 @@ system_features:
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
-                is_standalone: True
+                is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -168,6 +168,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: poll_pipeline_starter_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -181,7 +183,7 @@ system_features:
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
-                is_standalone: True
+                is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -209,7 +211,7 @@ system_features:
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
-                is_standalone: True
+                is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -240,7 +242,7 @@ system_features:
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
-                is_standalone: True
+                is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -268,7 +270,7 @@ system_features:
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
-                is_standalone: True
+                is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -295,6 +297,10 @@ system_features:
 
                 enabled: True
 
+                track_scm_changes: True
+
+                job_group_name: init_pipeline_starter_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -304,9 +310,17 @@ system_features:
 
                 block_build: True
 
+                # NOTE: Build once a day after office hours.
+                #       This is in addition to SCM trigger.
+                timer_spec: 'H 22 * * *'
+
                 scm_poll_timer_spec: '*/1 * * * *'
 
                 skip_if_true: SKIP_INIT_PIPELINE
+
+                # NOTE: This is the very first job which cannot
+                #       be asssociated with itself.
+                #is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -525,7 +539,6 @@ system_features:
                             []
                 {% endif %}
 
-
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
@@ -548,6 +561,9 @@ system_features:
                 condition_type: downstream_passed
                 accept_unstable: True
                 promotion_icon: star-blue
+
+                # Pass build paramters to `update_pipeline`.
+                propagate_build_paramterers: True
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -575,6 +591,9 @@ system_features:
                 condition_type: downstream_passed
                 accept_unstable: True
                 promotion_icon: star-purple
+
+                # Pass build paramters to `maven_pipeline`.
+                propagate_build_paramterers: True
 
                 parameterized_job_triggers:
                     job_not_faild:
@@ -607,6 +626,9 @@ system_features:
                 accept_unstable: False
                 promotion_icon: star-gold
 
+                # Pass build paramters to `deploy_pipeline`.
+                propagate_build_paramterers: True
+
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: SUCCESS
@@ -630,16 +652,19 @@ system_features:
                 condition_job_list:
                     - 04.09.deploy_pipeline.run_salt_highstate
 
-                # This is the last automatic pipeline -
-                # `package_pipeline` and `release_pipeline` are
-                # manually triggered.
-                {% if False %}
+                # Do NOT pass build paramters to `package_pipeline` -
+                # the pipeline is started with its own default paramters.
+                propagate_build_paramterers: False
+
+                # The `package_pipeline` is needed for manual triggering
+                # when new package has to be generated.
+                # However, it is executed anyway for testing purposes
+                # with default parameters.
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 05.01.package_pipeline.create_new_package
 
                 condition_type: downstream_passed
                 accept_unstable: False
@@ -666,15 +691,19 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-silver-e
 
-                # The `package_pipeline` is manually triggered
-                # and does not trigger any other pipelines.
-                {% if False %}
+                # Do NOT pass build paramters to `release_pipeline` -
+                # the pipeline is started with its own default paramters.
+                propagate_build_paramterers: False
+
+                # The `release_pipeline` is needed for manual triggering
+                # when new package has to be generated.
+                # However, it is executed anyway for testing purposes
+                # with default parameters.
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 06.01.release_pipeline.release_build
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
@@ -697,15 +726,19 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-red-e
 
-                # The `release_pipeline` is manually triggered
-                # and does not trigger any other pipelines.
-                {% if False %}
+                # Do NOT pass build paramters to `checkout_pipeline` -
+                # the pipeline is started with its own default paramters.
+                propagate_build_paramterers: False
+
+                # The `checkout_pipeline` is needed for manual triggering
+                # when new package has to be generated.
+                # However, it is executed anyway for testing purposes
+                # with default parameters.
                 parameterized_job_triggers:
                     job_not_faild:
                         condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            []
-                {% endif %}
+                            - 07.01.checkout_pipeline.checkout_build_branches
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/promotable_xml_template_job.sls'
                 job_config_data:
@@ -728,8 +761,8 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-blue-e
 
-                # The `checkout_pipeline` is manually triggered
-                # and does not trigger any other pipelines.
+                # The `checkout_pipeline` does not trigger
+                # any other pipelines.
                 {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
@@ -895,6 +928,64 @@ system_features:
 
             {% set skip_script_execution = False %}
 
+            {% set job_template_id = 'maven_pipeline.full_test_report' %}
+            __.__.{{ job_template_id }}:
+
+                enabled: True
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                block_build: True
+
+                # NOTE: Build once a day after office hours.
+                timer_spec: 'H 22 * * *'
+
+                # TODO: At the moment Maven jobs cannot be scipped.
+                skip_if_true: SKIP_MAVEN_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job.
+                #input_fingerprinted_artifacts:
+                #    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+
+                # This is a standalone job which runs outside of the pipeline.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                disable_archiving: True
+
+                # Similar to `maven_build_all`, use more memory.
+                # See also:
+                #   https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError
+                MAVEN_OPTS: '-Xmx2048m -XX:MaxPermSize=512m'
+
+                # TODO: Actually, this does not select JDK properly because
+                #       started JVM (java executable) is still different.
+                # NOTE: This variables has to be synced with deployment
+                #       of specific JDK refered here.
+                job_environment_variables:
+                    JAVA_HOME: '/usr/java/jdk1.7.0_71'
+                    PATH: '/usr/java/jdk1.7.0_71/bin:${PATH}'
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/maven_pipeline.maven_project_job.xml'
+                    # Specify root pom.xml file which triggers full
+                    # multi-module reactor build.
+                    repository_name: 'maven-demo'
+                    component_pom_path: 'pom.xml'
+
             {% set job_template_id = 'maven_pipeline.maven_build_all' %}
             03.01.{{ job_template_id }}:
 
@@ -922,6 +1013,8 @@ system_features:
                         condition: ALWAYS
                         trigger_jobs:
                             - 03.02.maven_pipeline.verify_maven_data
+
+                disable_archiving: True
 
                 # Specific goals and options.
                 # Note that we run initial build - all repositories are
@@ -967,8 +1060,6 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/maven_pipeline.maven_project_job.xml'
                     repository_name: 'maven-demo'
                     component_pom_path: 'pom.xml'
-
-                disable_archiving: True
 
             {% set job_template_id = 'maven_pipeline.verify_maven_data' %}
             03.02.{{ job_template_id }}:
@@ -1330,11 +1421,14 @@ system_features:
                 input_fingerprinted_artifacts:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
+                # This is the final job in the pipeline.
+                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: ALWAYS
+                        condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 05.01.package_pipeline.create_new_package
+                            []
+                {% endif %}
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1349,6 +1443,8 @@ system_features:
             05.01.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: package_pipeline_starter_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1470,9 +1566,16 @@ system_features:
                         parameter_type: boolean
                         parameter_value: False
 
+                # DISABLED: Do not use promotions designed for `init_pipeline`
+                #           because they are configured to trigger subsequent
+                #           pipeline for testing purposes.
+                #           If promotions are required, create new ones
+                #           specific for this job/pipeline.
+                {% if False %}
                 use_promotions:
                     - P.05.promotion.package_pipeline_passed
                     - P.__.promotion.bootstrap_package_approved
+                {% endif %}
 
             {% set job_template_id = 'package_pipeline.reset_previous_build' %}
             05.02.{{ job_template_id }}:
@@ -1650,11 +1753,14 @@ system_features:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
                     05.01.package_pipeline.create_new_package: initial.package_pipeline.dynamic_build_descriptor.yaml
 
+                # This is the final job in the pipeline.
+                {% if False %}
                 parameterized_job_triggers:
                     job_not_faild:
-                        condition: ALWAYS
+                        condition: UNSTABLE_OR_BETTER
                         trigger_jobs:
-                            - 06.01.release_pipeline.release_build
+                            []
+                {% endif %}
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
@@ -1669,6 +1775,8 @@ system_features:
             06.01.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: release_pipeline_starter_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1804,8 +1912,15 @@ system_features:
                         parameter_type: boolean
                         parameter_value: False
 
+                # DISABLED: Do not use promotions designed for `init_pipeline`
+                #           because they are configured to trigger subsequent
+                #           pipeline for testing purposes.
+                #           If promotions are required, create new ones
+                #           specific for this job/pipeline.
+                {% if False %}
                 use_promotions:
                     - P.06.promotion.release_pipeline_passed
+                {% endif %}
 
             {% set job_template_id = 'release_pipeline.reset_previous_build' %}
             06.02.{{ job_template_id }}:
@@ -2008,6 +2123,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: checkout_pipeline_starter_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -2109,8 +2226,15 @@ system_features:
                         parameter_type: boolean
                         parameter_value: False
 
+                # DISABLED: Do not use promotions designed for `init_pipeline`
+                #           because they are configured to trigger subsequent
+                #           pipeline for testing purposes.
+                #           If promotions are required, create new ones
+                #           specific for this job/pipeline.
+                {% if False %}
                 use_promotions:
                     - P.07.promotion.checkout_pipeline_passed
+                {% endif %}
 
             {% set job_template_id = 'checkout_pipeline.reset_previous_build' %}
             07.02.{{ job_template_id }}:
@@ -2329,6 +2453,58 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
                     first_job_name: 07.01.checkout_pipeline.checkout_build_branches
+
+        #######################################################################
+        #
+
+        job_group_configs:
+
+            #
+
+            # The lower the priority number the higher the priority.
+
+            # This group exists simply to shift `group_id`
+            # to match `priority_value`.
+            unused_group:
+                group_id: 0
+                priority_value: 100
+
+            #------------------------------------------------------------------
+            # Default priority is the highest and used by majority of jobs.
+            # This means that normal jobs has to complete before
+            # other can be started.
+            # If no `job_group_name` key is set in job configuration,
+            # `default_group` is used.
+
+            default_group:
+                group_id: 1
+                priority_value: 1
+
+            #------------------------------------------------------------------
+            # Other priorities are sorted in the order opposite
+            # to the pipeline list.
+
+            #------------------------------------------------------------------
+
+            checkout_pipeline_starter_group:
+                group_id: 2
+                priority_value: 2
+
+            release_pipeline_starter_group:
+                group_id: 3
+                priority_value: 3
+
+            package_pipeline_starter_group:
+                group_id: 4
+                priority_value: 4
+
+            init_pipeline_starter_group:
+                group_id: 5
+                priority_value: 5
+
+            poll_pipeline_starter_group:
+                group_id: 6
+                priority_value: 6
 
 ###############################################################################
 # EOF
