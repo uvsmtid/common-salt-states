@@ -345,15 +345,15 @@ system_resources:
     #   https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin         
     # Direct link:                                                              
     #   http://updates.jenkins-ci.org/download/plugins/PrioritySorter/3.4                   
-    jenkins_priority-sorter_plugin:
+    jenkins_PrioritySorter_plugin:
         resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: common/jenkins
-        item_base_name: priority-sorter.v3.4.hpi
+        item_base_name: PrioritySorter.v3.4.hpi
         item_content_hash: md5=bbdc48c60946e5cc98f3554f67abff72
-        plugin_name: priority-sorter
+        plugin_name: PrioritySorter
 
     # Nexus maven repository manager (community edition).
     # Downloadable from:
