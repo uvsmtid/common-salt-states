@@ -26,7 +26,7 @@
     )
 %}
 
-{{ requisite_config_file_id }}_{{ deploy_step }}:
+set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
         - marker_start: '# Salt auto-config START: {{ requisite_config_file_id }}_{{ deploy_step }}'
@@ -39,7 +39,7 @@
             }
         - show_changes: True
         - require:
-            - file: {{ requisite_config_file_id }}
+            - file: req_file_{{ requisite_config_file_id }}
 
 {% endmacro %}
 

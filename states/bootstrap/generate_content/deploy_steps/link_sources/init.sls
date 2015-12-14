@@ -33,7 +33,7 @@
 # Configuration for the step.
 {% set export_dir_path_in_config = 'resources/sources/' + project_name + '/' + profile_name %}
 {% set export_dir_path = target_contents_dir + '/' + export_dir_path_in_config %}
-{{ requisite_config_file_id }}_{{ deploy_step }}:
+set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
         - marker_start: '# Salt auto-config START: {{ requisite_config_file_id }}_{{ deploy_step }}'
@@ -126,10 +126,10 @@
             }
         - show_changes: True
         - require:
-            - file: {{ requisite_config_file_id }}
+            - file: req_file_{{ requisite_config_file_id }}
 
-# Create base dir for all soruces.
-{{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir:
+# Create base dir for all sources.
+repo_base_dir_{{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir:
     file.directory:
         - name: '{{ export_dir_path }}'
         - makedirs: True
@@ -173,7 +173,7 @@
 {% if export_enabled %} # export_enabled
 
 # Create export.
-{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
+repo_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
     cmd.run:
 
     {% if not export_method %}
@@ -197,17 +197,17 @@
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['username'] }}'
         - require:
-            - file: {{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
+            - file: repo_base_dir_{{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
     {% if not selected_repo_name == target_repo_name %}
         # This is required to make sure that this step overwrite `target_repo_name`
         # _after_ it has been exported.
-            - cmd: {{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ target_repo_name }}
+            - cmd: repo_empty_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ target_repo_name }}
     {% endif %}
 
 {% else %} # export_enabled
 
 # Create an empty export.
-{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
+repo_empty_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
     cmd.run:
     {% if not export_method %}
         {{ FAIL_no_export_method_specified }}
@@ -225,7 +225,7 @@
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['username'] }}'
         - require:
-            - file: {{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
+            - file: repo_base_dir_{{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
 
 {% endif %} # export_enabled
 

@@ -34,7 +34,7 @@
 {% set resource_base_dir_rel_path = 'resources/depository/' + project_name + '/' + profile_name %}
 
 # Config for the step.
-{{ requisite_config_file_id }}_{{ deploy_step }}:
+set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
         - marker_start: '# Salt auto-config START: {{ requisite_config_file_id }}_{{ deploy_step }}'
@@ -49,7 +49,7 @@
             }
         - show_changes: True
         - require:
-            - file: {{ requisite_config_file_id }}
+            - file: req_file_{{ requisite_config_file_id }}
 
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_registered_content_item_URI_from_pillar with context %}
@@ -84,7 +84,7 @@
 #       using `bootstrap_package_use_cases` list in bootstrap configuration.
 {% if get_registered_content_item_bootstrap_use_cases_from_pillar(content_item_id, target_env_pillar) != 'False' %}
 
-{{ content_item_id }}_{{ project_name }}_{{ profile_name }}_{{ selected_host_name }}:
+res_file_{{ content_item_id }}_{{ project_name }}_{{ profile_name }}_{{ selected_host_name }}:
     file.managed:
         # TODO: Resource location should be adjusted through symlinks just like symlinks to sources.
         #       At the moment all resources during `deploy` appear in

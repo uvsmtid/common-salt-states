@@ -63,7 +63,7 @@ cleanup_{{ target_contents_dir }}_{{ selected_host_name }}:
     file.absent:
         - name: '{{ target_contents_dir }}/{{ selected_host_name }}'
 
-{{ requisite_config_file_id }}:
+req_file_{{ requisite_config_file_id }}:
     file.managed:
         - name: '{{ requisite_config_file_path }}'
         - source: 'salt://bootstrap/generate_content/bootstrap.conf.sls'
@@ -107,10 +107,10 @@ cleanup_{{ target_contents_dir }}_{{ selected_host_name }}:
 {% endfor %} # deploy_step
 
 # Copy scripts content per each project_name and profile_name.
-{{ requisite_config_file_id }}_modules_copy_script_to_packages:
+req_file_{{ requisite_config_file_id }}_modules_copy_script_to_packages:
     cmd.run:
         - name: 'rsync -avp {{ bootstrap_dir }}/modules/ {{ target_contents_dir }}/modules/'
-{{ requisite_config_file_id }}_bootstrap.py_copy_script_to_packages:
+req_file_{{ requisite_config_file_id }}_bootstrap.py_copy_script_to_packages:
     cmd.run:
         - name: 'rsync -avp {{ bootstrap_dir }}/bootstrap.py {{ target_contents_dir }}/bootstrap.py'
 
@@ -118,7 +118,7 @@ cleanup_{{ target_contents_dir }}_{{ selected_host_name }}:
 {% if pillar['system_features']['source_bootstrap_configuration']['generate_packages'] %} # generate_packages
 
 # Create destination package directory.
-{{ requisite_config_file_id }}_create_package_directory:
+req_file_{{ requisite_config_file_id }}_create_package_directory:
     file.directory:
         - name: '{{ bootstrap_dir }}/packages/{{ project_name }}/{{ profile_name }}'
         - makedirs: True
@@ -127,7 +127,7 @@ cleanup_{{ target_contents_dir }}_{{ selected_host_name }}:
         - group: '{{ account_conf['primary_group'] }}'
 
 # Pack target directories depending on the package type.
-{{ requisite_config_file_id }}_create_package_archive:
+req_file_{{ requisite_config_file_id }}_create_package_archive:
     cmd.run:
 {% set package_type = target_env_pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][target_env_pillar['system_hosts'][selected_host_name]['os_platform']] %}
 {% if not package_type %} # package_type

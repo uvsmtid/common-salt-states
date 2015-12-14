@@ -32,7 +32,7 @@
 {% from resources_macro_lib import get_registered_content_item_hash_from_pillar with context %}
 
 # Config for the step.
-{{ requisite_config_file_id }}_{{ deploy_step }}:
+set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
         - marker_start: '# Salt auto-config START: {{ requisite_config_file_id }}_{{ deploy_step }}'
@@ -65,7 +65,7 @@
             }
         - show_changes: True
         - require:
-            - file: {{ requisite_config_file_id }}
+            - file: req_file_{{ requisite_config_file_id }}
 
 # Save resource.
 {% set os_platform_yum_configs = target_env_pillar['system_features']['yum_repos_configuration'] %}

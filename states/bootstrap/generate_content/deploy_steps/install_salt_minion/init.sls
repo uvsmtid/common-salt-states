@@ -36,7 +36,7 @@
 {% from resources_macro_lib import get_registered_content_item_URI_from_pillar with context %}
 
 # Config for the step.
-{{ requisite_config_file_id }}_{{ deploy_step }}:
+set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
         - marker_start: '# Salt auto-config START: {{ requisite_config_file_id }}_{{ deploy_step }}'
@@ -65,12 +65,12 @@
             }
         - show_changes: True
         - require:
-            - file: {{ requisite_config_file_id }}
+            - file: req_file_{{ requisite_config_file_id }}
 
 # Pre-build config files used by the step.
 {% for minion_type in [ 'online', 'offline' ] %}
 {% set salt_minion_template = 'salt_minion_' + minion_type + '_template' %}
-{{ requisite_config_file_id }}_{{ deploy_step }}_salt_minion_{{ minion_type }}_config_file:
+config_file_{{ requisite_config_file_id }}_{{ deploy_step }}_salt_minion_{{ minion_type }}_config_file:
     file.managed:
         - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/minion.{{ minion_type }}.conf'
         - source: '{{ deploy_step_config[salt_minion_template] }}'
@@ -94,7 +94,7 @@
 {% set rpm_source_config = deploy_step_config['salt_minion_rpm_sources'][os_platform][rpm_source_name] %}
 {% if rpm_source_config['source_type'] %}
 {% set file_path = get_registered_content_item_rel_path_from_pillar(rpm_source_config['resource_id'], target_env_pillar) %}
-{{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:
+res_file_{{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:
     file.managed:
         # TODO: resources are NOT shared per project_name (they are shared per profile_name).
         - name: '{{ target_contents_dir }}/resources/bootstrap/{{ project_name }}/{{ profile_name }}/{{ file_path }}'
