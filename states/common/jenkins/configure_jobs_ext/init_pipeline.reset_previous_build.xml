@@ -107,6 +107,7 @@
         #       fail due to local modifications (which are only
         #       "non-stashable" for submodules).
         git reset
+        git status
 
         cd -
 
@@ -225,6 +226,7 @@
             # We cannot simply checkout the branch as this would also set
             # local files into recovery commits instead of restore point.
             git reset "${RECOVERY_COMMIT_ID}"
+            git status
 
             # This step moves away from detached HEAD to specified branch.
             # All modifications to local files produced by checking out

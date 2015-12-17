@@ -703,6 +703,7 @@ else
 fi
 
 git reset
+git status
 
 cd -
 

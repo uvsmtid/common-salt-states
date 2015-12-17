@@ -55,6 +55,7 @@
             git reset "${TEMP_FILE_NAME}"
             rm "${TEMP_FILE_NAME}"
             test "${RET_VAL}" == "0"
+            git status
         else
             # In case of `RESTORE_PARENT_BUILD_ONLY`,
             # there should be nothing to commit.
@@ -86,6 +87,7 @@
         fi
 
         git reset
+        git status
 
         cd -
 
@@ -273,6 +275,7 @@
         fi
 
         git reset
+        git status
 
         cd -
 

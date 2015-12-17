@@ -148,6 +148,7 @@
         echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ build_history_repo_id }}"
 
         git reset
+        git status
 
         cd -
 
@@ -284,6 +285,7 @@
         fi
 
         git reset
+        git status
 
         cd -
 
