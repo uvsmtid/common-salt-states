@@ -353,6 +353,9 @@
       <!--
         NOTE: Jobs cannot be run until any other job is running.
               Except for jobs which specify (non-default) priority.
+              This is done to avoid deadlock of two (and more) jobs
+              which are in the build queue but cannot start as they wait
+              on each other - start of such jobs is governed by priorities.
       -->
       {% if 'job_group_name' in job_config and job_config['job_group_name'] %}
       <blockingJobs>THIS_JOB_DOES_NOT_EXIST</blockingJobs>
