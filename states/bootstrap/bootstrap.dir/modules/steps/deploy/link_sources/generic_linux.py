@@ -92,7 +92,9 @@ def set_salt_states_and_pillars_symlinks(
     ###########################################################################
     # Make sure `states` contains symlinks to all project states repos.
 
-    for project_name in projects_states_repo_abs_paths.keys():
+    project_names = projects_states_repo_abs_paths.keys()
+    logging.debug('symlinks to states of project_names: ' + str(project_names))
+    for project_name in project_names:
         project_repo_path = projects_states_repo_abs_paths[project_name]
         assert(os.path.isabs(project_repo_path))
         command_args = [
