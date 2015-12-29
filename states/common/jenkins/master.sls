@@ -85,6 +85,7 @@ jenkins_configuration_file:
 {% for plugin_config_file in [
         'sidebar-link.xml',
         'jenkins.advancedqueue.PriorityConfiguration.xml',
+        'jenkins.advancedqueue.PrioritySorterConfiguration.xml',
     ]
 %}
 

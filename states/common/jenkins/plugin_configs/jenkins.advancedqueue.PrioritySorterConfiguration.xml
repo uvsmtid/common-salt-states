@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<jenkins.advancedqueue.PrioritySorterConfiguration plugin="PrioritySorter@3.4">
+  <allowPriorityOnJobs>false</allowPriorityOnJobs>
+  <onlyAdminsMayEditPriorityConfiguration>false</onlyAdminsMayEditPriorityConfiguration>
+  <strategy class="jenkins.advancedqueue.sorter.strategy.AbsoluteStrategy">
+    <ifCondition></ifCondition>
+    <unlessCondition></unlessCondition>
+    <children/>
+    <location>
+      <lineNumber>0</lineNumber>
+      <columnNumber>0</columnNumber>
+    </location>
+    <!--
+        Set large number of available priorities.
+        See: https://issues.jenkins-ci.org/browse/JENKINS-32138
+    -->
+    <numberOfPriorities>1000</numberOfPriorities>
+    <!--
+        Use the highest priority (the smallest number)
+        for jobs with unassigned priority.
+    -->
+    <defaultPriority>1</defaultPriority>
+  </strategy>
+</jenkins.advancedqueue.PrioritySorterConfiguration>
