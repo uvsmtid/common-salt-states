@@ -106,27 +106,24 @@
         export REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
         cd "${REPO_PATH}"
 
-        # There are three types of builds:
-        # - Build which starts the initial build
-        #   (initial dynamic build descriptor).
-        #   This is only `init_pipeline.start_new_build`.
-        # - Build which continue from where the previous build stop
-        #   using parent build title to copy dynamic build descriptor.
-        #   Example is `package_pipeline.create_new_package`.
-        # - Build which continue from _some_ previous build
-        #   by guessing any parent build title
-        #   Example is `checkout_pipeline.checkout_build_branches`.
-        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        # Automatically detect `PARENT_BUILD_TITLE`
+        # if not specified - pick the latest build title as parent one.
+        # The only job which should avoid selection of the latest build title
+        # is `init_pipeline.start_new_build` which is the origin of
+        # build titles (unless it is specifically instructed to build
+        # using parent build title).
+        if [ "${PARENT_BUILD_TITLE}" == '_' ]
         then
-            # Initialize new build title.
-            BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
-            SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
-            export BUILD_TITLE="${BUILD_TIMESTAMP}-{{ job_environ['job_name'] }}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-${BUILD_LABEL}"
-        else
-            # In case of `RESTORE_PARENT_BUILD_ONLY`,
-            # make sure that `PARENT_BUILD_TITLE` is set
-            # (otherwise pick the latest build title as parent one).
-            if [ "${PARENT_BUILD_TITLE}" == '_' ]
+
+            # QUICKFIX: Continue selecting `PARENT_BUILD_TITLE`
+            #           only when `JOB_NAME` does not contain
+            #           `init_pipeline.start_new_build`.
+            set +e
+            echo "$JOB_NAME" | grep init_pipeline.start_new_build
+            RET_VAL="$?"
+            set -e
+
+            if [ "$RET_VAL" != "0" ]
             then
                 # NOTE: Branches named after build title must conform to
                 #       convention where root of the tree has to have
@@ -148,7 +145,27 @@
                 #   http://stackoverflow.com/a/5972362/441652
                 export PARENT_BUILD_TITLE="$(git for-each-ref --sort=-committerdate refs/heads/ --format='%(refname:short)' | grep 'init_pipeline.start_new_build' | head -n 1)"
             fi
+        fi
 
+        # There are three types of builds:
+        # - Build which starts the initial build
+        #   (initial dynamic build descriptor).
+        #   This is only `init_pipeline.start_new_build`.
+        # - Build which continue from where the previous build stop
+        #   using parent build title to copy dynamic build descriptor.
+        #   Example is `package_pipeline.create_new_package`.
+        # - Build which continue from _some_ previous build
+        #   by guessing any parent build title
+        #   Example is `checkout_pipeline.checkout_build_branches`.
+        if [ "${RESTORE_PARENT_BUILD_ONLY}" != "true" ]
+        then
+            # Initialize new build title.
+            BUILD_TIMESTAMP="$(date "+%Y-%m-%dT%H-%M-%S")"
+            SOURCE_PROFILE_NAME="${SALT_PROFILE_NAME}"
+            export BUILD_TITLE="${BUILD_TIMESTAMP}-{{ job_environ['job_name'] }}-${BUILD_NUMBER}-${SOURCE_PROFILE_NAME}-${BUILD_LABEL}"
+        else
+            # Because `RESTORE_PARENT_BUILD_ONLY` is `true`,
+            # the `BUILD_TITLE` is simply set to `PARENT_BUILD_TITLE`.
             export BUILD_TITLE="${PARENT_BUILD_TITLE}"
         fi
 
