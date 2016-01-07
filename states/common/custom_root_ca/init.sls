@@ -23,22 +23,24 @@
 # <<<
 {% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
-{% set content_parent_dir = pillar['system_features']['validate_depository_content']['depository_content_parent_dir'] %}
-{% set content_item = pillar['system_resources']['custom_root_CA_certificate'] %}
-{% set item_parent_dir_path = content_item['item_parent_dir_path'] %}
-{% set item_base_name = content_item['item_base_name'] %}
-{% set item_content_hash = content_item['item_content_hash'] %}
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
+{% from resources_macro_lib import get_registered_content_item_base_name with context %}
 
-# TODO: Rewrite using macros to get resource files.
-custom_root_ca:
+{% for cert_res_id in pillar['system_features']['custom_root_CA_certificates'] %}
+
+custom_root_ca_{{ cert_res_id }}:
     file.managed:
-        - name: '/usr/share/pki/ca-trust-source/anchors/{{ item_base_name }}'
-        - source: http://{{ pillar['system_host_roles']['depository_role']['hostname'] }}/{{ item_parent_dir_path }}/{{ item_base_name }}
-        - source_hash: {{ item_content_hash }}
+        - name: '/usr/share/pki/ca-trust-source/anchors/{{ get_registered_content_item_base_name(cert_res_id) }}'
+        - source: {{ get_registered_content_item_URI(cert_res_id) }}
+        - source_hash: {{ get_registered_content_item_hash(cert_res_id) }}
         - template: null
         - user: root
         - group: root
         - mode: 644
+
+{% endfor %}
 
 ca_trusted_certificates_package:
     pkg.installed:
@@ -49,7 +51,9 @@ update_ca_trust_command:
     cmd.run:
         - name: 'update-ca-trust'
         - require:
-            - file: custom_root_ca
+{% for cert_res_id in pillar['system_features']['custom_root_CA_certificates'] %}
+            - file: custom_root_ca_{{ cert_res_id }}
+{% endfor %}
             - pkg: ca_trusted_certificates_package
 
 {% endif %}

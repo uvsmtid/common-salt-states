@@ -56,6 +56,8 @@ include:
         'tmux_features_configuration'
         ,
         'yum_repos_configuration'
+        ,
+        'custom_root_CA_certificates'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
