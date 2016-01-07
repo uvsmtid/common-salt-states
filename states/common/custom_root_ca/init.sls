@@ -40,11 +40,17 @@ custom_root_ca:
         - group: root
         - mode: 644
 
+ca_trusted_certificates_package:
+    pkg.installed:
+        - name: ca-certificates
+        - aggregate: True
+
 update_ca_trust_command:
     cmd.run:
         - name: 'update-ca-trust'
         - require:
             - file: custom_root_ca
+            - pkg: ca_trusted_certificates_package
 
 {% endif %}
 # >>>
