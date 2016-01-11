@@ -58,6 +58,8 @@ include:
         'yum_repos_configuration'
         ,
         'custom_root_CA_certificates'
+        ,
+        'smtp_connection_settings'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
