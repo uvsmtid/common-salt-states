@@ -17,3 +17,5 @@ include:
     #-common.ssh.distribute_public_keys
     - common.ssh.accept_host_keys
 
+    - common.gnome.system_proxy
+
