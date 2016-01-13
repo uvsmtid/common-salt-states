@@ -105,8 +105,6 @@ system_features:
 
                 skip_if_true: SKIP_INIT_PIPELINE
 
-                is_associated_by_fingerprints: True
-
                 skip_script_execution: {{ skip_script_execution }}
 
                 # NOTE: This is a standalone job.
@@ -140,8 +138,6 @@ system_features:
                 block_build: True
 
                 skip_if_true: SKIP_POLL_PIPELINE
-
-                is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -183,8 +179,6 @@ system_features:
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
-                is_associated_by_fingerprints: True
-
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -210,8 +204,6 @@ system_features:
                     - controller_role
 
                 skip_if_true: SKIP_POLL_PIPELINE
-
-                is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -242,8 +234,6 @@ system_features:
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
-                is_associated_by_fingerprints: True
-
                 skip_script_execution: {{ skip_script_execution }}
 
                 parameterized_job_triggers:
@@ -269,8 +259,6 @@ system_features:
                     - controller_role
 
                 skip_if_true: SKIP_POLL_PIPELINE
-
-                is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
@@ -317,10 +305,6 @@ system_features:
                 scm_poll_timer_spec: '*/1 * * * *'
 
                 skip_if_true: SKIP_INIT_PIPELINE
-
-                # NOTE: This is the very first job which cannot
-                #       be asssociated with itself.
-                #is_associated_by_fingerprints: True
 
                 skip_script_execution: {{ skip_script_execution }}
 
