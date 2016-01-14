@@ -19,3 +19,5 @@ include:
 
     - common.gnome.system_proxy
 
+    - common.packages_per_os_platfrom_type
+

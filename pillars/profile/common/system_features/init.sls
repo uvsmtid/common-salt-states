@@ -60,6 +60,8 @@ include:
         'custom_root_CA_certificates'
         ,
         'smtp_connection_settings'
+        ,
+        'packages_per_os_platfrom_type'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
