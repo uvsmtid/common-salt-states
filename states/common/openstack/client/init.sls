@@ -8,7 +8,7 @@
 {% endif %}
 
 ###############################################################################
-{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc21') %}
+{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_registered_content_item_URI with context %}

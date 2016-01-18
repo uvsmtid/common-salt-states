@@ -3,6 +3,9 @@ from platforms.generic_linux import generic_linux_build
 ###############################################################################
 #
 
+# TODO: Fedora is fast-moving distribution.
+#       The code gets duplicated for `fc22`, `fc23`, `fc24`, ...
+#       Propose solution to reuse the code.
 class fc21_linux_build(generic_linux_build):
     pass
 
