@@ -10,6 +10,12 @@ system_platforms:
     fc22:
         os_type: linux
 
+    fc23:
+        os_type: linux
+
+    fc24:
+        os_type: linux
+
     rhel5:
         os_type: linux
 

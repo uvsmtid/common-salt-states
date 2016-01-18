@@ -29,8 +29,30 @@ system_features:
                         #       it is fast moving platform and not used for
                         #       primary deployments.
 
-                    # NOTE: Reusing the same config with `fc21`.
+                    # NOTE: Reusing the same config for `fc21` by `fc22`.
                     fc22:
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
+
+                        # NOTE: Repo key for Fedora is not managed because
+                        #       it is fast moving platform and not used for
+                        #       primary deployments.
+
+                    # NOTE: Reusing the same config for `fc21` by `fc23`.
+                    fc23:
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
+
+                        # NOTE: Repo key for Fedora is not managed because
+                        #       it is fast moving platform and not used for
+                        #       primary deployments.
+
+                    # NOTE: Reusing the same config for `fc21` by `fc24`.
+                    fc24:
                         repo_enabled: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
@@ -78,8 +100,34 @@ system_features:
                         #       it is fast moving platform and not used for
                         #       primary deployments.
 
-                    # NOTE: Reusing the same config with `fc21`.
+                    # NOTE: Reusing the same config for `fc21` by `fc22`.
                     fc22:
+                        # Default is enabled.
+                        # Keep it enabled for all updates.
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
+
+                        # NOTE: Repo key for Fedora is not managed because
+                        #       it is fast moving platform and not used for
+                        #       primary deployments.
+
+                    # NOTE: Reusing the same config for `fc21` by `fc23`.
+                    fc23:
+                        # Default is enabled.
+                        # Keep it enabled for all updates.
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
+
+                        # NOTE: Repo key for Fedora is not managed because
+                        #       it is fast moving platform and not used for
+                        #       primary deployments.
+
+                    # NOTE: Reusing the same config for `fc21` by `fc24`.
+                    fc24:
                         # Default is enabled.
                         # Keep it enabled for all updates.
                         repo_enabled: True
@@ -281,8 +329,32 @@ system_features:
                         key_file_resource_id: openstack_juno_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
 
-                    # NOTE: Reusing the same config with `fc21`.
+                    # NOTE: Reusing the same config for `fc21` by `fc22`.
                     fc22:
+                        repo_enabled: False
+
+                        yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
+
+                        # NOTE: Fedora and RHEL7 keys are the same.
+
+                        key_file_resource_id: openstack_juno_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
+
+                    # NOTE: Reusing the same config for `fc21` by `fc23`.
+                    fc23:
+                        repo_enabled: False
+
+                        yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
+
+                        # NOTE: Fedora and RHEL7 keys are the same.
+
+                        key_file_resource_id: openstack_juno_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
+
+                    # NOTE: Reusing the same config for `fc21` by `fc24`.
+                    fc24:
                         repo_enabled: False
 
                         yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
@@ -327,7 +399,7 @@ system_features:
                         key_file_resource_id: jenkins_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
-                    # NOTE: Reusing the same config with `fc21`.
+                    # NOTE: Reusing the same config for `fc21` by `fc22`.
                     fc22:
                         repo_enabled: True
 
@@ -339,6 +411,29 @@ system_features:
                         key_file_resource_id: jenkins_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
+                    # NOTE: Reusing the same config for `fc21` by `fc23`.
+                    fc23:
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
+                        yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
+
+                        # NOTE: Fedora and RHEL7 keys are the same.
+
+                        key_file_resource_id: jenkins_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
+
+                    # NOTE: Reusing the same config for `fc21` by `fc24`.
+                    fc24:
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
+                        yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
+
+                        # NOTE: Fedora and RHEL7 keys are the same.
+
+                        key_file_resource_id: jenkins_yum_repository_rpm_verification_key
+                        key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
                     rhel7:
                         repo_enabled: True

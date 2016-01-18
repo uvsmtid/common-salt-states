@@ -28,8 +28,16 @@ system_features:
                     fc21:
                         JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
                         rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
-                    # NOTE: Reusing the same configuration with `fc21`.
+                    # NOTE: Reusing the same configuration for `fc21` by `fc22`.
                     fc22:
+                        JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
+                        rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
+                    # NOTE: Reusing the same configuration for `fc21` by `fc23`.
+                    fc23:
+                        JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
+                        rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
+                    # NOTE: Reusing the same configuration for `fc21` by `fc24`.
+                    fc24:
                         JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
                         rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
                     rhel5:
@@ -51,8 +59,14 @@ system_features:
                 os_platform_configs:
                     fc21:
                         JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
-                    # NOTE: Reusing the same configuration with `fc21`.
+                    # NOTE: Reusing the same configuration for `fc21` by `fc22`.
                     fc22:
+                        JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
+                    # NOTE: Reusing the same configuration for `fc21` by `fc23`.
+                    fc23:
+                        JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
+                    # NOTE: Reusing the same configuration for `fc21` by `fc24`.
+                    fc24:
                         JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
                     rhel7:
                         JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
@@ -69,8 +83,14 @@ system_features:
                 os_platform_configs:
                     fc21:
                         JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
-                    # NOTE: Reusing the same configuration with `fc21`.
+                    # NOTE: Reusing the same configuration for `fc21` by `fc22`.
                     fc22:
+                        JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
+                    # NOTE: Reusing the same configuration for `fc21` by `fc23`.
+                    fc23:
+                        JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
+                    # NOTE: Reusing the same configuration for `fc21` by `fc24`.
+                    fc24:
                         JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
                     rhel7:
                         JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
