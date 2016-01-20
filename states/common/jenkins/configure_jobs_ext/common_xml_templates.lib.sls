@@ -345,22 +345,19 @@
       -->
       <blockLevel>GLOBAL</blockLevel>
       <!--
-        NOTE: Make sure queue is scanned to be blocked.
+        NOTE: Make sure all job statuses are considered for blocking
+              (not just BUILDABLE, but WAITING and others) - see:
+                https://issues.jenkins-ci.org/browse/JENKINS-32266?focusedCommentId=246354&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-246354
               Otherwise, the job may jump into build while there is
               a pipeline job queueing (this will disrupt the pipeline).
       -->
       <scanQueueFor>ALL</scanQueueFor>
-      <!--
-        NOTE: Jobs cannot be run until any other job is running.
-              Except for jobs which specify (non-default) priority.
-              This is done to avoid deadlock of two (and more) jobs
-              which are in the build queue but cannot start as they wait
-              on each other - start of such jobs is governed by priorities.
-      -->
-      {% if 'job_group_name' in job_config and job_config['job_group_name'] %}
-      <blockingJobs>THIS_JOB_DOES_NOT_EXIST</blockingJobs>
+      {% if 'blocking_jobs' in job_config %}
+      <blockingJobs>
+{{ job_config['blocking_jobs'] }}
+      </blockingJobs>
       {% else %}
-      <blockingJobs>.*</blockingJobs>
+      <blockingJobs>THIS_JOB_DOES_NOT_EXIST</blockingJobs>
       {% endif %}
     </hudson.plugins.buildblocker.BuildBlockerProperty>
     {% endif %}
