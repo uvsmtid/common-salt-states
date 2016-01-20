@@ -337,7 +337,7 @@
 
 
     <!-- build blocker -->
-    {% if 'block_build' in job_config and job_config['block_build'] %}
+    {% if 'block_build' in job_config %}
     <hudson.plugins.buildblocker.BuildBlockerProperty plugin="build-blocker-plugin@1.7.1">
       <useBuildBlocker>true</useBuildBlocker>
       <!--
@@ -352,13 +352,9 @@
               a pipeline job queueing (this will disrupt the pipeline).
       -->
       <scanQueueFor>ALL</scanQueueFor>
-      {% if 'blocking_jobs' in job_config %}
       <blockingJobs>
-{{ job_config['blocking_jobs'] }}
+{{ job_config['block_build'] }}
       </blockingJobs>
-      {% else %}
-      <blockingJobs>THIS_JOB_DOES_NOT_EXIST</blockingJobs>
-      {% endif %}
     </hudson.plugins.buildblocker.BuildBlockerProperty>
     {% endif %}
 
