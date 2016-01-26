@@ -58,6 +58,13 @@ test "${CURRENT_BRANCH}" != "HEAD"
 # copy in the pillars stays the same.
 export BUILD_BRANCH="{{ pillar['dynamic_build_descriptor']['build_branches'][repo_name] }}"
 
+# TODO
+# Retrieve release name and version name.
+{% set project_version_name_key = pillar['project_name'] +'_version_name' %}
+{% set project_version_number_key = pillar['project_name'] + '_version_number' %}
+export PROJECT_VERSION_NAME="{{ pillar['dynamic_build_descriptor'][project_version_name_key] }}"
+export PROJECT_VERSION_NUMBER="{{ pillar['dynamic_build_descriptor'][project_version_number_key] }}"
+
 {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
 # Use hardcoded default branch `develop` for `build_history_role`.
 export TARGET_UPSTREAM_BRANCH="develop"
@@ -95,8 +102,8 @@ then
     echo "        cd '${REPO_PATH}'"
     echo "        git checkout '${TARGET_UPSTREAM_BRANCH}'"
     echo "        git merge --no-ff --no-commit '${BUILD_BRANCH}'"
-    echo "        # Review merged content."
-    echo "        git commit --author=YOUR_EMAIL"
+    echo "        # Review merged content and commit with YOUR_EMAIL='First Last<first.last@example.com>'"
+    echo "        git commit --author=YOUR_EMAIL -m 'Merge ${PROJECT_VERSION_NAME}-${PROJECT_VERSION_NUMBER}'"
 else
     echo SKIP
 fi
