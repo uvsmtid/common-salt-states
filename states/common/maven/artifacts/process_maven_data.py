@@ -894,6 +894,9 @@ def get_single_pom_dependencies(
         # Tag `pluginExecutionFilter` was seen used for Eclipse configuration
         # (without affecting build itself as claimed by comments).
         pom_xml_ns_prefix + 'pluginExecutionFilter',
+
+        # Tag `deployable` is used by `cargo` Maven plugin configuration.
+        pom_xml_ns_prefix + 'deployable',
     ]
 
     single_pom_dependencies = {}
