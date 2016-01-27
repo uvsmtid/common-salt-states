@@ -433,6 +433,23 @@
 {% endmacro %}
 
 ###############################################################################
+{% macro send_email_notifications(job_config, job_environ) %}
+
+    #{#
+    # NOTE: By default, without explicit `send_email_notifications`
+    #       notifications are ENABLED.
+    #}#
+    {% if 'send_email_notifications' not in job_config or job_config['send_email_notifications'] %}
+    <hudson.tasks.Mailer plugin="mailer@1.11">
+      <recipients>{{ pillar['system_features']['email_notifications_lists']['jenkins']|join(' ') }}</recipients>
+      <dontNotifyEveryUnstableBuild>false</dontNotifyEveryUnstableBuild>
+      <sendToIndividuals>false</sendToIndividuals>
+    </hudson.tasks.Mailer>
+    {% endif %}
+
+{% endmacro %}
+
+###############################################################################
 {% macro copy_artifacts(job_config, job_environ) %}
 
     <!--
