@@ -62,6 +62,8 @@ include:
         'smtp_connection_settings'
         ,
         'packages_per_os_platfrom_type'
+        ,
+        'email_notifications_lists'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
