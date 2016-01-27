@@ -76,6 +76,9 @@
     {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
     {{ parameterized_job_triggers_macro(job_config, job_environ) }}
 
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import send_email_notifications with context %}
+    {{ send_email_notifications(job_config, job_environ) }}
+
   </publishers>
 
 
