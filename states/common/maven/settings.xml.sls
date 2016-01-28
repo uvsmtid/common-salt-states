@@ -32,6 +32,9 @@
     -->
     <pluginGroups>
         <pluginGroup>org.mortbay.jetty</pluginGroup>
+        
+        <!-- SonarQube -->
+        <pluginGroup>org.sonarsource.scanner.maven</pluginGroup> 
     </pluginGroups>
 
     <!--
@@ -170,6 +173,24 @@
             </properties>
         </profile>
 
+    <!-- SonarQube -->
+    <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Optional URL to server. Default value is http://localhost:9000 -->
+                <sonar.host.url>
+                  http://localhost:9000
+                </sonar.host.url>
+                <sonar.jdbc.url>
+                  jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8
+                </sonar.jdbc.url>
+                <sonar.jdbc.username>sonar</sonar.jdbc.username>
+                <sonar.jdbc.password>sonar</sonar.jdbc.password>
+            </properties>
+        </profile> 
     </profiles>
 
     <!-- activeProfiles List of profiles that are active for all builds. -->
