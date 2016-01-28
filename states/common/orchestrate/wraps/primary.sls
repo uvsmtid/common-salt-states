@@ -21,4 +21,9 @@ include:
 
     # Set splash screen and boot console resolution.
     - common.grub
+    
+    # Mariadb
+    #- common.mariadb
 
+    # SonarQube
+    #- common.sonarqube
