@@ -188,7 +188,7 @@
                   jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8
                 </sonar.jdbc.url>
                 <sonar.jdbc.username>sonar</sonar.jdbc.username>
-                <sonar.jdbc.password>sonar</sonar.jdbc.password>
+                <sonar.jdbc.password></sonar.jdbc.password>
             </properties>
         </profile> 
     </profiles>
