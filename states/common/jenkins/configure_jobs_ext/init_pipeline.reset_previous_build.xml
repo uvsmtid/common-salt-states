@@ -109,6 +109,11 @@
         git reset
         git status
 
+        # Clean all files and directories not known/managed by Git.
+        # Ignored files are _also_ known/managed by Git -
+        # option `-x` removes them as well.
+        git clean -d -x --force
+
         cd -
 
         {% endif %}
