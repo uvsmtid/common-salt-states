@@ -23,7 +23,7 @@ deploy_sonar_configuration_file:
 
 deploy_sonar_init_file:                                                
     file.managed:                                                               
-        - name: '/etc/init.d'                              
+        - name: '/etc/init.d/sonar'    
         - source: 'salt://common/sonarqube/sonar'
         - template: jinja                                                       
         - makedirs: True                                                        
