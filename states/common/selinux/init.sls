@@ -12,7 +12,8 @@ selinux_config:
         - group: root
         - mode: 644
     cmd.run:
-        - name: "setenforce 0"
+        # OBS-1873: Redefine PATH to include where `ldconfig` may be.
+        - name: "PATH=$PATH:/usr/sbin setenforce 0"
 
 {% endif %}
 # >>>
