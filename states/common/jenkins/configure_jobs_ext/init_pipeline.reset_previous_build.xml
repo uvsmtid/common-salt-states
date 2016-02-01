@@ -112,7 +112,18 @@
         # Clean all files and directories not known/managed by Git.
         # Ignored files are _also_ known/managed by Git -
         # option `-x` removes them as well.
+        # NOTE: The exception are
+        #       (symlinks configured by `configure_salt.py` script):
+        #       - symlinks in pillars repository to bootstrap profiles
+        #       - `main.sls` symlink from common states repository
+        #       - project_name symlink from common states repository
+        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['source_profile_pillars_role'] %}
+        git clean -e '/pillars/bootstrap/profiles' -d -x --force
+        {% elif repo_name == 'common-salt-states' %}
+        git clean -e '/states/main.sls' -e '/states/{{ pillar['project_name'] }}' -d -x --force
+        {% else %}
         git clean -d -x --force
+        {% endif %}
 
         cd -
 
