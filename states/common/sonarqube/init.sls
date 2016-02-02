@@ -86,7 +86,8 @@ sonar_service:
         - enable: True
         - require:
             - pkg: sonar_package
-#            - file: deploy_sonar_configuration_file
+            - file: deploy_sonar_configuration_file
+            - file: deploy_sonar_init_file
 #            - file: deploy_sonar_plugin_checkstyle
 #            - file: deploy_sonar_plugin_findbugs
 #            - file: deploy_sonar_plugin_java
@@ -95,6 +96,5 @@ sonar_service:
         
 {% endif %}
 # >>>
-###############################################################################
-
+###############################################################################:
 
