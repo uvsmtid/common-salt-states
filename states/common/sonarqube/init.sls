@@ -37,6 +37,11 @@ deploy_sonar_init_file:
         - require:
             - pkg: sonar_package
 
+# OBS-975: TODO
+remove_sonar_plugin_java_default:
+    file.absent:
+        - name: '/opt/sonar/extensions/plugins/sonar-java-plugin-3.7.1.jar'
+
 # Import macros to query info based on resource id.
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_registered_content_item_URI with context %}
@@ -85,6 +90,7 @@ sonar_service:
             - file: deploy_sonar_service_script
             - file: deploy_sonar_configuration_file
             - file: deploy_sonar_init_file
+            - file: remove_sonar_plugin_java_default
 {% for resource_id in required_sonar_plugins %}
             - file: deploy_sonar_plugin_{{ resource_id }}
 {% endfor %}
