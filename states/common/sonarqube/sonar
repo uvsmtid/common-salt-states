@@ -9,6 +9,7 @@
 # Description:       Open platform to manage code quality
 ### END INIT INFO
 
+# TODO: Avoid hardcoded JRE/JDK.
 export JAVA_HOME='/usr/java/jdk1.7.0_71'
 export PATH="${JAVA_HOME}/bin:${PATH}"
 

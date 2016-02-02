@@ -62,6 +62,8 @@ include:
         'smtp_connection_settings'
         ,
         'packages_per_os_platfrom_type'
+        ,
+        'configure_sonar_qube'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
