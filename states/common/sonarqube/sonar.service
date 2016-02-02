@@ -1,16 +1,22 @@
+
+# OBS-975: SystemD couldn't detect running SonarQube with
+#          original init.d script, so this unit file was added.
+
 [Unit]
 Description=Sonar 5.3
-After=network.target network-online.target
+After=network-online.target
 Wants=network-online.target
+Conflicts=shutdown.target
 
 [Service]
-ExecStart=/opt/sonar/bin/linux-x86-64/sonar.sh start
-ExecStop=/opt/sonar/bin/linux-x86-64/sonar.sh stop
-ExecReload=/opt/sonar/bin/linux-x86-64/sonar.sh restart
-PIDFile=/opt/sonar/bin/linux-x86-64/./SonarQube.pid
 Type=forking
-User=sonar
-
+Restart=no
+TimeoutSec=5min
+ExecStart=/etc/rc.d/init.d/sonar start
+ExecStop=/etc/rc.d/init.d/sonar stop
+ExecReload=/etc/rc.d/init.d/sonar restart
+PIDFile=/opt/sonar/bin/linux-x86-64/SonarQube.pid
 
 [Install]
 WantedBy=multi-user.target
+
