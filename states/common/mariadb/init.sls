@@ -16,8 +16,6 @@ mariadb_server_package:
         - name: mariadb-server
         - aggregate: True
 
-
-
 deploy_mariadb_configuration_file:
     file.managed:
         - name: '/etc/my.cnf'
@@ -29,7 +27,7 @@ deploy_mariadb_configuration_file:
         - require:
             - pkg: mariadb_package
             - pkg: mariadb_server_package
-       
+
 # Start database service.
 mariadb_service:
     service.running:
@@ -45,16 +43,16 @@ deploy_sonarqube_init_script:
     file.managed:
         - name: '{{ config_temp_dir }}/sonar_init.sql'
         - source: 'salt://common/mariadb/sonar_init.sql'
-        - template: jinja                                                       
-        - makedirs: True                                                        
-        - dir_mode: 755                                                         
+        - template: jinja
+        - makedirs: True
+        - dir_mode: 755
         - mode: 755
 
 # Sonarqube Database Creation
 run_sonarqube_database_create:
     cmd.run:
         - name : "mysql -u root < {{ config_temp_dir }}/sonar_init.sql"
-                
+
 {% endif %}
 # >>>
 ###############################################################################

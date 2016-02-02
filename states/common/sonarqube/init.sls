@@ -21,30 +21,31 @@ deploy_sonar_configuration_file:
         - require:
             - pkg: sonar_package
 
-deploy_sonar_init_file:                                                
-    file.managed:                                                               
-        - name: '/etc/init.d/sonar'    
+deploy_sonar_init_file:
+    file.managed:
+        - name: '/etc/init.d/sonar'
         - source: 'salt://common/sonarqube/sonar'
-        - template: jinja                                                       
-        - makedirs: True                                                        
-        - dir_mode: 755                                                         
-        - mode: 755                                                             
-        - require:                                                              
+        - template: jinja
+        - makedirs: True
+        - dir_mode: 755
+        - mode: 755
+        - require:
             - pkg: sonar_package
 
-# Deploy plugins       
+# Deploy plugins
+# TODO: If we deploy, we use loop over resource ids of registered files.
 # Verify for the latest version
-#deploy_sonar_plugin_checkstyle:                                                
-#    file.managed:                                                               
-#        - name: '/opt/sonar/extensions/plugins/sonar-checkstyle-plugin-2.4.jar'                              
+#deploy_sonar_plugin_checkstyle:
+#    file.managed:
+#        - name: '/opt/sonar/extensions/plugins/sonar-checkstyle-plugin-2.4.jar'
 #        - resource_repository: common-resources
 #        - item_parent_dir_path: common/sonarqube
 #        - item_base_name: sonar-checkstyle-plugin-2.4.jar
-#        - require:                                                              
+#        - require:
 #            - pkg: sonar_package
 
 #deploy_sonar_plugin_findbugs:
-#    file.managed:                                                               
+#    file.managed:
 #        - name: '/opt/sonar/extensions/plugins/sonar-findbugs-plugin-3.3.jar'
 #        - resource_repository: common-resources
 #        - item_parent_dir_path: common/sonarqube
@@ -52,32 +53,53 @@ deploy_sonar_init_file:
 #        - require:
 #            - pkg: sonar_package
 #
-#deploy_sonar_plugin_java:                                                 
-#    file.managed:                                                               
-#        - name: '/opt/sonar/extensions/plugins/sonar-java-plugin-3.9.jar' 
-#        - resource_repository: common-resources                                 
-#        - item_parent_dir_path: common/sonarqube                                
+#deploy_sonar_plugin_java:
+#    file.managed:
+#        - name: '/opt/sonar/extensions/plugins/sonar-java-plugin-3.9.jar'
+#        - resource_repository: common-resources
+#        - item_parent_dir_path: common/sonarqube
 #        - item_base_name: sonar-java-plugin-3.9.jar
-#        - require:                                                              
-#            - pkg: sonar_package 
+#        - require:
+#            - pkg: sonar_package
 
-#deploy_sonar_plugin_pdf_report:                             
-#    file.managed:                                                               
+#deploy_sonar_plugin_pdf_report:
+#    file.managed:
 #        - name: '/opt/sonar/extensions/plugins/sonar-pdfreport-plugin-1.4.jar'
-#        - resource_repository: common-resources                                 
-#        - item_parent_dir_path: common/sonarqube                                
+#        - resource_repository: common-resources
+#        - item_parent_dir_path: common/sonarqube
 #        - item_base_name: sonar-pdfreport-plugin-1.4.jar
-#        - require:                                                              
-#            - pkg: sonar_package 
+#        - require:
+#            - pkg: sonar_package
 
 #deploy_sonar_plugin_pmd:
-#    file.managed:                                                               
+#    file.managed:
 #        - name: '/opt/sonar/extensions/plugins/sonar-pmd-plugin-2.5.jar'
-#        - resource_repository: common-resources                                 
-#        - item_parent_dir_path: common/sonarqube                                
+#        - resource_repository: common-resources
+#        - item_parent_dir_path: common/sonarqube
 #        - item_base_name: sonar-pmd-plugin-2.5.jar
-#        - require:                                                              
-#            - pkg: sonar_package 
+#        - require:
+#            - pkg: sonar_package
+
+#Deploy service script
+deploy_sonar_service_script:
+    file.managed:
+        - name: '/usr/lib/systemd/system/sonar.service'
+        - source: 'salt://common/sonarqube/sonar.service'
+        - template: jinja
+        - makedirs: True
+        - dir_mode: 755
+        - mode: 755
+        - require:
+            - pkg: sonar_package
+
+enable_sonar_systemd:                                                  
+    cmd.run:
+        - name : "sudo systemctl enable sonar"
+        - require:
+            - pkg: sonar_package
+            - file: deploy_sonar_service_script
+            - file: deploy_sonar_configuration_file
+            - file: deploy_sonar_init_file
 
 # Start sonarqube service.
 sonar_service:
@@ -86,14 +108,16 @@ sonar_service:
         - enable: True
         - require:
             - pkg: sonar_package
+            - file: deploy_sonar_service_script
             - file: deploy_sonar_configuration_file
             - file: deploy_sonar_init_file
+            - cmd: enable_sonar_systemd
 #            - file: deploy_sonar_plugin_checkstyle
 #            - file: deploy_sonar_plugin_findbugs
 #            - file: deploy_sonar_plugin_java
 #            - file: deploy_sonar_plugin_pdf_report
 #            - file: deploy_sonar_plugin_pmd
-        
+
 {% endif %}
 # >>>
 ###############################################################################:

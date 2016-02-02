@@ -8,6 +8,8 @@ include:
         'main'
         ,
         'ssh_keys'
+        ,
+        'sonar_qube'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
