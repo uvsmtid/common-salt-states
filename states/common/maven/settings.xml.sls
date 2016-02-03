@@ -34,7 +34,9 @@
         <pluginGroup>org.mortbay.jetty</pluginGroup>
         
         <!-- SonarQube -->
+        {% if pillar['system_host_roles']['sonar_qube_role']['assigned_hosts']|length != 0 %}
         <pluginGroup>org.sonarsource.scanner.maven</pluginGroup> 
+        {% endif %}
     </pluginGroups>
 
     <!--
