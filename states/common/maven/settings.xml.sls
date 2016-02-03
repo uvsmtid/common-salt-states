@@ -32,6 +32,11 @@
     -->
     <pluginGroups>
         <pluginGroup>org.mortbay.jetty</pluginGroup>
+        
+        <!-- SonarQube -->
+        {% if pillar['system_host_roles']['sonar_qube_role']['assigned_hosts']|length != 0 %}
+        <pluginGroup>org.sonarsource.scanner.maven</pluginGroup> 
+        {% endif %}
     </pluginGroups>
 
     <!--
@@ -170,7 +175,30 @@
             </properties>
         </profile>
 
+    <!-- SonarQube -->
+    {% if pillar['system_host_roles']['sonar_qube_role']['assigned_hosts']|length != 0 %} 
+    <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Optional URL to server. Default value is http://localhost:9000 -->
+                <sonar.host.url>
+                  <!-- TODO: Make it work with non-localhost. -->
+                  http://localhost:9000
+                </sonar.host.url>
+                <sonar.jdbc.url>
+                  <!-- TODO: Make it work with non-localhost. -->
+                  jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8
+                </sonar.jdbc.url>
+                  <!-- TODO: Make it work with configurerable username and password. -->
+                <sonar.jdbc.username>sonar</sonar.jdbc.username>
+                <sonar.jdbc.password></sonar.jdbc.password>
+            </properties>
+        </profile> 
     </profiles>
+    {% endif %}
 
     <!-- activeProfiles List of profiles that are active for all builds. -->
     <activeProfiles>

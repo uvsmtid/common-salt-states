@@ -21,4 +21,3 @@ include:
 
     # Set splash screen and boot console resolution.
     - common.grub
-

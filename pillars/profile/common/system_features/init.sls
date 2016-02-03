@@ -64,6 +64,8 @@ include:
         'packages_per_os_platfrom_type'
         ,
         'email_notifications_lists'
+        ,
+        'configure_sonar_qube'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
