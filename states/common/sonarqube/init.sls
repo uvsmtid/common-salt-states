@@ -10,10 +10,30 @@ include:
 sonar_package:
     pkg.installed:
         - name: sonar
+        # NOTE: This repo is supposed to be configured.
+        #       See `pillar['system_features']['yum_repos_configuration']`.
+        - fromrepo: sonar
+        # NOTE: The package from the official repo is not signed.
+        #       This argument does not seem to work on
+        #       Fedora 22 with Salt `2015.5.5` - see workaround below.
         - skip_verify: True
-        - aggregate: True
+        # NOTE: Do not agregate this package as its state function has
+        #       specific arguments which may not be used when aggregated
+        #       with others (not sure if such behaviour is true but
+        #       it is a suspected bug on Salt side when aggregate is used).
+        - aggregate: False
         - require:
             - sls: common.mariadb
+
+# NOTE: Apparently, there is a Salt bug to propaget `skip_verify`
+#       as `--nogpgcheck` argument to `yum`.
+#       This state is response in case of `sonar_package` failure above - see:
+#           https://docs.saltstack.com/en/latest/ref/states/requisites.html#onfail
+ensure_sonar_package:
+    cmd.run:
+        - name: 'yum -y --nogpgcheck --enablerepo=sonar install sonar'
+        - onfail:
+            - pkg: sonar_package
 
 deploy_sonar_configuration_file:
     file.managed:
@@ -63,6 +83,7 @@ deploy_sonar_plugin_{{ resource_id }}:
         - name: '/opt/sonar/extensions/plugins/{{ get_registered_content_item_base_name(resource_id) }}'
         - source_hash: '{{ get_registered_content_item_hash(resource_id) }}'
         - mode: 644
+        - makedirs: True
         - require:
             - pkg: sonar_package
 
