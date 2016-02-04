@@ -19,9 +19,13 @@ system_features:
         'rhel':
             - nmap
 
+            - dos2unix
+
         # Packages common for all Fedora versions
         'fc':
             - nmap
+
+            - dos2unix
 
             # This is used by `invoke.py` script from `git-group`.
             - python-lxml
