@@ -114,10 +114,15 @@
         # option `-x` removes them as well.
         # NOTE: The exception are
         #       (symlinks configured by `configure_salt.py` script):
-        #       - symlinks in pillars repository to bootstrap profiles
+        #       - symlinks in defaults and overrides pillars
+        #         repositories which point to bootstrap profiles
         #       - `main.sls` symlink from common states repository
         #       - project_name symlink from common states repository
-        {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['source_profile_pillars_role'] %}
+        {% if repo_name in
+            pillar['system_features']['deploy_environment_sources']['repository_roles']['source_profile_pillars_role']
+            +
+            pillar['system_features']['deploy_environment_sources']['repository_roles']['project_states_role']
+        %}
         git clean -e '/pillars/bootstrap/profiles' -d -x --force
         {% elif repo_name == 'common-salt-states' %}
         git clean -e '/states/main.sls' -e '/states/{{ pillar['project_name'] }}' -d -x --force
