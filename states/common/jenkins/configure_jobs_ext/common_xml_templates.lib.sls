@@ -450,6 +450,25 @@
 {% endmacro %}
 
 ###############################################################################
+{% macro sonarqube_runner(job_config, job_environ) %}
+
+    #{#
+    # NOTE: By default, `sonarqube_runner` execution is DISABLED.
+    #}#
+    {% if 'sonarqube_runner' in job_config and job_config['sonarqube_runner'] %}
+    <hudson.plugins.sonar.SonarPublisher plugin="sonar@2.3">
+      <branch></branch>
+      <mavenOpts></mavenOpts>
+      <jobAdditionalProperties></jobAdditionalProperties>
+      <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+      <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+      <usePrivateRepository>false</usePrivateRepository>
+    </hudson.plugins.sonar.SonarPublisher>
+    {% endif %}
+
+{% endmacro %}
+
+###############################################################################
 {% macro copy_artifacts(job_config, job_environ) %}
 
     <!--

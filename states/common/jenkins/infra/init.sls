@@ -28,6 +28,7 @@ include:
         'jenkins_buildtriggerbadge_plugin',
         'jenkins_sidebar-link_plugin',
         'jenkins_PrioritySorter_plugin',
+        'jenkins_Sonar_plugin',
     ]
 %}
 

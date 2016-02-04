@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson.plugins.sonar.SonarPublisher_-DescriptorImpl plugin="sonar@2.3">
+  <installations>
+    <hudson.plugins.sonar.SonarInstallation>
+      <name>SonarQube</name>
+      <disabled>false</disabled>
+      <serverUrl>http://localhost:9000/</serverUrl>
+      <mojoVersion></mojoVersion>
+      <databaseUrl>jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;amp;characterEncoding=utf8</databaseUrl>
+      <databaseLogin>sonar</databaseLogin>
+      <additionalProperties></additionalProperties>
+      <additionalAnalysisProperties>sonar.jacoco.reportPath=target/coverage-reports/jacoco-ut.exec</additionalAnalysisProperties>
+      <triggers>
+        <skipScmCause>false</skipScmCause>
+        <skipUpstreamCause>false</skipUpstreamCause>
+        <envVar></envVar>
+      </triggers>
+      <sonarLogin>admin</sonarLogin>
+      <databaseSecret>8gBJnnoliBwMNaf8506wsQ==</databaseSecret>
+      <sonarSecret>N6qBodiuONy5hrI30sPmkIrR/7q71QhPvrhUaw2BJos=</sonarSecret>
+    </hudson.plugins.sonar.SonarInstallation>
+  </installations>
+  <buildWrapperEnabled>true</buildWrapperEnabled>
+</hudson.plugins.sonar.SonarPublisher_-DescriptorImpl>
