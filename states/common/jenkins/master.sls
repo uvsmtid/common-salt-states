@@ -86,6 +86,9 @@ jenkins_configuration_file:
         'sidebar-link.xml',
         'jenkins.advancedqueue.PriorityConfiguration.xml',
         'jenkins.advancedqueue.PrioritySorterConfiguration.xml',
+        'hudson.plugins.sonar.MsBuildSQRunnerInstallation.xml',                
+        'hudson.plugins.sonar.SonarPublisher.xml',                             
+        'hudson.plugins.sonar.SonarRunnerInstallation.xml',
     ]
 %}
 
