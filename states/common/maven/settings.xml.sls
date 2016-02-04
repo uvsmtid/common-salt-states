@@ -180,7 +180,7 @@
     <!-- SonarQube -->
     {% if 'sonar_qube_role' in pillar['system_host_roles'] %}
     {% if pillar['system_host_roles']['sonar_qube_role']['assigned_hosts']|length != 0 %}
-    <profile>
+        <profile>
             <id>sonar</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -200,9 +200,9 @@
                 <sonar.jdbc.password></sonar.jdbc.password>
             </properties>
         </profile>
+    {% endif %}
+    {% endif %}
     </profiles>
-    {% endif %}
-    {% endif %}
 
     <!-- activeProfiles List of profiles that are active for all builds. -->
     <activeProfiles>
