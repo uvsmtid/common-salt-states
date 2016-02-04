@@ -32,10 +32,12 @@
     -->
     <pluginGroups>
         <pluginGroup>org.mortbay.jetty</pluginGroup>
-        
+
         <!-- SonarQube -->
+        {% if 'sonar_qube_role' in pillar['system_host_roles'] %}
         {% if pillar['system_host_roles']['sonar_qube_role']['assigned_hosts']|length != 0 %}
-        <pluginGroup>org.sonarsource.scanner.maven</pluginGroup> 
+        <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
+        {% endif %}
         {% endif %}
     </pluginGroups>
 
@@ -176,7 +178,8 @@
         </profile>
 
     <!-- SonarQube -->
-    {% if pillar['system_host_roles']['sonar_qube_role']['assigned_hosts']|length != 0 %} 
+    {% if 'sonar_qube_role' in pillar['system_host_roles'] %}
+    {% if pillar['system_host_roles']['sonar_qube_role']['assigned_hosts']|length != 0 %}
     <profile>
             <id>sonar</id>
             <activation>
@@ -196,8 +199,9 @@
                 <sonar.jdbc.username>sonar</sonar.jdbc.username>
                 <sonar.jdbc.password></sonar.jdbc.password>
             </properties>
-        </profile> 
+        </profile>
     </profiles>
+    {% endif %}
     {% endif %}
 
     <!-- activeProfiles List of profiles that are active for all builds. -->
