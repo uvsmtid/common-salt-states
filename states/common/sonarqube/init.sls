@@ -52,6 +52,9 @@ deploy_sonarqube_init_script:
 # Sonarqube Database Creation
 run_sonarqube_database_create:
     cmd.run:
+        # TODO: Database init should only be run when it does not exits.
+        #       User should manually drop DB in order for this script to run.
+        #       Add `unless` to check for existing database.
         - name: "mysql -u root < {{ config_temp_dir }}/sonar_init.sql"
         # NOTE: We do not run SQL every time (only when there are changes).
         - onchanges:
