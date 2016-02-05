@@ -7,6 +7,8 @@ include:
 # <<<
 {% if grains['os_platform_type'].startswith('fc') or grains['os_platform_type'].startswith('rhel7') %}
 
+{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
+
 sonar_package:
     pkg.installed:
         - name: sonar
@@ -35,6 +37,29 @@ ensure_sonar_package:
         - onfail:
             - pkg: sonar_package
 
+# Deploy SonarQube init script
+deploy_sonarqube_init_script:
+    file.managed:
+        - name: '{{ config_temp_dir }}/sonar_init.sql'
+        - source: 'salt://common/sonarqube/sonar_init.sql'
+        - template: jinja
+        - makedirs: True
+        - dir_mode: 755
+        - mode: 755
+        - require:
+            - pkg: sonar_package
+
+# Sonarqube Database Creation
+run_sonarqube_database_create:
+    cmd.run:
+        - name: "mysql -u root < {{ config_temp_dir }}/sonar_init.sql"
+        # NOTE: We do not run SQL every time (only when there are changes).
+        - onchanges:
+            - file: deploy_sonarqube_init_script
+        - require:
+            - pkg: sonar_package
+            - sls: common.mariadb
+
 deploy_sonar_configuration_file:
     file.managed:
         - name: '/opt/sonar/conf/sonar.properties'
@@ -46,6 +71,8 @@ deploy_sonar_configuration_file:
         - require:
             - pkg: sonar_package
 
+{% if False %}
+# DISABLED: Instead of init.d file, we use systemd unit file.
 deploy_sonar_init_file:
     file.managed:
         - name: '/etc/init.d/sonar'
@@ -56,8 +83,10 @@ deploy_sonar_init_file:
         - mode: 755
         - require:
             - pkg: sonar_package
+{% endif %}
 
-# OBS-975: TODO
+# OBS-975: This file is overriding extension deployed by default.
+#          The new file exports the environment variable for Java 7.
 remove_sonar_plugin_java_default:
     file.absent:
         - name: '/opt/sonar/extensions/plugins/sonar-java-plugin-3.7.1.jar'
@@ -89,7 +118,7 @@ deploy_sonar_plugin_{{ resource_id }}:
 
 {% endfor %}
 
-# Deploy systemd service script.
+# Deploy systemd service unitfile.
 deploy_sonar_service_script:
     file.managed:
         - name: '/usr/lib/systemd/system/sonar.service'
@@ -106,11 +135,12 @@ sonar_service:
     service.running:
         - name: sonar
         - enable: True
-        - require:
+        # NOTE: Restart the service if there are any changes.
+        - watch:
             - pkg: sonar_package
+            - cmd: run_sonarqube_database_create
             - file: deploy_sonar_service_script
             - file: deploy_sonar_configuration_file
-            - file: deploy_sonar_init_file
             - file: remove_sonar_plugin_java_default
 {% for resource_id in required_sonar_plugins %}
             - file: deploy_sonar_plugin_{{ resource_id }}
