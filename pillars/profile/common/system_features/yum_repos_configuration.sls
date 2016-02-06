@@ -463,10 +463,17 @@ system_features:
 
                 os_platform_configs:
 
-                    fc22:
+                    {% for system_platform_id in [
+                            'fc22'
+                            ,
+                            'fc23'
+                        ]
+                    %}
+                    {{ system_platform_id }}:
                         repo_enabled: True
 
                         yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'
+                    {% endfor %}
 
 
 ###############################################################################
