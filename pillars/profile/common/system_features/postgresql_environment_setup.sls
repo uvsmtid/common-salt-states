@@ -25,9 +25,7 @@ system_features:
         postgresql_orig_service_name: 'postgresql-9.3'
 
         # PostgreSQL service name for project_name server.
-        # TODO: Use generic name for the key `postgresql_service_name`
-        #       instead of embedding project name into the key.
-        postgresql_project_name_service_name: 'postgresql-{{ project_name }}'
+        postgresql_service_name: 'postgresql-{{ project_name }}'
 
         # PostgreSQL database directory with data files.
         # Default is `/var/lib/pgsql/9.3/data`.
