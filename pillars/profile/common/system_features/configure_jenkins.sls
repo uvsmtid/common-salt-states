@@ -81,8 +81,8 @@ system_features:
         #
 
             # If set to `-1`, keep forever.
-            {% set discard_build_days = 32 %}
-            {% set discard_build_num = 32 %}
+            {% set discard_build_days = 64 %}
+            {% set discard_build_num = 128 %}
 
             ###################################################################
             # Triggers
@@ -94,6 +94,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: standalone_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -101,11 +103,15 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                block_build: True
-
                 skip_if_true: SKIP_INIT_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job and does not associate.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
 
                 # NOTE: This is a standalone job.
                 {% if False %}
@@ -128,6 +134,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: standalone_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -135,11 +143,15 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                block_build: True
-
                 skip_if_true: SKIP_POLL_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job and does not associate.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
 
                 # NOTE: This is a standalone job.
                 {% if False %}
@@ -164,7 +176,7 @@ system_features:
 
                 enabled: True
 
-                job_group_name: poll_pipeline_starter_group
+                job_group_name: poll_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -173,7 +185,16 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                block_build: True
+                # 1. Block on any pipeline job except start of `init_pipeline`.
+                #    The job will still wait on already executing `01.01`.
+                # 2. Do not get blocked by standalone jobs because
+                #    standalone jobs are normally block on all
+                #    (condition which would cause deadlock).
+                block_build: |
+                    ^(?!01.01)\d\d.\d\d.*$
+                    {% if False %}
+                    ^__.__.*$
+                    {% endif %}
 
                 timer_spec: '*/10 * * * *'
 
@@ -195,6 +216,10 @@ system_features:
             00.02.{{ job_template_id }}:
 
                 enabled: True
+
+                send_email_notifications: False
+
+                job_group_name: poll_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -225,6 +250,10 @@ system_features:
 
                 enabled: True
 
+                send_email_notifications: False
+
+                job_group_name: poll_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -250,6 +279,8 @@ system_features:
             00.04.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: poll_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -287,7 +318,7 @@ system_features:
 
                 track_scm_changes: True
 
-                job_group_name: init_pipeline_starter_group
+                job_group_name: init_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -296,7 +327,22 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                block_build: True
+                # 1. Block by any pipeline jobs in `poll_pipeline`.
+                #    Blocking on any jobs is required as `init_pipeline`
+                #    does not have upstream/downstream relationship
+                #    with `poll_pipeline`.
+                # 2. Block on any subsequent pipeplines.
+                #    Jobs across pipelines may not have upstream/downstream
+                #    relationship which may cause out of order execution.
+                # 3. Do not get blocked by standalone jobs because
+                #    standalone jobs are normally block on all
+                #    (condition which would cause deadlock).
+                block_build: |
+                    ^(?=00.\d\d)\d\d.\d\d.*$
+                    ^(?=0[2-9].\d\d)\d\d.\d\d.*$
+                    {% if False %}
+                    ^__.__.*$
+                    {% endif %}
 
                 # NOTE: Build once a day after office hours.
                 #       This is in addition to SCM trigger.
@@ -333,6 +379,8 @@ system_features:
                 #       And we also have to archive another artefact which
                 #       originates in this job so that promotion jobs can
                 #       see associations of downstream jobs with this one.
+                # NOTE: This is the very first job - it cannot
+                #       be asssociated with itself.
                 {% if False %}
                 input_fingerprinted_artifacts:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
@@ -442,6 +490,10 @@ system_features:
 
                 enabled: True
 
+                send_email_notifications: False
+
+                job_group_name: init_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -471,6 +523,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: init_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -499,6 +553,8 @@ system_features:
             01.04.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: init_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -546,7 +602,7 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-blue
 
-                # Pass build paramters to `update_pipeline`.
+                # Pass build parameters to `update_pipeline`.
                 propagate_build_paramterers: True
 
                 parameterized_job_triggers:
@@ -576,7 +632,7 @@ system_features:
                 accept_unstable: True
                 promotion_icon: star-purple
 
-                # Pass build paramters to `maven_pipeline`.
+                # Pass build parameters to `maven_pipeline`.
                 propagate_build_paramterers: True
 
                 parameterized_job_triggers:
@@ -634,6 +690,9 @@ system_features:
                     - controller_role
 
                 condition_job_list:
+
+                    # Demand completion of deployment.
+                    - 04.08.deploy_pipeline.run_salt_orchestrate
                     - 04.09.deploy_pipeline.run_salt_highstate
 
                 # Do NOT pass build paramters to `package_pipeline` -
@@ -786,12 +845,26 @@ system_features:
 
                 enabled: True
 
+                job_group_name: update_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
+
+                # 1. Block on any subsequent pipeplines.
+                #    Jobs across pipelines may not have upstream/downstream
+                #    relationship which may cause out of order execution.
+                # 2. Do not get blocked by standalone jobs because
+                #    standalone jobs are normally block on all
+                #    (condition which would cause deadlock).
+                block_build: |
+                    ^(?=0[3-9].\d\d)\d\d.\d\d.*$
+                    {% if False %}
+                    ^__.__.*$
+                    {% endif %}
 
                 skip_if_true: SKIP_UPDATE_PIPELINE
 
@@ -814,6 +887,8 @@ system_features:
             02.02.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: update_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -844,6 +919,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: update_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -872,6 +949,8 @@ system_features:
             02.04.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: update_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -917,26 +996,33 @@ system_features:
 
                 enabled: True
 
+                job_group_name: standalone_group
+
                 discard_old_builds:
-                    build_days: {{ discard_build_days }}
-                    build_num: {{ discard_build_num }}
+                    # NOTE: Keep history forever.
+                    build_days: -1
+                    build_num: -1
 
                 restrict_to_system_role:
                     - controller_role
 
-                block_build: True
+                # 1. Block on all jobs.
+                block_build: |
+                    ^.*$
 
                 # NOTE: Build once a day after office hours.
                 timer_spec: 'H 22 * * *'
 
-                # TODO: At the moment Maven jobs cannot be scipped.
+                # TODO: At the moment Maven jobs cannot be skipped.
                 skip_if_true: SKIP_MAVEN_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
 
-                # NOTE: This is a standalone job.
-                #input_fingerprinted_artifacts:
-                #    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                # NOTE: This is a standalone job and does not associate.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
 
                 # This is a standalone job which runs outside of the pipeline.
                 {% if False %}
@@ -949,6 +1035,8 @@ system_features:
 
                 disable_archiving: True
 
+                sonarqube_runner: True
+
                 # Similar to `maven_build_all`, use more memory.
                 # See also:
                 #   https://cwiki.apache.org/confluence/display/MAVEN/OutOfMemoryError
@@ -957,7 +1045,7 @@ system_features:
                 # TODO: Actually, this does not select JDK properly because
                 #       started JVM (java executable) is still different.
                 # NOTE: This variables has to be synced with deployment
-                #       of specific JDK refered here.
+                #       of specific JDK referred here.
                 job_environment_variables:
                     JAVA_HOME: '/usr/java/jdk1.7.0_71'
                     PATH: '/usr/java/jdk1.7.0_71/bin:${PATH}'
@@ -975,6 +1063,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: maven_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -982,7 +1072,19 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                # TODO: At the moment Maven jobs cannot be scipped.
+                # 1. Block on any subsequent pipeplines.
+                #    Jobs across pipelines may not have upstream/downstream
+                #    relationship which may cause out of order execution.
+                # 2. Do not get blocked by standalone jobs because
+                #    standalone jobs are normally block on all
+                #    (condition which would cause deadlock).
+                block_build: |
+                    ^(?=0[4-9].\d\d)\d\d.\d\d.*$
+                    {% if False %}
+                    ^__.__.*$
+                    {% endif %}
+
+                # TODO: At the moment Maven jobs cannot be skipped.
                 skip_if_true: SKIP_MAVEN_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
@@ -1023,7 +1125,7 @@ system_features:
                 # TODO: Actually, this does not select JDK properly because
                 #       started JVM (java executable) is still different.
                 # NOTE: This variables has to be synced with deployment
-                #       of specific JDK refered here.
+                #       of specific JDK referred here.
                 job_environment_variables:
                     JAVA_HOME: '/usr/java/jdk1.7.0_71'
                     PATH: '/usr/java/jdk1.7.0_71/bin:${PATH}'
@@ -1050,6 +1152,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: maven_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1057,7 +1161,7 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                # TODO: At the moment Maven jobs cannot be scipped.
+                # TODO: At the moment Maven jobs cannot be skipped.
                 skip_if_true: SKIP_MAVEN_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
@@ -1085,6 +1189,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: maven_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1092,7 +1198,7 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                # TODO: At the moment Maven jobs cannot be scipped.
+                # TODO: At the moment Maven jobs cannot be skipped.
                 skip_if_true: SKIP_MAVEN_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
@@ -1149,12 +1255,26 @@ system_features:
 
                 enabled: True
 
+                job_group_name: deploy_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
                     - controller_role
+
+                # 1. Block on any subsequent pipeplines.
+                #    Jobs across pipelines may not have upstream/downstream
+                #    relationship which may cause out of order execution.
+                # 2. Do not get blocked by standalone jobs because
+                #    standalone jobs are normally block on all
+                #    (condition which would cause deadlock).
+                block_build: |
+                    ^(?=0[5-9].\d\d)\d\d.\d\d.*$
+                    {% if False %}
+                    ^__.__.*$
+                    {% endif %}
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1183,6 +1303,8 @@ system_features:
             04.02.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: deploy_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1215,6 +1337,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: deploy_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1246,6 +1370,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: deploy_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1274,6 +1400,8 @@ system_features:
             04.05.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: deploy_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1304,6 +1432,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: deploy_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1332,6 +1462,8 @@ system_features:
             04.07.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: deploy_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1362,6 +1494,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: deploy_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1390,6 +1524,8 @@ system_features:
             04.09.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: deploy_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1428,7 +1564,7 @@ system_features:
 
                 enabled: True
 
-                job_group_name: package_pipeline_starter_group
+                job_group_name: package_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1437,7 +1573,17 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                block_build: True
+                # 1. Block on any subsequent pipeplines.
+                #    Jobs across pipelines may not have upstream/downstream
+                #    relationship which may cause out of order execution.
+                # 2. Do not get blocked by standalone jobs because
+                #    standalone jobs are normally block on all
+                #    (condition which would cause deadlock).
+                block_build: |
+                    ^(?=0[6-9].\d\d)\d\d.\d\d.*$
+                    {% if False %}
+                    ^__.__.*$
+                    {% endif %}
 
                 skip_if_true: SKIP_PACKAGE_PIPELINE
 
@@ -1566,6 +1712,10 @@ system_features:
 
                 enabled: True
 
+                send_email_notifications: False
+
+                job_group_name: package_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1597,6 +1747,8 @@ system_features:
             05.03.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: package_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1630,6 +1782,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: package_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1662,6 +1816,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: package_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1692,6 +1848,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: package_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1721,6 +1879,8 @@ system_features:
             05.07.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: package_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1760,7 +1920,7 @@ system_features:
 
                 enabled: True
 
-                job_group_name: release_pipeline_starter_group
+                job_group_name: release_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1769,7 +1929,17 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                block_build: True
+                # 1. Block on any subsequent pipeplines.
+                #    Jobs across pipelines may not have upstream/downstream
+                #    relationship which may cause out of order execution.
+                # 2. Do not get blocked by standalone jobs because
+                #    standalone jobs are normally block on all
+                #    (condition which would cause deadlock).
+                block_build: |
+                    ^(?=0[7-9].\d\d)\d\d.\d\d.*$
+                    {% if False %}
+                    ^__.__.*$
+                    {% endif %}
 
                 skip_if_true: SKIP_RELEASE_PIPELINE
 
@@ -1911,6 +2081,10 @@ system_features:
 
                 enabled: True
 
+                send_email_notifications: False
+
+                job_group_name: release_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -1942,6 +2116,8 @@ system_features:
             06.03.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: release_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -1975,6 +2151,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: release_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -2006,6 +2184,8 @@ system_features:
             06.05.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: release_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -2039,6 +2219,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: release_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -2068,6 +2250,8 @@ system_features:
             06.07.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: release_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -2107,7 +2291,7 @@ system_features:
 
                 enabled: True
 
-                job_group_name: checkout_pipeline_starter_group
+                job_group_name: checkout_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -2116,7 +2300,17 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                block_build: True
+                # 1. Block on any subsequent pipeplines.
+                #    Jobs across pipelines may not have upstream/downstream
+                #    relationship which may cause out of order execution.
+                # 2. Do not get blocked by standalone jobs because
+                #    standalone jobs are normally block on all
+                #    (condition which would cause deadlock).
+                block_build: |
+                    ^(?=0[8-9].\d\d)\d\d.\d\d.*$
+                    {% if False %}
+                    ^__.__.*$
+                    {% endif %}
 
                 skip_if_true: SKIP_CHECKOUT_PIPELINE
 
@@ -2225,6 +2419,10 @@ system_features:
 
                 enabled: True
 
+                send_email_notifications: False
+
+                job_group_name: checkout_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -2257,6 +2455,8 @@ system_features:
 
                 enabled: True
 
+                job_group_name: checkout_pipeline_group
+
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
@@ -2288,6 +2488,8 @@ system_features:
             07.04.{{ job_template_id }}:
 
                 enabled: True
+
+                job_group_name: checkout_pipeline_group
 
                 discard_old_builds:
                     build_days: {{ discard_build_days }}
@@ -2443,15 +2645,14 @@ system_features:
 
         job_group_configs:
 
-            #
-
             # The lower the priority number the higher the priority.
 
             # This group exists simply to shift `group_id`
             # to match `priority_value`.
             unused_group:
                 group_id: 0
-                priority_value: 100
+                # Set the lowest priority (the largest number).
+                priority_value: 1000
 
             #------------------------------------------------------------------
             # Default priority is the highest and used by majority of jobs.
@@ -2470,25 +2671,43 @@ system_features:
 
             #------------------------------------------------------------------
 
-            checkout_pipeline_starter_group:
+            checkout_pipeline_group:
                 group_id: 2
                 priority_value: 2
 
-            release_pipeline_starter_group:
+            release_pipeline_group:
                 group_id: 3
                 priority_value: 3
 
-            package_pipeline_starter_group:
+            package_pipeline_group:
                 group_id: 4
                 priority_value: 4
 
-            init_pipeline_starter_group:
+            deploy_pipeline_group:
                 group_id: 5
                 priority_value: 5
 
-            poll_pipeline_starter_group:
+            maven_pipeline_group:
                 group_id: 6
                 priority_value: 6
+
+            update_pipeline_group:
+                group_id: 7
+                priority_value: 7
+
+            init_pipeline_group:
+                group_id: 8
+                priority_value: 8
+
+            poll_pipeline_group:
+                group_id: 9
+                priority_value: 9
+
+            # Standalone group is lowest priority (among used ones)
+            # to make sure such job are not run in between of pipelines.
+            standalone_group:
+                group_id: 10
+                priority_value: 10
 
 ###############################################################################
 # EOF

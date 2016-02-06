@@ -94,6 +94,9 @@ system_host_roles:
     jenkins_master_role:
         hostname: jenkins-master-role-host
         assigned_hosts:
+            # NOTE: Add `master_minion_id` minion to install and configure
+            #       Jenkins on master minion Salt node.
+            #       It is disabled by default.
             {{ filter_assigned_hosts_by_enabled_minion_hosts([
                     master_minion_id
                 ])
