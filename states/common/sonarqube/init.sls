@@ -14,7 +14,7 @@ sonar_package:
         - name: sonar
         # NOTE: This repo is supposed to be configured.
         #       See `pillar['system_features']['yum_repos_configuration']`.
-        - fromrepo: sonar
+        - fromrepo: sonar_qube
         # NOTE: The package from the official repo is not signed.
         #       This argument does not seem to work on
         #       Fedora 22 with Salt `2015.5.5` - see workaround below.
@@ -33,7 +33,7 @@ sonar_package:
 #           https://docs.saltstack.com/en/latest/ref/states/requisites.html#onfail
 ensure_sonar_package:
     cmd.run:
-        - name: 'yum -y --nogpgcheck --enablerepo=sonar install sonar'
+        - name: 'yum -y --nogpgcheck --enablerepo=sonar_qube install sonar'
         - onfail:
             - pkg: sonar_package
 
