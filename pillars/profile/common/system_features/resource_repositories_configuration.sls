@@ -63,6 +63,9 @@ system_features:
                 abs_resource_target_path: '/home/{{ default_username }}/Works/{{ project_name }}-salt-resources.git'
             {% endif %}
 
+            # TODO: Add additional resource repositories below.
+
+
 ###############################################################################
 # EOF
 ###############################################################################

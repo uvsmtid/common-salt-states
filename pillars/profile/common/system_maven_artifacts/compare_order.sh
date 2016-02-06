@@ -25,7 +25,7 @@ grep -r '^[^:][^:]*:[^:][^:]*:[[:space:]]*$' \
     "${RUNTIME_DIR}/"artifact_descriptors.sls           > \
     "${RUNTIME_DIR}/"existing.order.txt
 grep -r '^[^:][^:]*:[^:][^:]*:[[:space:]]*$' \
-    "${RUNTIME_DIR}/"artifact_descriptors.sls | sort -u > \
+    "${RUNTIME_DIR}/"artifact_descriptors.sls | sort    > \
     "${RUNTIME_DIR}/"required.order.txt
 
 set +e

@@ -58,6 +58,10 @@ symlinks_map:
     '/home/username/Works/common-salt-pillars.git': '/home/username/Works/common-salt-states.git'
     '/home/username/Works/common-salt-pillars.bootstrap-target.git': '/home/username/Works/common-salt-states.git'
 
+# Developer mode sets priority to deploy locally build binaries
+# (rather than those which are supplied by dynamic build descriptor).
+developer_mode: False
+
 # TODO: Make absolute paths to repositories relative to primary user's path.
 #       This is to be able to make paths consistent
 #       when `offline-minion-installer` especially with different
