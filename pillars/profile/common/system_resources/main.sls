@@ -355,11 +355,11 @@ system_resources:
         item_content_hash: md5=bbdc48c60946e5cc98f3554f67abff72
         plugin_name: PrioritySorter
 
-    # Jenkins: SonarQube Plugin                                                 
-    # Downloaable from:                                                         
-    #   https://wiki.jenkins-ci.org/display/JENKINS/SonarQube+plugin            
-    # Direct link:                                                              
-    #   https://updates.jenkins-ci.org/latest/sonar.hpi                         
+    # Jenkins: SonarQube Plugin
+    # Downloaable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/SonarQube+plugin
+    # Direct link:
+    #   https://updates.jenkins-ci.org/latest/sonar.hpi
     jenkins_Sonar_plugin:
         resource_repository: common-resources
         bootstrap_use_cases: True
@@ -369,7 +369,7 @@ system_resources:
         item_base_name: sonar.v2.3.hpi
         item_content_hash: md5=b620cb4179dd49e1e2ddf0b65774d159
         plugin_name: sonar
-    
+
     # Nexus maven repository manager (community edition).
     # Downloadable from:
     #   http://www.sonatype.org/nexus/go/

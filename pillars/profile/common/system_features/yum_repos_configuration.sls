@@ -457,6 +457,18 @@ system_features:
                         yum_repo_baseurl: 'http://copr-be.cloud.fedoraproject.org/results/saltstack/salt-el5/epel-5-$basearch/'
                         yum_repo_key_url: 'http://copr-be.cloud.fedoraproject.org/results/saltstack/salt-el5/pubkey.gpg'
 
+            # SonarQube
+            sonar_qube:
+                installation_type: conf_template
+
+                os_platform_configs:
+
+                    fc22:
+                        repo_enabled: True
+
+                        yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'
+
+
 ###############################################################################
 # EOF
 ###############################################################################

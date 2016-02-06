@@ -114,6 +114,18 @@ system_host_roles:
                 ])
             }}
 
+    # SonarQube role.
+    sonar_qube_role:
+        hostname: sonar-qube-role-host
+        assigned_hosts:
+            # NOTE: Add `master_minion_id` minion to install and configure
+            #       SonarQube on master minion Salt node.
+            #       It is disabled by default.
+            {{ filter_assigned_hosts_by_enabled_minion_hosts([
+                    master_minion_id
+                ])
+            }}
+
     # Sonatype Nexus is used as Maven Repository Manager.
     maven_repository_upstream_manager_role:
         hostname: maven-repository-upstream-manager-role-host
