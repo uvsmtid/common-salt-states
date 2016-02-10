@@ -82,7 +82,7 @@ passwordless_ssh_config_file:
         - name: '{{ config_temp_dir }}\passwordless_ssh_config.sh'
 {% endif %}
         - contents:
-            ssh -o "StrictHostKeyChecking no" -o "PreferredAuthentications publickey" "$1" "$2"
+            ssh -x -o "StrictHostKeyChecking no" -o "PreferredAuthentications publickey" "$1" "$2"
 
 # Only for Windows: convert line_endings.
 {% if grains['kernel'] == 'Windows' %}

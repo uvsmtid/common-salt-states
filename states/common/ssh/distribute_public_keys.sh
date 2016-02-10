@@ -58,6 +58,7 @@ then
     if [ "$OS_TYPE" == "windows" ]
     then
         sshpass -e ssh \
+            -x \
             -o "StrictHostKeyChecking no" \
             -o "PreferredAuthentications password,publickey" \
             "${USERNAME}${SEPARATOR}${HOSTNAME}" \
@@ -66,6 +67,7 @@ then
 
     # Test with public key:
     ssh \
+        -x \
         -o "StrictHostKeyChecking no" \
         -o "PreferredAuthentications publickey" \
         "${USERNAME}${SEPARATOR}${HOSTNAME}" \
