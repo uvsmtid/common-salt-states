@@ -208,6 +208,18 @@
     <activeProfiles>
         <activeProfile>nexus-profile</activeProfile>
         <activeProfile>properties-profile</activeProfile>
+
+        {% if 'maven_installation_configuration' in pillar['system_features'] %}
+        {% if 'activate_profiles' in pillar['system_features']['maven_installation_configuration'] %}
+        <!-- Additional list of activated profiles. -->
+
+        {% for profile_name in pillar['system_features']['maven_installation_configuration']['activate_profiles'] %}
+        <activeProfile>{{ profile_name }}</activeProfile>
+        {% endfor %}
+
+        {% endif %}
+        {% endif %}
+
     </activeProfiles>
 </settings>
 
