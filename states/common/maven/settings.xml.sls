@@ -186,16 +186,19 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
+
                 <!-- Optional URL to server. Default value is http://localhost:9000 -->
-                <sonar.host.url>
-                  <!-- TODO: Make it work with non-localhost. -->
-                  http://localhost:9000
-                </sonar.host.url>
+                {% set sonar_qube_role_host = 'localhost' %}
+                {% if pillar['system_host_roles']['sonar_qube_role']['assigned_hosts']|length != 0 %}
+                {% set sonar_qube_role_host = pillar['system_host_roles']['sonar_qube_role']['assigned_hosts'][0] %}
+                {% endif %}
+                <sonar.host.url>http://{{ sonar_qube_role_host }}:9000/</sonar.host.url>
+
+                <!-- NOTE: The URL assumes DB runs on the same host with SonarQube. -->
                 <sonar.jdbc.url>
-                  <!-- TODO: Make it work with non-localhost. -->
                   jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8
                 </sonar.jdbc.url>
-                  <!-- TODO: Make it work with configurerable username and password. -->
+                <!-- TODO: Make it work with configurerable username and password. -->
                 <sonar.jdbc.username>sonar</sonar.jdbc.username>
                 <sonar.jdbc.password></sonar.jdbc.password>
             </properties>

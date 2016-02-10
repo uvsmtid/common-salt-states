@@ -4,8 +4,15 @@
     <hudson.plugins.sonar.SonarInstallation>
       <name>SonarQube</name>
       <disabled>false</disabled>
-      <serverUrl>http://localhost:9000/</serverUrl>
+
+      {% set sonar_qube_role_host = 'localhost' %}
+      {% if pillar['system_host_roles']['sonar_qube_role']['assigned_hosts']|length != 0 %}
+      {% set sonar_qube_role_host = pillar['system_host_roles']['sonar_qube_role']['assigned_hosts'][0] %}
+      {% endif %}
+      <serverUrl>http://{{ sonar_qube_role_host }}:9000/</serverUrl>
+
       <mojoVersion></mojoVersion>
+      <!-- NOTE: The URL assumes DB runs on the same host with SonarQube. -->
       <databaseUrl>jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;amp;characterEncoding=utf8</databaseUrl>
       <databaseLogin>sonar</databaseLogin>
       <additionalProperties></additionalProperties>
