@@ -60,7 +60,10 @@ then
     # Only `deploy` action requires SSH.
 
     # Copy SSH public key right away (to avoid typing passwords ever).
-    ssh-copy-id "${SSH_DST}"
+    ssh-copy-id \
+        -o "ForwardAgent no" \
+        -o "ForwardX11 no" \
+        "${SSH_DST}"
 
     # Note the use of trailing slashes in path for rsync.
     # 1. Sync content directory with destination.

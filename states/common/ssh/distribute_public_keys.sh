@@ -48,6 +48,8 @@ then
 
     # Distribute by authenticating with `password_value`:
     sshpass -e ssh-copy-id \
+        -o "ForwardAgent no" \
+        -o "ForwardX11 no" \
         -o "StrictHostKeyChecking no" \
         -o "PreferredAuthentications password,publickey" \
         "${USERNAME}${SEPARATOR}${HOSTNAME}"
@@ -59,6 +61,8 @@ then
     then
         sshpass -e ssh \
             -x \
+            -o "ForwardAgent no" \
+            -o "ForwardX11 no" \
             -o "StrictHostKeyChecking no" \
             -o "PreferredAuthentications password,publickey" \
             "${USERNAME}${SEPARATOR}${HOSTNAME}" \
@@ -68,6 +72,8 @@ then
     # Test with public key:
     ssh \
         -x \
+        -o "ForwardAgent no" \
+        -o "ForwardX11 no" \
         -o "StrictHostKeyChecking no" \
         -o "PreferredAuthentications publickey" \
         "${USERNAME}${SEPARATOR}${HOSTNAME}" \
