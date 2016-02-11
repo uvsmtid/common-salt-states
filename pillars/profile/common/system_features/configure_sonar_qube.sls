@@ -13,7 +13,10 @@ system_features:
         # TODO: Add list of plugins to install.
         # Each plugin is a resource_id.
         install_plugins:
-            - sonar_plugin_java
+
+            - sonar_java_plugin
+
+            - sonar_git_plugin
 
 ###############################################################################
 # EOF
