@@ -196,7 +196,11 @@
 
                 <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
                 <sonar.scm.provider>git</sonar.scm.provider>
+
+                <!-- Use default location. -->
+                <!--
                 <sonar.jacoco.reportPath>target/coverage-reports/jacoco-ut.exec</sonar.jacoco.reportPath>
+                -->
 
             </properties>
         </profile>

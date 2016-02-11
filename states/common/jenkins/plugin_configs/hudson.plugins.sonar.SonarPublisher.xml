@@ -16,7 +16,13 @@
       <databaseUrl>jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;amp;characterEncoding=utf8</databaseUrl>
       <databaseLogin>sonar</databaseLogin>
       <additionalProperties></additionalProperties>
+
+      <!-- Use default location. -->
+      <!--
       <additionalAnalysisProperties>sonar.jacoco.reportPath=target/coverage-reports/jacoco-ut.exec</additionalAnalysisProperties>
+      -->
+      <additionalAnalysisProperties></additionalAnalysisProperties>
+
       <triggers>
         <skipScmCause>false</skipScmCause>
         <skipUpstreamCause>false</skipUpstreamCause>
