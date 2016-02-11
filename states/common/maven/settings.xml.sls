@@ -194,13 +194,10 @@
                 {% endif %}
                 <sonar.host.url>http://{{ sonar_qube_role_host }}:9000/</sonar.host.url>
 
-                <!-- NOTE: The URL assumes DB runs on the same host with SonarQube. -->
-                <sonar.jdbc.url>
-                  jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8
-                </sonar.jdbc.url>
-                <!-- TODO: Make it work with configurerable username and password. -->
-                <sonar.jdbc.username>sonar</sonar.jdbc.username>
-                <sonar.jdbc.password></sonar.jdbc.password>
+                <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+                <sonar.scm.provider>git</sonar.scm.provider>
+                <sonar.jacoco.reportPath>target/coverage-reports/jacoco-ut.exec</sonar.jacoco.reportPath>
+
             </properties>
         </profile>
     {% endif %}
