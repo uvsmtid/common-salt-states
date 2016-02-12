@@ -68,7 +68,20 @@ test "${CURRENT_BRANCH}" != "HEAD"
 # copy in the pillars stays the same.
 export BUILD_BRANCH="{{ pillar['dynamic_build_descriptor']['build_branches'][repo_name] }}"
 
-# TODO
+# NOTE: There are different build branches to consider.
+#
+#       It is crucial to understand that there are to information sources
+#       for build branches:
+#       *   current build branches in local Git repositories
+#           (created for the pipeline)
+#       *   those build branches which are accessible via pillar
+#           (recorded in dynamic build descriptor transferred before).
+#
+#       Consistency between them must be ensured.
+#       New build branches are supposed to be based on those in
+#       the dynamic build descriptor.
+test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
+
 # Retrieve release name and version name.
 {% set project_version_name_key = pillar['project_name'] +'_version_name' %}
 {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
@@ -76,6 +89,8 @@ export PROJECT_VERSION_NAME="{{ pillar['dynamic_build_descriptor'][project_versi
 export PROJECT_VERSION_NUMBER="{{ pillar['dynamic_build_descriptor'][project_version_number_key] }}"
 
 {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
+# TODO: Make branch name generic (configurable or
+#       available in dynamic build descriptor) for `build_history_role`.
 # Use hardcoded default branch `develop` for `build_history_role`.
 export TARGET_UPSTREAM_BRANCH="develop"
 {% else %}
@@ -94,9 +109,10 @@ git diff-index --ignore-submodules=all --exit-code HEAD
 # Reset any staged data.
 git reset 1> /dev/null
 
-# Switch to the branch.
+# Switch to the merge target branch.
 git checkout "${TARGET_UPSTREAM_BRANCH}"
 
+# Check that merge source branch exists.
 git rev-parse --verify "${BUILD_BRANCH}" 1> /dev/null
 
 # Check if there is BUILD_BRANCH is not merged into TARGET_UPSTREAM_BRANCH.
@@ -120,6 +136,9 @@ then
 else
     echo SKIP
 fi
+
+# Switch back to the build branch.
+git checkout "${BUILD_BRANCH}"
 
 cd - 1> /dev/null
 

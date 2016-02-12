@@ -67,6 +67,9 @@
         #######################################################################
         # Update dynamic build descriptor.
 
+        # NOTE: It's a arguable if there need to update
+        #       dynamic build descriptor before merging.
+
         {{ update_dynamic_build_descriptor(job_config, job_environ) }}
 
         #######################################################################
