@@ -37,7 +37,8 @@ set -u
 # Make sure source pillars do not override dynamic build descriptor.
 # This is required because merge report uses its information to
 # see what branches hasn't been merged yet.
-{% set override_pillars_repo_id = 'source_profile_pillars_role' %}
+{% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+{% set override_pillars_repo_id = get_repository_id_by_role('source_profile_pillars_role') %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][override_pillars_repo_id]['git'] %}
 REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 ! ls -lrt "${REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
