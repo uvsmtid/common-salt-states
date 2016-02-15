@@ -197,6 +197,16 @@
                 <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
                 <sonar.scm.provider>git</sonar.scm.provider>
 
+                <!--
+                    The following property forces zero coverage report for
+                    coponents without tests (instead of reporting no or
+                    "null" coverage).
+                    See: http://docs.sonarqube.org/display/PLUG/Usage+of+JaCoCo+with+Java+Plugin
+                -->
+                <!--
+                <sonar.jacoco.reportMissing.force.zero>true</sonar.jacoco.reportMissing.force.zero>
+                -->
+
                 <!-- Use default location. -->
                 <!--
                 <sonar.jacoco.reportPath>target/coverage-reports/jacoco-ut.exec</sonar.jacoco.reportPath>
