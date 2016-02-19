@@ -120,8 +120,28 @@
     -->
     <hudson.tasks.Shell>
       <command>
+        set -x
+        set -u
+        set -e
+
+        # DEBUG: Display environment variables and java version before build.
         env
         java -version
+
+        # Make sure there is no untracked files.
+        # NOTE: All files generated during the build should be
+        #       ignored via .gitignore.
+        cd {{ repo_path }}
+        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
+        git add --all
+        set +e
+        git diff-index --ignore-submodules=dirty --exit-code HEAD
+        RET_VAL="${?}"
+        set -e
+        git reset
+        test "${RET_VAL}" == "0"
+        cd -
+
       </command>
     </hudson.tasks.Shell>
 
@@ -135,8 +155,29 @@
     -->
     <hudson.tasks.Shell>
       <command>
+        set -x
+        set -u
+        set -e
+
+        # DEBUG: Display environment variables and java version before build.
+        env
         env
         java -version
+
+        # Make sure there is no untracked files.
+        # NOTE: All files generated during the build should be
+        #       ignored via .gitignore.
+        cd {{ repo_path }}
+        # NOTE: Without `add -all` `diff-index` will not notice untracked files.
+        git add --all
+        set +e
+        git diff-index --ignore-submodules=dirty --exit-code HEAD
+        RET_VAL="${?}"
+        set -e
+        git reset
+        test "${RET_VAL}" == "0"
+        cd -
+
       </command>
     </hudson.tasks.Shell>
 
