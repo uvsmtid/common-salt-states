@@ -2748,6 +2748,11 @@ def get_incremental_report(
     # non-SNAPSHOT versions.
     #
     #--------------------------------------------------------------------------
+    # TODO: Code coverage confiuration.
+    # -
+    # Make sure all `pom.xml` files configure `jacoco-maven-plugin`
+    # plugin to enable code coverage consumed by Sonar.
+    #--------------------------------------------------------------------------
 
     # Compute overall result.
     report_data['overall_result'] = get_overall_result(
