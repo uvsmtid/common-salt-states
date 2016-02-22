@@ -81,7 +81,7 @@
             git status
 
             # Only "clean and dry" repositories are allowed.
-            # (except new commits in submodules).
+            # (except any changes in submodules).
             git diff-index --ignore-submodules=all --exit-code HEAD
 
         fi

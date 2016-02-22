@@ -726,7 +726,7 @@ then
     git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: dynamic build descriptor at ${JOB_NAME}"
 
 else
-    # Fail if there are any changes.
+    # Fail if there are any changes (except chenges to submodules).
     git diff-index --ignore-submodules=all --exit-code HEAD
 fi
 

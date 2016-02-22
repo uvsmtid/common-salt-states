@@ -104,7 +104,8 @@ echo "TARGET_UPSTREM_BRANCH: ${TARGET_UPSTREAM_BRANCH}"
 # Reset repositories and test that there is no local modifications.
 # NOTE: Without `add --all` `diff-index` will not notice untracked files.
 git add --all
-# NOTE: We ignore any changes in submodules for parent repo.
+# NOTE: We ignore any changes in submodules
+# (but we check every repository anyway).
 git diff-index --ignore-submodules=all --exit-code HEAD
 # Reset any staged data.
 git reset 1> /dev/null

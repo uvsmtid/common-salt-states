@@ -120,6 +120,11 @@
     -->
     <hudson.tasks.Shell>
       <command>
+
+        # TODO: Deduplicate.
+        #       This pre-build script duplicates post-build script.
+
+        set -v
         set -x
         set -u
         set -e
@@ -135,7 +140,7 @@
         # NOTE: Without `add -all` `diff-index` will not notice untracked files.
         git add --all
         set +e
-        git diff-index --ignore-submodules=dirty --exit-code HEAD
+        git diff-index --ignore-submodules=all --exit-code HEAD
         RET_VAL="${?}"
         set -e
         git reset
@@ -155,6 +160,11 @@
     -->
     <hudson.tasks.Shell>
       <command>
+
+        # TODO: Deduplicate.
+        #       This pre-build script duplicates post-build script.
+
+        set -v
         set -x
         set -u
         set -e
@@ -171,7 +181,7 @@
         # NOTE: Without `add -all` `diff-index` will not notice untracked files.
         git add --all
         set +e
-        git diff-index --ignore-submodules=dirty --exit-code HEAD
+        git diff-index --ignore-submodules=all --exit-code HEAD
         RET_VAL="${?}"
         set -e
         git reset
