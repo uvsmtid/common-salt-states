@@ -1,0 +1,14 @@
+# Git ignore
+
+# Maven
+/target/
+
+# Eclipse
+/.project
+/.settings/
+/.classpath
+
+# IntelliJ
+/*.iml
+/.idea/
+
