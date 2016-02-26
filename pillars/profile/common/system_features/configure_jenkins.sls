@@ -1102,6 +1102,9 @@ system_features:
 
                 disable_archiving: True
 
+                # This job is not for analysis. It is only for initial build.
+                sonarqube_runner: False
+
                 # Specific goals and options.
                 # Note that we run initial build - all repositories are
                 # rebuilt subsequently in individual jobs.
@@ -1216,6 +1219,8 @@ system_features:
                 {% endif %}
 
                 disable_archiving: True
+
+                sonarqube_runner: True
 
                 # Similar to `maven_build_all`, use more memory.
                 # See also:
