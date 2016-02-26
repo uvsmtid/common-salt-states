@@ -207,6 +207,17 @@
                 <sonar.jacoco.reportMissing.force.zero>true</sonar.jacoco.reportMissing.force.zero>
                 -->
 
+                <!--
+                    NOTE: This is experimental to accumulate historical data in SonarQube
+                          about different versions.
+                    TODO: Think whether it should be part of Jenkins configuration instead.
+                -->
+                {% set project_version_name_key = pillar['project_name'] +'_version_name' %}
+                {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
+                {% set project_version_name = pillar['dynamic_build_descriptor'][project_version_name_key] %}
+                {% set project_version_number = pillar['dynamic_build_descriptor'][project_version_number_key] %}
+                <sonar.projectVersion>AFTER-{{ project_version_name }}-{{ project_version_number }}</sonar.projectVersion>
+
                 <!-- Use default location. -->
                 <!--
                 <sonar.jacoco.reportPath>target/coverage-reports/jacoco-ut.exec</sonar.jacoco.reportPath>
