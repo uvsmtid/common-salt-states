@@ -477,17 +477,8 @@
       <!--
         Set "display name" for project instead of using content of
         `name` tag from Maven config.
-        NOTE: It is prefixed with `.` for sorting and
-              visual grouping by default.
-              If `sonarqube_display_name_infix` is used, the prefix
-              includes the specified string. This was primarily (originally)
-              done to bring selected repository by sorting up from the rest.
       -->
-      {% set repo_name_prefix = '.' %}
-      {% if 'sonarqube_display_name_infix' in job_config %}
-      {% set repo_name_prefix = '.' + job_config['sonarqube_display_name_infix'] + '.' %}
-      {% endif %}
-      <jobAdditionalProperties>-Dsonar.projectName={{repo_name_prefix}}{{ repo_name }}</jobAdditionalProperties>
+      <jobAdditionalProperties>-Dsonar.projectName={{ repo_name }}</jobAdditionalProperties>
 
       <settings class="jenkins.mvn.DefaultSettingsProvider"/>
       <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
