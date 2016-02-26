@@ -473,13 +473,7 @@
       <branch>{{ repo_name }}</branch>
 
       <mavenOpts></mavenOpts>
-
-      <!--
-        Set "display name" for project instead of using content of
-        `name` tag from Maven config.
-      -->
-      <jobAdditionalProperties>-Dsonar.projectName={{ repo_name }}</jobAdditionalProperties>
-
+      <jobAdditionalProperties></jobAdditionalProperties>
       <settings class="jenkins.mvn.DefaultSettingsProvider"/>
       <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
       <usePrivateRepository>false</usePrivateRepository>
