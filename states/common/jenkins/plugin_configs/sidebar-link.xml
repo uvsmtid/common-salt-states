@@ -5,6 +5,11 @@
 {% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 
+    <!--
+        This brings "Quiet Down" action from
+        "Manage Jenkins" -> "Prepare for Shutdown" to
+        the sidebar on the main page.
+    -->
     <hudson.plugins.sidebar__link.LinkAction>
       <!--
         NOTE: Instead of guessing absolute linke (with schema, hostname, port),
@@ -17,6 +22,20 @@
       -->
       <icon>/images/24x24/lock.png</icon>
     </hudson.plugins.sidebar__link.LinkAction>
+
+    <!--
+        This link only shows project_name on its title
+        to quickly distinguish Jenkins instances.
+    -->
+    <hudson.plugins.sidebar__link.LinkAction>
+      <url>/</url>
+      <text>project_name: {{ pillar['project_name'] }}</text>
+      <!--
+        NOTE: Set image to some known resource shipped with Jenkins.
+      -->
+      <icon>/images/24x24/attribute.png</icon>
+    </hudson.plugins.sidebar__link.LinkAction>
+
   </links>
 </hudson.plugins.sidebar__link.SidebarLinkPlugin>
 
