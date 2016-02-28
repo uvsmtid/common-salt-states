@@ -39,15 +39,13 @@
         #######################################################################
         # Locate dynamic build descriptor in build history repo.
 
+        # Make sure dynamic build descriptor repository file exists.
         {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
         {{ locate_repository_dynamic_build_descriptor(job_config, job_environ) }}
         ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
 
         #######################################################################
         # Function to update resource definition.
-
-        # Make sure dynamic build descriptor repository file exists.
-        ls -lrt "${REPO_DYN_BUILD_DESC_PATH}"
 
         function update_resource_with_its_definition {
             ARTIFACT_SRC_PATH="${1}"
@@ -131,7 +129,7 @@
         # Ignore dirty content in submodules because there is no way to
         # commit them from top-level repo anyway (and all dirty content
         # will be committed by children).
-        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m 'Auto-commit: {{ job_environ['job_name'] }}'
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: {{ job_environ['job_name'] }} at ${JOB_NAME}"
 
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
