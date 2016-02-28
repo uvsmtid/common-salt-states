@@ -450,39 +450,6 @@
 {% endmacro %}
 
 ###############################################################################
-{% macro sonarqube_runner(job_config, job_environ) %}
-
-    #{#
-    # NOTE: By default, `sonarqube_runner` execution is DISABLED.
-    #}#
-    {% if 'sonarqube_runner' in job_config and job_config['sonarqube_runner'] %}
-    <hudson.plugins.sonar.SonarPublisher plugin="sonar@2.3">
-      <!--
-        NOTE: In addition to specified MAVEN_OPTS by pillars,
-              we set `sonar.branch` property to repo's unique name
-              to allow each repository be analyzed individually by SonarQube.
-              If `sonar.branch` is not set (all repos are analyzed with
-              empty string "" branch nmae), then SonarQube rejects reports
-              if specific Maven component is arleady sub-component (or sup-) of
-              existing porject tracked by SonarQube. In other words,
-              if top-level Maven project is already analyzed by SonarQube,
-              all sub-projects are symply ignored.
-              Property `sonar.branch` allows treating all of them as separate.
-      -->
-      {% set repo_name = job_config['job_config_data']['repository_name'] %}
-      <branch>{{ repo_name }}</branch>
-
-      <mavenOpts></mavenOpts>
-      <jobAdditionalProperties></jobAdditionalProperties>
-      <settings class="jenkins.mvn.DefaultSettingsProvider"/>
-      <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
-      <usePrivateRepository>false</usePrivateRepository>
-    </hudson.plugins.sonar.SonarPublisher>
-    {% endif %}
-
-{% endmacro %}
-
-###############################################################################
 {% macro copy_artifacts(job_config, job_environ) %}
 
     <!--
