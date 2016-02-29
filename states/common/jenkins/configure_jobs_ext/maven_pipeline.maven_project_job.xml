@@ -247,18 +247,21 @@
             # grep '"status":"SUCCESS"\|"status":"CANCELED"\|"status":"FAILED"'
 
             # Get `status` in JSON object returned by GET to `ceTaskUrl`.
-            TASK_STATUS_VAL="$(curl -H "Accept: application/json" -H "Content-Type: application/json" "${ceTaskUrl}" |\
+            TASK_STATUS_VAL="$(unset http_proxy; unset https_proxy; \
+            curl -H "Accept: application/json" -H "Content-Type: application/json" "${ceTaskUrl}" |\
             python -c 'import sys; import json; obj=json.load(sys.stdin); print obj["task"]["status"]')"
 
             if [ "${TASK_STATUS_VAL}" == "SUCCESS" ]
             then
 
                 # Get `analysisId`.
-                ANALYSIS_ID="$(curl -H "Accept: application/json" -H "Content-Type: application/json" "${ceTaskUrl}" |\
+                ANALYSIS_ID="$(unset http_proxy; unset https_proxy; \
+                curl -H "Accept: application/json" -H "Content-Type: application/json" "${ceTaskUrl}" |\
                 python -c 'import sys; import json; obj=json.load(sys.stdin); print obj["task"]["analysisId"]')"
 
                 # Use `analysisId` to check quality gate result.
-                ANALYSIS_STATUS_VAL="$(curl -H "Accept: application/json" -H "Content-Type: application/json" "${serverUrl}/api/qualitygates/project_status?analysisId=${ANALYSIS_ID}" |\
+                ANALYSIS_STATUS_VAL="$(unset http_proxy; unset https_proxy; \
+                curl -H "Accept: application/json" -H "Content-Type: application/json" "${serverUrl}/api/qualitygates/project_status?analysisId=${ANALYSIS_ID}" |\
                 python -c 'import sys; import json; obj=json.load(sys.stdin); print obj["projectStatus"]["status"]')"
 
                 if [ "${ANALYSIS_STATUS_VAL}" == "OK" ]
