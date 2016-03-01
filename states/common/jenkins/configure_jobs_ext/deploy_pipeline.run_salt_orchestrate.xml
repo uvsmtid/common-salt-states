@@ -47,7 +47,7 @@
         sudo salt-run \
             -l debug \
             state.orchestrate common.orchestrate.run_all_stages \
-            test=fasle | tee salt.output.yaml
+            test=True | tee salt.output.yaml
 
         # 2nd time with error detection
         # This is not supposed to fail -
