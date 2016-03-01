@@ -41,6 +41,8 @@ set -u
 {% set override_pillars_repo_id = get_repository_id_by_role('source_profile_pillars_role') %}
 {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][override_pillars_repo_id]['git'] %}
 REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+echo "Make sure dynamic build descriptor is not overwritten within pillars repository." 1>&2
+echo "This file must not exists: ${REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml" 1>&2
 ! ls -lrt "${REPO_PATH}/pillars/profile/dynamic_build_descriptor.yaml"
 
 {#############################################################################}
@@ -128,12 +130,17 @@ set -e
 if [ "${RET_VAL}" == "0" ]
 then
     echo TO_BE_MERGED
-    echo "    Instructions:"
+    echo "<<<<<<< INSTRUCTIONS"
     echo "        cd '${REPO_PATH}'"
     echo "        git checkout '${TARGET_UPSTREAM_BRANCH}'"
     echo "        git merge --no-ff --no-commit '${BUILD_BRANCH}'"
-    echo "        # Review merged content and commit with YOUR_EMAIL='First Last<first.last@example.com>'"
+    echo "        # "
+    echo "        # NOTE: Review merged content and commit with YOUR_EMAIL='First Last<first.last@example.com>'"
     echo "        git commit --author=YOUR_EMAIL -m 'Merge ${PROJECT_VERSION_NAME}-${PROJECT_VERSION_NUMBER}'"
+    echo "        # "
+    echo "        # Switch back to the build branch."
+    echo "        git checkout '${BUILD_BRANCH}'"
+    echo ">>>>>>> "
 else
     echo SKIP
 fi
