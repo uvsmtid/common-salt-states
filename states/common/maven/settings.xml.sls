@@ -214,8 +214,8 @@
                 -->
                 {% set project_version_name_key = pillar['project_name'] +'_version_name' %}
                 {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
-                {% set project_version_name = pillar['dynamic_build_descriptor'][project_version_name_key] %}
-                {% set project_version_number = pillar['dynamic_build_descriptor'][project_version_number_key] %}
+                {% set project_version_name = pillar[project_version_name_key] %}
+                {% set project_version_number = pillar[project_version_number_key] %}
                 <sonar.projectVersion>AFTER-{{ project_version_name }}-{{ project_version_number }}</sonar.projectVersion>
 
                 <!-- Use default location. -->
