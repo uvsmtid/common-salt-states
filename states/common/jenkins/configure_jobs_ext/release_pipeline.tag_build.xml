@@ -40,12 +40,17 @@
         # Load additional macros.
 
         {% from 'common/libs/repo_config_queries.lib.sls' import get_repository_id_by_role with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_repository_dynamic_build_descriptor with context %}
+
+        #######################################################################
+        # Set env vars.
+
+        {{ locate_repository_dynamic_build_descriptor(job_config, job_environ, check_repo_dyn_build_desc = False) }}
 
         #######################################################################
         # This job should only be part of `release_pipeline` (at the moment).
 
         test -n "${RELEASE_TYPE:-}"
-
 
         ###############################################################################
         # Make sure source pillars do not override dynamic build descriptor.
@@ -138,8 +143,118 @@
         BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ build_history_repo_id }}")"
         test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
+        # Debug.
+        ls -lrt
+
         # Add release directory - a copy current build title directory.
         cp -rp "${BUILD_TITLE}" "${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+
+        # NOTE: Without `add --all` `diff-index` will not notice untracked files.
+        git add --all
+
+        # Debug.
+        git status
+
+        # Make sure repository became dirty, otherwise fail.
+        if git diff-index --ignore-submodules=dirty --exit-code HEAD
+        then
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                # ERROR: Fail = repository is NOT dirty.
+                JOB_STATUS='2'
+            fi
+        fi
+
+        # Display status.
+        git status
+
+        # Commit only if there are changes.
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: add release dir ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER} at ${JOB_NAME}"
+
+        # Record `latest_commit_ids`.
+        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+        echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ build_history_repo_id }}"
+
+        # Save dynamic build descriptor to repository for subsequent commit.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
+
+        git reset
+        git status
+
+        cd -
+
+        #######################################################################
+        # Update commit ids of submodules in the top-level repository.
+        # This will point all submodules at the ids at the release point.
+
+        {% if pillar['parent_repo_name'] %}
+        {% set parent_repo_id = pillar['parent_repo_name'] %}
+
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][parent_repo_id]['git'] %}
+        export PARENT_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${PARENT_REPO_PATH}"
+
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ parent_repo_id }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
+
+        # NOTE: Without `add --all` `diff-index` will not notice untracked files.
+        git add --all
+
+        # Make sure repository became dirty, otherwise fail.
+        # NOTE: At least commit id for build history submodule repo
+        #       should be updated.
+        if git diff-index --ignore-submodules=dirty --exit-code HEAD
+        then
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                # ERROR: Fail = repository is NOT dirty.
+                JOB_STATUS='2'
+            fi
+        fi
+
+        # Display status.
+        git status
+
+        # Commit only if there are changes.
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: update commit ids of submodules at ${JOB_NAME}"
+
+        # Record `latest_commit_ids`.
+        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+        echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ parent_repo_id }}"
+
+        # Save dynamic build descriptor to repository for subsequent commit.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
+
+        git reset
+        git status
+
+        {% else %}
+
+        # ERROR: Systems without parent repository are not supported.
+        exit 1
+
+        {% endif %}
+
+        cd -
+
+        #######################################################################
+        # Last update of dynamic build descriptor in build history.
+        # This is to record:
+        # - commit id in build history with release directory
+        # - commit id in parent repository with all submodule commit ids
+
+        # Get location of build history repo.
+        {% set build_history_repo_id = get_repository_id_by_role('build_history_role') %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][build_history_repo_id]['git'] %}
+        export BUILD_HISTORY_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        cd "${BUILD_HISTORY_REPO_PATH}"
+
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ build_history_repo_id }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
         # NOTE: Without `add --all` `diff-index` will not notice untracked files.
         git add --all
@@ -158,11 +273,14 @@
         git status
 
         # Commit only if there are changes.
-        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: add release dir: ${RELEASE_VERSION_NAME}-${RELEASE_VERSION_NUMBER}"
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: last dynamic build descriptor before tag at ${JOB_NAME}"
 
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
         echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ build_history_repo_id }}"
+
+        # Save dynamic build descriptor to repository for subsequent commit.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
 
         git reset
         git status
@@ -170,22 +288,68 @@
         cd -
 
         #######################################################################
-        # Commit all submodules' commit ids in the parent repository.
+        # Last update of parent repository.
+        # This will update submodule commit id of build history repo with
+        # the last required dynamic build descriptor.
+        # NOTE: This commit in parent repository will not be recorded
+        #       in dynamic build descriptor accessible through release
+        #       tag within build history repository.
+        #       In other words, checking out release tag from build history
+        #       repository will yeild in dynamic build descriptor which
+        #       points to a commit within parent repo _before_ the release.
 
-        # TODO
+        {% if pillar['parent_repo_name'] %}
+        {% set parent_repo_id = pillar['parent_repo_name'] %}
 
-        #######################################################################
-        # Last update of dynamic build descriptor in build history.
-        # This is to record:
-        # - commit id in build history with release directory
-        # - commit id in parent repository with all submodule commit ids
-        # NOTE: The commit id of parent which will be tagged later is not
-        #       recorded in dynamic build descriptor because we commit
-        #       build history repository first and than parent repository.
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][parent_repo_id]['git'] %}
+        export PARENT_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
-        # TODO: Commit dynamic build descriptor to build history.
+        cd "${PARENT_REPO_PATH}"
 
-        # TODO: Commit all changes in parent repsository (all submodules ids).
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        BUILD_BRANCH="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "build_branches:{{ parent_repo_id }}")"
+        test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
+
+        # NOTE: Without `add --all` `diff-index` will not notice untracked files.
+        git add --all
+
+        # Make sure repository became dirty, otherwise fail.
+        # NOTE: At least commit id for build history submodule repo
+        #       should be updated.
+        if git diff-index --ignore-submodules=dirty --exit-code HEAD
+        then
+            if [ "${JOB_STATUS}" -lt '2' ]
+            then
+                # ERROR: Fail = repository is NOT dirty.
+                JOB_STATUS='2'
+            fi
+        fi
+
+        # Display status.
+        git status
+
+        # Commit only if there are changes.
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: update commit ids of submodules at ${JOB_NAME}"
+
+        # Record `latest_commit_ids`.
+        CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
+        echo "${CURRENT_COMMIT_ID}" | python "${KEY_SETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "latest_commit_ids:{{ parent_repo_id }}"
+
+        # Save dynamic build descriptor to repository for subsequent commit.
+        cp "${JOB_DYN_BUILD_DESC_PATH}" "${REPO_DYN_BUILD_DESC_PATH}"
+
+        git reset
+        git status
+
+        {% else %}
+
+        # ERROR: Systems without parent repository are not supported.
+        exit 1
+
+        {% endif %}
+
+        cd -
+
 
         #######################################################################
         # Tag parent repository.
