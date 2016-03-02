@@ -270,6 +270,13 @@
                     # Success - exit the script.
                     exit 0
 
+                elif [ "${ANALYSIS_STATUS_VAL}" == "WARN" ]
+                then
+
+                    # TODO: OBS-2073: Set Jenkins job to unstable.
+                    # At the moment WARN is indistinguishable from OK.
+                    exit 0
+
                 elif [ "${ANALYSIS_STATUS_VAL}" == "ERROR" ]
                 then
 
