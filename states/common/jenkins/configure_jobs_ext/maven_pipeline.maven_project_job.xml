@@ -273,12 +273,30 @@
                 elif [ "${ANALYSIS_STATUS_VAL}" == "WARN" ]
                 then
 
+                    # OBS-2076: Check if analysis is disabled.
+                    # TODO: Set job to unstable (warning) if analysis disabled.
+                    # TODO: Use parameterized Jenkins directory.
+                    if [ -f ~/jenkins/ignore_sonarqube_quality_analysis ]
+                    then
+                        echo "WARNING: Quality is ignored."
+                        exit 0
+                    fi
+
                     # TODO: OBS-2073: Set Jenkins job to unstable.
                     # At the moment WARN is indistinguishable from OK.
                     exit 0
 
                 elif [ "${ANALYSIS_STATUS_VAL}" == "ERROR" ]
                 then
+
+                    # OBS-2076: Check if analysis is disabled.
+                    # TODO: Set job to unstable (warning) if analysis disabled.
+                    # TODO: Use parameterized Jenkins directory.
+                    if [ -f ~/jenkins/ignore_sonarqube_quality_analysis ]
+                    then
+                        echo "WARNING: Quality is ignored."
+                        exit 0
+                    fi
 
                     # Obviously, fail.
                     false
