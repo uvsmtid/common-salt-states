@@ -205,7 +205,6 @@
         #######################################################################
         # Initialize repository build descriptor.
 
-
         cd "${REPO_DYN_BUILD_DESC_REPO_PATH}"
 
         # Make sure `build_history_role` is clean.
@@ -275,6 +274,23 @@
 
             echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "build_branches:{{ build_history_repo_id }}"
             echo "${BUILD_TITLE}"         | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_branches:{{ build_history_repo_id }}"
+
+            #######################################################################
+            # Set initial version in dynamic build descriptor
+            # based on current configuration.
+            # NOTE: It is not a release, it is only metadata used initially
+            #       for a build to configure Jenkins within pipelines to
+            #       show which version build is based on (previous release).
+            #       Once build is accepted for release, these values
+            #       are changed by user in the `release_pipeline`.
+
+            # Retrieve version name and number.
+            {% set project_version_name_key = pillar['project_name'] +'_version_name' %}
+            {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
+            export PROJECT_VERSION_NAME="{{ pillar['dynamic_build_descriptor'][project_version_name_key] }}"
+            export PROJECT_VERSION_NUMBER="{{ pillar['dynamic_build_descriptor'][project_version_number_key] }}"
+            echo "${PROJECT_VERSION_NAME}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${REPO_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_name"
+            echo "${PROJECT_VERSION_NUMBER}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${REPO_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_number"
 
             # Make initial commit.
             git add --all

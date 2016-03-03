@@ -84,7 +84,7 @@ export BUILD_BRANCH="{{ pillar['dynamic_build_descriptor']['build_branches'][rep
 #       the dynamic build descriptor.
 test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
-# Retrieve release name and version name.
+# Retrieve version name and number.
 {% set project_version_name_key = pillar['project_name'] +'_version_name' %}
 {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
 export PROJECT_VERSION_NAME="{{ pillar['dynamic_build_descriptor'][project_version_name_key] }}"
