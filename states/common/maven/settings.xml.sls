@@ -216,7 +216,28 @@
                 {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
                 {% set project_version_name = pillar[project_version_name_key] %}
                 {% set project_version_number = pillar[project_version_number_key] %}
+
+                <!-- Set default `is_release` value if not available. -->
+                {% if 'is_release' in pillar['dynamic_build_descriptor'] %}
+                {% set is_release = pillar['dynamic_build_descriptor']['is_release'] %}
+                {% else %}
+                {% set is_release = 'FALSE' %}
+                {% endif %}
+
+                <!--
+                    NOTE: The build is NEVER done on for the released version.
+                          Instead, we promote a built to a release.
+                          In other words, we never know which version we built
+                          in advance until decision is made to assign this
+                          specific version. So, the only sure version
+                          we know is the previously released - that's why
+                          prefix `AFTER-` is used.
+                -->
+                {% if is_release == 'TRUE' %}
+                {{ FAIL_HERE_THIS_CASE_CANNOT_HAPPEN }}
+                {% else %}
                 <sonar.projectVersion>AFTER-{{ project_version_name }}-{{ project_version_number }}</sonar.projectVersion>
+                {% endif %}
 
                 <!-- Use default location. -->
                 <!--

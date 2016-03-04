@@ -86,19 +86,43 @@
         # It is only set when variable `RELEASE_VERSION_NUMBER` is set.
         if [ -n "${RELEASE_VERSION_NUMBER:-}" ]
         then
+
+            # TODO: Compare currently set version name and number
+            #       and check that we are not re-releasing
+            #       with the same version.
+
             echo "${RELEASE_VERSION_NUMBER}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_number"
+
+            # Variable `is_release` indicates whether sources actually correspond
+            # to a release (true) and not simply build on top of
+            # the previous release (false).
+
+            IS_RELEASE="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "is_release")"
+            echo "Previous release flag: ${IS_RELEASE}"
+
+            echo "TRUE" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "is_release"
+
         else
-            # TODO: Should the `*_version_number` key be deleted?
-            #       - If the key is propagated from `init_pipeline`,
-            #         then key may be completely deleted as whatever
-            #         is build there is a snapshot.
-            #       - If the key is propagated from `package_pipeline`,
-            #         the key cannot be deleted because it may be
-            #         packaging of release which should have
-            #         correct version number inside dyn build desc.
-            #       - If the key is propagated from `release_pipeline`,
-            #         then key may be deleted as not set by user.
-            echo "Nothing to do."
+
+            # NOTE: The release version number is not provided.
+            #       Therefoe, the version set in the dynamic build descriptor
+            #       does not correspond to the source code state - instead,
+            #       source code state is simply being built on top of
+            #       the specified previous release version number.
+
+            # Variable `is_release` indicates whether sources actually correspond
+            # to a release (true) and not simply build on top of
+            # the previous release (false).
+
+            IS_RELEASE="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "is_release")"
+            echo "Previous release flag: ${IS_RELEASE}"
+
+            echo "FALSE" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "is_release"
+
+            # Make sure version number is set.
+            VERSION_NUMBER="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_number")"
+            test -n "${VERSION_NUMBER}"
+
         fi
 
         #######################################################################

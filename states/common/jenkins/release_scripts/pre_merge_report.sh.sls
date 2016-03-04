@@ -90,6 +90,12 @@ test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 export PROJECT_VERSION_NAME="{{ pillar['dynamic_build_descriptor'][project_version_name_key] }}"
 export PROJECT_VERSION_NUMBER="{{ pillar['dynamic_build_descriptor'][project_version_number_key] }}"
 
+# Make sure `is_release` is set to `true`.
+# Otherwise, it does not make sense to merge
+# the release which is not a release.
+export IS_RELEASE="{{ pillar['dynamic_build_descriptor']['is_release'] }}"
+test "${IS_RELEASE}" == "TRUE"
+
 {% if repo_name in pillar['system_features']['deploy_environment_sources']['repository_roles']['build_history_role'] %}
 # TODO: Make branch name generic (configurable or
 #       available in dynamic build descriptor) for `build_history_role`.

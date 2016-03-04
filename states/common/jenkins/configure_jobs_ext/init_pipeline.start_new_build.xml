@@ -292,6 +292,11 @@
             echo "${PROJECT_VERSION_NAME}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${REPO_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_name"
             echo "${PROJECT_VERSION_NUMBER}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${REPO_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_number"
 
+            # Variable `is_release` indicates whether sources actually correspond
+            # to a release (true) and not simply built on top of
+            # the previous release (false).
+            echo "TRUE" | python ${KEY_SETTER_PYTHON_SCRIPT} ${REPO_DYN_BUILD_DESC_PATH} "is_release"
+
             # Make initial commit.
             git add --all
             git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
