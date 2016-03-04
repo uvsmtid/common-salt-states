@@ -2,6 +2,8 @@
 
 include:
 
+    - common.system_version
+
     - common.orchestrate.wraps.primary
 
     - common.sudo
