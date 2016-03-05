@@ -299,7 +299,7 @@
 
             # Make initial commit.
             git add --all
-            git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE}"
+            git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Initialize build history: ${BUILD_TITLE} at ${JOB_NAME}"
 
             CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
             echo "${CURRENT_COMMIT_ID}"  | python "${KEY_SETTER_PYTHON_SCRIPT}" "${REPO_DYN_BUILD_DESC_PATH}" "initial_commit_ids:{{ build_history_repo_id }}"
