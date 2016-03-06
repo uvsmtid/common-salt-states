@@ -238,10 +238,10 @@
             #       the pipeline except for bootstrap target pillars.
             #       Bootstrap target pillars are checked out clean and changes
             #       in restore point does not become part of the build.
-            #       In fact, restore point may not ever ff-merge because
+            #       In fact, restore point may even fail to ff-merge because
             #       pillars change to another branch (another profile).
 
-            {% if repo_name not in get_repository_id_by_role('target_profile_pillars_role') %}
+            {% if repo_name != get_repository_id_by_role('target_profile_pillars_role') %}
 
             RESTORE_POINT_COMMIT="$(python "${KEY_GETTER_PYTHON_SCRIPT}" "${JOB_DYN_BUILD_DESC_PATH}" "restore_point_commit_ids:{{ repo_name }}")"
             git merge --ff-only "${RESTORE_POINT_COMMIT}"
