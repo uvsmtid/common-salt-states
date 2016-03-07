@@ -49,12 +49,21 @@ managed_hosts_file:
             {% for selected_minion_id in pillar['system_hosts'].keys() %}
             {% set selected_host = pillar['system_hosts'][selected_minion_id] %}
             {% set selected_net = selected_host['resolved_in'] %}
+            # NOTE: Resoving hostname into local IP address
+            #       breaks some test cases (they determing it as `localhost`)
+            #       deep inside some framework code which is hard to resolve.
+            #       The solution is to avoid using local IP addresses
+            #       in this case.
+            {{ selected_host['host_networks'][selected_net]['ip'] }} {{ selected_host['hostname'] }} {{ selected_host['hostname'] }}.{{ hostname_res['domain_name'] }}
+            #{# DISABLED: Instead, use IP address from the network
+              #           where minion is defined.
             {% if selected_minion_id == grains['id'] %}
             # If this hosts file belongs to this minion, use localhost address.
             127.0.0.1 {{ selected_host['hostname'] }} {{ selected_host['hostname'] }}.{{ hostname_res['domain_name'] }}
             {% else %}
             {{ selected_host['host_networks'][selected_net]['ip'] }} {{ selected_host['hostname'] }} {{ selected_host['hostname'] }}.{{ hostname_res['domain_name'] }}
             {% endif %}
+            #}#
             {% endfor %}
 
             # Hosts by their role (the first in the list of assigned hosts).
