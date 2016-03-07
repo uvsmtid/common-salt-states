@@ -218,7 +218,7 @@
         git status
 
         # Commit only if there are changes.
-        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: update commit ids of submodules at ${JOB_NAME}"
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: update commit ids of submodules before last dynamic build descriptor at ${JOB_NAME}"
 
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
@@ -329,7 +329,7 @@
         git status
 
         # Commit only if there are changes.
-        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: update commit ids of submodules at ${JOB_NAME}"
+        git diff-index --ignore-submodules=dirty --exit-code HEAD || git commit --author "${AUTO_COMMIT_GIT_AUTHOR_EMAIL}" -m "Auto-commit: update commit ids of submodules after last dynamic build descriptor at ${JOB_NAME}"
 
         # Record `latest_commit_ids`.
         CURRENT_COMMIT_ID="$(git rev-parse --verify HEAD)"
