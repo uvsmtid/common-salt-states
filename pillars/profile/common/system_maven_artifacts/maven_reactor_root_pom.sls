@@ -15,7 +15,7 @@ system_maven_artifacts:
     maven_reactor_root_pom:
 
         repository_id: maven-demo
-        pom_relative_path: pom.xml
+        pom_relative_dir_path: ''
 
 ###############################################################################
 # EOF

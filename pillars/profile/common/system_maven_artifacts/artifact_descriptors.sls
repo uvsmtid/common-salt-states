@@ -16,35 +16,35 @@ system_maven_artifacts:
             used: True
             source_type: modified-open
             repository_id: maven-demo
-            pom_relative_path: dependent_binary/pom.xml
+            pom_relative_dir_path: dependent_binary
             current_version: 0.0.0.0-SNAPSHOT
 
         'com.spectsys.maven-demo:direct_library':
             used: True
             source_type: modified-open
             repository_id: maven-demo
-            pom_relative_path: direct_library/pom.xml
+            pom_relative_dir_path: direct_library
             current_version: 0.0.0.0-SNAPSHOT
 
         'com.spectsys.maven-demo:hello-world-maven-plugin':
             used: True
             source_type: modified-open
             repository_id: maven-demo
-            pom_relative_path: hello_world_maven_plugin/pom.xml
+            pom_relative_dir_path: hello_world_maven_plugin
             current_version: 0.0.0.0-SNAPSHOT
 
         'com.spectsys.maven-demo:indirect_library':
             used: True
             source_type: modified-open
             repository_id: maven-demo
-            pom_relative_path: indirect_library/pom.xml
+            pom_relative_dir_path: indirect_library
             current_version: 0.0.0.0-SNAPSHOT
 
         'com.spectsys.maven-demo:multi-module-build':
             used: True
             source_type: modified-open
             repository_id: maven-demo
-            pom_relative_path: pom.xml
+            pom_relative_dir_path: ''
             current_version: 0.0.0.0-SNAPSHOT
 
         'junit:junit':
@@ -67,7 +67,7 @@ system_maven_artifacts:
             source_type: unmodified-open
 
             current_version:
-                - '2.2-beta-5' 
+                - '2.2-beta-5'
 
         ':maven-clean-plugin':
             used: True

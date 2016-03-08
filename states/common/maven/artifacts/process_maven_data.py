@@ -513,7 +513,7 @@ def maven_reactor_root_clean(
 ):
 
     repo_id = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['repository_id']
-    pom_rel_path = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['pom_relative_path']
+    pom_rel_path = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['pom_relative_dir_path'] + '/pom.xml'
     pom_file_data = get_pom_file_data(
         repo_id,
         pom_rel_path,
@@ -1812,20 +1812,20 @@ class ArtifactDescriptor(ItemDescriptor):
                 )
                 func_result = False
 
-            if 'pom_relative_path' not in self.data_item:
-                msg = self.get_desc_coords_string() + 'field `pom_relative_path` is not present'
+            if 'pom_relative_dir_path' not in self.data_item:
+                msg = self.get_desc_coords_string() + 'field `pom_relative_dir_path` is not present'
                 logging.error(msg)
                 self.add_step_log(
-                    'is_`pom_relative_path`_field_present',
+                    'is_`pom_relative_dir_path`_field_present',
                     False,
                     msg,
                 )
                 func_result = False
-            elif not isinstance(self.data_item['pom_relative_path'], basestring):
-                msg = self.get_desc_coords_string() + 'field `pom_relative_path` is not string'
+            elif not isinstance(self.data_item['pom_relative_dir_path'], basestring):
+                msg = self.get_desc_coords_string() + 'field `pom_relative_dir_path` is not string'
                 logging.error(msg)
                 self.add_step_log(
-                    'is_`pom_relative_path`_field_string',
+                    'is_`pom_relative_dir_path`_field_string',
                     False,
                     msg,
                 )
@@ -1915,7 +1915,7 @@ class ArtifactDescriptor(ItemDescriptor):
             return True
 
         # Only internal artifacts are supposed to have
-        # `repository_id` and `pom_relative_path` keys
+        # `repository_id` and `pom_relative_dir_path` keys
         # (artifacts which are built from sources in project repositories).
         # TODO: Add reference to docs.
         if artifact_descriptor['source_type'] in [
@@ -1924,7 +1924,7 @@ class ArtifactDescriptor(ItemDescriptor):
         ]:
 
             repo_id = artifact_descriptor['repository_id']
-            pom_rel_path = artifact_descriptor['pom_relative_path']
+            pom_rel_path = artifact_descriptor['pom_relative_dir_path'] + '/pom.xml'
 
             # Get initial pom file info.
             pom_file_data = get_pom_file_data(
@@ -1992,7 +1992,7 @@ class ArtifactDescriptor(ItemDescriptor):
             return True
 
         # Only internal artifacts are supposed to have
-        # `repository_id` and `pom_relative_path` keys
+        # `repository_id` and `pom_relative_dir_path` keys
         # (artifacts which are built from sources in project repositories).
         # TODO: Add reference to docs.
         if artifact_descriptor['source_type'] in [
@@ -2001,7 +2001,7 @@ class ArtifactDescriptor(ItemDescriptor):
         ]:
 
             repo_id = artifact_descriptor['repository_id']
-            pom_rel_path = artifact_descriptor['pom_relative_path']
+            pom_rel_path = artifact_descriptor['pom_relative_dir_path'] + '/pom.xml'
 
             if repo_id not in report_data['pom_files']:
                 msg = self.get_desc_coords_string() + 'artifact ' + artifact_key + '` refers to non-existing repository id `' + repo_id + '`'
