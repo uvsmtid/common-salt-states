@@ -66,6 +66,8 @@ include:
         'email_notifications_lists'
         ,
         'configure_sonar_qube'
+        ,
+        'wildfly_deployments'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

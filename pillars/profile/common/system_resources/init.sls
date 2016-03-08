@@ -10,6 +10,8 @@ include:
         'ssh_keys'
         ,
         'sonar_qube'
+        ,
+        'wildfly'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

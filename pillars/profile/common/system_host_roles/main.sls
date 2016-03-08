@@ -152,6 +152,22 @@ system_host_roles:
                 ])
             }}
 
+    wildfly_node_1_role:
+        hostname: wildfly-node-role
+        assigned_hosts:
+            {{ filter_assigned_hosts_by_enabled_minion_hosts([
+                    master_minion_id
+                ])
+            }}
+
+    wildfly_node_2_role:
+        hostname: wildfly-node-role
+        assigned_hosts:
+            {{ filter_assigned_hosts_by_enabled_minion_hosts([
+                    master_minion_id
+                ])
+            }}
+
 ###############################################################################
 # EOF
 ###############################################################################
