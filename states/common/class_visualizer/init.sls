@@ -51,6 +51,8 @@ class_visualizer_project_file:
     file.directory:
         - name: '{{ repo_path }}/{{ pom_relative_dir_path }}/target/classes'
         - makedirs: True
+        # Do not create sub-directory if parent directory does not exists.
+        - onlyif: 'ls {{ repo_path }}/{{ pom_relative_dir_path }}'
         - user: {{ account_conf['username'] }}
         - group: {{ account_conf['primary_group'] }}
         - mode: 755

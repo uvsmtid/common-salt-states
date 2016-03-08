@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <projectConfig>
 
+    {% set primary_user = pillar['system_hosts'][grains['id']]['primary_user'] %}
+    {% set account_conf = pillar['system_accounts'][ primary_user ] %}
+
+    <classPaths>{{ account_conf['posix_user_home_dir'] }}/.m2/repository</classPaths>
+
     {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
 
     {% for artifact_id in pillar['system_maven_artifacts']['artifact_descriptors'].keys() %}
