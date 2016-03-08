@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<projectConfig>
+
+    {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+    {% for artifact_id in pillar['system_maven_artifacts']['artifact_descriptors'].keys() %}
+
+    {% set artifact_conf = pillar['system_maven_artifacts']['artifact_descriptors'][artifact_id] %}
+
+    {% if artifact_conf['used'] %}
+
+    {% if artifact_conf['source_type'] in [
+            'available-closed'
+            ,
+            'modified-open'
+        ]
+    %}
+
+    {% set repo_name = artifact_conf['repository_id'] %}
+
+    {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_name]['git'] %}
+
+    {% set repo_path = get_system_host_primary_user_posix_home(repo_config['source_system_host']) + '/' + repo_config['origin_uri_ssh_path'] %}
+
+    {% set pom_relative_dir_path = artifact_conf['pom_relative_dir_path'] %}
+
+    <importPaths>{{ repo_path }}/{{ pom_relative_dir_path }}/target/classes</importPaths>
+
+    {% endif %}
+
+    {% endif %}
+
+    {% endfor %}
+
+</projectConfig>
