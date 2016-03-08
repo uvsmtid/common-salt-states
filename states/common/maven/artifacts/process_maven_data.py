@@ -513,7 +513,12 @@ def maven_reactor_root_clean(
 ):
 
     repo_id = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['repository_id']
-    pom_rel_path = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['pom_relative_dir_path'] + '/pom.xml'
+    pom_rel_path = None
+    # Avoid turning path to absolute `/pom.xml` when path is empty.
+    if not salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['pom_relative_dir_path']:
+        pom_rel_path = 'pom.xml'
+    else:
+        pom_rel_path = salt_pillar['system_maven_artifacts']['maven_reactor_root_pom']['pom_relative_dir_path'] + '/pom.xml'
     pom_file_data = get_pom_file_data(
         repo_id,
         pom_rel_path,
@@ -1924,8 +1929,12 @@ class ArtifactDescriptor(ItemDescriptor):
         ]:
 
             repo_id = artifact_descriptor['repository_id']
-            pom_rel_path = artifact_descriptor['pom_relative_dir_path'] + '/pom.xml'
-
+            pom_rel_path = None
+            # Avoid turning path to absolute `/pom.xml` when path is empty.
+            if not artifact_descriptor['pom_relative_dir_path']:
+                pom_rel_path = 'pom.xml'
+            else:
+                pom_rel_path = artifact_descriptor['pom_relative_dir_path'] + '/pom.xml'
             # Get initial pom file info.
             pom_file_data = get_pom_file_data(
                 repo_id,
@@ -2001,8 +2010,12 @@ class ArtifactDescriptor(ItemDescriptor):
         ]:
 
             repo_id = artifact_descriptor['repository_id']
-            pom_rel_path = artifact_descriptor['pom_relative_dir_path'] + '/pom.xml'
-
+            pom_rel_path = None
+            # Avoid turning path to absolute `/pom.xml` when path is empty.
+            if not artifact_descriptor['pom_relative_dir_path']:
+                pom_rel_path = 'pom.xml'
+            else:
+                pom_rel_path = artifact_descriptor['pom_relative_dir_path'] + '/pom.xml'
             if repo_id not in report_data['pom_files']:
                 msg = self.get_desc_coords_string() + 'artifact ' + artifact_key + '` refers to non-existing repository id `' + repo_id + '`'
                 logging.error(msg)
