@@ -27,9 +27,12 @@ system_features:
 
             file_templates:
                 example:
-                    source_url:
-                    destination_path:
+                    source_url: 'salt://common/wildfly/templates/standalone.xml'
+                    template_type: jinja
+                    destination_path: 'configuration/standalone.xml'
                     config_data:
+                        key1: value1
+                        key2: value2
 
         node-2:
             target_system_role: wildfly_node_2_role
@@ -37,9 +40,12 @@ system_features:
 
             file_templates:
                 example:
-                    source_url:
-                    destination_path:
+                    source_url: 'salt://common/wildfly/templates/standalone.xml'
+                    template_type: jinja
+                    destination_path: 'configuration/standalone.xml'
                     config_data:
+                        key1: value1
+                        key2: value2
 
 ###############################################################################
 # EOF
