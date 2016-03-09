@@ -48,9 +48,10 @@
         - name: '{{ destination_dir_path }}'
         - source: {{ get_registered_content_item_URI(resource_id) }}
         - source_hash: {{ get_registered_content_item_hash(resource_id) }}
-        - unless: 'ls {{ destination_dir_path }}'
         - archive_format: '{{ archive_format }}'
         - archive_user: '{{ account_conf['username'] }}'
+        # Do not overwrite existing directory.
+        - unless: 'ls {{ destination_dir_path }}'
 
 'wildfly_distribution_permissions_{{ deployment_id }}_{{ instance_id }}':
     file.directory:
@@ -63,6 +64,14 @@
             - group
         - require:
             - archive: 'extract_wildfly_distribution_archive_{{ deployment_id }}_{{ instance_id }}'
+
+# NOTE: Unfortunately, `archive.extracted` clears executable permissions
+#       on files originally set in archive.
+'fix_executable_permissions_{{ deployment_id }}_{{ instance_id }}':
+    cmd.run:
+        - name: 'find {{ destination_dir_path }} -name "*.sh" -exec chmod u+x {} \;'
+        - require:
+            - file: 'wildfly_distribution_permissions_{{ deployment_id }}_{{ instance_id }}'
 
 {% endif %} # target_system_role
 
