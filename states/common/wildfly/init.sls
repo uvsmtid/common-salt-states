@@ -73,6 +73,31 @@
         - require:
             - file: 'wildfly_distribution_permissions_{{ deployment_id }}_{{ instance_id }}'
 
+# Create instances within deployed archive.
+'clone_wildfly_instance_{{ deployment_id }}_{{ instance_id }}':
+    cmd.run:
+        - name: 'cp -rp {{ destination_dir_path }}/{{ root_subdir }}/standalone {{ destination_dir_path }}/{{ root_subdir }}/{{ instance_id }}'
+        # Do not overwrite existing directory.
+        - unless: 'ls {{ destination_dir_path }}/{{ root_subdir }}/{{ instance_id }}'
+        - require:
+            - file: 'wildfly_distribution_permissions_{{ deployment_id }}_{{ instance_id }}'
+
+# Deploy each template.
+{% for template_id in instance_config['file_templates'].keys() %} # template_id
+
+{% set template_config = instance_config['file_templates'][template_id] %}
+
+'deploy_instance_template_{{ deployment_id }}_{{ instance_id }}_{{ template_id }}':
+    file.managed:
+        - name: '{{ destination_dir_path }}/{{ root_subdir }}/{{ instance_id }}/{{ template_config['destination_path'] }}'
+        - source: '{{ template_config['source_url'] }}'
+        - template: '{{ template_config['template_type'] }}'
+        - context:
+        # The value of `config_data` is not a string, it is data.
+            config_data: {{ template_config['config_data']|json }}
+
+{% endfor %} # template_id
+
 {% endif %} # target_system_role
 
 {% endfor %} # wildfly_instances
