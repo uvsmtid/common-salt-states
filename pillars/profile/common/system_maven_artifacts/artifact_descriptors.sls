@@ -146,6 +146,7 @@ system_maven_artifacts:
             source_type: unmodified-open
 
             current_version:
+                - '2.19'
                 - '2.12.4'
 
         'org.apache.maven:maven-artifact':
@@ -187,6 +188,13 @@ system_maven_artifacts:
         'org.codehaus.plexus:plexus-utils':
             used: True
             source_type: unmodified-open
+
+        'org.jacoco:jacoco-maven-plugin':
+            used: True
+            source_type: unmodified-open
+
+            current_version:
+                - '0.7.5.201505241946'
 
 ###############################################################################
 # EOF
