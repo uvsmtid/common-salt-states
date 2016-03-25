@@ -24,6 +24,10 @@ enabled=0
 gpgkey={{ yum_repo_os_platform_config['yum_repo_key_url'] }}
 gpgcheck=1
 {% endif %}
+{% if 'yum_repo_gpgcheck' in yum_repo_os_platform_config and not yum_repo_os_platform_config['yum_repo_gpgcheck'] %}
+# Do not check signature for packages.
+gpgcheck=0
+{% endif %}
 
 {% endif %}{# os_platform #}
 
