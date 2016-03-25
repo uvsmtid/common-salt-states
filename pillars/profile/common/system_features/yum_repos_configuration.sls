@@ -473,6 +473,8 @@ system_features:
                         repo_enabled: True
 
                         yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'
+
+                        yum_repo_gpgcheck: False
                     {% endfor %}
 
 
