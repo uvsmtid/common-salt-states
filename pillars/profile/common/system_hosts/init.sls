@@ -10,6 +10,10 @@ include:
         'rhel5_minion'
         ,
         'rhel7_minion'
+        ,
+        'nexus'
+        ,
+        'sonar'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
