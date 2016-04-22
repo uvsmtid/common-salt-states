@@ -12,6 +12,8 @@ dnf_conf:
             selected_pillar: {{ pillar }}
         - user: root
         - group: root
+        - makedirs: True
+        - dir_mode: 755
         - mode: 644
         - template: jinja
 
