@@ -689,6 +689,8 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
+                neglect_run_salt_orchestrate_error_state: False
+
                 condition_job_list:
 
                     # Demand completion of deployment.
