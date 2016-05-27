@@ -42,6 +42,10 @@
         # TODO: Fix Orchestrate maybe by trying to configure YUM/DNF
         #       before running any other installation.
 
+        {% if 'neglect_run_salt_orchestrate_error_state' in job_config and job_config['neglect_run_salt_orchestrate_error_state'] %}
+        set +e
+        {% endif %}
+        
         # 1st time without error detection
         # This is supposed to show failed states in cleaner (non-JSON) output.
         sudo salt-run \
@@ -63,6 +67,9 @@
         # See: https://github.com/saltstack/salt/issues/18510
         /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
             salt.output.json
+
+        # Enable back error detection if it was disabled above.
+        set -e
 
         #######################################################################
         # Script footer
