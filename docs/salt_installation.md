@@ -159,7 +159,7 @@ Minion is identified by its minion id.
 Set `id` field in Salt minion configuration in `/etc/salt/minion` file:
 
 ```
-id master_minion_id
+id: master_minion_id
 ```
 
 NOTE: Substitute `master_minion_id` by chosen master minion id.
