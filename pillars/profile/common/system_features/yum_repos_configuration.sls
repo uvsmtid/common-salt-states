@@ -454,8 +454,16 @@ system_features:
                     rhel5:
                         repo_enabled: True
 
+                        {% if False %}
+                        # It seems these are obsolete URLs.
                         yum_repo_baseurl: 'http://copr-be.cloud.fedoraproject.org/results/saltstack/salt-el5/epel-5-$basearch/'
                         yum_repo_key_url: 'http://copr-be.cloud.fedoraproject.org/results/saltstack/salt-el5/pubkey.gpg'
+                        {% else %}
+                        # See updated URLs here:
+                        #   https://docs.saltstack.com/en/latest/topics/installation/rhel.html
+                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest'
+                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/SALTSTACK-GPG-KEY.pub'
+                        {% endif %}
 
             # SonarQube
             sonar_qube:
