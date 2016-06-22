@@ -4,17 +4,16 @@
 
 system_platforms:
 
-    fc21:
+    {% for system_platform_id in [
+            'fc21',
+            'fc22',
+            'fc23',
+            'fc24',
+        ]
+    %}
+    {{ system_platform_id }}:
         os_type: linux
-
-    fc22:
-        os_type: linux
-
-    fc23:
-        os_type: linux
-
-    fc24:
-        os_type: linux
+    {% endfor %}
 
     rhel5:
         os_type: linux
