@@ -34,7 +34,7 @@ system_hosts:
 
         # NOTE: Fedora is fast-moving distribution.
         #       Select `fc22`, `fc23`, `fc24`, ...
-        os_platform: fc22
+        os_platform: fc24
 
         hostname: {{ master_minion_id }}
         # The master minion host is defined in `primary_network`
