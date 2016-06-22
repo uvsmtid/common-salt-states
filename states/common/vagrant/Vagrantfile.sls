@@ -141,17 +141,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 # NOTE: If host does not list this network,
 #       the network will silently be omitted.
 {% if sys_net_name in selected_host['host_networks'] %} # host_networks
-    {{ selected_host_name }}.vm.network '{{ vagrant_net_conf['vagrant_net_type'] }}',
+    {{ selected_host_name }}.vm.network :{{ vagrant_net_conf['vagrant_net_type'] }},
 
         {% if instance_configuration['vagrant_provider'] == 'libvirt' %}
         :libvirt__network_name => '{{ vagrant_net_name }}',
         {% endif %}
 
         {% if instance_configuration['vagrant_provider'] == 'virtualbox' %}
-        virtualbox__intnet: '{{ vagrant_net_name }}',
+        :virtualbox__intnet => '{{ vagrant_net_name }}',
         {% endif %}
 
-        ip: '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
+        # NOTE: There is an issue with fixed IP addresses on CentOS 7:
+        #           https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-227637698
+        #       The IP address does not get assigned.
+        :ip => '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
 
         {% if 'mac' in selected_host['host_networks'][sys_net_name] %}
         :mac => '{{ selected_host['host_networks'][sys_net_name]['mac'] }}',
@@ -171,7 +174,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         {% endif %}
 
         {% if instance_configuration['vagrant_provider'] == 'virtualbox' %}
-        bridge: '{{ vagrant_net_conf['host_bridge_interface'] }}',
+        :bridge => '{{ vagrant_net_conf['host_bridge_interface'] }}',
         {% endif %}
 
         :mode => 'bridge',
