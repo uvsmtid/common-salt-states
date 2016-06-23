@@ -53,6 +53,11 @@ import_jenkins_yum_repository_key:
 
 {% endif %} # enable_installation
 
+# NOTE: Due to issues with some other Jenkins versions,
+#       the decision is to use specific version and
+#       pre-downloaded RPM file from resources.
+{% if False %}
+
 jenkins_rpm_package:
     pkg.installed:
         - name: jenkins
@@ -64,6 +69,23 @@ jenkins_rpm_package:
             - cmd: import_jenkins_yum_repository_key
 {% endif %} # enable_installation
 
+{% else %}
+
+retrieve_jenkins_rpm_package:
+    file.managed:
+        - name: '{{ config_temp_dir }}/jenkins/jenkins.rpm'
+        - source: {{ get_registered_content_item_URI('jenkins_pre_downloaded_rpm') }}
+        - source_hash: {{ get_registered_content_item_hash('jenkins_pre_downloaded_rpm') }}
+        - makedirs: True
+
+jenkins_rpm_package:
+    cmd.run:
+        - name: 'yum install -y {{ config_temp_dir }}/jenkins/jenkins.rpm'
+        - require:
+            - file: retrieve_jenkins_rpm_package
+
+{% endif %}
+
 jenkins_credentials_configuration_file:
     file.managed:
         - name: '{{ pillar['system_features']['configure_jenkins']['jenkins_root_dir'] }}/credentials.xml'
@@ -71,7 +93,12 @@ jenkins_credentials_configuration_file:
         - template: jinja
         - makedirs: False
         - require:
+            # See comments above why `cmd` and not `pkg`.
+            {% if False %}
             - pkg: jenkins_rpm_package
+            {% else %}
+            - cmd: jenkins_rpm_package
+            {% endif %}
 
 jenkins_configuration_file:
     file.managed:
@@ -109,7 +136,12 @@ activate_jenkins_service:
         - name: jenkins
         - enable: True
         - require:
+            # See comments above why `cmd` and not `pkg`.
+            {% if False %}
             - pkg: jenkins_rpm_package
+            {% else %}
+            - cmd: jenkins_rpm_package
+            {% endif %}
             - file: jenkins_credentials_configuration_file
             - file: jenkins_configuration_file
 
@@ -122,7 +154,12 @@ jenkins_service_enable:
     cmd.run:
         - name: "systemctl enable jenkins"
         - require:
+            # See comments above why `cmd` and not `pkg`.
+            {% if False %}
             - pkg: jenkins_rpm_package
+            {% else %}
+            - cmd: jenkins_rpm_package
+            {% endif %}
             - file: jenkins_credentials_configuration_file
             - file: jenkins_configuration_file
 

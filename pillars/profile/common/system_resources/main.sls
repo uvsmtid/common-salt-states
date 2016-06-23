@@ -26,6 +26,24 @@
 
 system_resources:
 
+    # NOTE: There were some issues with Jenkins of other versions
+    #       (including 2.x versions and latest 1.658), for example:
+    #       - Master-Slave SSH connection cannot be established
+    #         again after running `highstate` and disconnection
+    #         (e.g. in `reconnect_jenkins_slaves`).
+    #       - The issue (once fixed by `orchestrate`) reappeared
+    #         again on `1.658` when run of `orchestrate` fully
+    #         connects all Jenkins Slaves.
+    # So, this is the version where everything seem to work without problems:
+    jenkins_pre_downloaded_rpm:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/jenkins
+        item_base_name: jenkins-1.650-1.1.noarch.rpm
+        item_content_hash: md5=1055463dd474ec4848854521bf1a6356
+
     # Jenkins YUM repository key (to verify signed RPM packages).
     # Downloadable from:
     #   http://pkg.jenkins-ci.org/redhat/
@@ -340,11 +358,11 @@ system_resources:
         item_content_hash: md5=ff33db98be4d85726daf5ba46e6a4603
         plugin_name: sidebar-link
 
-    # Jenkins: Priority-Sorter Plugin                                              
-    # Downloadable from:                                                        
-    #   https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin         
-    # Direct link:                                                              
-    #   http://updates.jenkins-ci.org/download/plugins/PrioritySorter/3.4                   
+    # Jenkins: Priority-Sorter Plugin
+    # Downloadable from:
+    #   https://wiki.jenkins-ci.org/display/JENKINS/Priority+Sorter+Plugin
+    # Direct link:
+    #   http://updates.jenkins-ci.org/download/plugins/PrioritySorter/3.4
     jenkins_PrioritySorter_plugin:
         resource_repository: common-resources
         bootstrap_use_cases: True
