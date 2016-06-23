@@ -74,6 +74,18 @@ deploy_sonar_configuration_file:
         - require:
             - pkg: sonar_package
 
+# Deploy systemd service unit file.
+deploy_sonar_service_script:
+    file.managed:
+        - name: '/usr/lib/systemd/system/sonar.service'
+        - source: 'salt://common/sonarqube/sonar.service'
+        - template: jinja
+        - makedirs: True
+        - dir_mode: 755
+        - mode: 755
+        - require:
+            - pkg: sonar_package
+
 {% if False %}
 # DISABLED: Instead of init.d file, we use systemd unit file.
 deploy_sonar_init_file:
@@ -125,18 +137,6 @@ deploy_sonar_plugin_{{ resource_id }}:
             - pkg: sonar_package
 
 {% endfor %}
-
-# Deploy systemd service unitfile.
-deploy_sonar_service_script:
-    file.managed:
-        - name: '/usr/lib/systemd/system/sonar.service'
-        - source: 'salt://common/sonarqube/sonar.service'
-        - template: jinja
-        - makedirs: True
-        - dir_mode: 755
-        - mode: 755
-        - require:
-            - pkg: sonar_package
 
 # Start sonarqube service.
 sonar_service:
