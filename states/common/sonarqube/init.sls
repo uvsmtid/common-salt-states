@@ -149,28 +149,7 @@ deploy_sonar_service_script:
             - cmd: sonar_package
             {% endif %}
 
-
 {% if False %}
-# DISABLED: Instead of init.d file, we use systemd unit file.
-deploy_sonar_init_file:
-    file.managed:
-        - name: '/etc/init.d/sonar'
-        - source: 'salt://common/sonarqube/sonar'
-        - template: jinja
-        - makedirs: True
-        - dir_mode: 755
-        - mode: 755
-        - require:
-
-            # NOTE: Use `cmd` instead of `pkg` - see reason above.
-            {% if False %}
-            - pkg: sonar_package
-            {% else %}
-            - cmd: sonar_package
-            {% endif %}
-
-{% endif %}
-
 # OBS-975: This file is overriding extension deployed by default.
 #          The new file exports the environment variable for Java 7.
 {% set removable_plugin_names = [
