@@ -149,21 +149,6 @@ deploy_sonar_service_script:
             - cmd: sonar_package
             {% endif %}
 
-{% if False %}
-# OBS-975: This file is overriding extension deployed by default.
-#          The new file exports the environment variable for Java 7.
-{% set removable_plugin_names = [
-        'sonar-java-plugin-3.9.jar'
-        ,
-        'sonar-scm-git-plugin-1.1.jar'
-    ]
-%}
-{% for file_name in removable_plugin_names %}
-remove_default_sonar_plugin_{{ file_name }}:
-    file.absent:
-        - name: '/opt/sonar/extensions/plugins/{{ file_name }}'
-{% endfor %}
-
 # Import macros to query info based on resource id.
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_registered_content_item_URI with context %}
@@ -171,10 +156,10 @@ remove_default_sonar_plugin_{{ file_name }}:
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 
 # List of resource ids for each plugin.
-{% set required_sonar_plugins = pillar['system_features']['configure_sonar_qube']['install_plugins'] %}
+{% set required_sonar_plugin_ids = pillar['system_features']['configure_sonar_qube']['install_plugins'] %}
 
 # Loop through each plugin and deploy it.
-{% for resource_id in required_sonar_plugins %}
+{% for resource_id in required_sonar_plugin_ids %}
 
 deploy_sonar_plugin_{{ resource_id }}:
     file.managed:
@@ -214,15 +199,12 @@ sonar_service:
             - file: deploy_sonar_service_script
             - file: deploy_sonar_configuration_file
 
-{% for file_name in removable_plugin_names %}
-            - file: remove_default_sonar_plugin_{{ file_name }}
-{% endfor %}
-
-{% for resource_id in required_sonar_plugins %}
+{% for resource_id in required_sonar_plugin_ids %}
             - file: deploy_sonar_plugin_{{ resource_id }}
 {% endfor %}
 
 {% endif %}
+
 # >>>
 ###############################################################################:
 
