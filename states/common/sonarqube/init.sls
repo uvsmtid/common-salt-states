@@ -9,6 +9,11 @@ include:
 
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
 
+# NOTE: Due to issues with some other Sonarqube versions,
+#       the decision is to use specific version and
+#       pre-downloaded RPM file from resources.
+{% if False %}
+
 sonar_package:
     pkg.installed:
         - name: sonar
@@ -27,6 +32,27 @@ sonar_package:
         - require:
             - sls: common.mariadb
 
+{% else %}
+
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
+
+retrieve_sonar_rpm_package:
+    file.managed:
+        - name: '{{ config_temp_dir }}/sonar/sonar.rpm'
+        - source: {{ get_registered_content_item_URI('sonar_pre_downloaded_rpm') }}
+        - source_hash: {{ get_registered_content_item_hash('sonar_pre_downloaded_rpm') }}
+        - makedirs: True
+
+sonar_package:
+    cmd.run:
+        - name: 'yum install -y {{ config_temp_dir }}/sonar/sonar.rpm'
+        - require:
+            - file: retrieve_sonar_rpm_package
+
+{% endif %}
+
 # NOTE: Apparently, there is a Salt bug to propagate `skip_verify`
 #       as `--nogpgcheck` argument to `yum`.
 #       This state is response in case of `sonar_package` failure above - see:
@@ -35,7 +61,13 @@ ensure_sonar_package:
     cmd.run:
         - name: 'yum -y --nogpgcheck --enablerepo=sonar_qube install sonar'
         - onfail:
+
+            # NOTE: Use `cmd` instead of `pkg` - see reason above.
+            {% if False %}
             - pkg: sonar_package
+            {% else %}
+            - cmd: sonar_package
+            {% endif %}
 
 # Deploy SonarQube init script
 deploy_sonarqube_init_script:
@@ -47,7 +79,13 @@ deploy_sonarqube_init_script:
         - dir_mode: 755
         - mode: 755
         - require:
+
+            # NOTE: Use `cmd` instead of `pkg` - see reason above.
+            {% if False %}
             - pkg: sonar_package
+            {% else %}
+            - cmd: sonar_package
+            {% endif %}
 
 # Sonarqube Database Creation
 run_sonarqube_database_create:
@@ -61,7 +99,14 @@ run_sonarqube_database_create:
         - onchanges:
             - file: deploy_sonarqube_init_script
         - require:
+
+            # NOTE: Use `cmd` instead of `pkg` - see reason above.
+            {% if False %}
             - pkg: sonar_package
+            {% else %}
+            - cmd: sonar_package
+            {% endif %}
+
             - sls: common.mariadb
 
 deploy_sonar_configuration_file:
@@ -73,7 +118,13 @@ deploy_sonar_configuration_file:
         - dir_mode: 755
         - mode: 755
         - require:
+
+            # NOTE: Use `cmd` instead of `pkg` - see reason above.
+            {% if False %}
             - pkg: sonar_package
+            {% else %}
+            - cmd: sonar_package
+            {% endif %}
 
 # Deploy systemd service unit file.
 deploy_sonar_service_script:
@@ -85,7 +136,14 @@ deploy_sonar_service_script:
         - dir_mode: 755
         - mode: 755
         - require:
+
+            # NOTE: Use `cmd` instead of `pkg` - see reason above.
+            {% if False %}
             - pkg: sonar_package
+            {% else %}
+            - cmd: sonar_package
+            {% endif %}
+
 
 {% if False %}
 # DISABLED: Instead of init.d file, we use systemd unit file.
@@ -98,15 +156,22 @@ deploy_sonar_init_file:
         - dir_mode: 755
         - mode: 755
         - require:
+
+            # NOTE: Use `cmd` instead of `pkg` - see reason above.
+            {% if False %}
             - pkg: sonar_package
+            {% else %}
+            - cmd: sonar_package
+            {% endif %}
+
 {% endif %}
 
 # OBS-975: This file is overriding extension deployed by default.
 #          The new file exports the environment variable for Java 7.
 {% set removable_plugin_names = [
-        'sonar-java-plugin-3.7.1.jar'
+        'sonar-java-plugin-3.9.jar'
         ,
-        'sonar-scm-git-plugin-1.0.jar'
+        'sonar-scm-git-plugin-1.1.jar'
     ]
 %}
 {% for file_name in removable_plugin_names %}
@@ -135,7 +200,14 @@ deploy_sonar_plugin_{{ resource_id }}:
         - mode: 644
         - makedirs: True
         - require:
+
+            # NOTE: Use `cmd` instead of `pkg` - see reason above.
+            {% if False %}
             - pkg: sonar_package
+            {% else %}
+            - cmd: sonar_package
+            {% endif %}
+
 
 {% endfor %}
 
@@ -146,7 +218,14 @@ sonar_service:
         - enable: True
         # NOTE: Restart the service if there are any changes.
         - watch:
+
+            # NOTE: Use `cmd` instead of `pkg` - see reason above.
+            {% if False %}
             - pkg: sonar_package
+            {% else %}
+            - cmd: sonar_package
+            {% endif %}
+
             - cmd: run_sonarqube_database_create
             - file: deploy_sonar_service_script
             - file: deploy_sonar_configuration_file
