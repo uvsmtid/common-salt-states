@@ -4,22 +4,19 @@
 
 system_resources:
 
-    # This is just an example.
-    {% if False %}
-    # Jenkins YUM repository key (to verify signed RPM packages).
-    # Downloadable from:
-    #   http://pkg.jenkins-ci.org/redhat/
-    jenkins_yum_repository_rpm_verification_key:
+    # NOTE: Sonarqube is not from Fedora default repositories.
+    #       Therefore, it is a moving target package is installed
+    #       (even major version updates may be selected).
+    #       To avoid issues, fix the version of Sonarqube by using
+    #       this pre-downloaded RPM.
+    sonar_pre_downloaded_rpm:
         resource_repository: common-resources
         bootstrap_use_cases: True
         enable_content_validation: True
-        # In addition to importing RPM key, this enables configuration of
-        # Jenkins repository:
         enable_installation: True
-        item_parent_dir_path: common/jenkins
-        item_base_name: jenkins-ci.org.key
-        item_content_hash: md5=9fa06089848262c5a6383ec27fdd2575
-    {% endif %}
+        item_parent_dir_path: common/sonarqube
+        item_base_name: sonar-5.6-1.noarch.rpm
+        item_content_hash: md5=cd251c613ca20ca308f63140e35eb210
 
     # TODO: Use format `sonar_[name]_plugin` - see word order in original `item_base_name`.
     sonar_plugin_checkstyle:

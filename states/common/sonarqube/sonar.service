@@ -2,8 +2,12 @@
 # OBS-975: SystemD couldn't detect running SonarQube with
 #          original init.d script, so this unit file was added.
 
+# NOTE: One of the example of Sonar systemd service unit file
+#       can be found here:
+#           https://github.com/wichtounet/systemd-unit-files/blob/master/sonar.service
+
 [Unit]
-Description=Sonar 5.3
+Description=Sonar
 After=network-online.target
 Wants=network-online.target
 Conflicts=shutdown.target
@@ -16,6 +20,9 @@ ExecStart=/etc/rc.d/init.d/sonar start
 ExecStop=/etc/rc.d/init.d/sonar stop
 ExecReload=/etc/rc.d/init.d/sonar restart
 PIDFile=/opt/sonar/bin/linux-x86-64/SonarQube.pid
+# Do not use `sonar` user because script checks and exits with error otherwise:
+#   The sonar init script can only be run as root
+#User=sonar
 
 [Install]
 WantedBy=multi-user.target
