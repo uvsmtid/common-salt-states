@@ -70,7 +70,7 @@ ensure_sonar_package:
             {% endif %}
 
 # Deploy SonarQube init script
-deploy_sonarqube_init_script:
+deploy_sonarqube_database_init_script:
     file.managed:
         - name: '{{ config_temp_dir }}/sonar_init.sql'
         - source: 'salt://common/sonarqube/sonar_init.sql'
@@ -93,12 +93,17 @@ run_sonarqube_database_create:
 
         # WARNING: Database init should only be run when it does not exits
         #          (otherwise it will repeatedly overwrite existing history).
-        #       Add `unless` to check for existing database.
         - name: "mysql -u root < {{ config_temp_dir }}/sonar_init.sql"
-        # NOTE: We do not run SQL every time (only when there are changes).
-        - onchanges:
-            - file: deploy_sonarqube_init_script
+
+        # NOTE: User should manually drop DB in order for this script to run.
+        #       Unless to check for existing database.
+        #       In order to drop the database, execute this commands:
+        #           shell> mysql -u root
+        #           mysql> drop database sonar;
+        - unless: "mysqlshow 'sonar' > /dev/null 2>&1"
+
         - require:
+            - file: deploy_sonarqube_database_init_script
 
             # NOTE: Use `cmd` instead of `pkg` - see reason above.
             {% if False %}
