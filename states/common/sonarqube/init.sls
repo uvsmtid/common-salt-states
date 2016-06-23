@@ -27,7 +27,7 @@ sonar_package:
         - require:
             - sls: common.mariadb
 
-# NOTE: Apparently, there is a Salt bug to propaget `skip_verify`
+# NOTE: Apparently, there is a Salt bug to propagate `skip_verify`
 #       as `--nogpgcheck` argument to `yum`.
 #       This state is response in case of `sonar_package` failure above - see:
 #           https://docs.saltstack.com/en/latest/ref/states/requisites.html#onfail
@@ -52,8 +52,9 @@ deploy_sonarqube_init_script:
 # Sonarqube Database Creation
 run_sonarqube_database_create:
     cmd.run:
-        # TODO: Database init should only be run when it does not exits.
-        #       User should manually drop DB in order for this script to run.
+
+        # WARNING: Database init should only be run when it does not exits
+        #          (otherwise it will repeatedly overwrite existing history).
         #       Add `unless` to check for existing database.
         - name: "mysql -u root < {{ config_temp_dir }}/sonar_init.sql"
         # NOTE: We do not run SQL every time (only when there are changes).

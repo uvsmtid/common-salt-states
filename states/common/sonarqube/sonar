@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# NOTE: This script is a slight modification of the init.d script
+#       from original `sonar` RPM package.
+#       The last version it was synced with is `sonar-5.6-1.noarch`.
+
 ### BEGIN INIT INFO
 # Provides:          sonar
 # Required-Start:    $local_fs $remote_fs $network $time $named
