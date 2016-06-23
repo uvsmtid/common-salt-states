@@ -25,21 +25,20 @@ system_features:
                 # TODO: List of applicable platforms where this Java environment
                 # can be installed with their configuratoin.
                 os_platform_configs:
-                    fc21:
-                        JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
-                        rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
-                    # NOTE: Reusing the same configuration for `fc21` by `fc22`.
-                    fc22:
-                        JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
-                        rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
-                    # NOTE: Reusing the same configuration for `fc21` by `fc23`.
-                    fc23:
-                        JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
-                        rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
+
+                    {% for system_platform_id in [
+                            'fc21',
+                            'fc22',
+                            'fc23',
+                            'fc24',
+                        ]
+                    %}
+                    {{ system_platform_id }}:
                     # NOTE: Reusing the same configuration for `fc21` by `fc24`.
-                    fc24:
                         JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
                         rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
+                    {% endfor %}
+
                     rhel5:
                         JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
                         # `rpm_version` is used to check whether package is
@@ -57,17 +56,19 @@ system_features:
                     - java-1.8.0-openjdk
 
                 os_platform_configs:
-                    fc21:
-                        JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
+
+                    {% for system_platform_id in [
+                            'fc21',
+                            'fc22',
+                            'fc23',
+                            'fc24',
+                        ]
+                    %}
+                    {{ system_platform_id }}:
                     # NOTE: Reusing the same configuration for `fc21` by `fc22`.
-                    fc22:
                         JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
-                    # NOTE: Reusing the same configuration for `fc21` by `fc23`.
-                    fc23:
-                        JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
-                    # NOTE: Reusing the same configuration for `fc21` by `fc24`.
-                    fc24:
-                        JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
+                    {% endfor %}
+
                     rhel7:
                         JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
                     rhel5:
@@ -81,17 +82,19 @@ system_features:
                     - java-1.7.0-openjdk
 
                 os_platform_configs:
-                    fc21:
-                        JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
+
+                    {% for system_platform_id in [
+                            'fc21',
+                            'fc22',
+                            'fc23',
+                            'fc24',
+                        ]
+                    %}
+                    {{ system_platform_id }}:
                     # NOTE: Reusing the same configuration for `fc21` by `fc22`.
-                    fc22:
                         JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
-                    # NOTE: Reusing the same configuration for `fc21` by `fc23`.
-                    fc23:
-                        JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
-                    # NOTE: Reusing the same configuration for `fc21` by `fc24`.
-                    fc24:
-                        JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
+                    {% endfor %}
+
                     rhel7:
                         JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'
                     rhel5:

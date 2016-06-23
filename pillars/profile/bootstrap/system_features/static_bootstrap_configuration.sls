@@ -15,10 +15,17 @@ system_features:
         #       The whole idea about bootstrap is to have single package
         #       per system instance.
         os_platform_package_types:
-            fc21: tar.gz
-            fc22: tar.gz
-            fc23: tar.gz
-            fc24: tar.gz
+
+            {% for system_platform_id in [
+                    'fc21',
+                    'fc22',
+                    'fc23',
+                    'fc24',
+                ]
+            %}
+            {{ system_platform_id }}: tar.gz
+            {% endfor %}
+
             rhel5: tar.gz
             rhel7: tar.gz
             win7: zip
@@ -48,28 +55,22 @@ system_features:
                 step_enabled: True
                 salt_master_template: 'salt://common/salt/master/master.conf'
                 salt_master_rpm_sources:
-                    fc21:
-                        salt-master:
-                            source_type: tar
-                            resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
-                    fc22:
-                        salt-master:
-                            source_type: tar
-                            # NOTE: This RPM was created for `fc21` and simply reused here.
-                            # TODO: Generate new resource for `fc22`.
-                            resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
-                    fc23:
-                        salt-master:
-                            source_type: tar
-                            # NOTE: This RPM was created for `fc21` and simply reused here.
-                            # TODO: Generate new resource for `fc23`.
-                            resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
-                    fc24:
+
+                    {% for system_platform_id in [
+                            'fc21',
+                            'fc22',
+                            'fc23',
+                            'fc24',
+                        ]
+                    %}
+                    {{ system_platform_id }}:
                         salt-master:
                             source_type: tar
                             # NOTE: This RPM was created for `fc21` and simply reused here.
                             # TODO: Generate new resource for `fc24`.
                             resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
+                    {% endfor %}
+
                     rhel5:
                         salt:
                             source_type: tar
@@ -99,28 +100,22 @@ system_features:
                 salt_minion_online_template: 'salt://common/salt/minion/minion.online.conf'
                 salt_minion_offline_template: 'salt://common/salt/minion/minion.offline.conf'
                 salt_minion_rpm_sources:
-                    fc21:
-                        salt-master:
-                            source_type: tar
-                            resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
-                    fc22:
-                        salt-master:
-                            source_type: tar
-                            # NOTE: This RPM was created for `fc21` and simply reused here.
-                            # TODO: Generate new resource for `fc22`.
-                            resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
-                    fc23:
-                        salt-master:
-                            source_type: tar
-                            # NOTE: This RPM was created for `fc21` and simply reused here.
-                            # TODO: Generate new resource for `fc23`.
-                            resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
-                    fc24:
+
+                    {% for system_platform_id in [
+                            'fc21',
+                            'fc22',
+                            'fc23',
+                            'fc24',
+                        ]
+                    %}
+                    {{ system_platform_id }}:
                         salt-master:
                             source_type: tar
                             # NOTE: This RPM was created for `fc21` and simply reused here.
                             # TODO: Generate new resource for `fc24`.
                             resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
+                    {% endfor %}
+
                     rhel5:
                         salt:
                             source_type: tar
