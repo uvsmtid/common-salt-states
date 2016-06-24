@@ -48,6 +48,8 @@ retrieve_sonar_rpm_package:
 sonar_package:
     cmd.run:
         - name: 'yum install -y {{ config_temp_dir }}/sonar/sonar.rpm'
+        # NOTE: Do not reinstall sonar (if exists).
+        - unless: 'rpm -qi sonar'
         - require:
             - file: retrieve_sonar_rpm_package
 
