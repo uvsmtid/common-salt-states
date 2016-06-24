@@ -368,9 +368,10 @@ system_features:
                 os_platform_configs:
 
                     {% for system_platform_id in [
-                            'fc22'
-                            ,
-                            'fc23'
+                            'fc21',
+                            'fc22',
+                            'fc23',
+                            'fc24',
                         ]
                     %}
                     {{ system_platform_id }}:
