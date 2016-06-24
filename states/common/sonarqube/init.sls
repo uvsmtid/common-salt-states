@@ -93,6 +93,8 @@ run_sonarqube_database_create:
 
         # WARNING: Database init should only be run when it does not exits
         #          (otherwise it will repeatedly overwrite existing history).
+        # NOTE: This requires mariadb fresh installation
+        #       (when passord is not yet set).
         - name: "mysql -u root < {{ config_temp_dir }}/sonar_init.sql"
 
         # NOTE: User should manually drop DB in order for this script to run.
@@ -100,7 +102,7 @@ run_sonarqube_database_create:
         #       In order to drop the database, execute this commands:
         #           shell> mysql -u root
         #           mysql> drop database sonar;
-        - unless: "mysqlshow 'sonar' > /dev/null 2>&1"
+        - unless: "mysqlshow 'sonar' 1> /dev/null 2>&1"
 
         - require:
             - file: deploy_sonarqube_database_init_script
