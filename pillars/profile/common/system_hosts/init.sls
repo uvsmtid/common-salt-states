@@ -11,6 +11,8 @@ include:
         ,
         'rhel7_minion'
         ,
+        'fedora_minion'
+        ,
         'nexus'
         ,
         'sonar'
