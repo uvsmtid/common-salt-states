@@ -24,23 +24,35 @@ install_maven_package:
 {% set user_home_dir = account_conf['posix_user_home_dir'] %}
 
 {% set resource_id = 'maven_pre_downloaded_rpm' %}
+
+maven_distribution_target_dir:
+    file.directory:
+        - name: '/opt'
+        - makedirs: True
+
 extract_maven_distribution_archive:
     archive.extracted:
-        - name: '{{ user_home_dir }}/Apps/maven'
+        - name: '/opt/maven'
         - source: {{ get_registered_content_item_URI(resource_id) }}
         - source_hash: {{ get_registered_content_item_hash(resource_id) }}
         - archive_format: tar
         - archive_user: '{{ account_conf['username'] }}'
+        - require:
+            - file: maven_distribution_target_dir
 
 maven_distribution_permissions:
     file.directory:
-        - name: '{{ user_home_dir }}/Apps/maven'
+        - name: '/opt/maven'
         - source: ~
+
+        {% if True %}
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['primary_group'] }}'
         - recurse:
             - user
             - group
+        {% endif %}
+
         - require:
             - archive: extract_maven_distribution_archive
 
