@@ -12,6 +12,8 @@ include:
         'sonar_qube'
         ,
         'wildfly'
+        ,
+        'maven'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

@@ -5,10 +5,46 @@
 # NOTE: RHEL5 does not include `maven` package.
 {% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
+# NOTE: Use specific Maven version from pre-downloaded package.
+#       This helps to avoid issues with some plugins, if needed.
+{% if False %}
+
 install_maven_package:
     pkg.installed:
         - name: maven
         - aggregate: True
+
+{% else %}
+
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_URI with context %}
+{% from resources_macro_lib import get_registered_content_item_hash with context %}
+
+{% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+{% set user_home_dir = account_conf['posix_user_home_dir'] %}
+
+{% set resource_id = 'maven_pre_downloaded_rpm' %}
+extract_maven_distribution_archive:
+    archive.extracted:
+        - name: '{{ user_home_dir }}/Apps/maven'
+        - source: {{ get_registered_content_item_URI(resource_id) }}
+        - source_hash: {{ get_registered_content_item_hash(resource_id) }}
+        - archive_format: tar
+        - archive_user: '{{ account_conf['username'] }}'
+
+maven_distribution_permissions:
+    file.directory:
+        - name: '{{ user_home_dir }}/Apps/maven'
+        - source: ~
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
+        - recurse:
+            - user
+            - group
+        - require:
+            - archive: extract_maven_distribution_archive
+
+{% endif %}
 
 {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
 maven_configuration_file:
