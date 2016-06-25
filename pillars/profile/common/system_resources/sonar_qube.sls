@@ -9,6 +9,10 @@ system_resources:
     #       (even major version updates may be selected).
     #       To avoid issues, fix the version of Sonarqube by using
     #       this pre-downloaded RPM.
+    # NOTE: Sonar 5.6 had to be reverted to 5.3 to use JDK 7.
+    #       Otherwise, analysis during the build fails due
+    #       unsupported Java version (apparently on the server side).
+    {% if False %}
     sonar_pre_downloaded_rpm:
         resource_repository: common-resources
         bootstrap_use_cases: True
@@ -17,6 +21,16 @@ system_resources:
         item_parent_dir_path: common/sonarqube
         item_base_name: sonar-5.6-1.noarch.rpm
         item_content_hash: md5=cd251c613ca20ca308f63140e35eb210
+    {% else %}
+    sonar_pre_downloaded_rpm:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: common/sonarqube
+        item_base_name: sonar-5.3-1.noarch.rpm
+        item_content_hash: md5=1ad1c713db948cd27c5dac575be47542
+    {% endif %}
 
     # TODO: Use format `sonar_[name]_plugin` - see word order in original `item_base_name`.
     sonar_plugin_checkstyle:

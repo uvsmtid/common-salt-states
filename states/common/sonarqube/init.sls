@@ -32,6 +32,22 @@ sonar_package:
         - require:
             - sls: common.mariadb
 
+# NOTE: Apparently, there is a Salt bug to propagate `skip_verify`
+#       as `--nogpgcheck` argument to `yum`.
+#       This state is response in case of `sonar_package` failure above - see:
+#           https://docs.saltstack.com/en/latest/ref/states/requisites.html#onfail
+ensure_sonar_package:
+    cmd.run:
+        - name: 'yum -y --nogpgcheck --enablerepo=sonar_qube install sonar'
+        - onfail:
+
+            # NOTE: Use `cmd` instead of `pkg` - see reason above.
+            {% if False %}
+            - pkg: sonar_package
+            {% else %}
+            - cmd: sonar_package
+            {% endif %}
+
 {% else %}
 
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
@@ -54,22 +70,6 @@ sonar_package:
             - file: retrieve_sonar_rpm_package
 
 {% endif %}
-
-# NOTE: Apparently, there is a Salt bug to propagate `skip_verify`
-#       as `--nogpgcheck` argument to `yum`.
-#       This state is response in case of `sonar_package` failure above - see:
-#           https://docs.saltstack.com/en/latest/ref/states/requisites.html#onfail
-ensure_sonar_package:
-    cmd.run:
-        - name: 'yum -y --nogpgcheck --enablerepo=sonar_qube install sonar'
-        - onfail:
-
-            # NOTE: Use `cmd` instead of `pkg` - see reason above.
-            {% if False %}
-            - pkg: sonar_package
-            {% else %}
-            - cmd: sonar_package
-            {% endif %}
 
 # Deploy SonarQube init script
 deploy_sonarqube_database_init_script:
@@ -121,7 +121,7 @@ run_sonarqube_database_create:
 deploy_sonar_configuration_file:
     file.managed:
         - name: '/opt/sonar/conf/sonar.properties'
-        - source: 'salt://common/sonarqube/sonar.properties'
+        - source: 'salt://common/sonarqube/sonar-5.3.properties'
         - template: jinja
         - makedirs: True
         - dir_mode: 755
