@@ -1419,6 +1419,12 @@ system_features:
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
+                # NOTE: Current default is to avoid destroying Vagrant hosts
+                #       because there are some issues with Vagrant leaving
+                #       VMs with incorrect IP address.
+                #       NOTE: This issues seems fixed in Fedora 24.
+                # NOTE: There are also some manual steps (e.g. screen resolution)
+                #       which are not configured automatically yet.
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
@@ -1450,6 +1456,12 @@ system_features:
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
+                # NOTE: Current default is to avoid destroying Vagrant hosts
+                #       because there are some issues with Vagrant leaving
+                #       VMs with incorrect IP address.
+                #       NOTE: This issues seems fixed in Fedora 24.
+                # NOTE: There are also some manual steps (e.g. screen resolution)
+                #       which are not configured automatically yet.
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
@@ -1481,6 +1493,12 @@ system_features:
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
+                # NOTE: Current default is to avoid destroying Vagrant hosts
+                #       because there are some issues with Vagrant leaving
+                #       VMs with incorrect IP address.
+                #       NOTE: This issues seems fixed in Fedora 24.
+                # NOTE: There are also some manual steps (e.g. screen resolution)
+                #       which are not configured automatically yet.
                 skip_script_execution: {{ skip_script_execution }}
 
                 input_fingerprinted_artifacts:
