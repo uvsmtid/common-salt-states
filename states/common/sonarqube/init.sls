@@ -121,7 +121,7 @@ run_sonarqube_database_create:
 deploy_sonar_configuration_file:
     file.managed:
         - name: '/opt/sonar/conf/sonar.properties'
-        - source: 'salt://common/sonarqube/sonar.properties'
+        - source: 'salt://common/sonarqube/sonar-5.3.properties'
         - template: jinja
         - makedirs: True
         - dir_mode: 755
