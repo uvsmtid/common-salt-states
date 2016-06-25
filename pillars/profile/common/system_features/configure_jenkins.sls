@@ -960,7 +960,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 # NOTE: This job is special.
-                #       While all other jobs run through Jenkins Slaves
+                #       While many other jobs run through Jenkins Slaves
                 #       (even if this Slave may run on Jenkins Master),
                 #       this job is actually executed by Jenkins Master.
                 #       This is required to be able to keep connection
@@ -1415,8 +1415,19 @@ system_features:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
 
+                # NOTE: This job is special.
+                #       While many other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                # NOTE: This is required because even Jenkins Slave
+                #       running on the same host with Jenkins Master
+                #       will destroy its network (together with its
+                #       connection to master) while destroying (Vagrant) VMs.
+                #       This will fail the job with error:
+                #           Slave went offline during the build
+                force_jenkins_master: True
                 restrict_to_system_role:
-                    - controller_role
+                    - jenkins_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1452,8 +1463,19 @@ system_features:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
 
+                # NOTE: This job is special.
+                #       While many other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                # NOTE: This is required because even Jenkins Slave
+                #       running on the same host with Jenkins Master
+                #       may not have necessary (virtual) network configured
+                #       as it may be created only with (Vagrant) VMs
+                #       Such Jenkins Slave may be inaccessible by
+                #       its known IP address to master yet.
+                force_jenkins_master: True
                 restrict_to_system_role:
-                    - controller_role
+                    - jenkins_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1489,8 +1511,19 @@ system_features:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
 
+                # NOTE: This job is special.
+                #       While many other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                # NOTE: This is required because even Jenkins Slave
+                #       running on the same host with Jenkins Master
+                #       may not have necessary (virtual) network configured
+                #       as it may be created only with (Vagrant) VMs
+                #       Such Jenkins Slave may be inaccessible by
+                #       its known IP address to master yet.
+                force_jenkins_master: True
                 restrict_to_system_role:
-                    - controller_role
+                    - jenkins_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1526,8 +1559,16 @@ system_features:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
 
+                # NOTE: This job is special.
+                #       While many other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                # NOTE: This is required as Jenkins Slaves may not yet
+                #       have necessary SSH keys distributed
+                #       (so, they may not be able to connect to master yet).
+                force_jenkins_master: True
                 restrict_to_system_role:
-                    - controller_role
+                    - jenkins_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1557,8 +1598,16 @@ system_features:
                     build_days: {{ discard_build_days }}
                     build_num: {{ discard_build_num }}
 
+                # NOTE: This job is special.
+                #       While many other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                # NOTE: This is required as Jenkins Slaves may not yet
+                #       have necessary SSH keys distributed
+                #       (so, they may not be able to connect to master yet).
+                force_jenkins_master: True
                 restrict_to_system_role:
-                    - controller_role
+                    - jenkins_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1589,7 +1638,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 # NOTE: This job is special.
-                #       While all other jobs run through Jenkins Slaves
+                #       While many other jobs run through Jenkins Slaves
                 #       (even if this Slave may run on Jenkins Master),
                 #       this job is actually executed by Jenkins Master.
                 #       This is required to be able to keep connection
