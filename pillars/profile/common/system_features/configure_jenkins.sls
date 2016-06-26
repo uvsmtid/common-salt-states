@@ -1432,6 +1432,7 @@ system_features:
                 #       Instead, we use Jenkins Slave which is connected
                 #       via `localhost`.
                 force_jenkins_master: False
+                jenkins_master_role: localhost_role
                 restrict_to_system_role:
                     - localhost_role
 
@@ -1486,6 +1487,7 @@ system_features:
                 #       Instead, we use Jenkins Slave which is connected
                 #       via `localhost`.
                 force_jenkins_master: False
+                jenkins_master_role: localhost_role
                 restrict_to_system_role:
                     - localhost_role
 
@@ -1540,6 +1542,7 @@ system_features:
                 #       Instead, we use Jenkins Slave which is connected
                 #       via `localhost`.
                 force_jenkins_master: False
+                jenkins_master_role: localhost_role
                 restrict_to_system_role:
                     - localhost_role
 
@@ -1591,6 +1594,7 @@ system_features:
                 #       Instead, we use Jenkins Slave which is connected
                 #       via `localhost`.
                 force_jenkins_master: False
+                jenkins_master_role: localhost_role
                 restrict_to_system_role:
                     - localhost_role
 
@@ -1636,6 +1640,7 @@ system_features:
                 #       Instead, we use Jenkins Slave which is connected
                 #       via `localhost`.
                 force_jenkins_master: False
+                jenkins_master_role: localhost_role
                 restrict_to_system_role:
                     - localhost_role
 
