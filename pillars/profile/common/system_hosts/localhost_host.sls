@@ -36,7 +36,7 @@ system_hosts:
             localhost_net:
                 ip: 127.0.0.1
 
-        primary_user: obsdev_user
+        primary_user: default_user
 
 {% endif %}
 

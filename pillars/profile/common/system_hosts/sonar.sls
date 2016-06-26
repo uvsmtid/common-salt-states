@@ -31,7 +31,7 @@ system_hosts:
             {{ primary_network['network_name'] }}:
                 ip: {{ props['enabled_minion_hosts']['sonar'] }}
 
-        primary_user: obsdev_user
+        primary_user: default_user
 
 {% endif %}
 
