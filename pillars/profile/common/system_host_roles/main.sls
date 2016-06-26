@@ -25,6 +25,15 @@
 
 system_host_roles:
 
+    # Special case: host role which poings to localhost.
+    localhost_role:
+        hostname: localhost-host-role-host
+        assigned_hosts:
+            {{ filter_assigned_hosts_by_enabled_minion_hosts([
+                    'localhost_host'
+                ])
+            }}
+
     # Primary console is the machine which user/developer
     # interacts with to control the rest of the system.
     # It should normally be a barebone machine and may
