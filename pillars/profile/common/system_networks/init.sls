@@ -11,6 +11,8 @@
 include:
 
 {% for sub_item in [
+        'localhost_net'
+        ,
         primary_network['network_name']
         ,
         'internal_net_A'
