@@ -5,6 +5,8 @@
 include:
 
 {% for sub_item in [
+        'localhost_host'
+        ,
         'master_minion_id'
         ,
         'rhel5_minion'
