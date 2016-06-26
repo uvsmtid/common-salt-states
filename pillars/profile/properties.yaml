@@ -119,6 +119,9 @@ primary_network:
 #       - List of accepted minions configured by `salt-key` command should
 #         be re-configured accordingly so that `*` actually means this list.
 enabled_minion_hosts:
+    # NOTE: `localhost_host` is special non-minion host which must be defined.
+    localhost_host: 127.0.0.1
+
     master_minion_id: 192.168.40.1
     rhel5_minion: 192.168.40.10
     rhel7_minion: 192.168.40.20
