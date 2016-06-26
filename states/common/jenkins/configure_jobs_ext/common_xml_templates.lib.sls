@@ -722,7 +722,13 @@ cd -
 {% macro get_JENKINS_CLI_TOOL_INVOKE_STRING(job_config, job_environ) %}
 {% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
+
+{% if 'jenkins_master_role' in job_config and job_config['jenkins_master_role'] %}
+{% set jenkins_master_hostname = pillar['system_hosts'][ pillar['system_host_roles'][ job_config['jenkins_master_role'] ]['assigned_hosts'][0] ]['hostname'] %}
+{% else %}
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
+{% endif %}
+
 JENKINS_CLI_TOOL_INVOKE_STRING='java -jar jenkins-cli.jar -s "http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/"'
 
 # Download Jenkins CLI tool.
