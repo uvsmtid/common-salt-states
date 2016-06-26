@@ -1425,9 +1425,15 @@ system_features:
                 #       connection to master) while destroying (Vagrant) VMs.
                 #       This will fail the job with error:
                 #           Slave went offline during the build
-                force_jenkins_master: True
+                # NOTE: We cannot run on true Jenkins Master
+                #       (which is available on Jenkins by default)
+                #       because its jobs executed by default user (`jenkins`)
+                #       which may not have access to Vagrant file.
+                #       Instead, we use Jenkins Slave which is connected
+                #       via `localhost`.
+                force_jenkins_master: False
                 restrict_to_system_role:
-                    - jenkins_master_role
+                    - localhost_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1473,9 +1479,15 @@ system_features:
                 #       as it may be created only with (Vagrant) VMs
                 #       Such Jenkins Slave may be inaccessible by
                 #       its known IP address to master yet.
-                force_jenkins_master: True
+                # NOTE: We cannot run on true Jenkins Master
+                #       (which is available on Jenkins by default)
+                #       because its jobs executed by default user (`jenkins`)
+                #       which may not have `sudo` enabled.
+                #       Instead, we use Jenkins Slave which is connected
+                #       via `localhost`.
+                force_jenkins_master: False
                 restrict_to_system_role:
-                    - jenkins_master_role
+                    - localhost_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1521,9 +1533,15 @@ system_features:
                 #       as it may be created only with (Vagrant) VMs
                 #       Such Jenkins Slave may be inaccessible by
                 #       its known IP address to master yet.
-                force_jenkins_master: True
+                # NOTE: We cannot run on true Jenkins Master
+                #       (which is available on Jenkins by default)
+                #       because its jobs executed by default user (`jenkins`)
+                #       which may not have access to Vagrant file.
+                #       Instead, we use Jenkins Slave which is connected
+                #       via `localhost`.
+                force_jenkins_master: False
                 restrict_to_system_role:
-                    - jenkins_master_role
+                    - localhost_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1566,9 +1584,15 @@ system_features:
                 # NOTE: This is required as Jenkins Slaves may not yet
                 #       have necessary SSH keys distributed
                 #       (so, they may not be able to connect to master yet).
-                force_jenkins_master: True
+                # NOTE: We cannot run on true Jenkins Master
+                #       (which is available on Jenkins by default)
+                #       because its jobs executed by default user (`jenkins`)
+                #       which may not have `sudo` enabled.
+                #       Instead, we use Jenkins Slave which is connected
+                #       via `localhost`.
+                force_jenkins_master: False
                 restrict_to_system_role:
-                    - jenkins_master_role
+                    - localhost_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1605,9 +1629,15 @@ system_features:
                 # NOTE: This is required as Jenkins Slaves may not yet
                 #       have necessary SSH keys distributed
                 #       (so, they may not be able to connect to master yet).
-                force_jenkins_master: True
+                # NOTE: We cannot run on true Jenkins Master
+                #       (which is available on Jenkins by default)
+                #       because its jobs executed by default user (`jenkins`)
+                #       which may not have `sudo` enabled.
+                #       Instead, we use Jenkins Slave which is connected
+                #       via `localhost`.
+                force_jenkins_master: False
                 restrict_to_system_role:
-                    - jenkins_master_role
+                    - localhost_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 

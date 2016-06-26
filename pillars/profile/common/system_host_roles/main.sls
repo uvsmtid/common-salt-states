@@ -115,6 +115,8 @@ system_host_roles:
         hostname: jenkins-slave-role-host
         assigned_hosts:
             {{ filter_assigned_hosts_by_enabled_minion_hosts([
+                    'localhost_host'
+                    ,
                     master_minion_id
                     ,
                     'rhel5_minion'
