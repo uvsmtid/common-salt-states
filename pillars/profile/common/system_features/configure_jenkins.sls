@@ -346,7 +346,9 @@ system_features:
 
                 # NOTE: Build once a day after office hours.
                 #       This is in addition to SCM trigger.
-                timer_spec: 'H 22 * * *'
+                #       Use early morning to keep timestamps within
+                #       the same date.
+                timer_spec: 'H 01 * * *'
 
                 scm_poll_timer_spec: '*/1 * * * *'
 
@@ -689,8 +691,6 @@ system_features:
                 restrict_to_system_role:
                     - controller_role
 
-                neglect_run_salt_orchestrate_error_state: False
-
                 condition_job_list:
 
                     # Demand completion of deployment.
@@ -1014,7 +1014,9 @@ system_features:
                     ^.*$
 
                 # NOTE: Build once a day after office hours.
-                timer_spec: 'H 22 * * *'
+                #       Use early morning to keep timestamps within
+                #       the same date after full pipeline build.
+                timer_spec: 'H 05 * * *'
 
                 # TODO: At the moment Maven jobs cannot be skipped.
                 skip_if_true: SKIP_MAVEN_PIPELINE
@@ -1233,7 +1235,7 @@ system_features:
                 # TODO: Actually, this does not select JDK properly because
                 #       started JVM (java executable) is still different.
                 # NOTE: This variables has to be synced with deployment
-                #       of specific JDK refered here.
+                #       of specific JDK referred here.
                 job_environment_variables:
                     JAVA_HOME: '/usr/java/jdk1.7.0_71'
                     PATH: '/usr/java/jdk1.7.0_71/bin:${PATH}'
@@ -1441,7 +1443,8 @@ system_features:
                 # NOTE: Current default is to avoid destroying Vagrant hosts
                 #       because there are some issues with Vagrant leaving
                 #       VMs with incorrect IP address.
-                #       NOTE: This issues seems fixed in Fedora 24.
+                #         https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-227637698
+                # NOTE: This issues seems fixed in Fedora 24.
                 # NOTE: There are also some manual steps (e.g. screen resolution)
                 #       which are not configured automatically yet.
                 skip_script_execution: {{ skip_script_execution }}
@@ -1496,7 +1499,8 @@ system_features:
                 # NOTE: Current default is to avoid destroying Vagrant hosts
                 #       because there are some issues with Vagrant leaving
                 #       VMs with incorrect IP address.
-                #       NOTE: This issues seems fixed in Fedora 24.
+                #         https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-227637698
+                # NOTE: This issues seems fixed in Fedora 24.
                 # NOTE: There are also some manual steps (e.g. screen resolution)
                 #       which are not configured automatically yet.
                 skip_script_execution: {{ skip_script_execution }}
@@ -1551,7 +1555,8 @@ system_features:
                 # NOTE: Current default is to avoid destroying Vagrant hosts
                 #       because there are some issues with Vagrant leaving
                 #       VMs with incorrect IP address.
-                #       NOTE: This issues seems fixed in Fedora 24.
+                #         https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-227637698
+                # NOTE: This issues seems fixed in Fedora 24.
                 # NOTE: There are also some manual steps (e.g. screen resolution)
                 #       which are not configured automatically yet.
                 skip_script_execution: {{ skip_script_execution }}
@@ -1601,6 +1606,13 @@ system_features:
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
                 skip_script_execution: {{ skip_script_execution }}
+
+                #NOTE:  run_salt_orchestrate job is randomly failing and it blocks the
+                # build further and it is understood that the orchestrate job is needed
+                # when the cross platform's services are to up before run the salt high state.
+                # In clearsea, neglect_run_salt_orchestrate_error_state, is set to True to proceed further
+                # eventhough the run_salt_orchastreate is having error
+                neglect_run_salt_orchestrate_error_state: False
 
                 input_fingerprinted_artifacts:
                     01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml

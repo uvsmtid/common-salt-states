@@ -15,6 +15,8 @@ include:
         ,
         'fedora_minion'
         ,
+        'jenkins'
+        ,
         'nexus'
         ,
         'sonar'

@@ -67,6 +67,8 @@ include:
         ,
         'configure_sonar_qube'
         ,
+        'sonarqube_quality_gates'
+        ,
         'wildfly_deployments'
     ]
 %}
