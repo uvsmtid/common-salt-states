@@ -109,17 +109,19 @@ jenkins_configuration_file:
         - template: jinja
         - makedirs: False
 
-# TODO: This is supposed to be refactored to be done through configuration.
-# Deploy configuration files for plugins which need them (in advance).
-{% for plugin_config_file in [
+{% set plugin_config_file_list = [
         'sidebar-link.xml',
         'jenkins.advancedqueue.PriorityConfiguration.xml',
         'jenkins.advancedqueue.PrioritySorterConfiguration.xml',
-        'hudson.plugins.sonar.MsBuildSQRunnerInstallation.xml',                
-        'hudson.plugins.sonar.SonarPublisher.xml',                             
+        'hudson.plugins.sonar.MsBuildSQRunnerInstallation.xml',
+        'hudson.plugins.sonar.SonarPublisher.xml',
         'hudson.plugins.sonar.SonarRunnerInstallation.xml',
     ]
 %}
+
+# TODO: This is supposed to be refactored to be done through configuration.
+# Deploy configuration files for plugins which need them (in advance).
+{% for plugin_config_file in plugin_config_file_list %}
 
 jenkins_plugin_config_file_{{ plugin_config_file }}:
     file.managed:
@@ -133,10 +135,18 @@ jenkins_plugin_config_file_{{ plugin_config_file }}:
 # The following state does not work at the moment due to a bug:
 #   https://github.com/saltstack/salt/issues/11900
 
+# NOTE: In order to wait for end of Jenkins restart, see/use:
+#       states/common/jenkins/download_jenkins_cli_tool.sls
+# NOTE: We do not restart Jenkins because this state may be part
+#       of the `highstate` run by Jenkins job. Instead, we only
+#       require Jenkins to be started.
 activate_jenkins_service:
     service.running:
         - name: jenkins
         - enable: True
+        # Cannot watch - see above
+        # (Jenkins should not be restarted in its own job).
+        #- watch:
         - require:
             # See comments above why `cmd` and not `pkg`.
             {% if False %}
@@ -144,6 +154,11 @@ activate_jenkins_service:
             {% else %}
             - cmd: jenkins_rpm_package
             {% endif %}
+# TODO: This is duplication - see below.
+# Changes in configuration files require Jenkins restart.
+{% for plugin_config_file in plugin_config_file_list %}
+            - file: jenkins_plugin_config_file_{{ plugin_config_file }}
+{% endfor %}
             - file: jenkins_credentials_configuration_file
             - file: jenkins_configuration_file
 
@@ -162,19 +177,27 @@ jenkins_service_enable:
             {% else %}
             - cmd: jenkins_rpm_package
             {% endif %}
-            - file: jenkins_credentials_configuration_file
-            - file: jenkins_configuration_file
 
 # NOTE: In order to wait for end of Jenkins restart, see/use:
 #       states/common/jenkins/download_jenkins_cli_tool.sls
 # NOTE: We do not restart Jenkins because this state may be part
-#       of the `highstate` ruy by Jenkins job. Instead, we only
+#       of the `highstate` run by Jenkins job. Instead, we only
 #       require Jenkins to be started.
 jenkins_service_start:
     cmd.run:
         - name: "systemctl start jenkins"
+        # Cannot watch - see above
+        # (Jenkins should not be restarted in its own job).
+        #- watch:
         - require:
             - cmd: jenkins_service_enable
+# TODO: This is duplication - see above.
+# Changes in configuration files require Jenkins restart.
+{% for plugin_config_file in plugin_config_file_list %}
+            - file: jenkins_plugin_config_file_{{ plugin_config_file }}
+{% endfor %}
+            - file: jenkins_credentials_configuration_file
+            - file: jenkins_configuration_file
 
 {% endif %} # Disabled
 
