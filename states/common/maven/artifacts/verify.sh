@@ -27,6 +27,14 @@ export PATH="${JAVA_HOME}/bin:${PATH}"
 # TODO: Do not hardcode it - get from Salt pillar.
 export MAVEN_OPTS="-Xmx2048m -XX:MaxPermSize=512m"
 
+# OBS-2336: Put required Maven version in front of the `PATH`.
+# It is supposed to be deployed by Salt.
+if [ -d "/opt/maven/apache-maven-3.2.5/bin" ]
+then
+    export PATH="/opt/maven/apache-maven-3.2.5/bin:$PATH"
+    export M2_HOME="/opt/maven/apache-maven-3.2.5"
+fi
+
 # Get directory the script is in.
 SCRIPT_DIR="$( dirname "${0}" )"
 if [ "${SCRIPT_DIR:0:1}" == '/' ]
