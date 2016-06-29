@@ -243,7 +243,12 @@ def main():
     salt_master_conf['pillar_opts'] = True
     salt_master_conf['show_jid'] = True
     salt_master_conf['show_timeout'] = True
-    salt_master_conf['timeout'] = 30
+    # NOTE: We are ready to wait for 10 min (600 sec) to get response.
+    salt_master_conf['timeout'] = 600
+    salt_master_conf['gather_job_timeout'] = 600
+    # Original `worker_threads` is set to 5, but
+    # maybe 15 will make it more responsive.
+    salt_master_conf['worker_threads'] = 15
 
     # - Save configuration.
     try:

@@ -29,6 +29,7 @@ system_features:
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
@@ -42,6 +43,7 @@ system_features:
                     rhel7:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -52,6 +54,7 @@ system_features:
                     rhel5:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -77,6 +80,7 @@ system_features:
                         # Default is enabled.
                         # Keep it enabled for all updates.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
@@ -91,6 +95,7 @@ system_features:
                         # Default is enabled.
                         # NOTE: Disable updates repo - use relase-time one.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -102,6 +107,7 @@ system_features:
                         # Default is enabled.
                         # NOTE: Disable updates repo - use relase-time one.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -118,6 +124,7 @@ system_features:
                     #{#
                     rhel7:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -129,6 +136,7 @@ system_features:
                     rhel5:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -144,6 +152,7 @@ system_features:
                     rhel7:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -154,6 +163,7 @@ system_features:
                     rhel5:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -169,6 +179,7 @@ system_features:
                     rhel7:
                         # Default is disabled.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -179,6 +190,7 @@ system_features:
                     rhel5:
                         # Default is disabled.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -195,6 +207,7 @@ system_features:
                     #{#
                     rhel7:
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -206,6 +219,7 @@ system_features:
                     rhel5:
                         # Default is disabled.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -221,6 +235,7 @@ system_features:
 
                     rhel7:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
@@ -230,6 +245,7 @@ system_features:
 
                     rhel5:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
@@ -247,6 +263,7 @@ system_features:
 
                     rhel5:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-$releasever-$basearch'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
@@ -276,6 +293,7 @@ system_features:
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
@@ -289,6 +307,7 @@ system_features:
 
                     rhel7:
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
@@ -320,6 +339,7 @@ system_features:
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
@@ -333,6 +353,7 @@ system_features:
 
                     rhel7:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
@@ -349,6 +370,7 @@ system_features:
 
                     rhel5:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         {% if False %}
                         # It seems these are obsolete URLs.
@@ -376,6 +398,7 @@ system_features:
                     %}
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'
 
