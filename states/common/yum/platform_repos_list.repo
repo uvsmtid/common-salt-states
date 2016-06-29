@@ -28,6 +28,12 @@ gpgcheck=1
 # Do not check signature for packages.
 gpgcheck=0
 {% endif %}
+{% if 'skip_if_unavailable' in yum_repo_os_platform_config %}
+{% if yum_repo_os_platform_config['skip_if_unavailable'] %}
+skip_if_unavailable=1
+{% endif %}
+skip_if_unavailable=0
+{% endif %}
 
 {% endif %}{# os_platform #}
 
