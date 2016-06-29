@@ -20,10 +20,18 @@ SALT_OUTPUT="$(mktemp)"
 
 if [ $# -eq 0 ]
 then
-    salt '*'  --out json saltutil.running | tee "${SALT_OUTPUT}"
+    MINIONS_SPEC="*"
 else
-    salt "$1" --out json saltutil.running | tee "${SALT_OUTPUT}"
+    MINIONS_SPEC="$1"
 fi
+
+# NOTE: We are ready to wait for 10 min (600 sec) to get response.
+salt \
+    --timeout=600 \
+    "${MINIONS_SPEC}" \
+    --out json \
+    saltutil.running \
+| tee "${SALT_OUTPUT}"
 
 # Check if there is anything running.
 cat "${SALT_OUTPUT}" | grep '"jid":'
