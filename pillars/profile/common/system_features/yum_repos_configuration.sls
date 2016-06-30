@@ -2,6 +2,27 @@
 ###############################################################################
 #
 
+# Import properties.
+{% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
+{% import_yaml properties_path as props %}
+
+{% if 'use_local_yum_mirrors' in props %}
+{% set use_local_yum_mirrors = props['use_local_yum_mirrors'] %}
+{% else %}
+{% set use_local_yum_mirrors = False %}
+{% endif %}
+
+# Map `os_platform` to relese verion number.
+{% set os_platform_to_release_ver = {
+        'fc21': 21,
+        'fc22': 22,
+        'fc23': 23,
+        'fc24': 24,
+        'rhel5': 5,
+        'rhel7': 7,
+    }
+%}
+
 system_features:
 
     yum_repos_configuration:
@@ -56,9 +77,13 @@ system_features:
 
                         # NOTE: Sync only the latest Fedora release.
                         {% if system_platform_id == 'fc24' %}
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/releases/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/Everything/x86_64/os/'
                         rsync_mirror_local_destination_path_prefix: 'fedora/'
+
                         {% endif %}
 
                     {% endfor %}
@@ -72,6 +97,8 @@ system_features:
 
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
@@ -89,6 +116,8 @@ system_features:
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
@@ -125,9 +154,13 @@ system_features:
 
                         # NOTE: Sync only the latest Fedora release.
                         {% if system_platform_id == 'fc24' %}
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/updates/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/24/x86_64/'
                         rsync_mirror_local_destination_path_prefix: 'fedora/'
+
                         {% endif %}
 
                     {% endfor %}
@@ -142,6 +175,8 @@ system_features:
 
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
@@ -159,6 +194,8 @@ system_features:
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
@@ -181,6 +218,8 @@ system_features:
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
                         # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
@@ -196,6 +235,8 @@ system_features:
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
@@ -217,6 +258,8 @@ system_features:
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
                         # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
@@ -232,6 +275,8 @@ system_features:
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
@@ -253,6 +298,8 @@ system_features:
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
                         # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
@@ -268,6 +315,8 @@ system_features:
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
@@ -290,6 +339,8 @@ system_features:
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
                         # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
@@ -305,6 +356,8 @@ system_features:
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
@@ -326,6 +379,8 @@ system_features:
                         key_file_resource_id: rhel5_epel7_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
 
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+
                         rsync_mirror_internet_source_base_url: 'mirrors.thzhost.com::'
                         rsync_mirror_internet_source_rel_path: 'epel/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
                         # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
@@ -340,6 +395,8 @@ system_features:
 
                         key_file_resource_id: rhel5_epel5_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirrors.thzhost.com::'
                         rsync_mirror_internet_source_rel_path: 'epel/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
@@ -362,6 +419,8 @@ system_features:
 
                         key_file_resource_id: rhel5_postgresql_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
+
+                        use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'yum.postgresql.org::'
                         rsync_mirror_internet_source_rel_path: 'pgrpm-93/'
@@ -399,6 +458,11 @@ system_features:
                         key_file_resource_id: openstack_juno_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
 
+                        # TODO: Use global `use_local_yum_mirrors` switch
+                        #       when rsync-able URL parts are define.
+                        #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        use_local_yum_mirrors: False
+
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
@@ -414,6 +478,11 @@ system_features:
 
                         key_file_resource_id: openstack_juno_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
+
+                        # TODO: Use global `use_local_yum_mirrors` switch
+                        #       when rsync-able URL parts are define.
+                        #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        use_local_yum_mirrors: False
 
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
@@ -454,6 +523,11 @@ system_features:
                         key_file_resource_id: jenkins_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
+                        # TODO: Use global `use_local_yum_mirrors` switch
+                        #       when rsync-able URL parts are define.
+                        #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        use_local_yum_mirrors: False
+
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
@@ -469,6 +543,11 @@ system_features:
 
                         key_file_resource_id: jenkins_yum_repository_rpm_verification_key
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
+
+                        # TODO: Use global `use_local_yum_mirrors` switch
+                        #       when rsync-able URL parts are define.
+                        #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        use_local_yum_mirrors: False
 
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
@@ -497,6 +576,11 @@ system_features:
                         yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/SALTSTACK-GPG-KEY.pub'
                         {% endif %}
 
+                        # TODO: Use global `use_local_yum_mirrors` switch
+                        #       when rsync-able URL parts are define.
+                        #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        use_local_yum_mirrors: False
+
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
@@ -522,6 +606,11 @@ system_features:
                         yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'
 
                         yum_repo_gpgcheck: False
+
+                        # TODO: Use global `use_local_yum_mirrors` switch
+                        #       when rsync-able URL parts are define.
+                        #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        use_local_yum_mirrors: False
 
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
