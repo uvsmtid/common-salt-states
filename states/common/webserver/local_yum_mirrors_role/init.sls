@@ -73,7 +73,13 @@ extend:
 #       `recurse` option.
 fix_content_permissions:
     cmd.run:
-        - name: 'chown -R apache:apache "{{ local_yum_mirrors_role_content_parent_dir }}" && chmod -R u+rX "{{ local_yum_mirrors_role_content_parent_dir }}" && chmod -R g+rX "{{ local_yum_mirrors_role_content_parent_dir }}"'
+        # NOTE: Trailing `/` after `local_yum_mirrors_role_content_parent_dir`
+        #       is required as this directory may be a symlink.
+        - name: |
+            chown -R apache:apache "{{ local_yum_mirrors_role_content_parent_dir }}/" && \
+            chmod -R u+rX "{{ local_yum_mirrors_role_content_parent_dir }}/" && \
+            chmod -R g+rX "{{ local_yum_mirrors_role_content_parent_dir }}/" && \
+            true
 
 # Logs for Apache virtual server:
 '/var/log/httpd/hosts/{{ pillar['system_host_roles']['local_yum_mirrors_role']['hostname'] }}':
