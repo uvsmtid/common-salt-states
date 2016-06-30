@@ -60,6 +60,16 @@ rsync_mirror_internet_source_rel_path_{{ repo_name }}_{{ os_platform }}:
         - mode: 644
         - template: jinja
 
+rsync_mirror_local_destination_path_prefix_{{ repo_name }}_{{ os_platform }}:
+    file.managed:
+        - name: '{{ base_dir }}/rsync_mirror_local_destination_path_prefix'
+        - makedirs: True
+        - contents: '{{ repo_config['rsync_mirror_local_destination_path_prefix'] }}'
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
+        - mode: 644
+        - template: jinja
+
 {% endif %}
 
 {% endfor %}

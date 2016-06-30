@@ -22,7 +22,8 @@ MIRRORS_BASE_DIR="{{ config_temp_dir }}/{{ pillar['system_features']['yum_repos_
 {% if 'rsync_mirror_internet_source_base_url' in repo_config and 'rsync_mirror_internet_source_rel_path' in repo_config%}
 RSYNC_SRC_URL="$(cat "${CONFIG_DIR}/{{ repo_name }}/{{ os_platform }}/rsync_mirror_source")"
 RSYNC_DST_REL_PATH="$(cat "${CONFIG_DIR}/{{ repo_name }}/{{ os_platform }}/rsync_mirror_internet_source_rel_path")"
-RSYNC_DST_PATH="${MIRRORS_BASE_DIR}/repos/${RSYNC_DST_REL_PATH}"
+RSYNC_DST_PATH_PREFIX="$(cat "${CONFIG_DIR}/{{ repo_name }}/{{ os_platform }}/rsync_mirror_local_destination_path_prefix")"
+RSYNC_DST_PATH="${MIRRORS_BASE_DIR}/repos/${RSYNC_DST_PATH_PREFIX}${RSYNC_DST_REL_PATH}"
 mkdir -p "${RSYNC_DST_PATH}"
 rsync -avrP --delete "${RSYNC_SRC_URL}" "${RSYNC_DST_PATH}"
 {% endif %}
