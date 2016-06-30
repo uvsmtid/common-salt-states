@@ -66,8 +66,13 @@ system_features:
                     {{ system_platform_id }}:
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/{{ os_platform_to_release_ver[system_platform_id] }}/Everything/x86_64/os/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-{{ os_platform_to_release_ver[system_platform_id] }}-x86_64'
 
                         # NOTE: Repo key for Fedora is not managed because
                         #       it is fast moving platform and not used for
@@ -88,11 +93,17 @@ system_features:
 
                     {% endfor %}
 
-                    rhel7:
+                    {% set system_platform_id = 'rhel7' %}
+                    {{ system_platform_id }}:
                         # Default is enabled.
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
@@ -107,11 +118,15 @@ system_features:
 
                     {% set system_platform_id = 'rhel5' %}
                     {{ system_platform_id }}:
-
                         # Default is enabled.
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
@@ -143,8 +158,13 @@ system_features:
                         # Keep it enabled for all updates.
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-{{ os_platform_to_release_ver[system_platform_id] }}-x86_64'
 
                         # NOTE: Repo key for Fedora is not managed because
                         #       it is fast moving platform and not used for
@@ -165,12 +185,18 @@ system_features:
 
                     {% endfor %}
 
-                    rhel7:
+                    {% set system_platform_id = 'rhel7' %}
+                    {{ system_platform_id }}:
                         # Default is enabled.
                         # NOTE: Disable updates repo - use relase-time one.
                         repo_enabled: False
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
@@ -189,7 +215,12 @@ system_features:
                         # NOTE: Disable updates repo - use relase-time one.
                         repo_enabled: False
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
@@ -208,11 +239,17 @@ system_features:
                 os_platform_configs:
 
                     # NOTE: `addons` repo is not configured on default rhel7.
-                    #{#
-                    rhel7:
+                    {% if False %}
+                    {% set system_platform_id = 'rhel7' %}
+                    {{ system_platform_id }}:
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
@@ -224,13 +261,20 @@ system_features:
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
                         # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
                         rsync_mirror_local_destination_path_prefix: ''
-                    #}#
 
-                    rhel5:
+                    {% endif %}
+
+                    {% set system_platform_id = 'rhel5' %}
+                    {{ system_platform_id }}:
                         # Default is enabled.
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
@@ -248,11 +292,17 @@ system_features:
 
                 os_platform_configs:
 
-                    rhel7:
+                    {% set system_platform_id = 'rhel7' %}
+                    {{ system_platform_id }}:
                         # Default is enabled.
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
@@ -270,7 +320,12 @@ system_features:
                         # Default is enabled.
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
@@ -288,11 +343,17 @@ system_features:
 
                 os_platform_configs:
 
-                    rhel7:
+                    {% set system_platform_id = 'rhel7' %}
+                    {{ system_platform_id }}:
                         # Default is disabled.
                         repo_enabled: False
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
@@ -310,7 +371,12 @@ system_features:
                         # Default is disabled.
                         repo_enabled: False
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
@@ -329,11 +395,17 @@ system_features:
                 os_platform_configs:
 
                     # NOTE: `contrib` repo is not configured on default rhel7.
-                    #{#
-                    rhel7:
+                    {% if False %}
+                    {% set system_platform_id = 'rhel7' %}
+                    {{ system_platform_id }}:
                         repo_enabled: False
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
 
                         key_file_resource_id: rhel7_centos7_base_updates_yum_repository_rpm_verification_key
@@ -345,13 +417,20 @@ system_features:
                         rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
                         # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
                         rsync_mirror_local_destination_path_prefix: ''
-                    #}#
 
-                    rhel5:
+                    {% endif %}
+
+                    {% set system_platform_id = 'rhel5' %}
+                    {{ system_platform_id }}:
                         # Default is disabled.
                         repo_enabled: False
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
 
                         key_file_resource_id: rhel5_centos5_base_updates_yum_repository_rpm_verification_key
@@ -370,10 +449,16 @@ system_features:
 
                 os_platform_configs:
 
-                    rhel7:
+                    {% set system_platform_id = 'rhel7' %}
+                    {{ system_platform_id }}:
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/x86_64'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
 
                         key_file_resource_id: rhel5_epel7_yum_repository_rpm_verification_key
@@ -390,7 +475,12 @@ system_features:
                     {{ system_platform_id }}:
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/x86_64'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
 
                         key_file_resource_id: rhel5_epel5_yum_repository_rpm_verification_key
@@ -411,10 +501,16 @@ system_features:
 
                 os_platform_configs:
 
-                    rhel5:
+                    {% set system_platform_id = 'rhel5' %}
+                    {{ system_platform_id }}:
                         repo_enabled: True
 
+                        #{# Original:
                         yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-$releasever-$basearch'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-{{ os_platform_to_release_ver[system_platform_id] }}-x86_64'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
 
                         key_file_resource_id: rhel5_postgresql_yum_repository_rpm_verification_key
@@ -450,7 +546,12 @@ system_features:
                     {{ system_platform_id }}:
                         repo_enabled: False
 
+                        #{# Original:
                         yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-{{ os_platform_to_release_ver[system_platform_id] }}/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
 
                         # NOTE: Fedora and RHEL7 keys are the same.
@@ -470,9 +571,15 @@ system_features:
 
                     {% endfor %}
 
-                    rhel7:
+                    {% set system_platform_id = 'rhel7' %}
+                    {{ system_platform_id }}:
                         repo_enabled: False
 
+                        #{# Original:
+                        yum_repo_baseurl: 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/'
+                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
+                        #}#
+                        # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
 
@@ -515,6 +622,11 @@ system_features:
                     {{ system_platform_id }}:
                         repo_enabled: True
 
+                        #{# Original:
+                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
+                        yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
+                        #}#
+                        # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
 
@@ -535,9 +647,15 @@ system_features:
 
                     {% endfor %}
 
-                    rhel7:
+                    {% set system_platform_id = 'rhel7' %}
+                    {{ system_platform_id }}:
                         repo_enabled: True
 
+                        #{# Original:
+                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
+                        yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
+                        #}#
+                        # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
 
@@ -562,9 +680,11 @@ system_features:
 
                 os_platform_configs:
 
-                    rhel5:
+                    {% set system_platform_id = 'rhel5' %}
+                    {{ system_platform_id }}:
                         repo_enabled: True
 
+                        #{# Original:
                         {% if False %}
                         # It seems these are obsolete URLs.
                         yum_repo_baseurl: 'http://copr-be.cloud.fedoraproject.org/results/saltstack/salt-el5/epel-5-$basearch/'
@@ -575,6 +695,10 @@ system_features:
                         yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest'
                         yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/SALTSTACK-GPG-KEY.pub'
                         {% endif %}
+                        #}#
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/latest'
+                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/latest/SALTSTACK-GPG-KEY.pub'
 
                         # TODO: Use global `use_local_yum_mirrors` switch
                         #       when rsync-able URL parts are define.
@@ -603,6 +727,10 @@ system_features:
                     {{ system_platform_id }}:
                         repo_enabled: True
 
+                        #{# Original:
+                        yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'
+                        #}#
+                        # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'
 
                         yum_repo_gpgcheck: False
