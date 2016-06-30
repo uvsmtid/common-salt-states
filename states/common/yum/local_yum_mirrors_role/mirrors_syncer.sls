@@ -28,18 +28,6 @@
 
 {% set base_dir = config_temp_dir + '/' + pillar['system_features']['yum_repos_configuration']['rsync_syncer_base_dir'] + '/config/' + repo_name + '/' + os_platform %}
 
-rsync_mirror_source_{{ repo_name }}_{{ os_platform }}:
-    file.managed:
-        - name: '{{ base_dir }}/rsync_mirror_source'
-        - makedirs: True
-        # NOTE: Concatenation has not `/`.
-        #       Both URL parts should concatenate without `/` by convention.
-        - contents: '{{ repo_config['rsync_mirror_internet_source_base_url'] }}{{ repo_config['rsync_mirror_internet_source_rel_path'] }}'
-        - user: '{{ account_conf['username'] }}'
-        - group: '{{ account_conf['primary_group'] }}'
-        - mode: 644
-        - template: jinja
-
 rsync_mirror_internet_source_base_url_{{ repo_name }}_{{ os_platform }}:
     file.managed:
         - name: '{{ base_dir }}/rsync_mirror_internet_source_base_url'
