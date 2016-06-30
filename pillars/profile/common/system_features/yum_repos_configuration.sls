@@ -11,6 +11,18 @@ system_features:
         # Directory relative to `config_temp_dir`
         rsync_syncer_base_dir: 'local_yum_mirrors'
 
+        # NOTE: URL is not specified.
+        #       Instead, access to the repositories is done via root path
+        #       of hostname associated with `local_yum_mirrors_role`, e.g.:
+        #           http://local_yum_mirrors_role/
+        # NOTE: Due to big content size, this directory is
+        #       actually be a symlink to special storage location
+        #       identified by `local_yum_mirrors_role_content_dir`.
+        local_yum_mirrors_role_content_symlink: '/var/www/html/local_yum_mirrors_role/content'
+
+        # Default location for local YUM repositories (on `local_yum_mirrors_role`).
+        local_yum_mirrors_role_content_dir: '/home/local_yum_mirrors'
+
         yum_repositories:
 
             # Default OS repositories.
