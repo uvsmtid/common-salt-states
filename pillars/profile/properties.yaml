@@ -30,6 +30,8 @@ use_internet_http_proxy: False
 
 offline_mode: False
 
+use_local_yum_mirrors: False
+
 project_name: common
 
 # Profile name specifies default branch name for configuration
