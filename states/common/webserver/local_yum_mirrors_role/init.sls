@@ -9,7 +9,8 @@
 # <<<
 {% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
-{% set local_yum_mirrors_role_content_parent_dir = pillar['system_features']['yum_repos_configuration']['local_yum_mirrors_role_content_parent_dir'] %}
+{% set local_yum_mirrors_role_content_symlink = pillar['system_features']['yum_repos_configuration']['local_yum_mirrors_role_content_symlink'] %}
+{% set local_yum_mirrors_role_content_dir = pillar['system_features']['yum_repos_configuration']['local_yum_mirrors_role_content_dir'] %}
 
 include:
     - common.webserver
@@ -25,8 +26,26 @@ extend:
             - watch:
                 - file: /etc/httpd/conf.d/local_yum_mirrors_role.conf
             - require:
-                - file: '{{ local_yum_mirrors_role_content_parent_dir }}/local_yum_mirrors_role.txt'
+                - file: '{{ local_yum_mirrors_role_content_symlink }}/local_yum_mirrors_role.txt'
                 - file: '/var/log/httpd/hosts/{{ pillar['system_host_roles']['local_yum_mirrors_role']['hostname'] }}'
+
+# Directory for webserver content:
+local_yum_mirrors_role_content_dir:
+    file.directory:
+        - name: '{{ local_yum_mirrors_role_content_dir }}'
+        - user: apache
+        - group: apache
+        - file_mode: 660
+        - dir_mode: 770
+        - makedirs: True
+
+# Set symlink from webserver content location to actual content location.
+local_yum_mirrors_role_content_symlink:
+    file.symlink:
+        - name: '{{ local_yum_mirrors_role_content_symlink }}'
+        - target: '{{ local_yum_mirrors_role_content_dir }}'
+        - require:
+            - file: local_yum_mirrors_role_content_dir
 
 # Configuration for Apache virtual server:
 /etc/httpd/conf.d/local_yum_mirrors_role.conf:
@@ -38,7 +57,7 @@ extend:
         - mode: 660
 
 # Hint file pointing to web server name.
-'{{ local_yum_mirrors_role_content_parent_dir }}/local_yum_mirrors_role.txt':
+'{{ local_yum_mirrors_role_content_symlink }}/local_yum_mirrors_role.txt':
     file.managed:
         - contents: "/etc/httpd/conf.d/local_yum_mirrors_role.conf"
         - user: apache
@@ -48,6 +67,7 @@ extend:
         - makedirs: True
         - require:
             - file: '/var/www/html/{{ pillar['system_host_roles']['local_yum_mirrors_role']['hostname'] }}'
+            - file: local_yum_mirrors_role_content_symlink
 
 # Base directory for Apache virtual server:
 '/var/www/html/{{ pillar['system_host_roles']['local_yum_mirrors_role']['hostname'] }}':
@@ -73,12 +93,12 @@ extend:
 #       `recurse` option.
 fix_content_permissions:
     cmd.run:
-        # NOTE: Trailing `/` after `local_yum_mirrors_role_content_parent_dir`
-        #       is required as this directory may be a symlink.
+        # NOTE: Trailing `/` after `local_yum_mirrors_role_content_symlink`
+        #       is required as this location is a symlink.
         - name: |
-            chown -R apache:apache "{{ local_yum_mirrors_role_content_parent_dir }}/" && \
-            chmod -R u+rX "{{ local_yum_mirrors_role_content_parent_dir }}/" && \
-            chmod -R g+rX "{{ local_yum_mirrors_role_content_parent_dir }}/" && \
+            chown -R apache:apache "{{ local_yum_mirrors_role_content_symlink }}/" && \
+            chmod -R u+rX "{{ local_yum_mirrors_role_content_symlink }}/" && \
+            chmod -R g+rX "{{ local_yum_mirrors_role_content_symlink }}/" && \
             true
 
 # Logs for Apache virtual server:
