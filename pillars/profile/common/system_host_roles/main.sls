@@ -89,6 +89,16 @@ system_host_roles:
                 ])
             }}
 
+    local_yum_mirrors_role:
+        hostname: local-yum-mirrors-role-host
+        assigned_hosts:
+            # NOTE: We use single (central) host for repositories by default.
+            #       The content size is big and it makes sense to centralize it.
+            {{ filter_assigned_hosts_by_enabled_minion_hosts([
+                    'jenkins'
+                ])
+            }}
+
     maven_build_server_role:
         hostname: maven-build-server-role-host
         assigned_hosts:
