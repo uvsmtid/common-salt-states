@@ -9,7 +9,7 @@ system_features:
         feature_enabled: True
 
         # Directory relative to `config_temp_dir`
-        rsync_syncer_base_dir: 'local_mirrors'
+        rsync_syncer_base_dir: 'local_yum_mirrors'
 
         yum_repositories:
 
