@@ -24,7 +24,7 @@
 {% for os_platform in pillar['system_features']['yum_repos_configuration']['yum_repositories'][repo_name]['os_platform_configs'].keys() %}
 {% set repo_config = pillar['system_features']['yum_repos_configuration']['yum_repositories'][repo_name]['os_platform_configs'][os_platform] %}
 
-{% if 'rsync_mirror_internet_source_base_url' in repo_config and 'rsync_mirror_internet_source_rel_path' in repo_config %}
+{% if 'use_local_yum_mirrors' in repo_config and repo_config['use_local_yum_mirrors'] %}
 
 {% set base_dir = config_temp_dir + '/' + pillar['system_features']['yum_repos_configuration']['rsync_syncer_base_dir'] + '/config/' + repo_name + '/' + os_platform %}
 

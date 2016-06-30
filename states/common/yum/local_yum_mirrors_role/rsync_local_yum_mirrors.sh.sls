@@ -20,7 +20,7 @@ MIRRORS_BASE_DIR="{{ local_yum_mirrors_role_content_dir }}"
 {% for os_platform in pillar['system_features']['yum_repos_configuration']['yum_repositories'][repo_name]['os_platform_configs'].keys() %}
 {% set repo_config = pillar['system_features']['yum_repos_configuration']['yum_repositories'][repo_name]['os_platform_configs'][os_platform] %}
 
-{% if 'rsync_mirror_internet_source_base_url' in repo_config and 'rsync_mirror_internet_source_rel_path' in repo_config%}
+{% if 'use_local_yum_mirrors' in repo_config and repo_config['use_local_yum_mirrors'] %}
 RSYNC_SRC_URL="$(cat "${CONFIG_DIR}/{{ repo_name }}/{{ os_platform }}/rsync_mirror_source")"
 RSYNC_DST_REL_PATH="$(cat "${CONFIG_DIR}/{{ repo_name }}/{{ os_platform }}/rsync_mirror_internet_source_rel_path")"
 RSYNC_DST_PATH_PREFIX="$(cat "${CONFIG_DIR}/{{ repo_name }}/{{ os_platform }}/rsync_mirror_local_destination_path_prefix")"
