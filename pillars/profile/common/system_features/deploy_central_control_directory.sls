@@ -35,6 +35,7 @@ system_features:
         # actually be distributed by Salt states (using `salt://` schema for
         # URI), but (external) control scripts require standard/known URI
         # schemes (i.e. `http://`, `file://`, ...) to be functional.
+        # TODO: Use host role's hostname instead.
         URI_prefix: 'http://depository_role'
 
         # URL part leading to control directory on the web server (to be

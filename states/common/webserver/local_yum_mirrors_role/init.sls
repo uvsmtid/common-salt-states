@@ -1,15 +1,15 @@
-# Configuration of `depository_role` on a webserver.
+# Configuration of `local_yum_mirrors_role` on a webserver.
 
 # TODO: This and default templates are almost identical.
 #       Try using a common template instead.
 
-{% if grains['id'] in pillar['system_host_roles']['depository_role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['local_yum_mirrors_role']['assigned_hosts'] %}
 
 ###############################################################################
 # <<<
 {% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
-{% set depository_role_content_parent_dir = pillar['system_features']['validate_depository_role_content']['depository_role_content_parent_dir'] %}
+{% set local_yum_mirrors_role_content_parent_dir = pillar['system_features']['yum_repos_configuration']['local_yum_mirrors_role_content_parent_dir'] %}
 
 include:
     - common.webserver
@@ -23,34 +23,34 @@ extend:
     webserver:
         service:
             - watch:
-                - file: /etc/httpd/conf.d/depository_role.conf
+                - file: /etc/httpd/conf.d/local_yum_mirrors_role.conf
             - require:
-                - file: '{{ depository_role_content_parent_dir }}/depository_role.txt'
-                - file: '/var/log/httpd/hosts/{{ pillar['system_host_roles']['depository_role']['hostname'] }}'
+                - file: '{{ local_yum_mirrors_role_content_parent_dir }}/local_yum_mirrors_role.txt'
+                - file: '/var/log/httpd/hosts/{{ pillar['system_host_roles']['local_yum_mirrors_role']['hostname'] }}'
 
 # Configuration for Apache virtual server:
-/etc/httpd/conf.d/depository_role.conf:
+/etc/httpd/conf.d/local_yum_mirrors_role.conf:
     file.managed:
-        - source: salt://common/webserver/depository_role/depository_role.conf
+        - source: salt://common/webserver/local_yum_mirrors_role/local_yum_mirrors_role.conf
         - template: jinja
         - user: apache
         - group: apache
         - mode: 660
 
 # Hint file pointing to web server name.
-'{{ depository_role_content_parent_dir }}/depository_role.txt':
+'{{ local_yum_mirrors_role_content_parent_dir }}/local_yum_mirrors_role.txt':
     file.managed:
-        - contents: "/etc/httpd/conf.d/depository_role.conf"
+        - contents: "/etc/httpd/conf.d/local_yum_mirrors_role.conf"
         - user: apache
         - group: apache
         - mode: 660
         - dir_mode: 770
         - makedirs: True
         - require:
-            - file: '/var/www/html/{{ pillar['system_host_roles']['depository_role']['hostname'] }}'
+            - file: '/var/www/html/{{ pillar['system_host_roles']['local_yum_mirrors_role']['hostname'] }}'
 
 # Base directory for Apache virtual server:
-'/var/www/html/{{ pillar['system_host_roles']['depository_role']['hostname'] }}':
+'/var/www/html/{{ pillar['system_host_roles']['local_yum_mirrors_role']['hostname'] }}':
     file.directory:
         - user: apache
         - group: apache
@@ -73,10 +73,10 @@ extend:
 #       `recurse` option.
 fix_content_permissions:
     cmd.run:
-        - name: 'chown -R apache:apache "{{ depository_role_content_parent_dir }}" && chmod -R u+rX "{{ depository_role_content_parent_dir }}" && chmod -R g+rX "{{ depository_role_content_parent_dir }}"'
+        - name: 'chown -R apache:apache "{{ local_yum_mirrors_role_content_parent_dir }}" && chmod -R u+rX "{{ local_yum_mirrors_role_content_parent_dir }}" && chmod -R g+rX "{{ local_yum_mirrors_role_content_parent_dir }}"'
 
 # Logs for Apache virtual server:
-'/var/log/httpd/hosts/{{ pillar['system_host_roles']['depository_role']['hostname'] }}':
+'/var/log/httpd/hosts/{{ pillar['system_host_roles']['local_yum_mirrors_role']['hostname'] }}':
     file.directory:
         - user: apache
         - group: apache

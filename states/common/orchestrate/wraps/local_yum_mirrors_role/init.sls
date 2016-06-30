@@ -1,16 +1,12 @@
-# Configure `depository_role` role.
+# Configure `local_yum_mirrors_role` role.
 
-{% if 'depository_role' in pillar['system_host_roles'] %}
+{% if 'local_yum_mirrors_role' in pillar['system_host_roles'] %}
 
-{% if grains['id'] in pillar['system_host_roles']['depository_role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['local_yum_mirrors_role']['assigned_hosts'] %}
 
 include:
 
-    - common.webserver.depository_role
-
-    #- common.webserver.depository_role.check_content
-
-    - common.webserver.depository_role.setup_control_directory
+    - common.webserver.local_yum_mirrors_role
 
 {% endif %}
 
