@@ -1,5 +1,5 @@
 # This states deploys script which syncs
-# local_mirrors on its local storage with Internet and local repos server:
+# local_yum_mirrors on its local storage with Internet and local repos server:
 # Internet => syncer local storage => repos server.
 #
 # There is no special role designated for syncer - it can be any host
@@ -77,11 +77,11 @@ rsync_mirror_local_destination_path_prefix_{{ repo_name }}_{{ os_platform }}:
 
 {% set base_dir = config_temp_dir + '/' + pillar['system_features']['yum_repos_configuration']['rsync_syncer_base_dir'] %}
 
-deploy_script_rsync_local_mirrors.sh:
+deploy_script_rsync_local_yum_mirrors.sh:
     file.managed:
-        - source: 'salt://common/yum/local_mirrors/rsync_local_mirrors.sh.sls'
+        - source: 'salt://common/yum/local_yum_mirrors_role/rsync_local_yum_mirrors.sh.sls'
         - template: jinja
-        - name: '{{ base_dir }}/rsync_local_mirrors.sh'
+        - name: '{{ base_dir }}/rsync_local_yum_mirrors.sh'
         - makedirs: True
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['primary_group'] }}'
