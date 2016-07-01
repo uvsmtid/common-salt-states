@@ -157,7 +157,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :ip => '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
 
         {% if 'mac' in selected_host['host_networks'][sys_net_name] %}
-        :mac => '{{ selected_host['host_networks'][sys_net_name]['mac'] }}',
+        # NOTE: Use lowercase due to current issue with Vagrant explained her:
+        #           https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-229963533
+        :mac => '{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}',
         {% endif %}
 
         # TODO: How to configure netmask on `virtualbox`?
