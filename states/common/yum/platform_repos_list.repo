@@ -14,12 +14,22 @@
 
 [{{ yum_repo_name }}]
 name={{ yum_repo_name }} - {{ host_config['os_platform'] }}
+
+{% if 'use_local_yum_mirrors' in yum_repo_os_platform_config and yum_repo_os_platform_config['use_local_yum_mirrors'] %}
+# Using generic hostname of `local_yum_mirrors_role`.
+baseurl=http://local-yum-mirrors-role-host/{{ yum_repo_os_platform_config['rsync_mirror_local_destination_path_prefix'] }}{{ yum_repo_os_platform_config['rsync_mirror_internet_source_rel_path'] }}
+# The host must be accessible via LAN (without proxy).
+proxy=_none_
+{% else %}
 baseurl={{ yum_repo_os_platform_config['yum_repo_baseurl'] }}
+{% endif %}
+
 {% if yum_repo_os_platform_config['repo_enabled'] %}
 enabled=1
 {% else %}
 enabled=0
 {% endif %}
+
 {% if 'yum_repo_key_url' in yum_repo_os_platform_config %}
 gpgkey={{ yum_repo_os_platform_config['yum_repo_key_url'] }}
 gpgcheck=1
