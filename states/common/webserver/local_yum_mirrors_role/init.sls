@@ -81,7 +81,7 @@ local_yum_mirrors_role_content_symlink:
 #           Instead, each state which adds new content should make sure
 #           permissions separately.
 #
-#           See cmd-based `fix_content_permissions` instead.
+#           See cmd-based `fix_content_permissions_local_yum_mirrors_role` instead.
 {% if False %}
         - recurse:
             - user
@@ -91,7 +91,7 @@ local_yum_mirrors_role_content_symlink:
 
 # NOTE: This is a workaround to very slow performance of `file.directory` with
 #       `recurse` option.
-fix_content_permissions:
+fix_content_permissions_local_yum_mirrors_role:
     cmd.run:
         # NOTE: Trailing `/` after `local_yum_mirrors_role_content_symlink`
         #       is required as this location is a symlink.

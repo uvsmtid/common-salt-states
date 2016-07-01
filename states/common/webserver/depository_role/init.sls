@@ -61,7 +61,7 @@ extend:
 #           Instead, each state which adds new content should make sure
 #           permissions separately.
 #
-#           See cmd-based `fix_content_permissions` instead.
+#           See cmd-based `fix_content_permissions_depository_role` instead.
 {% if False %}
         - recurse:
             - user
@@ -71,7 +71,7 @@ extend:
 
 # NOTE: This is a workaround to very slow performance of `file.directory` with
 #       `recurse` option.
-fix_content_permissions:
+fix_content_permissions_depository_role:
     cmd.run:
         - name: 'chown -R apache:apache "{{ depository_role_content_parent_dir }}" && chmod -R u+rX "{{ depository_role_content_parent_dir }}" && chmod -R g+rX "{{ depository_role_content_parent_dir }}"'
 
