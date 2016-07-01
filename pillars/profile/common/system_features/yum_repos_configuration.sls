@@ -62,6 +62,7 @@ system_features:
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
@@ -94,6 +95,7 @@ system_features:
                     {{ system_platform_id }}:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
@@ -116,6 +118,7 @@ system_features:
                     {{ system_platform_id }}:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
@@ -152,6 +155,7 @@ system_features:
                         # Default is enabled.
                         # Keep it enabled for all updates.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
@@ -185,6 +189,7 @@ system_features:
                         # Default is enabled.
                         # NOTE: Disable updates repo - use relase-time one.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
@@ -208,6 +213,7 @@ system_features:
                         # Default is enabled.
                         # NOTE: Disable updates repo - use relase-time one.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
@@ -236,6 +242,7 @@ system_features:
                     {% set system_platform_id = 'rhel7' %}
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
@@ -260,6 +267,7 @@ system_features:
                     {{ system_platform_id }}:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
@@ -287,6 +295,7 @@ system_features:
                     {{ system_platform_id }}:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
@@ -309,6 +318,7 @@ system_features:
                     {{ system_platform_id }}:
                         # Default is enabled.
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
@@ -336,6 +346,7 @@ system_features:
                     {{ system_platform_id }}:
                         # Default is disabled.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
@@ -358,6 +369,7 @@ system_features:
                     {{ system_platform_id }}:
                         # Default is disabled.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
@@ -386,6 +398,7 @@ system_features:
                     {% set system_platform_id = 'rhel7' %}
                     {{ system_platform_id }}:
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
@@ -410,6 +423,7 @@ system_features:
                     {{ system_platform_id }}:
                         # Default is disabled.
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
@@ -437,6 +451,7 @@ system_features:
                     {% set system_platform_id = 'rhel7' %}
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch'
@@ -458,6 +473,7 @@ system_features:
                     {% set system_platform_id = 'rhel5' %}
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch'
@@ -487,6 +503,7 @@ system_features:
                     {% set system_platform_id = 'rhel5' %}
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-$releasever-$basearch'
@@ -528,6 +545,7 @@ system_features:
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
@@ -557,6 +575,7 @@ system_features:
                     {% set system_platform_id = 'rhel7' %}
                     {{ system_platform_id }}:
                         repo_enabled: False
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/'
@@ -603,6 +622,7 @@ system_features:
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
@@ -632,6 +652,7 @@ system_features:
                     {% set system_platform_id = 'rhel7' %}
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
@@ -664,6 +685,7 @@ system_features:
                     {% set system_platform_id = 'rhel5' %}
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         {% if False %}
@@ -706,6 +728,7 @@ system_features:
                     %}
                     {{ system_platform_id }}:
                         repo_enabled: True
+                        skip_if_unavailable: True
 
                         #{# Original:
                         yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'

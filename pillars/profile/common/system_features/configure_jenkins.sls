@@ -946,6 +946,8 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
+                    # NOTE: This job cloned from `deploy_pipeline`.
+                    {% set job_template_id = 'deploy_pipeline.run_salt_highstate' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'update_pipeline.reconnect_jenkins_slaves' %}

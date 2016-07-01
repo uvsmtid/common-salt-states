@@ -42,18 +42,35 @@
         # TODO: Fix Orchestrate maybe by trying to configure YUM/DNF
         #       before running any other installation.
 
+        # Use `check_running_jobs.sh` script to wait for
+        # completion of all jobs.
+        {% set common_states_repo_id = 'common-salt-states' %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][common_states_repo_id]['git'] %}
+        export COMMON_STATES_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
         {% if 'neglect_run_salt_orchestrate_error_state' in job_config and job_config['neglect_run_salt_orchestrate_error_state'] %}
         set +e
         {% endif %}
+
+        # By the way, even if the following commands provide `test=False`
+        # argument, as of now it is simply ignored - see:
+        #    https://github.com/saltstack/salt/issues/24209
         
-        # 1st time without error detection
+        # The 1st time without error detection in the output.
         # This is supposed to show failed states in cleaner (non-JSON) output.
         sudo salt-run \
             -l debug \
             state.orchestrate common.orchestrate.run_all_stages \
-            test=True | tee salt.output.yaml
+            test=False | tee salt.output.yaml
 
-        # 2nd time with error detection
+        # The 1st time:
+        # Make sure (wait) until all jobs complete.
+        while ( sudo "${COMMON_STATES_REPO_PATH}"/scripts/check_running_jobs.sh )
+        do
+            sleep 10
+        done
+
+        # The 2nd time with error detection in JSON output.
         # This is not supposed to fail -
         # therefore, salt.output.json gets verified subsequently.
         sudo salt-run \
@@ -61,6 +78,21 @@
             -l debug \
             state.orchestrate common.orchestrate.run_all_stages \
             test=False | tee salt.output.json
+
+        # The 2nd time, again:
+        # Make sure (wait) until all jobs complete.
+        while ( sudo "${COMMON_STATES_REPO_PATH}"/scripts/check_running_jobs.sh )
+        do
+            sleep 10
+        done
+
+        # TODO: What if `salt-run` timeout on waiting for response?
+        #       Checking output as the next step doesn't make sense.
+        #       Instead, waiting on all job completion is the best option.
+        #       However, how can we get output of the job
+        #       if we don't know job_id? So, at the moment the only
+        #       case when checking the output below makes sense is when
+        #       `salt-run` does not timeout.
 
         # Capture errors from Salt.
         # At the moment salt does not return exit/error code.

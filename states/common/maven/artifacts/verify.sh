@@ -73,6 +73,7 @@ then
     rm -f "${RUNTIME_DIR}"/salt_pillar.yaml
 
     sudo \
+    --preserve-env \
     "${RUNTIME_DIR}"/process_maven_data.py \
         c get_salt_pillar \
         --output_salt_pillar_yaml_file_path \

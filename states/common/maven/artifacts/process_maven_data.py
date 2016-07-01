@@ -2782,6 +2782,45 @@ if __name__ == '__main__':
 
     setLoggingLevel('debug')
 
+    # Show environment variables.
+    exit_data = call_subprocess(
+        command_args = [
+            'env',
+        ],
+    )
+
+    # Show Java location.
+    exit_data = call_subprocess(
+        command_args = [
+            'which',
+            'java',
+        ],
+    )
+
+    # Show Java version.
+    exit_data = call_subprocess(
+        command_args = [
+            'java',
+            '-version',
+        ],
+    )
+
+    # Show Maven location.
+    exit_data = call_subprocess(
+        command_args = [
+            'which',
+            'mvn',
+        ],
+    )
+
+    # Show Maven version.
+    exit_data = call_subprocess(
+        command_args = [
+            'mvn',
+            '--version',
+        ],
+    )
+
     # Build parser
     parser = build_parser()
     # Parse command line

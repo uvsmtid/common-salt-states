@@ -32,16 +32,44 @@
         {{ common_build_script_header(job_config, job_environ) }}
 
         #######################################################################
+
+        # Use `check_running_jobs.sh` script to wait for
+        # completion of all jobs.
+        {% set common_states_repo_id = 'common-salt-states' %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][common_states_repo_id]['git'] %}
+        export COMMON_STATES_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
         # Run `highstate` separately (not as part of `orchestrate` runner)
         # as there is no known way to ask `orchestrate` to run it
         # with test=False.
         # See: https://github.com/saltstack/salt/issues/24209
-        sudo salt \
-            --out json \
+        # This command only submits the jobs to minions.
+        # The results are retrieved after job completion.
+        # The following ouput is expected to extract JOB_ID value:
+        #    Executed command with job ID: 20160629100939410081
+        JOB_ID="$(
+            sudo salt \
+            --async \
             '*' \
-            -l debug \
             state.highstate \
-            test=False | tee salt.output.json
+            test=False \
+            | sed 's/^[^:]*:[[:space:]]*\([[:digit:]][[:digit:]]*\)[[:space:]]*$/\1/g'
+        )"
+
+        # Make sure (wait) until all jobs complete.
+        while ( sudo "${COMMON_STATES_REPO_PATH}"/scripts/check_running_jobs.sh )
+        do
+            sleep 10
+        done
+
+        # Retrieve salt output for analysis.
+        # Wait up to 10 min (600 sec) to get response.
+        sudo salt-run \
+            --timeout=600 \
+            --out json \
+            -l debug \
+            jobs.lookup_jid \
+            "${JOB_ID}" | tee salt.output.json
 
         # Capture errors from Salt.
         # At the moment salt does not return exit/error code.
