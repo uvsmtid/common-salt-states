@@ -83,7 +83,7 @@
         # it does not have `host` tags which map
         # MAC to IP addresses.
 
-        virsh net-dumpxml '{{ vagrant_net_name }}'
+        sudo virsh net-dumpxml '{{ vagrant_net_name }}'
 
         # Add necessary MAC to IP mapping.
         # Use `net-update` subcommand to avoid messing
@@ -98,14 +98,26 @@
         #   is supposed to be already added by now.
 
         set -e
-        virsh net-update '{{ vagrant_net_name }}' add ip-dhcp-host "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" --current
+        sudo virsh \
+            net-update \
+            '{{ vagrant_net_name }}' \
+            add \
+            ip-dhcp-host \
+            "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" \
+            --current
         set +e
-        virsh net-update '{{ vagrant_net_name }}' modify ip-dhcp-host "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" --current
+        sudo virsh \
+            net-update \
+            '{{ vagrant_net_name }}' \
+            modify \
+            ip-dhcp-host \
+            "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" \
+            --current
 
         # Show XML configuration again to
         # demonstrate the changes.
 
-        virsh net-dumpxml '{{ vagrant_net_name }}'
+        sudo virsh net-dumpxml '{{ vagrant_net_name }}'
 
         {% endif %} # mac
 
