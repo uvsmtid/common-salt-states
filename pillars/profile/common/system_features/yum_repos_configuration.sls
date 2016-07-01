@@ -173,7 +173,7 @@ system_features:
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/updates/'
-                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/24/x86_64/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
                         rsync_mirror_local_destination_path_prefix: 'fedora/linux/updates/'
 
                         {% endif %}
@@ -502,6 +502,7 @@ system_features:
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'yum.postgresql.org::'
+                        # TODO: This repository has sub-repos per target OS.
                         rsync_mirror_internet_source_rel_path: 'pgrpm-93/'
                         rsync_mirror_local_destination_path_prefix: 'postgresql/'
 
