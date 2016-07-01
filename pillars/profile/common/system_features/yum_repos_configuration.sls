@@ -29,9 +29,6 @@ system_features:
 
         feature_enabled: True
 
-        # Directory relative to `config_temp_dir`
-        rsync_syncer_base_dir: 'local_yum_mirrors'
-
         # NOTE: URL is not specified.
         #       Instead, access to the repositories is done via root path
         #       of hostname associated with `local_yum_mirrors_role`, e.g.:
@@ -87,7 +84,7 @@ system_features:
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/releases/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/Everything/x86_64/os/'
-                        rsync_mirror_local_destination_path_prefix: 'fedora/'
+                        rsync_mirror_local_destination_path_prefix: 'fedora/linux/releases/'
 
                         {% endif %}
 
@@ -111,10 +108,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
                     {% set system_platform_id = 'rhel5' %}
                     {{ system_platform_id }}:
@@ -134,10 +130,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
             # Default repositories with updates.
             updates:
@@ -178,8 +173,8 @@ system_features:
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/updates/'
-                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/24/x86_64/'
-                        rsync_mirror_local_destination_path_prefix: 'fedora/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'fedora/linux/updates/'
 
                         {% endif %}
 
@@ -204,10 +199,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
                     {% set system_platform_id = 'rhel5' %}
                     {{ system_platform_id }}:
@@ -228,10 +222,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
             addons:
                 installation_type: conf_template
@@ -257,10 +250,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
                     {% endif %}
 
@@ -282,10 +274,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
             extras:
                 installation_type: conf_template
@@ -310,10 +301,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
                     {% set system_platform_id = 'rhel5' %}
                     {{ system_platform_id }}:
@@ -333,10 +323,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
             centosplus:
                 installation_type: conf_template
@@ -361,10 +350,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
                     {% set system_platform_id = 'rhel5' %}
                     {{ system_platform_id }}:
@@ -384,10 +372,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
             contrib:
                 installation_type: conf_template
@@ -413,10 +400,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
                     {% endif %}
 
@@ -438,10 +424,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::'
-                        rsync_mirror_internet_source_rel_path: 'centos/{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirror.0x.sg::centos/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'centos/'
 
             # EPEL repository for RHEL.
             epel:
@@ -466,10 +451,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirrors.thzhost.com::'
-                        rsync_mirror_internet_source_rel_path: 'epel/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirrors.thzhost.com::epel/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'epel/'
 
                     {% set system_platform_id = 'rhel5' %}
                     {{ system_platform_id }}:
@@ -488,10 +472,9 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirrors.thzhost.com::'
-                        rsync_mirror_internet_source_rel_path: 'epel/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_internet_source_base_url: 'mirrors.thzhost.com::epel/'
+                        rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'epel/'
 
             # PostgreSQL 9.3.
             # See list of available repositories:
@@ -519,9 +502,9 @@ system_features:
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
                         rsync_mirror_internet_source_base_url: 'yum.postgresql.org::'
+                        # TODO: This repository has sub-repos per target OS.
                         rsync_mirror_internet_source_rel_path: 'pgrpm-93/'
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        rsync_mirror_local_destination_path_prefix: ''
+                        rsync_mirror_local_destination_path_prefix: 'postgresql/'
 
             # Repository for OpenStack command line utils.
             # URL for installation RPM:
@@ -567,7 +550,7 @@ system_features:
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
-                        #rsync_mirror_local_destination_path_prefix: 'fedora/'
+                        #rsync_mirror_local_destination_path_prefix: 'openstack-juno/'
 
                     {% endfor %}
 
@@ -594,8 +577,7 @@ system_features:
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        #rsync_mirror_local_destination_path_prefix: ''
+                        #rsync_mirror_local_destination_path_prefix: 'openstack-juno/'
 
             # Jenkins.
             # See installation instructions:
@@ -643,7 +625,7 @@ system_features:
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
-                        #rsync_mirror_local_destination_path_prefix: 'fedora/'
+                        #rsync_mirror_local_destination_path_prefix: 'jenkins/'
 
                     {% endfor %}
 
@@ -670,8 +652,7 @@ system_features:
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        #rsync_mirror_local_destination_path_prefix: ''
+                        #rsync_mirror_local_destination_path_prefix: 'jenkins/'
 
             # Saltstack repository for RHEL5.
             # See: https://copr.fedoraproject.org/coprs/saltstack/salt-el5/
@@ -708,8 +689,7 @@ system_features:
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        #rsync_mirror_local_destination_path_prefix: ''
+                        #rsync_mirror_local_destination_path_prefix: 'saltstack/'
 
             # SonarQube
             sonar_qube:
@@ -743,8 +723,7 @@ system_features:
                         # TODO: Define rsync-able URL parts.
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
-                        # TODO: Unify local paths: [ OS name ]/[ release ver ]/[ original repo structure ]
-                        #rsync_mirror_local_destination_path_prefix: ''
+                        #rsync_mirror_local_destination_path_prefix: 'sonar/'
 
                     {% endfor %}
 
