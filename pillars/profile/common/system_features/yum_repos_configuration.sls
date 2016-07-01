@@ -29,9 +29,6 @@ system_features:
 
         feature_enabled: True
 
-        # Directory relative to `config_temp_dir`
-        rsync_syncer_base_dir: 'local_yum_mirrors'
-
         # NOTE: URL is not specified.
         #       Instead, access to the repositories is done via root path
         #       of hostname associated with `local_yum_mirrors_role`, e.g.:
