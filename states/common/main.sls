@@ -22,6 +22,8 @@ include:
 
         - common.orchestrate.wraps.depository_role
 
+        - common.orchestrate.wraps.local_yum_mirrors_role
+
         - common.orchestrate.wraps.maven_build_server_role
 
         - common.orchestrate.wraps.jenkins_master_role
