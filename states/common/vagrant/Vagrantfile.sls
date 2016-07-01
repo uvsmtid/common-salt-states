@@ -15,6 +15,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Based on Vagrant explanation, in the future they may support provider
   # per each VM. At the moment, it should only be configured per all
   # set of VMs (outside of individual configuration).
+  # In other words, in theory (multiple Vagrantfile-s were never tested
+  # together on the same machine), there is single provided for all boxes
+  # per Vagrantfile. In practice (as currently implemented with
+  # single Vagrant file) entire system defined through Salt
+  # must use the same Vagrant provider.
   {% set vagrant_provider = pillar['system_features']['vagrant_configuration']['vagrant_provider'] %}
   config.vm.provider "{{ vagrant_provider }}"
   config.vm.provider :{{ vagrant_provider }} do |{{ vagrant_provider }}|
@@ -151,9 +156,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :virtualbox__intnet => '{{ vagrant_net_name }}',
         {% endif %}
 
-        # NOTE: There is an issue with fixed IP addresses on CentOS 7:
-        #           https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-227637698
-        #       The IP address does not get assigned.
         :ip => '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
 
         {% if 'mac' in selected_host['host_networks'][sys_net_name] %}

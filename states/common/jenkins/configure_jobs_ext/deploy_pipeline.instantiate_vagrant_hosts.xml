@@ -38,7 +38,93 @@
         {% set vagrant_files_dir = pillar['system_features']['vagrant_configuration']['vagrant_files_dir'] %}
         {% set vagrant_dir = user_home_dir + '/' + vagrant_files_dir %}
         cd "{{ vagrant_dir }}"
+
+        # Start Vagrant boxes (and create all necessary networks).
         vagrant up --no-parallel
+
+        #######################################################################
+
+        # This section is a workaround to this issue of
+        # Vagrant with libvirt:
+        #     https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-229954632
+
+        {% set vagrant_provider = pillar['system_features']['vagrant_configuration']['vagrant_provider'] %}
+
+        {% if vagrant_provider == 'libvirt' %} # libvirt
+
+        {% for selected_host_name in pillar['system_hosts'].keys() %} # selected_host_name
+
+        {% set selected_host = pillar['system_hosts'][selected_host_name] %}
+
+        {% if selected_host['instantiated_by'] %} # instantiated_by
+
+        {% set instantiated_by = selected_host['instantiated_by'] %}
+        {% set instance_configuration = selected_host[instantiated_by] %}
+        {% set network_resolved_in = selected_host['resolved_in'] %}
+        {% set network_config = pillar['system_networks'][network_resolved_in] %}
+
+        {% for vagrant_net_name in pillar['system_features']['vagrant_configuration']['vagrant_networks'].keys() %} # vagrant_networks
+
+        # Vagrant configuration maps `vagrant_net_name` into system net name via `system_network`.
+        {% set vagrant_net_conf = pillar['system_features']['vagrant_configuration']['vagrant_networks'][vagrant_net_name] %}
+        {% set sys_net_name = vagrant_net_conf['system_network'] %}
+        {% set sys_net_conf = pillar['system_networks'][sys_net_name] %}
+
+        {% if vagrant_net_conf['enabled'] %} # enabled
+
+        # NOTE: If host does not list this network,
+        #       the network will silently be omitted.
+        {% if sys_net_name in selected_host['host_networks'] %} # host_networks
+
+        {% if 'mac' in selected_host['host_networks'][sys_net_name] %} # mac
+
+        # Show XML configuration of the required network.
+        # Normally, after initial creation via Vagrant,
+        # it does not have `host` tags which map
+        # MAC to IP addresses.
+
+        virsh net-dumpxml '{{ vagrant_net_name }}'
+
+        # Add necessary MAC to IP mapping.
+        # Use `net-update` subcommand to avoid messing
+        # with XML config in `bash` scripts directly.
+        # See official example: http://wiki.libvirt.org/page/Networking#virsh_net-update
+        # NOTE: Use lowercase due to current issue with Vagrant explained her:
+        #           https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-229963533
+        # - Command `add` may fail if specified MAC address
+        #   already exists (in the XML output above).
+        #   It is OK to ignore non-zero exit status.
+        # - Command `modify` should not fail as the mapping
+        #   is supposed to be already added by now.
+
+        set -e
+        virsh net-update '{{ vagrant_net_name }}' add ip-dhcp-host "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" --current
+        set +e
+        virsh net-update '{{ vagrant_net_name }}' modify ip-dhcp-host "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" --current
+
+        # Show XML configuration again to
+        # demonstrate the changes.
+
+        virsh net-dumpxml '{{ vagrant_net_name }}'
+
+        {% endif %} # mac
+
+        {% endif %} # host_networks
+
+        {% endif %} # enabled
+
+        {% endfor %} # vagrant_networks
+
+        {% endif %} # instantiated_by
+
+        {% endfor %} # selected_host_name
+
+        # Restart Vagrant boxes (to get required IPs from DHCP).
+        # Provisioning is explicitly disabled
+        # (as boxes are already provisioned by `vagrant up` above).
+        vagrant reload --no-provision
+
+        {% endif %} # libvirt
 
         #######################################################################
         # Script footer
