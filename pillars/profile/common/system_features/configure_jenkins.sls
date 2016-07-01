@@ -1262,6 +1262,259 @@ system_features:
 
             {% set skip_script_execution = False %}
 
+            {% set job_template_id = 'deploy_pipeline.build_bootstrap_package' %}
+            __.__.{{ job_template_id }}:
+
+                enabled: True
+
+                job_group_name: standalone_group
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job and does not associate.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
+
+                # NOTE: This is a standalone job.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: This job cloned from `package_pipeline`.
+                    {% set job_template_id = 'package_pipeline.build_bootstrap_package' %}
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'deploy_pipeline.configure_vagrant' %}
+            __.__.{{ job_template_id }}:
+
+                enabled: True
+
+                job_group_name: standalone_group
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                restrict_to_system_role:
+                    - controller_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job and does not associate.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
+
+                # NOTE: This is a standalone job.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'deploy_pipeline.destroy_vagrant_hosts' %}
+            __.__.{{ job_template_id }}:
+
+                enabled: True
+
+                job_group_name: standalone_group
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                # NOTE: This job is special.
+                #       While many other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                # NOTE: This is required because even Jenkins Slave
+                #       running on the same host with Jenkins Master
+                #       will destroy its network (together with its
+                #       connection to master) while destroying (Vagrant) VMs.
+                #       This will fail the job with error:
+                #           Slave went offline during the build
+                # NOTE: We cannot run on true Jenkins Master
+                #       (which is available on Jenkins by default)
+                #       because its jobs executed by default user (`jenkins`)
+                #       which may not have access to Vagrant file.
+                #       Instead, we use Jenkins Slave which is connected
+                #       via `localhost`.
+                force_jenkins_master: False
+                jenkins_master_role: localhost_role
+                restrict_to_system_role:
+                    - localhost_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
+                # NOTE: This step may avoid destroying Vagrant hosts
+                #       because this process is not yet reliable enough.
+                # NOTE: There are also some manual steps (e.g. screen resolution)
+                #       which are not configured automatically yet.
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job and does not associate.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
+
+                # NOTE: This is a standalone job.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'deploy_pipeline.remove_salt_minion_keys' %}
+            __.__.{{ job_template_id }}:
+
+                enabled: True
+
+                job_group_name: standalone_group
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                # NOTE: This job is special.
+                #       While many other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                # NOTE: This is required because even Jenkins Slave
+                #       running on the same host with Jenkins Master
+                #       may not have necessary (virtual) network configured
+                #       as it may be created only with (Vagrant) VMs
+                #       Such Jenkins Slave may be inaccessible by
+                #       its known IP address to master yet.
+                # NOTE: We cannot run on true Jenkins Master
+                #       (which is available on Jenkins by default)
+                #       because its jobs executed by default user (`jenkins`)
+                #       which may not have `sudo` enabled.
+                #       Instead, we use Jenkins Slave which is connected
+                #       via `localhost`.
+                force_jenkins_master: False
+                jenkins_master_role: localhost_role
+                restrict_to_system_role:
+                    - localhost_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
+                # NOTE: This step may avoid destroying Vagrant hosts
+                #       because this process is not yet reliable enough.
+                # NOTE: There are also some manual steps (e.g. screen resolution)
+                #       which are not configured automatically yet.
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job and does not associate.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
+
+                # NOTE: This is a standalone job.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'deploy_pipeline.instantiate_vagrant_hosts' %}
+            __.__.{{ job_template_id }}:
+
+                enabled: True
+
+                job_group_name: standalone_group
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                # NOTE: This job is special.
+                #       While many other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                # NOTE: This is required because even Jenkins Slave
+                #       running on the same host with Jenkins Master
+                #       may not have necessary (virtual) network configured
+                #       as it may be created only with (Vagrant) VMs
+                #       Such Jenkins Slave may be inaccessible by
+                #       its known IP address to master yet.
+                # NOTE: We cannot run on true Jenkins Master
+                #       (which is available on Jenkins by default)
+                #       because its jobs executed by default user (`jenkins`)
+                #       which may not have access to Vagrant file.
+                #       Instead, we use Jenkins Slave which is connected
+                #       via `localhost`.
+                force_jenkins_master: False
+                jenkins_master_role: localhost_role
+                restrict_to_system_role:
+                    - localhost_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
+                # NOTE: This step may avoid destroying Vagrant hosts
+                #       because this process is not yet reliable enough.
+                # NOTE: There are also some manual steps (e.g. screen resolution)
+                #       which are not configured automatically yet.
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job and does not associate.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
+
+                # NOTE: This is a standalone job.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
             {% set job_template_id = 'deploy_pipeline.run_salt_orchestrate' %}
             __.__.{{ job_template_id }}:
 
@@ -1371,6 +1624,52 @@ system_features:
 
                 job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
                 job_config_data:
+                    xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            {% set job_template_id = 'deploy_pipeline.reconnect_jenkins_slaves' %}
+            __.__.{{ job_template_id }}:
+
+                enabled: True
+
+                job_group_name: standalone_group
+
+                discard_old_builds:
+                    build_days: {{ discard_build_days }}
+                    build_num: {{ discard_build_num }}
+
+                # NOTE: This job is special.
+                #       While many other jobs run through Jenkins Slaves
+                #       (even if this Slave may run on Jenkins Master),
+                #       this job is actually executed by Jenkins Master.
+                #       This is required to be able to keep connection
+                #       while executing reconnection for Slaves.
+                force_jenkins_master: True
+                restrict_to_system_role:
+                    - jenkins_master_role
+
+                skip_if_true: SKIP_DEPLOY_PIPELINE
+
+                skip_script_execution: {{ skip_script_execution }}
+
+                # NOTE: This is a standalone job and does not associate.
+                {% if False %}
+                input_fingerprinted_artifacts:
+                    01.01.init_pipeline.start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+                {% endif %}
+
+                # NOTE: This is a standalone job.
+                {% if False %}
+                parameterized_job_triggers:
+                    job_not_faild:
+                        condition: UNSTABLE_OR_BETTER
+                        trigger_jobs:
+                            []
+                {% endif %}
+
+                job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
+                job_config_data:
+                    # NOTE: We reuse `update_pipeline.reconnect_jenkins_slaves` template.
+                    {% set job_template_id = 'update_pipeline.reconnect_jenkins_slaves' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             {% set job_template_id = 'deploy_pipeline.register_generated_resources' %}
