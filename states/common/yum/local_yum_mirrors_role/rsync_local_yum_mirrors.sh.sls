@@ -7,10 +7,10 @@
 {% set config_temp_dir = pillar['windows_config_temp_dir'] %}
 {% endif %}
 
+set -v
 set -u
 set -e
 set -x
-set -v
 
 MIRRORS_BASE_DIR="{{ pillar['system_features']['yum_repos_configuration']['local_yum_mirrors_role_content_dir'] }}"
 
@@ -23,6 +23,20 @@ MIRRORS_BASE_DIR="{{ pillar['system_features']['yum_repos_configuration']['local
 echo "SYNC: repo = '{{ repo_name }}', os_platform = '{{ os_platform }}': use_local_yum_mirrors = True"
 
 RSYNC_DST_PATH="${MIRRORS_BASE_DIR}/{{ repo_config['rsync_mirror_local_destination_path_prefix'] }}{{ repo_config['rsync_mirror_internet_source_rel_path'] }}"
+RSYNC_SRC_PATH="{{ repo_config['rsync_mirror_internet_source_base_url'] }}{{ repo_config['rsync_mirror_internet_source_rel_path'] }}"
+
+# Make sure trailing character is `/`
+# (for `rsync` to avoid creating subdirectories).
+# See: http://stackoverflow.com/a/21635778/441652
+for RSYNC_PATH in "${RSYNC_SRC_PATH}" "${RSYNC_DST_PATH}"
+do
+    if [ "${RSYNC_PATH: -1}" != "/" ]
+    then
+        echo "ERROR: trailing character is not \`/\`: ${RSYNC_PATH}"
+        exit 1
+    fi
+done
+
 mkdir -p "${RSYNC_DST_PATH}"
 rsync \
     --archive \
@@ -30,7 +44,7 @@ rsync \
     --verbose \
     --delete \
     --progress \
-    "{{ repo_config['rsync_mirror_internet_source_base_url'] }}{{ repo_config['rsync_mirror_internet_source_rel_path'] }}" \
+    "${RSYNC_SRC_PATH}" \
     "${RSYNC_DST_PATH}" \
     && true
 
