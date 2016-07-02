@@ -87,8 +87,6 @@ system_features:
             ###################################################################
             # Triggers
 
-            {% set skip_script_execution = False %}
-
             {% set job_template_id = 'init_pipeline.clean_old_build' %}
             __.__.{{ job_template_id }}:
 
@@ -105,7 +103,8 @@ system_features:
 
                 skip_if_true: SKIP_INIT_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -145,7 +144,8 @@ system_features:
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -839,7 +839,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/promotion.template.xml'
 
             ###################################################################
-            # The `update_pipeline`
+            # Standalone jobs of `update_pipeline`
 
             {% set job_template_id = 'update_pipeline.restart_master_salt_services' %}
             __.__.{{ job_template_id }}:
@@ -857,7 +857,8 @@ system_features:
 
                 skip_if_true: SKIP_UPDATE_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -894,7 +895,8 @@ system_features:
 
                 skip_if_true: SKIP_UPDATE_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -915,7 +917,8 @@ system_features:
                 job_config_data:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
-            #------------------------------------------------------------------
+            ###################################################################
+            # The `update_pipeline`
 
             {% set skip_script_execution = False %}
 
@@ -1068,9 +1071,7 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
             ###################################################################
-            # The `maven_pipeline`
-
-            {% set skip_script_execution = False %}
+            # Standalone jobs of `maven_pipeline`
 
             {% set job_template_id = 'maven_pipeline.full_test_report' %}
             __.__.{{ job_template_id }}:
@@ -1099,7 +1100,8 @@ system_features:
                 # TODO: At the moment Maven jobs cannot be skipped.
                 skip_if_true: SKIP_MAVEN_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -1140,6 +1142,11 @@ system_features:
                     # multi-module reactor build.
                     repository_name: 'maven-demo'
                     component_pom_path: 'pom.xml'
+
+            ###################################################################
+            # The `maven_pipeline`
+
+            {% set skip_script_execution = False %}
 
             {% set job_template_id = 'maven_pipeline.maven_build_all' %}
             03.01.{{ job_template_id }}:
@@ -1334,9 +1341,7 @@ system_features:
             {% endfor %}
 
             ###################################################################
-            # The `deploy_pipeline`
-
-            {% set skip_script_execution = False %}
+            # Standalone jobs of `deploy_pipeline`
 
             {% set job_template_id = 'deploy_pipeline.build_bootstrap_package' %}
             __.__.{{ job_template_id }}:
@@ -1354,7 +1359,8 @@ system_features:
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -1393,7 +1399,8 @@ system_features:
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -1452,7 +1459,8 @@ system_features:
                 #       because this process is not yet reliable enough.
                 # NOTE: There are also some manual steps (e.g. screen resolution)
                 #       which are not configured automatically yet.
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -1511,7 +1519,8 @@ system_features:
                 #       because this process is not yet reliable enough.
                 # NOTE: There are also some manual steps (e.g. screen resolution)
                 #       which are not configured automatically yet.
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -1570,7 +1579,8 @@ system_features:
                 #       because this process is not yet reliable enough.
                 # NOTE: There are also some manual steps (e.g. screen resolution)
                 #       which are not configured automatically yet.
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -1622,7 +1632,8 @@ system_features:
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 #NOTE:  run_salt_orchestrate job is randomly failing and it blocks the
                 # build further and it is understood that the orchestrate job is needed
@@ -1681,7 +1692,8 @@ system_features:
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -1725,7 +1737,8 @@ system_features:
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
-                skip_script_execution: {{ skip_script_execution }}
+                # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+                skip_script_execution: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -1747,6 +1760,11 @@ system_features:
                     # NOTE: We reuse `update_pipeline.reconnect_jenkins_slaves` template.
                     {% set job_template_id = 'update_pipeline.reconnect_jenkins_slaves' %}
                     xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
+
+            ###################################################################
+            # The `deploy_pipeline`
+
+            {% set skip_script_execution = False %}
 
             {% set job_template_id = 'deploy_pipeline.register_generated_resources' %}
             04.01.{{ job_template_id }}:
