@@ -8,6 +8,8 @@ include:
 
     - common.webserver.local_yum_mirrors_role
 
+    - common.yum.local_yum_mirrors_role.mirrors_syncer
+
 {% endif %}
 
 {% endif %}
