@@ -43,6 +43,7 @@ local_yum_mirrors_role_content_dir:
 local_yum_mirrors_role_content_symlink:
     file.symlink:
         - name: '{{ local_yum_mirrors_role_content_symlink }}'
+        - makedirs: True
         - target: '{{ local_yum_mirrors_role_content_dir }}'
         - require:
             - file: local_yum_mirrors_role_content_dir
