@@ -32,6 +32,17 @@ deploy_script_rsync_local_yum_mirrors.sh:
         - group: '{{ account_conf['primary_group'] }}'
         - mode: 755
 
+deploy_script_list_unsynced_directories.sh:
+    file.managed:
+        - source: 'salt://common/yum/local_yum_mirrors_role/list_unsynced_directories.sh.sls'
+        - template: jinja
+        - name: '{{ base_dir }}/list_unsynced_directories.sh'
+        - makedirs: True
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
+        - mode: 755
+
+
 {% endif %} # os_platform_type
 # ]]]
 ###############################################################################
