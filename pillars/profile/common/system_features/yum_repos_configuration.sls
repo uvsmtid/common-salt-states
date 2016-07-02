@@ -500,7 +500,13 @@ system_features:
 
                 os_platform_configs:
 
-                    {% set system_platform_id = 'rhel5' %}
+                    # TODO: The loop can possibly include `rhel7`.
+                    #       However, it was only tested for
+                    #       `key_file_resource_id: rhel5_postgresql_yum_repository_rpm_verification_key`.
+                    {% for system_platform_id in [
+                            'rhel5',
+                        ]
+                    %}
                     {{ system_platform_id }}:
                         repo_enabled: True
                         skip_if_unavailable: True
@@ -518,10 +524,12 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'yum.postgresql.org::'
+                        rsync_mirror_internet_source_base_url: 'yum.postgresql.org::pgrpm-93/redhat/'
                         # TODO: This repository has sub-repos per target OS.
-                        rsync_mirror_internet_source_rel_path: 'pgrpm-93/'
-                        rsync_mirror_local_destination_path_prefix: 'postgresql/'
+                        rsync_mirror_internet_source_rel_path: 'rhel-{{ os_platform_to_release_ver[system_platform_id] }}-x86_64/'
+                        rsync_mirror_local_destination_path_prefix: 'postgresql/pgrpm-93/redhat/'
+
+                    {% endfor %}
 
             # Repository for OpenStack command line utils.
             # URL for installation RPM:
