@@ -24,6 +24,8 @@ extend:
     webserver:
         service:
             - watch:
+                - file: local_yum_mirrors_role_content_dir
+                - file: local_yum_mirrors_role_content_symlink
                 - file: /etc/httpd/conf.d/local_yum_mirrors_role.conf
             - require:
                 - file: '{{ local_yum_mirrors_role_content_symlink }}/local_yum_mirrors_role.txt'
