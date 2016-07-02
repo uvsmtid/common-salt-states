@@ -74,6 +74,11 @@ set expandtab
 set tabstop=4
 set shiftwidth=4
 
+" Scroll cursor to the center
+" on each search iteration (and every move of the cursor).
+" See: http://stackoverflow.com/a/7406937/441652
+:set scrolloff=999
+
 " Make 'paste' mode default
 set paste
 
