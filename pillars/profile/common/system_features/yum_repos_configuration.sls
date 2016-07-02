@@ -454,11 +454,11 @@ system_features:
                         skip_if_unavailable: True
 
                         #{# Original:
-                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch'
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/x86_64'
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
 
                         key_file_resource_id: rhel5_epel7_yum_repository_rpm_verification_key
@@ -476,11 +476,11 @@ system_features:
                         skip_if_unavailable: True
 
                         #{# Original:
-                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch'
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/x86_64'
+                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
 
                         key_file_resource_id: rhel5_epel5_yum_repository_rpm_verification_key
@@ -512,11 +512,11 @@ system_features:
                         skip_if_unavailable: True
 
                         #{# Original:
-                        yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-$releasever-$basearch'
+                        yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-$releasever-$basearch/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-{{ os_platform_to_release_ver[system_platform_id] }}-x86_64'
+                        yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-{{ os_platform_to_release_ver[system_platform_id] }}-x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
 
                         key_file_resource_id: rhel5_postgresql_yum_repository_rpm_verification_key
@@ -633,11 +633,11 @@ system_features:
                         skip_if_unavailable: True
 
                         #{# Original:
-                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
+                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
+                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
 
                         # NOTE: Fedora and RHEL7 keys are the same.
@@ -663,11 +663,11 @@ system_features:
                         skip_if_unavailable: True
 
                         #{# Original:
-                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
+                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat'
+                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
 
                         key_file_resource_id: jenkins_yum_repository_rpm_verification_key
@@ -703,12 +703,12 @@ system_features:
                         {% else %}
                         # See updated URLs here:
                         #   https://docs.saltstack.com/en/latest/topics/installation/rhel.html
-                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest'
+                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/'
                         yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/SALTSTACK-GPG-KEY.pub'
                         {% endif %}
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/latest'
+                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/latest/'
                         yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/latest/SALTSTACK-GPG-KEY.pub'
 
                         # TODO: Use global `use_local_yum_mirrors` switch
@@ -739,10 +739,10 @@ system_features:
                         skip_if_unavailable: True
 
                         #{# Original:
-                        yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'
+                        yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm/'
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm'
+                        yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm/'
 
                         yum_repo_gpgcheck: False
 
