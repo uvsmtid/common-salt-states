@@ -44,10 +44,10 @@ then
 mkdir -p "${RSYNC_DST_PATH}"
 # NOTE: Option `--archive` is removed - we do not care about attributes.
 #    --archive \
+#    --delete \
 rsync \
     --recursive \
     --verbose \
-    --delete \
     --progress \
     "${RSYNC_SRC_PATH}" \
     "${RSYNC_DST_PATH}" \
