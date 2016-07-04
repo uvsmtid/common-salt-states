@@ -22,6 +22,9 @@ do
 done
 cat "${UNSORTED_ITEMS}" | sed 's|/*$||g' | sort -u > "${ALL_ITEMS}"
 
+# Clean "${UNSORTED_ITEMS}" for reuse.
+: 1> "${UNSORTED_ITEMS}"
+
 # Find all files under rsynced directories.
 # NOTE: Multiline template requires trailing escape char `\`.
 for TOP_LEVEL_DIR in \
