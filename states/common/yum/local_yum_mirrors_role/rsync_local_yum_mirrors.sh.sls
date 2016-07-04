@@ -37,6 +37,10 @@ do
     fi
 done
 
+# NOTE: Use this `true`<->`false` switch for manual script changes if require.
+if true
+then
+
 mkdir -p "${RSYNC_DST_PATH}"
 rsync \
     --archive \
@@ -47,6 +51,8 @@ rsync \
     "${RSYNC_SRC_PATH}" \
     "${RSYNC_DST_PATH}" \
     && true
+
+fi
 
 {% else %}
 
