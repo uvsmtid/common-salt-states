@@ -42,8 +42,9 @@ if true
 then
 
 mkdir -p "${RSYNC_DST_PATH}"
+# NOTE: Option `--archive` is removed - we do not care about attributes.
+#    --archive \
 rsync \
-    --archive \
     --recursive \
     --verbose \
     --delete \
