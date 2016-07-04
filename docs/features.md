@@ -1,6 +1,18 @@
 
 # Offline installation #
 
+## Local YUM repository support ##
+
+State [`common.yum`][6] configures YUM repositories on each minion
+according to [`system_features:yum_repos_configuration`][7] config in pillars.
+
+State [`common.yum.local_yum_mirrors_role.mirrors_syncer`][8] provides
+generated script which can be used to sync YUM repositories from the Internet.
+
+State [`states.common.orchestrate.wraps.local_yum_mirrors_role`][9]
+configures web server to publish content of YUM repositories on LAN
+for all system hosts.
+
 ## Disable online checks ##
 
 If there is a top level key `bootstrap_mode` set to `offline-minion-installer`,
@@ -61,4 +73,9 @@ how to generate bootstrap package.
 [3]: /pillars/profile
 [4]: /docs/pillars/common/bootstrap_mode/readme.md
 [5]: /docs/pillars/common/system_hosts/_id/consider_online_for_remote_connections/readme.md
+
+[6]: /states/common/yum/
+[7]: /docs/pillars/common/system_features/yum_repos_configuration/
+[8]: /states/common/yum/local_yum_mirrors_role/
+[9]: /states/common/orchestrate/wraps/local_yum_mirrors_role/
 
