@@ -466,7 +466,7 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirrors.thzhost.com::epel/'
+                        rsync_mirror_internet_source_base_url: 'linux.mirrors.es.net::fedora-epel/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
                         rsync_mirror_local_destination_path_prefix: 'epel/'
 
@@ -488,7 +488,7 @@ system_features:
 
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
 
-                        rsync_mirror_internet_source_base_url: 'mirrors.thzhost.com::epel/'
+                        rsync_mirror_internet_source_base_url: 'linux.mirrors.es.net::fedora-epel/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
                         rsync_mirror_local_destination_path_prefix: 'epel/'
 
