@@ -684,35 +684,54 @@ system_features:
                         #rsync_mirror_local_destination_path_prefix: 'jenkins/'
 
             # Saltstack repository for RHEL5.
-            # See: https://copr.fedoraproject.org/coprs/saltstack/salt-el5/
-            saltstack-salt-el5:
+            # Apparently, Fedora (and EPEL) copr repositories are discontinued:
+            #     https://copr.fedorainfracloud.org/coprs/saltstack/salt/
+            # Instead, there is official Saltstack repository for RHEL:
+            #     https://repo.saltstack.com/yum/redhat/5/x86_64/2015.5/
+            # All official configuration options for RHEL:
+            #     https://repo.saltstack.com/#rhel
+            # At the moment, Fedora support lacks recent updates:
+            #     https://github.com/saltstack/salt/issues/28142#issuecomment-230115486
+            saltstack:
                 installation_type: conf_template
 
                 os_platform_configs:
 
-                    {% set system_platform_id = 'rhel5' %}
+                    {% for system_platform_id in [
+                            'rhel5',
+                            'rhel7',
+                        ]
+                    %}
                     {{ system_platform_id }}:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        {% if False %}
-                        # It seems these are obsolete URLs.
-                        yum_repo_baseurl: 'http://copr-be.cloud.fedoraproject.org/results/saltstack/salt-el5/epel-5-$basearch/'
-                        yum_repo_key_url: 'http://copr-be.cloud.fedoraproject.org/results/saltstack/salt-el5/pubkey.gpg'
-                        {% else %}
-                        # See updated URLs here:
-                        #   https://docs.saltstack.com/en/latest/topics/installation/rhel.html
-                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/'
-                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/SALTSTACK-GPG-KEY.pub'
-                        {% endif %}
+                        # NOTE: Why fixed on release 2015.5?
+                        #       Current Salt master used on Fedora is
+                        #       only updated 2015.5.10.
+
+                        # These are URLs for official
+                        # repsositories supporting RHEL only.
+                        #{#
+                        yum_repo_baseurl: 'https://repo.saltstack.com/yum/redhat/5/x86_64/2015.5/'
+                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/5/x86_64/2015.5/SALTSTACK-EL5-GPG-KEY.pub'
+                        yum_repo_baseurl: 'https://repo.saltstack.com/yum/redhat/7/x86_64/2015.5/'
+                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/7/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/latest/'
-                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/latest/SALTSTACK-GPG-KEY.pub'
+                        yum_repo_baseurl: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/'
+                        {% if False %}
+                        {% elif system_platform_id  == 'rhel5' %}
+                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-EL5-GPG-KEY.pub'
+                        {% elif system_platform_id  == 'rhel7' %}
+                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
+                        {% endif %}
 
                         # TODO: Use global `use_local_yum_mirrors` switch
-                        #       when rsync-able URL parts are define.
+                        #       when rsync-able URL parts are defined.
+                        # NOTE: Official repositories listed above do not
+                        #       support rsync protocol yet:
+                        #           https://github.com/saltstack/salt/issues/29222
                         #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
                         use_local_yum_mirrors: False
 
@@ -720,6 +739,8 @@ system_features:
                         #rsync_mirror_internet_source_base_url: ''
                         #rsync_mirror_internet_source_rel_path: ''
                         #rsync_mirror_local_destination_path_prefix: 'saltstack/'
+
+                    {% endfor %}
 
             # SonarQube
             sonar_qube:
