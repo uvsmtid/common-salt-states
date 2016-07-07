@@ -7,11 +7,11 @@
 {% set flag_name = 'ssh_keys_distributed' %}
 
 # Use library of maros for stage flag files.
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_prerequisites_include      with context %}
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_prerequisites_include_self with context %}
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_prerequisites              with context %}
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_prerequisites_self         with context %}
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_create                     with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_prerequisites_include      with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_prerequisites_include_self with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_prerequisites              with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_prerequisites_self         with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_create                     with context %}
 
 # Include required states.
 include:
