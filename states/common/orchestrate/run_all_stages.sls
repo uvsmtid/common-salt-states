@@ -5,7 +5,7 @@
 # configuration (in pillar).
 #
 # Details on what states are being set up and on which hosts are coded
-# are in the respective stage state.
+# in the respective stage state.
 
 include:
 
