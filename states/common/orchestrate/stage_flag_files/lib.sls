@@ -77,20 +77,37 @@
 # Include prerequisites of stage flag file:
 include:
 
+    # NOTE: We do not include stage states into flag file state.
+    #       If included, they will trigger stage states execution.
+    #       Flag file is the indicator that state execution
+    #       has already been completed in the state which actually
+    #       implements steps for the stage.
+    #       This indicator flag file is not created by the flag file state.
+    #       Instead, it is created by the state which implements the state.
+    {% if False %}
     # Include itself to trigger execution and meet stage flag requirements:
     - {{ project_name }}.orchestrate.stages.{{ stage_flag_id }}
+    {% endif %}
 
     # Include all pre-requisites:
     {{ stage_flag_file_prerequisites_include(project_name, stage_flag_id) }}
 
 # State name is a file name prefixed with `stage_flag_`:
 'stage_flag_{{ stage_flag_id }}':
+    # NOTE: This state only verifies the existence of file name.
+    #       It does not create the file, if it does not exist.
     file.exists:
         - name: '{{ dir_name }}/{{ stage_flag_id }}'
         - require:
 
+            # NOTE: We do not trigger state execution to for flag file.
+            #       Flag file is the indicator that state execution
+            #       has already been completed in the state which actually
+            #       implements steps for the stage.
+            {% if False %}
             # Trigger stage execution:
             - sls: {{ project_name }}.orchestrate.stages.{{ stage_flag_id }}
+            {% endif %}
 
             # Depend on all pre-requisite stage flag files:
             {{ stage_flag_file_prerequisites(stage_flag_id) }}
