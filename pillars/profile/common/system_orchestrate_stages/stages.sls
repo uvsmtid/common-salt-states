@@ -15,6 +15,7 @@ system_orchestrate_stages:
     state_flag_files_order:
         - orchestrate_stage_start
         - salt_minions_ready
+        - hosts_files_updated
         - required_system_hosts_online
         - sudo_configured
         - ssh_service_ready
@@ -63,6 +64,16 @@ system_orchestrate_stages:
             prerequisites:
                 - orchestrate_stage_start
 
+        # All hosts files are updated to list all required system hosts.
+        # NOTE: The hosts file is not updated if `hostname_resolution_type`
+        #       is not set to `static_hosts_file` to avoid stale entries
+        #       in case of other host resolution method is used (e.g. DNS).
+        hosts_files_updated:
+            enable_auto_creation:                                       True
+            enable_prerequisite_enforcement:                            True
+            prerequisites:
+                - salt_minions_ready
+
         # DONE
         # This is an automatic stage which makes sure all hosts which
         # should be accessible are actually accessible so that subsequent
@@ -73,8 +84,8 @@ system_orchestrate_stages:
             enable_auto_creation:                                       True
             enable_prerequisite_enforcement:                            True
             prerequisites:
-                - orchestrate_stage_start
                 - salt_minions_ready
+                - hosts_files_updated
 
         # DONE
         sudo_configured:
@@ -147,6 +158,7 @@ system_orchestrate_stages:
             prerequisites:
                 - orchestrate_stage_start
                 - salt_minions_ready
+                - hosts_files_updated
                 - required_system_hosts_online
                 - sudo_configured
                 - ssh_service_ready
