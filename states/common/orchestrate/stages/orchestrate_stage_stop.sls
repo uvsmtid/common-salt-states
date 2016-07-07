@@ -4,7 +4,7 @@
 # HEADER
 ###############################################################################
 
-{% set flag_name = 'stop' %}
+{% set flag_name = 'orchestrate_stage_stop' %}
 
 # Use library of maros for stage flag files.
 {% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_prerequisites_include      with context %}
