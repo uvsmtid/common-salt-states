@@ -7,6 +7,23 @@ system_orchestrate_stages:
     # This path is relative to primary user's home:
     deployment_directory_path: 'salt_orchestration_stage_flag_files'
 
+    # NOTE: Unfortunately, there is no way to enforce listing of
+    #       dict keys in the order they are defined.
+    #       So, this list is in addition to the keys of
+    #       `stage_flag_files` dict defined below just to know the order
+    #       in which they have to be executed.
+    state_flag_files_order:
+        - orchestrate_stage_start
+        - salt_minions_ready
+        - required_system_hosts_online
+        - sudo_configured
+        - ssh_service_ready
+        - ssh_keys_distributed
+        - jenkins_master_installed
+        - jenkins_slaves_connected
+        - jenkins_jobs_configured
+        - orchestrate_stage_stop
+
     #--------------------------------------------------------------------------
     # Stage Flag Files
     #
