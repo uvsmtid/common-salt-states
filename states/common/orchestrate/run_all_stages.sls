@@ -9,8 +9,11 @@
 
 include:
 
-{% for stage_name in pillar['system_orchestrate_stages']['stage_flag_files'].keys() %}
-    - common.orchestrate.stage_flag_files.{{ stage_name }}
+# NOTE: Because the order of keys in dict is not guaranteed, we use
+#       explicitly specified order of keys in
+#       a separate `state_flag_files_order`.
+{% for stage_name in pillar['system_orchestrate_stages']['state_flag_files_order'] %}
+    - common.orchestrate.stages.{{ stage_name }}
 {% endfor %}
 
     # Use `dummy` to make YAML list even without any normal elements.
