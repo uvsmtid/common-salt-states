@@ -17,6 +17,7 @@ system_orchestrate_stages:
         - salt_minions_ready
         - hosts_files_updated
         - required_system_hosts_online
+        - yum_repositories_configured
         - sudo_configured
         - ssh_service_ready
         - ssh_keys_distributed
@@ -87,12 +88,23 @@ system_orchestrate_stages:
                 - salt_minions_ready
                 - hosts_files_updated
 
+        # Configure YUM repositories (e.g. including cases when local
+        # YUM mirros are used) so that any installation
+        # of packages can succeed.
+        yum_repositories_configured:
+            enable_auto_creation:                                       True
+            enable_prerequisite_enforcement:                            True
+            prerequisites:
+                - hosts_files_updated
+                - required_system_hosts_online
+
         # DONE
         sudo_configured:
             enable_auto_creation:                                       True
             enable_prerequisite_enforcement:                            True
             prerequisites:
                 - salt_minions_ready
+                - yum_repositories_configured
 
         # DONE
         ssh_service_ready:
@@ -103,6 +115,7 @@ system_orchestrate_stages:
             enable_prerequisite_enforcement:                            True
             prerequisites:
                 - salt_minions_ready
+                - yum_repositories_configured
 
         # DONE
         ssh_keys_distributed:
@@ -119,6 +132,7 @@ system_orchestrate_stages:
             enable_prerequisite_enforcement:                            True
             prerequisites:
                 - ssh_keys_distributed
+                - yum_repositories_configured
 
         # DONE
         jenkins_slaves_connected:
@@ -160,6 +174,7 @@ system_orchestrate_stages:
                 - salt_minions_ready
                 - hosts_files_updated
                 - required_system_hosts_online
+                - yum_repositories_configured
                 - sudo_configured
                 - ssh_service_ready
                 - ssh_keys_distributed
