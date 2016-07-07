@@ -122,7 +122,7 @@ system_orchestrate_stages:
 
         # DONE
         # The very last stage which runs highstate on all minions.
-        stop:
+        orchestrate_stage_stop:
             enable_auto_creation:                                       True
             enable_prerequisite_enforcement:                            True
             # TODO: There should be no explicit prerequisites.
