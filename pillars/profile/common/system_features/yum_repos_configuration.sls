@@ -81,7 +81,16 @@ system_features:
                         # NOTE: Sync only the latest Fedora release.
                         {% if system_platform_id == 'fc24' %}
 
+                        # NOTE: At the moment Fedora 24 had `dnf` with
+                        #       the bug which makes it impossible to
+                        #       avoid using proxy per repository.
+                        #       See details:
+                        #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
+                        {% if system_platform_id == 'fc24' %}
+                        use_local_yum_mirrors: False
+                        {% else %}
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        {% endif %}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/releases/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/Everything/x86_64/os/'
@@ -174,7 +183,16 @@ system_features:
                         # NOTE: Sync only the latest Fedora release.
                         {% if system_platform_id == 'fc24' %}
 
+                        # NOTE: At the moment Fedora 24 had `dnf` with
+                        #       the bug which makes it impossible to
+                        #       avoid using proxy per repository.
+                        #       See details:
+                        #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
+                        {% if system_platform_id == 'fc24' %}
+                        use_local_yum_mirrors: False
+                        {% else %}
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        {% endif %}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/updates/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
