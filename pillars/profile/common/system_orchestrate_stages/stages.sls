@@ -24,7 +24,7 @@ system_orchestrate_stages:
 
         # DONE
         # The very first stage without any prerequisites.
-        start:
+        orchestrate_stage_start:
             # WARNING: This flag should manually be created just to direct
             #          attention on the directory with stage flag files.
             enable_auto_creation:                                       True
@@ -44,7 +44,7 @@ system_orchestrate_stages:
             enable_auto_creation:                                       True
             enable_prerequisite_enforcement:                            True
             prerequisites:
-                - start
+                - orchestrate_stage_start
 
         # DONE
         # This is an automatic stage which makes sure all hosts which
@@ -56,7 +56,7 @@ system_orchestrate_stages:
             enable_auto_creation:                                       True
             enable_prerequisite_enforcement:                            True
             prerequisites:
-                - start
+                - orchestrate_stage_start
                 - salt_minions_ready
 
         # DONE
@@ -128,7 +128,7 @@ system_orchestrate_stages:
             # TODO: There should be no explicit prerequisites.
             #       All stages should be added automatically in the SLS.
             prerequisites:
-                - start
+                - orchestrate_stage_start
                 - salt_minions_ready
                 - required_system_hosts_online
                 - sudo_configured
