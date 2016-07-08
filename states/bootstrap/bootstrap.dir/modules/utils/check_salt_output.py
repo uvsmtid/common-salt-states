@@ -62,13 +62,16 @@ import types
 import logging
 import cStringIO
 
-
 ###############################################################################
 #
 
 # This is what all states failed due to failed requisites have
 # in their `comment` string.
 requisite_failure_prefix = "One or more requisite failed:"
+
+# Global statistics per script run.
+# Currently it is used to show ordered list of execution time per state.
+g_stats = []
 
 ###############################################################################
 #
@@ -77,6 +80,10 @@ def process_file(
     file_path,
     min_count = 1,
 ):
+
+    """
+    Wrap processing to use file path to data as input.
+    """
 
     # Instead of using `with` keyword, perform standard `try`/`finally`
     # to support Python 2.5 on RHEL5.
@@ -93,6 +100,14 @@ def process_string(
     string,
     min_count = 1,
 ):
+
+    """
+    Wrap processing to use string data as input.
+
+    This function is normally used for test purposes
+    (real output is normally provided via file - see `process_file`).
+    """
+
     stream = cStringIO.StringIO(string)
     try:
         return process_stream(stream, min_count)
@@ -106,6 +121,11 @@ def process_stream(
     stream,
     min_count = 1,
 ):
+
+    """
+    Process input stream treating it as JSON and pass for analysis.
+    """
+
     output_data = json_multi_object_loader(stream)
     return check_output_data(output_data, min_count)
 
@@ -170,10 +190,14 @@ def json_multi_object_loader(stream):
     return output_objects
 
 ###############################################################################
+#
 
 def describe_result(potential_state_id, output_data):
 
+    global g_stats
+
     overall_result = True
+    duration = None
 
     independent_failures = 0
 
@@ -191,9 +215,23 @@ def describe_result(potential_state_id, output_data):
     if 'name' in output_data:
         logging.info("`name`: " + str(output_data['name']))
 
+    if 'duration' in output_data:
+        # NOTE: Convert duration from floating point to integer
+        #       and print with leading zeroes.
+        duration = int(output_data['duration'])
+        logging.info("`duration`: " + str(duration).zfill(8))
+    else:
+        logging.warn("Field `duration` is absent")
+        duration = -1
+
+    # Add state id and duration into the list.
+    g_stats.append((duration, potential_state_id))
+
+    # Print result at the bottom of other state id data.
     result_value = output_data['result']
     logging.info("`result`: " + str(result_value))
 
+    # Analyse different flavours of `result_value`.
     if result_value is None:
         logging.critical("unexpected `result` value: " + str(result_value))
         overall_result = False
@@ -212,6 +250,7 @@ def describe_result(potential_state_id, output_data):
         logging.info("unexpected `result` value: " + str(result_value))
         overall_result = False
 
+    # Return object for accumulation.
     if overall_result:
         return {
             'overall_result': True,
@@ -233,6 +272,7 @@ def describe_result(potential_state_id, output_data):
 def consolidate_results(potential_state_id, overall_result, output_data):
 
     """
+    Aggregate lower-level result counters in a higher-level accumulator object.
     """
 
     result = traverse_output_data(potential_state_id, output_data)
@@ -251,6 +291,13 @@ def consolidate_results(potential_state_id, overall_result, output_data):
 
 def traverse_output_data(potential_state_id, output_data):
 
+    """
+    Analyse current data node (as JSON object) whether it is state result.
+
+    To recognize whether it is state result or not,
+    key `result` is searched for.
+    """
+
     overall_result = {
         'overall_result': True,
         'total_counter': 0,
@@ -265,6 +312,7 @@ def traverse_output_data(potential_state_id, output_data):
     ):
         logging.debug("list")
         for item in output_data:
+            # NOTE: Indirect recursive call.
             overall_result = consolidate_results(None, overall_result, item)
         return overall_result
 
@@ -272,21 +320,25 @@ def traverse_output_data(potential_state_id, output_data):
         logging.debug("dict")
         if 'result' in output_data:
             # Key `result` exists - it must be result of state execution.
+            # Generate analysis logs and determine
+            # wither it was a failed state or not.
             overall_result = describe_result(potential_state_id, output_data)
             return overall_result
         else:
             # Key `result` does not exist - it must be complex object.
             # And every `key` of this complex object is potentially a state id.
             for potential_state_id, value in output_data.items():
+                # NOTE: Indirect recursive call.
                 overall_result = consolidate_results(potential_state_id, overall_result, value)
             return overall_result
     else:
         logging.debug("not list and not dict: " + str(output_data))
 
-    # It must just a field (ignore).
+    # It must be just a field (ignore).
     return overall_result
 
 ###############################################################################
+#
 
 def check_output_data(
     output_data,
@@ -294,10 +346,24 @@ def check_output_data(
 ):
 
     """
-    Check result provided by Salt for local (see `salt-call`) execution.
+    Check result provided by Salt output.
     """
 
+    global g_stats
+
     overall_result = traverse_output_data(None, output_data)
+
+    # Print state ids sorted by duration time.
+    # http://stackoverflow.com/a/3121985/441652
+    sorted_by_duration = sorted(
+        g_stats,
+        key=lambda tup: tup[0],
+        reverse=True,
+    )
+    logging.info("sorted_by_duration ----------------------------------------")
+    for sorted_item in sorted_by_duration:
+        logging.info("sorted_by_duration: " + str(sorted_item))
+    logging.info("sorted_by_duration ----------------------------------------")
 
     # Check minimal required total count.
     if overall_result['total_counter'] < min_count:
@@ -315,19 +381,23 @@ def check_output_data(
     return overall_result['overall_result']
 
 ###############################################################################
-#
+# MAIN
 
 def main():
 
     logging.getLogger().setLevel(0)
 
-    # http://stackoverflow.com/a/15064168/441652
     if len(sys.argv) < 2:
+        # Print Python file's docstring as usage help.
+        # http://stackoverflow.com/a/15064168/441652
         print __doc__ % { 'script_name' : sys.argv[0].split(os.pathsep)[-1] }
         # In addition to usage output, run tests.
         sys.exit(1)
     elif sys.argv[1] == "test":
-        run_tests()       
+        # Run tests if only signle `test` argument is provided.
+        # NOTE: Yes, if file to be processed is named `test`,
+        #       it will be ignored.
+        run_tests()
         logging.info("SUCCESS: ALL TESTS PASSED")
         return
 
@@ -349,6 +419,9 @@ def main():
 
 def run_tests():
 
+    global g_stats
+
+    #--------------------------------------------------------------------------
     # Blank output shall be success.
     assert(
         process_string(
@@ -359,6 +432,7 @@ def run_tests():
         ) == True
     )
 
+    #--------------------------------------------------------------------------
     # Empty object shall be success.
     assert(
         process_string(
@@ -370,6 +444,7 @@ def run_tests():
         ) == True
     )
 
+    #--------------------------------------------------------------------------
     # Minimal couter shall trigger error without results.
     assert(
         process_string(
@@ -381,6 +456,7 @@ def run_tests():
         ) == True
     )
 
+    #--------------------------------------------------------------------------
     # Any additional characters between objects shall be ignored (success).
     assert(
         process_string(
@@ -397,6 +473,7 @@ asdfghjkl
         ) == True
     )
 
+    #--------------------------------------------------------------------------
     # Schema of any structural depth is acceptable with some
     # expectations about objects which describe result of the state.
     assert(
@@ -420,7 +497,10 @@ asdfghjkl
             """
         ) == True
     )
+    # Also, make sure number of objects in the `g_stats`.
+    assert(len(g_stats) == 1)
 
+    #--------------------------------------------------------------------------
     # Any `"result": false` makes overall result False.
     assert(
         process_string(
@@ -431,6 +511,8 @@ asdfghjkl
             "something_like_state_id": {
                 "result": false
                 ,
+                "duration": 100.1
+                ,
                 "comment": "whenever there is `result`, there must be `comment`"
             }
         ]
@@ -439,7 +521,10 @@ asdfghjkl
             """
         ) == False
     )
+    # Also, make sure number of objects in the `g_stats`.
+    assert(len(g_stats) == 2)
 
+    #--------------------------------------------------------------------------
     # Any missing `comment` field makes overal result False.
     # The point to fail is absense of valuable description what went wrong.
     # Salt may not have `name` output in some cases (not sure, probably when
@@ -461,7 +546,10 @@ asdfghjkl
             """
         ) == False
     )
+    # Also, make sure number of objects in the `g_stats`.
+    assert(len(g_stats) == 3)
 
+    #--------------------------------------------------------------------------
     # If many requisite states fail, the output is very noizy (having
     # many failed results) while the requisite state which caused
     # these failures has to be found manually. In order to highlight
@@ -485,6 +573,8 @@ asdfghjkl
     "independent_2": {
         "result": false
         ,
+        "duration": 150
+        ,
         "comment": "whatever the 2nd reason is"
     }
 }
@@ -496,6 +586,9 @@ asdfghjkl
     assert(case_result['overall_result'] == False)
     assert(case_result['total_counter'] == 2)
     assert(case_result['success_counter'] == 0)
+    # Also, make sure number of objects in the `g_stats`.
+    assert(len(g_stats) == 5)
+    #
     # * Case B: two dependent failures.
     case_result = traverse_output_data(
         None
@@ -523,6 +616,9 @@ asdfghjkl
     assert(case_result['overall_result'] == False)
     assert(case_result['total_counter'] == 2)
     assert(case_result['success_counter'] == 0)
+    # Also, make sure number of objects in the `g_stats`.
+    assert(len(g_stats) == 7)
+    #
     # * Case C: two independent failures.
     case_result = traverse_output_data(
         None
@@ -550,6 +646,9 @@ asdfghjkl
     assert(case_result['overall_result'] == False)
     assert(case_result['total_counter'] == 2)
     assert(case_result['success_counter'] == 0)
+    # Also, make sure number of objects in the `g_stats`.
+    assert(len(g_stats) == 9)
+    #
     # * Case D: no actual failure (only comments look like failure).
     case_result = traverse_output_data(
         None
@@ -577,6 +676,33 @@ asdfghjkl
     assert(case_result['overall_result'] == True)
     assert(case_result['total_counter'] == 2)
     assert(case_result['success_counter'] == 2)
+    # Also, make sure number of objects in the `g_stats`.
+    assert(len(g_stats) == 11)
+
+    #--------------------------------------------------------------------------
+    # Just one more test to print final sorted duration list.
+    assert(
+        process_string(
+            """
+{
+    "field_dict": {
+        "field_list": [
+            "something_like_state_id": {
+                "result": false
+                ,
+                "duration": 100.01
+                ,
+                "comment": "whatever"
+            }
+        ]
+    }
+}
+            """
+        ) == False
+    )
+    # Also, make sure number of objects in the `g_stats`.
+    assert(len(g_stats) == 12)
+
 
 ###############################################################################
 # MAIN
