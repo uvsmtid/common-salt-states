@@ -35,13 +35,6 @@
         # Run orchestrate to make sure states across minions
         # are executed in proper order.
 
-        # NOTE: We run orchestrate 2 times
-        #       (due to issues with some RPM-related states):
-        #       * 1st time without error detection
-        #       * 2nd time with error detection
-        # TODO: Fix Orchestrate maybe by trying to configure YUM/DNF
-        #       before running any other installation.
-
         # Use `check_running_jobs.sh` script to wait for
         # completion of all jobs.
         {% set common_states_repo_id = 'common-salt-states' %}
@@ -56,21 +49,7 @@
         # argument, as of now it is simply ignored - see:
         #    https://github.com/saltstack/salt/issues/24209
         
-        # The 1st time without error detection in the output.
-        # This is supposed to show failed states in cleaner (non-JSON) output.
-        sudo salt-run \
-            -l debug \
-            state.orchestrate common.orchestrate.run_all_stages \
-            test=False | tee salt.output.yaml
-
-        # The 1st time:
-        # Make sure (wait) until all jobs complete.
-        while ( sudo "${COMMON_STATES_REPO_PATH}"/scripts/check_running_jobs.sh )
-        do
-            sleep 10
-        done
-
-        # The 2nd time with error detection in JSON output.
+        # Run orchestrate with error detection in JSON output.
         # This is not supposed to fail -
         # therefore, salt.output.json gets verified subsequently.
         sudo salt-run \
@@ -79,8 +58,7 @@
             state.orchestrate common.orchestrate.run_all_stages \
             test=False | tee salt.output.json
 
-        # The 2nd time, again:
-        # Make sure (wait) until all jobs complete.
+        # Loop (wait) until all jobs complete.
         while ( sudo "${COMMON_STATES_REPO_PATH}"/scripts/check_running_jobs.sh )
         do
             sleep 10
