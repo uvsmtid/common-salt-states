@@ -2,7 +2,8 @@
 <hudson.tasks.Maven_-DescriptorImpl>
   <installations>
     <hudson.tasks.Maven_-MavenInstallation>
-      <name>Default Linux</name>
+      <!-- NOTE: Name Maven installation after its location on the filesystem. -->
+      <name>{{ pillar['system_features']['maven_installation_configuration']['maven_home_dir'] }}</name>
       <home>{{ pillar['system_features']['maven_installation_configuration']['maven_home_dir'] }}</home>
       <properties/>
     </hudson.tasks.Maven_-MavenInstallation>
