@@ -172,7 +172,10 @@ system_orchestrate_stages:
                 - jenkins_master_installed
                 - jenkins_slaves_connected
 
-        # The very last stage which runs highstate on all minions.
+        # The very last stage which is idle by purpose.
+        # If `highstate` is required, it has to be run explicitly.
+        # At the moment, this file configures `orchestrate`
+        # to bring up the system into initially working condition.
         orchestrate_stage_stop:
             enable_auto_creation:                                       True
             enable_prerequisite_enforcement:                            True
