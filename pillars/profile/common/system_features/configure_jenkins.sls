@@ -1635,12 +1635,8 @@ system_features:
                 # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
                 skip_script_execution: False
 
-                #NOTE:  run_salt_orchestrate job is randomly failing and it blocks the
-                # build further and it is understood that the orchestrate job is needed
-                # when the cross platform's services are to up before run the salt high state.
-                # In clearsea, neglect_run_salt_orchestrate_error_state, is set to True to proceed further
-                # eventhough the run_salt_orchastreate is having error
-                neglect_run_salt_orchestrate_error_state: True
+                # This disables error detection on this job.
+                neglect_run_salt_orchestrate_error_state: False
 
                 # NOTE: This is a standalone job and does not associate.
                 {% if False %}
@@ -2104,11 +2100,7 @@ system_features:
 
                 skip_script_execution: {{ skip_script_execution }}
 
-                #NOTE:  run_salt_orchestrate job is randomly failing and it blocks the
-                # build further and it is understood that the orchestrate job is needed
-                # when the cross platform's services are to up before run the salt high state.
-                # In clearsea, neglect_run_salt_orchestrate_error_state, is set to True to proceed further
-                # eventhough the run_salt_orchastreate is having error
+                # This disables error detection on this job.
                 neglect_run_salt_orchestrate_error_state: False
 
                 input_fingerprinted_artifacts:

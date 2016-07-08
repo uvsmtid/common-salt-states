@@ -58,10 +58,13 @@
 {% endmacro %}
 
 ###############################################################################
-# This macro simply generates content for SLS file of stage flag file.
-# For example, if you want to have a new stage flag file called `dummy`,
-# you need to write a `dummy.sls` SLS file which performs all the logic
-# to check existance of this stage file and its dependencies.
+# This macro generates content for SLS file of stage flag file.
+# It is supposed to be used for state which manages stage flag file only
+# (not the state which implements the stage itself).
+# For example, if you want to have a new stage flag file
+# called `orchestrate_stage_dummy`, you need to write
+# a `orchestrate_stage_dummy.sls` SLS file which performs
+# all the logic to check existance of this stage file and its dependencies.
 # Place this macro inside the SLS instead.
 
 {% macro stage_flag_file_sls(project_name, stage_flag_id) %}
@@ -74,20 +77,37 @@
 # Include prerequisites of stage flag file:
 include:
 
+    # NOTE: We do not include stage states into flag file state.
+    #       If included, they will trigger stage states execution.
+    #       Flag file is the indicator that state execution
+    #       has already been completed in the state which actually
+    #       implements steps for the stage.
+    #       This indicator flag file is not created by the flag file state.
+    #       Instead, it is created by the state which implements the state.
+    {% if False %}
     # Include itself to trigger execution and meet stage flag requirements:
     - {{ project_name }}.orchestrate.stages.{{ stage_flag_id }}
+    {% endif %}
 
     # Include all pre-requisites:
     {{ stage_flag_file_prerequisites_include(project_name, stage_flag_id) }}
 
 # State name is a file name prefixed with `stage_flag_`:
 'stage_flag_{{ stage_flag_id }}':
+    # NOTE: This state only verifies the existence of file name.
+    #       It does not create the file, if it does not exist.
     file.exists:
         - name: '{{ dir_name }}/{{ stage_flag_id }}'
         - require:
 
+            # NOTE: We do not trigger state execution to for flag file.
+            #       Flag file is the indicator that state execution
+            #       has already been completed in the state which actually
+            #       implements steps for the stage.
+            {% if False %}
             # Trigger stage execution:
             - sls: {{ project_name }}.orchestrate.stages.{{ stage_flag_id }}
+            {% endif %}
 
             # Depend on all pre-requisite stage flag files:
             {{ stage_flag_file_prerequisites(stage_flag_id) }}
@@ -98,8 +118,9 @@ include:
 # This macro is supposed to be used in the orchestration stage which actully
 # implements what stage flag file indicates. The macro adds state to create
 # stage flag file automatically or manually.
-# For example, if `dummy` state sets up something and you want to create stage
-# flag file `dummy` automatically, use this macro.
+# For example, if `orchestrate_stage_dummy` state sets up something and
+# you want to create stage flag file `orchestrate_stage_dummy` automatically,
+# use this macro.
 
 {% macro stage_flag_file_create(unique_prefix, stage_flag_id, orchestrate_dep_list) %}
 
@@ -119,8 +140,10 @@ include:
         - require:
 {% else %}
 '{{ unique_prefix }}_stage_flag_file_exists_{{ stage_flag_id }}':
-    file.exists:
-        - name: '{{ dir_name }}/{{ stage_flag_id }}'
+    # All we need is to successfuly complete the stage with some note
+    # in the output which tells that manual user intervention is required.
+    cmd.run:
+        - name: "echo NOTE: auto-creation for this file is disabled and has to be done manually: {{ dir_name }}/{{ stage_flag_id }}"
         - require:
 {% endif %}
             # The stage flag file should exists AFTER the last required

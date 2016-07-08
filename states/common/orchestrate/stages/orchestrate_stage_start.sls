@@ -1,4 +1,4 @@
-# Initial start stage which is empty.
+# Initial orchestrate_stage_start stage which is empty.
 # The reason for this stage to exists is to require manual creation of
 # its stage file.
 
@@ -6,14 +6,14 @@
 # HEADER
 ###############################################################################
 
-{% set flag_name = 'start' %}
+{% set flag_name = 'orchestrate_stage_start' %}
 
 # Use library of maros for stage flag files.
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_prerequisites_include      with context %}
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_prerequisites_include_self with context %}
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_prerequisites              with context %}
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_prerequisites_self         with context %}
-{% from 'common/orchestrate/stage_flag_files/lib.sls' import stage_flag_file_create                     with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_prerequisites_include      with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_prerequisites_include_self with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_prerequisites              with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_prerequisites_self         with context %}
+{% from 'common/orchestrate/lib.sls' import stage_flag_file_create                     with context %}
 
 # Include required states.
 include:

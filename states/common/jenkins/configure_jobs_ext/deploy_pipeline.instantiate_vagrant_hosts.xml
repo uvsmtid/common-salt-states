@@ -93,11 +93,13 @@
         #           https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-229963533
         # - Command `add` may fail if specified MAC address
         #   already exists (in the XML output above).
-        #   It is OK to ignore non-zero exit status.
-        # - Command `modify` should not fail as the mapping
-        #   is supposed to be already added by now.
+        # - Command `modify` may also fail if there given MAC and IP
+        #   pair is already registered.
+        # So, we ignore non-zero exit status both times.
+        # However, then we make sure that MAC and IP are present in
+        # the output of XML configuration.
 
-        set -e
+        set +e
         sudo virsh \
             net-update \
             '{{ vagrant_net_name }}' \
@@ -105,7 +107,6 @@
             ip-dhcp-host \
             "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" \
             --current
-        set +e
         sudo virsh \
             net-update \
             '{{ vagrant_net_name }}' \
@@ -113,11 +114,16 @@
             ip-dhcp-host \
             "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" \
             --current
+        set -e
 
         # Show XML configuration again to
         # demonstrate the changes.
 
         sudo virsh net-dumpxml '{{ vagrant_net_name }}'
+
+        # Make sure MAC to IP mapping is present in the output.
+        sudo virsh net-dumpxml '{{ vagrant_net_name }}' \
+            | grep '{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}.*{{ selected_host['host_networks'][sys_net_name]['ip'] }}'
 
         {% endif %} # mac
 
