@@ -81,7 +81,7 @@ retrieve_jenkins_rpm_package:
 jenkins_rpm_package:
     cmd.run:
         - name: 'yum install -y {{ config_temp_dir }}/jenkins/jenkins.rpm'
-        # NOTE: Do not reinstall sonar (if exists).
+        # NOTE: Do not reinstall jeknins package (if exists).
         - unless: 'rpm -qi jenkins'
         - require:
             - file: retrieve_jenkins_rpm_package
@@ -116,6 +116,7 @@ jenkins_configuration_file:
         'hudson.plugins.sonar.MsBuildSQRunnerInstallation.xml',
         'hudson.plugins.sonar.SonarPublisher.xml',
         'hudson.plugins.sonar.SonarRunnerInstallation.xml',
+        'hudson.tasks.Maven.xml',
     ]
 %}
 
