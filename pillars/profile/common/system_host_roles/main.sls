@@ -73,6 +73,14 @@ system_host_roles:
                 ])
             }}
 
+    time_server_role:
+        hostname: time-server-role-host
+        assigned_hosts:
+            {{ filter_assigned_hosts_by_enabled_minion_hosts([
+                    master_minion_id
+                ])
+            }}
+
     hypervisor_role:
         hostname: hypervisor-role-host
         assigned_hosts:

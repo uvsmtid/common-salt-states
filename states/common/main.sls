@@ -18,6 +18,8 @@ include:
         #- common.orchestrate.wraps.router_role
         #- common.orchestrate.wraps.resolver_role
 
+        - common.orchestrate.wraps.time_server_role
+
         - common.orchestrate.wraps.hypervisor_role
 
         - common.orchestrate.wraps.depository_role
