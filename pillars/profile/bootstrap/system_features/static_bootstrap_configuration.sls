@@ -89,9 +89,16 @@ system_features:
                             resource_id: PyYAML-3.09-10.el5.x86_64.rpms.tar
                     rhel7:
 
-                        salt-master:
+                        # NOTE: These components come together.
+                        {% if True %}
+                        salt:
                             source_type: tar
-                            resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.el7.x86_64
+                            resource_id: salt-rpms-2015.5.10-1.el7.x86_64.tar
+
+                        salt-master:
+                            source_type: rpm
+                            resource_id: salt-master-2015.5.10-1.el7.noarch.rpm
+                        {% endif %}
 
                         unzip:
                             source_type: rpm
@@ -145,9 +152,16 @@ system_features:
                             resource_id: PyYAML-3.09-10.el5.x86_64.rpms.tar
                     rhel7:
 
-                        salt-minion:
+                        # NOTE: These components come together.
+                        {% if True %}
+                        salt:
                             source_type: tar
-                            resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.el7.x86_64
+                            resource_id: salt-rpms-2015.5.10-1.el7.x86_64.tar
+
+                        salt-minion:
+                            source_type: rpm
+                            resource_id: salt-minion-2015.5.10-1.el7.noarch.rpm
+                        {% endif %}
 
                         unzip:
                             source_type: rpm
