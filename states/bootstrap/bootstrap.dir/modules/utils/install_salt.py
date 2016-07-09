@@ -37,6 +37,14 @@ def deploy_salt(
     salt_deploy_step_config,
     action_context,
 ):
+
+    # Skip Salt master installation if this host
+    # is not supposed to be Salt master.
+    # Deployment config only for Salt master has key `is_master`.
+    if 'is_master' in salt_deploy_step_config:
+        if not salt_deploy_step_config['is_master']:
+            return
+
     # Make sure `rpms` dir exists.
     if not os.path.exists(temp_rpm_dir_path_rel):
         os.makedirs(temp_rpm_dir_path_rel)

@@ -28,6 +28,10 @@ class deploy_template_method (action_context):
         "init_yum_repos": "always",
 
         "install_salt_master": [
+            # NOTE: This triggeres installation of Salt master
+            #       for all Salt minions in case of `initial-online-node`.
+            #       However, only minions with `is_master` set to `True`
+            #       are installed with Salt master.
             'initial-online-node',
         ],
 
