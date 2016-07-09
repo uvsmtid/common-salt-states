@@ -77,6 +77,11 @@ system_resources:
     ###########################################################################
     # Salt for CentOS 5 = platform `rhel5`
 
+    {% if False %}
+
+    # Previous Salt version `2015.5.3`.
+    {% elif False %}
+
     # Common dependencies for both `salt-minion` and `salt-master`
     # NOTE: After downloading with dependencies `salt*` pacakges,
     #       the following command shows that all dependencies are the same:
@@ -130,6 +135,38 @@ system_resources:
         item_parent_dir_path: bootstrap/salt
         item_base_name: salt-minion-2015.5.3-4.noarch.el5.rpm
         item_content_hash: md5=1a88c3d858d82733acb3a667de467041
+
+    # Latest Salt version `2015.5.10`.
+    {% elif True %}
+
+    salt-rpms-2015.5.10-1.el5.x86_64.tar:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: bootstrap/salt
+        item_base_name: salt-rpms-2015.5.10-1.el5.x86_64.tar
+        item_content_hash: md5=d4eae5dcfbf76c1737eb16364e9b7fe8
+
+    salt-master-2015.5.10-1.el5.noarch.rpm:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: bootstrap/salt
+        item_base_name: salt-master-2015.5.10-1.el5.noarch.rpm
+        item_content_hash: md5=993b091e7984d5917d059bc5d06355b8
+
+    salt-minion-2015.5.10-1.el5.noarch.rpm:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: bootstrap/salt
+        item_base_name: salt-minion-2015.5.10-1.el5.noarch.rpm
+        item_content_hash: md5=5197b47c7cff3014eea99ee2df98d104
+
+    {% endif %}
 
 ###############################################################################
 # EOF
