@@ -72,28 +72,46 @@ system_features:
                     {% endfor %}
 
                     rhel5:
+
+                        # NOTE: These components come together.
+                        {% if True %}
                         salt:
                             source_type: tar
-                            resource_id: salt_downloaded_rpms_with_dependencies_2015.5.3-4.el5.x86_64.tar
+                            resource_id: salt-rpms-2015.5.10-1.el5.x86_64.tar
+
                         salt-master:
                             source_type: rpm
-                            resource_id: salt-master-2015.5.3-4.noarch.el5.rpm
+                            resource_id: salt-master-2015.5.10-1.el5.noarch.rpm
+                        {% endif %}
+
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.09-10.el5.x86_64.rpms.tar
                     rhel7:
-                        salt-master:
+
+                        # NOTE: These components come together.
+                        {% if True %}
+                        salt:
                             source_type: tar
-                            resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.el7.x86_64
+                            resource_id: salt-rpms-2015.5.10-1.el7.x86_64.tar
+
+                        salt-master:
+                            source_type: rpm
+                            resource_id: salt-master-2015.5.10-1.el7.noarch.rpm
+                        {% endif %}
+
                         unzip:
                             source_type: rpm
                             resource_id: zip-3.0-10.el7.x86_64.rpm
+
                         zip:
                             source_type: rpm
                             resource_id: unzip-6.0-13.el7.x86_64.rpm
+
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
+
                     win7: {} # TODO
             install_salt_minion:
                 step_enabled: True
@@ -117,28 +135,46 @@ system_features:
                     {% endfor %}
 
                     rhel5:
+
+                        # NOTE: These components come together.
+                        {% if True %}
                         salt:
                             source_type: tar
-                            resource_id: salt_downloaded_rpms_with_dependencies_2015.5.3-4.el5.x86_64.tar
+                            resource_id: salt-rpms-2015.5.10-1.el5.x86_64.tar
+
                         salt-minion:
                             source_type: rpm
-                            resource_id: salt-minion-2015.5.3-4.noarch.el5.rpm
+                            resource_id: salt-minion-2015.5.10-1.el5.noarch.rpm
+                        {% endif %}
+
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.09-10.el5.x86_64.rpms.tar
                     rhel7:
-                        salt-minion:
+
+                        # NOTE: These components come together.
+                        {% if True %}
+                        salt:
                             source_type: tar
-                            resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.el7.x86_64
+                            resource_id: salt-rpms-2015.5.10-1.el7.x86_64.tar
+
+                        salt-minion:
+                            source_type: rpm
+                            resource_id: salt-minion-2015.5.10-1.el7.noarch.rpm
+                        {% endif %}
+
                         unzip:
                             source_type: rpm
                             resource_id: zip-3.0-10.el7.x86_64.rpm
+
                         zip:
                             source_type: rpm
                             resource_id: unzip-6.0-13.el7.x86_64.rpm
+
                         PyYAML:
                             source_type: tar
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
+
                     win7: {} # TODO
             link_sources:
                 step_enabled: True

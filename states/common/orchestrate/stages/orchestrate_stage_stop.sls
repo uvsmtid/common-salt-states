@@ -35,7 +35,10 @@ include:
 run_highstate_on_all_minions:
     salt.state:
         - tgt: '*'
-        # DO not run `highstate` because default is test=True.
+        # Do not run `highstate`. Run it explicitly, if required.
+        # At the moment, this file configures `orchestrate`
+        # to bring up the system into initially working condition.
+        # More over, it will fail if default minion config is test=True.
         # TODO: How to force this `highstate` to run with test=False?
         # See:
         #   https://github.com/saltstack/salt/issues/24209

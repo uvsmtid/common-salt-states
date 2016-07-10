@@ -46,6 +46,11 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
         - content: |
             {{ deploy_step }} = {
                 "step_enabled": {{ deploy_step_config['step_enabled'] }},
+                {% if selected_host_name in target_env_pillar['system_host_roles']['controller_role']['assigned_hosts'] %}
+                "is_master": True,
+                {% else %}
+                "is_master": False,
+                {% endif %}
                 "src_salt_config_file": "resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/master.conf",
                 "dst_salt_config_file": "/etc/salt/master",
                 "rpm_sources": {
