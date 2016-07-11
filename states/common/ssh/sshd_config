@@ -45,7 +45,14 @@ SyslogFacility AUTHPRIV
 # Authentication:
 
 #LoginGraceTime 2m
+
+# TODO: Provide environment config option in pillars to disable root login.
+{% if False %}
 #PermitRootLogin yes
+{% else %}
+PermitRootLogin yes
+{% endif %}
+
 #StrictModes yes
 #MaxAuthTries 6
 #MaxSessions 10
