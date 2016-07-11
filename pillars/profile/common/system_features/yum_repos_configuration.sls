@@ -745,12 +745,14 @@ system_features:
                         yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/7/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/'
+                        # NOTE: Avoid using HTTPS due to issues with proxy.
+                        #       Luckily, these repos are available via HTTP.
+                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/'
                         {% if False %}
                         {% elif system_platform_id  == 'rhel5' %}
-                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-EL5-GPG-KEY.pub'
+                        yum_repo_key_url: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-EL5-GPG-KEY.pub'
                         {% elif system_platform_id  == 'rhel7' %}
-                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
+                        yum_repo_key_url: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
                         {% endif %}
 
                         # TODO: Use global `use_local_yum_mirrors` switch
