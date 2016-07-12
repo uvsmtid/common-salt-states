@@ -20,6 +20,7 @@ include:
     - common.ssh.accept_host_keys
 
     - common.gnome.system_proxy
+    - common.gnome.auto_login
 
     - common.packages_per_os_platfrom_type
 
