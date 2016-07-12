@@ -70,6 +70,8 @@ include:
         'sonarqube_quality_gates'
         ,
         'wildfly_deployments'
+        ,
+        'enable_primary_user_auto_login'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
