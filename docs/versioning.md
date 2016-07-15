@@ -1,11 +1,6 @@
 
 # Versioning #
 
-Public API of the framework are the following components
-*   compiled pillar structure accessed by common Salt states;
-*   state ids like [`dummy_state`][3] which are global for Salt;
-*   paths to files under [`states`][2] directory.
-
 The versioning scheme adheres to [Semantic Versioning][1]:
 
 ```
@@ -17,6 +12,48 @@ Additional labels for pre-release and build metadata are available as extensions
 ```
 
 See also [branching][4] document.
+
+# Note on applicability of Semantic Versioning #
+
+Public API in case of this framework is too wide
+(too many items are exposed for any other `project_name` to rely on).
+This makes it less practical to separate incompatible and compatible changes.
+Effectively, any refactoring degenerate into `MAJOR` version
+(as incompatible changes to public API become very likely).
+
+Nevertheless, Semantic Versioning sill make sense
+if there a chance to indicate backwards-compatible changes.
+
+# Public API #
+
+Public API of the framework are the following components:
+
+*   Compiled pillar structure accessed by common Salt states.
+
+    Because the entire framework relies on the data schema in pillars.
+
+*   State ids like [`dummy_state`][3].
+
+    Because are global for Salt and references to individual state ids
+    (e.g. as dependencies) would break on rename.
+
+*   Paths to files under [`states`][2] directory.
+
+    Because references (e.g. as dependencies) to common states
+    (which depend on their location on the file system) or any
+    references to actual files as in `salt://common/dummy/init.sls`
+    break on rename.
+
+*   Paths to files under [`pillars`][4] directory.
+
+    Because efficient use and maintenance of pillars requires
+    use of defaults and overrides which depend on file path overlaps.
+
+Technically, even key values (as opposed to key name) provided as
+defaults in [`pillars`][4] directory may cause problems for
+some `project_name`s (as it affects state execution logic).
+Again, this highlights the difficulty of tracking such cases explained above.
+Such cases are simply ignored (by this definition of public API).
 
 # Examples of version number changes #
 
@@ -63,7 +100,7 @@ cannot be part of framework release.
 Any `project_name` states (`*-salt-states`) repository is specific to
 `project_name` and cannot be part of framework release.
 
-Therefore, the framework logically is `common-salt-states` source code
+Therefore, logically, the framework is `common-salt-states` source code
 which may be common for both multiple `project_name`s and multiple deployments.
 
 ## Choice of release name ##
@@ -74,26 +111,11 @@ where `MAJOR`, `MINOR`, `PATCH` are numbers described above.
 
 Any other tags are not supposed to be called "release".
 
-## Choice of public API ##
-
-Becides required pillar structure, any user of the framework may also
-be dependent on common Salt states. For example, user may:
-
-*   extend a Salt state;
-
-*   include macros for Jinja template engine and use them;
-
-*   etc.
-
-At the moment, public API definition is limited to pillar structure only
-ignoring any dependency user may have on common Salt states.
-
-If practice causes frequent problems, it may change.
-
 # [footer] #
 
 [1]: http://semver.org/
 [2]: /states
 [3]: https://github.com/uvsmtid/common-salt-states/blob/a39f21eb3b8dd10cb41d39bd8762e39d6ed27c4d/states/common/dummy/init.sls#L4
 [4]: /docs/branching.md
+[5]: /pillars
 
