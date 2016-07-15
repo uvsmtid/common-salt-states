@@ -54,6 +54,9 @@ See also [official Salt documentation](http://docs.saltstack.com/en/latest/).
 *   [Versioning](docs/versioning.md) and [Branching](docs/branching.md)
     explain rules for development, releasing and maintenance.
 
+*   [Releases](docs/releases/)
+    release notes for previously released versions.
+
 [1]: http://saltstack.com/
 [2]: https://gitlab.com/uvsmtid/common-salt-resources/tree/develop
 
