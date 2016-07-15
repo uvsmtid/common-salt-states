@@ -87,7 +87,11 @@ system_features:
                         #       See details:
                         #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
                         {% if system_platform_id == 'fc24' %}
-                        use_local_yum_mirrors: False
+                        # TODO: It is set back to `TRUE` -
+                        #       it seems the issue is resolved.
+                        #       This `if` remains until testing confirms
+                        #       there is no issues.
+                        use_local_yum_mirrors: True
                         {% else %}
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
                         {% endif %}
@@ -189,7 +193,11 @@ system_features:
                         #       See details:
                         #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
                         {% if system_platform_id == 'fc24' %}
-                        use_local_yum_mirrors: False
+                        # TODO: It is set back to `TRUE` -
+                        #       it seems the issue is resolved.
+                        #       This `if` remains until testing confirms
+                        #       there is no issues.
+                        use_local_yum_mirrors: True
                         {% else %}
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
                         {% endif %}
