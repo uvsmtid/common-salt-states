@@ -30,27 +30,6 @@
         - group: root
         - mode: 644
 
-{% if 'offline_yum_repo' in pillar['system_features'] and pillar['system_features']['offline_yum_repo']['feature_enabled'] %}
-{% set offline_yum_repo_ip = pillar['system_features']['offline_yum_repo']['ip'] %}
-
-yum_epel:
-    pkgrepo.managed:
-        - name: epel
-        - baseurl: http://{{offline_yum_repo_ip}}/mirror/epel/$releasever/$basearch/
-        - enabled: 1
-
-yum_epel_debug_info:
-    pkgrepo.managed:
-        - name: epel-debuginfo
-        - enabled: 0
-
-yum_epel_source:
-    pkgrepo.managed:
-        - name: epel-source
-        - enabled: 0
-
-{% endif %}
-
 {% endif %}
 
 # >>> RHEL 5 & 7
