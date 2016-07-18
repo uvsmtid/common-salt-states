@@ -57,6 +57,12 @@ load_bootstrap_target_envs:
 # Map between absolute path of symlink to absolut path of its target.
 # This is used for initial setup of various symbolic links.
 symlinks_map:
+    # Emulate (via symlinks) existence source and target pillars repositories.
+    # NOTE: For normal projects, these lines should be removed.
+    #       Instead, keys `repo_path_pillars` and `repo_path_bootstrap_target_pillars`
+    #       should point to valid separate source and target pillars repositories.
+    # Example map entry:
+    #     '/path/to/symlink': '/path/to/target'
     '/home/username/Works/common-salt-pillars.git': '/home/username/Works/common-salt-states.git'
     '/home/username/Works/common-salt-pillars.bootstrap-target.git': '/home/username/Works/common-salt-states.git'
 
@@ -87,6 +93,11 @@ repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-pillars.bo
 
 # Additional symlinks from common states repo to project states repos.
 projects_states_repo_paths:
+    # This map creates symlinks to `project_name`-specific states
+    # so that these states like `state_name` can be referred
+    # to as `project_name.state_name`.
+    # Example map entry:
+    #     project_name: '/home/username/Works/project_name.git/salt/project_name-salt-states.git'
     {}
 
 # If set, it specifies repository which is considered parent

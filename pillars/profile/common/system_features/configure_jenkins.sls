@@ -413,7 +413,7 @@ system_features:
                     # NOTE: This variable is `true` only in `checkout_pipeline`.
                     RESTORE_PARENT_BUILD_ONLY: 'false'
                     # Set default version name.
-                    RELEASE_VERSION_NAME: 'common'
+                    RELEASE_VERSION_NAME: '{{ project_name }}'
 
                 build_parameters:
                     BUILD_LABEL:
@@ -2298,7 +2298,7 @@ system_features:
                     # NOTE: This variable is `true` only in `checkout_pipeline`.
                     RESTORE_PARENT_BUILD_ONLY: 'false'
                     # Set default version name.
-                    RELEASE_VERSION_NAME: 'common'
+                    RELEASE_VERSION_NAME: '{{ project_name }}'
 
                 build_parameters:
                     TARGET_PROFILE_NAME:
@@ -2668,7 +2668,7 @@ system_features:
                             It is embedded into release title (tag).
                         parameter_type: string
                         # Default version name.
-                        parameter_value: 'common'
+                        parameter_value: '{{ project_name }}'
                     RELEASE_VERSION_NUMBER:
                         parameter_description: |
                             Version number should have format `X.Y.Z.N`.
