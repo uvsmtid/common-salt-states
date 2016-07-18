@@ -21,8 +21,6 @@ include:
         ,
         'external_http_proxy'
         ,
-        'offline_yum_repo'
-        ,
         'allow_package_installation_through_yum'
         ,
         'configure_jenkins'

@@ -81,7 +81,20 @@ system_features:
                         # NOTE: Sync only the latest Fedora release.
                         {% if system_platform_id == 'fc24' %}
 
+                        # NOTE: At the moment Fedora 24 had `dnf` with
+                        #       the bug which makes it impossible to
+                        #       avoid using proxy per repository.
+                        #       See details:
+                        #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
+                        {% if system_platform_id == 'fc24' %}
+                        # TODO: It is set back to `TRUE` -
+                        #       it seems the issue is resolved.
+                        #       This `if` remains until testing confirms
+                        #       there is no issues.
+                        use_local_yum_mirrors: True
+                        {% else %}
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        {% endif %}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/releases/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/Everything/x86_64/os/'
@@ -174,7 +187,20 @@ system_features:
                         # NOTE: Sync only the latest Fedora release.
                         {% if system_platform_id == 'fc24' %}
 
+                        # NOTE: At the moment Fedora 24 had `dnf` with
+                        #       the bug which makes it impossible to
+                        #       avoid using proxy per repository.
+                        #       See details:
+                        #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
+                        {% if system_platform_id == 'fc24' %}
+                        # TODO: It is set back to `TRUE` -
+                        #       it seems the issue is resolved.
+                        #       This `if` remains until testing confirms
+                        #       there is no issues.
+                        use_local_yum_mirrors: True
+                        {% else %}
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        {% endif %}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/updates/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
@@ -719,12 +745,14 @@ system_features:
                         yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/7/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
                         #}#
                         # URLs renderred exactly (based on template params):
-                        yum_repo_baseurl: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/'
+                        # NOTE: Avoid using HTTPS due to issues with proxy.
+                        #       Luckily, these repos are available via HTTP.
+                        yum_repo_baseurl: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/'
                         {% if False %}
                         {% elif system_platform_id  == 'rhel5' %}
-                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-EL5-GPG-KEY.pub'
+                        yum_repo_key_url: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-EL5-GPG-KEY.pub'
                         {% elif system_platform_id  == 'rhel7' %}
-                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
+                        yum_repo_key_url: 'http://repo.saltstack.com/yum/redhat/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
                         {% endif %}
 
                         # TODO: Use global `use_local_yum_mirrors` switch

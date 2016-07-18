@@ -132,14 +132,20 @@ def set_salt_states_and_pillars_symlinks(
     )
 
     ###########################################################################
-    # Make sure both `defaults` and `overrides` symlinks point
-    # to `pillars` repositories.
+    # Make sure all:
+    #   - `commons`
+    #   - `defaults`
+    #   - `overrides`
+    # symlinks point to `pillars` directories in relevant repositories.
 
     if project_name != 'common':
         defaults_pillars_repo_abs_path = projects_states_repo_abs_paths[project_name]
     else:
-        # common
+        # For `common` project `defaults` point to `common-salt-states`.
         defaults_pillars_repo_abs_path = states_repo_abs_path
+
+    # `commons` pillars are in `common-salt-states` repository.
+    commons_pillars_repo_abs_path = states_repo_abs_path
 
     # Create base `/srv/pillars` directory.
     command_args = [
@@ -153,6 +159,12 @@ def set_salt_states_and_pillars_symlinks(
 
     # Make symlinks.
     for pillars_repo_map_item in [
+        {
+            'symlink_name': 'commons'
+            ,
+            'symlink_target': commons_pillars_repo_abs_path
+        }
+        ,
         {
             'symlink_name': 'overrides'
             ,
@@ -267,6 +279,23 @@ def set_salt_states_and_pillars_symlinks(
             ),
             os.path.join(
                 '/srv/pillars/defaults/bootstrap/profiles',
+                profile_name,
+            ),
+        ]
+        call_subprocess(
+            command_args,
+        )
+        # Set `commons` symlink which point to project "commons-salt-states" repository.
+        command_args = [
+            'ln',
+            '-snf',
+            os.path.join(
+                commons_pillars_repo_abs_path,
+                'pillars',
+                'profile',
+            ),
+            os.path.join(
+                '/srv/pillars/commons/bootstrap/profiles',
                 profile_name,
             ),
         ]
