@@ -8,6 +8,7 @@
 
 # Exceptions: do not ignore expected idrectories and files.
 !/.gitignore
+!/readme.md
 
 ###############################################################################
 # EOF
