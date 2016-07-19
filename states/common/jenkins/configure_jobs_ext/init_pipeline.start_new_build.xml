@@ -32,6 +32,21 @@
         {{ common_build_script_header(job_config, job_environ) }}
 
         #######################################################################
+        # Check if flag-file (which allows build to proceed) exists.
+
+        {% set host_config = pillar['system_hosts'][ grains['id'] ] %}
+        {% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
+        {% set jenkins_dir_path = account_conf['posix_user_home_dir'] + '/jenkins' %}
+
+        if [ ! -f "{{ jenkins_dir_path }}/approve_jenkins_poll_pipeline" ]
+        then
+            # Do not set status.
+            # Simply fail without leaving any changes behind.
+            #JOB_STATUS='1'
+            exit 1
+        fi
+
+        #######################################################################
         # Check that specified author is able to commit in every repository.
         # In addition to that, verify other states of repositories
         # depending on build type.

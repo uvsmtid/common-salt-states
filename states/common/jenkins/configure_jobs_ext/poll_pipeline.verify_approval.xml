@@ -34,7 +34,11 @@
         #######################################################################
         # Check if flag-file (which allows polling) exists.
 
-        if [ ! -f ~/approve_jenkins_poll_pipeline ]
+        {% set host_config = pillar['system_hosts'][ grains['id'] ] %}
+        {% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
+        {% set jenkins_dir_path = account_conf['posix_user_home_dir'] + '/jenkins' %}
+
+        if [ ! -f "{{ jenkins_dir_path }}/approve_jenkins_poll_pipeline" ]
         then
             JOB_STATUS='1'
         fi
