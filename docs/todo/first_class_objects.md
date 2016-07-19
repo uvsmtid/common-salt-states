@@ -25,20 +25,37 @@ At the moment there is support for few first-class configuration objects:
 
     *   TODO:
 
-        `bootstrap` - separate pillar info only for environments configured
-        to generate bootstrap packages.
-
-    *   DONE:
+        See: https://github.com/uvsmtid/common-salt-states/issues/5
 
         `system_secrets` - simple key-value pairs with secret information
         (keys, passwords, etc.) to be easy to populate from scratch.
 
+        DONE: The template is done, but it is not used at the momement.
+
+        TODO: Design easy to use procedure to attach
+              secrets via `properties.yaml` file.
+
     *   TODO:
 
-        `system_repositories` - any type of repository:
-        *   filesystem
-        *   subversion
-        *   git
+        See: https://github.com/uvsmtid/common-salt-states/issues/2
+
+        *   `system_repositories` - support any type of repository:
+            *   filesystem
+            *   svn
+            *   git
+            *   yum
+            *   winrepo
+            *   etc.
+
+        *   It is not optimal to manage all types of repositories via
+            single sub-key (e.g. differentiating them by `repo_type` field).
+
+            A lot of them are drastically different (e.g. `yum` and `git`).
+
+            Instead, it is better to have a sub-key per repository type
+            (e.g. `pillar['system_repositories']['git'][repon_name]`).
+
+        Rename `depository` into `repository`.
 
     *   DONE:
 

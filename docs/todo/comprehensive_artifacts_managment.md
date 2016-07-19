@@ -39,11 +39,5 @@ requirements which can be uniformily consolidated.
     to physical conent. And "artifact accessor service" should provide
     configuration for the service which will use this specific resource.
 
-# Proposal #
-
-See also [plugable project_names' proposal][1].
-
-# [footer] #
-
-[1]: /docs/todo/plugable_project_names.md#proposal
+---
 
