@@ -5,7 +5,13 @@
 include:
 
 {% for sub_item in [
-        'main'
+        'fc24'
+        ,
+        'rhel5'
+        ,
+        'rhel7'
+        ,
+        'win7'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

@@ -1,14 +1,11 @@
 
 ###############################################################################
-# Ignore everything except listed directories.
-# This is to avoid "dirty" Git dir status when symlinks are used to
-# point to different `profile_name`s.
+#
 
-/*
+system_platforms:
 
-# Exceptions: do not ignore expected idrectories and files.
-!/.gitignore
-!/readme.md
+    win7:
+        os_type: windows
 
 ###############################################################################
 # EOF
