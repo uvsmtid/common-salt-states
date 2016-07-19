@@ -9,15 +9,21 @@ requirements which can be uniformily consolidated.
 
 ## Requirements ##
 
-*   Use single configuration in Salt config file for all external artifacts
+*   DONE:
+
+    Use single configuration in Salt config file for all external artifacts
     (resources or sources) so that changes to data sets can be done dynamically
     without restarting Salt (without changing `file_roots` or `pillar_roots`
     configuration in config files - config files stay static).
 
-*   Manage access to these artifacts through a set of symlinks which are
+*   DONE:
+
+    Manage access to these artifacts through a set of symlinks which are
     seen by Salt from `file_roots` or `pillar_roots`.
 
-*   List all possible artifacts under the same common pillar key.
+*   DONE:
+
+    List all possible artifacts under the same common pillar key.
     If they all use the same namespace (preferably), this will ensure there
     is no name clashes because it is impossible to have duplicate keys
     in the same dict.

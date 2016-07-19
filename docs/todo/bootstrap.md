@@ -22,7 +22,7 @@ TODO
 *   TODO: Provide two more bootstrap modes:
     *   salt-master-only
     *   salt-minion-only
-    These two modes will simply install Salt on specified platform
+    These two modes will simply install Salt on specified platform.
     The platform will be given as `host_id` (which will require config
     file for this `host_id`) named after platform like `rhel5`, `rhel7`, etc.
     Therefore, building of bootstrap package will require generating config

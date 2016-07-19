@@ -7,16 +7,24 @@ TODO
 
   However, in order to make them plugable to with each other, there are
   several requirements to fulfil:
+
   * If a project_name is plugged in, there is no need to change any of its sources.
     The only thing which could be done is changed Salt configuration file.
-  * Links in documentation should be valid (browsable) through project_names
+
+  * Links in documentation should be valid (browsable) through `project_name`s
     repositories (i.e. on GitLab).
+        NOTE: This might be impossible as relative links within one
+              project cannot be automatically translated to absolute
+              links in another project.
+
   * Pillar should be automatically accessible if Salt configuration file
     indicates that this project_name is plugged in.
+
   * The `/srv/pillars` and `/srv/states` should only be symlinked to
     the `common` repository. A project_name is plugged in by adding symlinks
     from within `common` repository to the plugged project_name.
     TODO: Update after pillars are split into "defaults" and "overrides".
+
   * The best part whould be ability to put entire source code of
     plugable repository under single directory of `common` repository
     so that they can be developed as single entity via Git submodules.
@@ -28,7 +36,7 @@ TODO
   ```
 
 * TODO: There should be a script to run on salt master to make sure that all
-  minions listed in `salt-key` (or accessed through `salt '*' test.ping) are
+  minions listed in `salt-key` (or accessed through `salt '*' test.ping`) are
   actually defined in the project_name `system_hosts`.
 
 *   DONE: There could be a mechanisim defeloped which allows Salt master to
@@ -52,11 +60,11 @@ file_roots:
         - /srv/sources
         - /srv/resources
 ```
-What if remove `/srv/sources` and rename `/srv/states` to `/srv/artifacts`?
+What if we remove `/srv/sources` and rename `/srv/resources` to `/srv/artifacts`?
 We can generalize management of "project_names", "sources" and "resources".
 All of them are managed under the same pillar key (i.e.) named
-`artifacts_configuration`. For the moment let's leave
-"sources" and "resources".
+`artifacts_configuration`.
+For the moment let's leave "sources" and "resources".
 
 ## Mechanics ##
 
