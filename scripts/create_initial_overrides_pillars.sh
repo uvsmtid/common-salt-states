@@ -1,24 +1,40 @@
 #!/bin/sh
 ###############################################################################
-# This script creates initial Git repo with layout for "overrides" pillars.
+# This interactive script generates initial content
+# with required layout for Git repo with "overrides" or "defaults" pillars.
+#
+# The required content is copied from `common-salt-states.git` into
+# the actual `project_name-salt-pillars.git` Git repo.
+#
 # TODO: Add reference to documentation.
 
 # Fail on error and on undefined variable.
 set -e
 set -u
 
-# Get project name.
+# Get pillars repo path.
 if [ -z "${1:-}" ]
 then
-    echo "Enter project name (single keyword) to name pillars repository:"
-    read PROJECT_NAME
+    echo "Enter absolute path to pillars repository:"
+    read DST_REPO_DIR
     # TODO: Sanitize input.
 else
-    PROJECT_NAME="${1}"
+    DST_REPO_DIR="${1}"
 fi
 
-# Repository should follow naming convention.
-DST_REPO_DIR="${PROJECT_NAME}-salt-pillars.git"
+# Make sure path is absolute.
+if [ "${DST_REPO_DIR:0:1}" != "/" ]
+then
+    echo "ERROR: Path is not absolute: ${DST_REPO_DIR}" 1>&2
+    exit 1
+fi
+
+# Make sure target directory exists.
+if [ ! -d "${DST_REPO_DIR}" ]
+then
+    echo "ERROR: Directory does not exists: ${DST_REPO_DIR}"
+    exit 1
+fi
 
 # Hardcoded relative path to `common-salt-states` repository root.
 COMMON_SALT_STATES_REPO_ROOT_DIR='..'
@@ -34,22 +50,31 @@ else
     RUNTIME_DIR="$( realpath "$( pwd )/${SCRIPT_DIR}" )"
 fi
 
-# Destination path should not exist.
-if [ -e "${DST_REPO_DIR}" ]
+USER_ANSWER="no"
+echo "Some files in the destination directory may be overwritten."
+echo "Type exactly \"YEAH!\" to proceed."
+read USER_ANSWER
+if [ "${USER_ANSWER}" != "YEAH!" ]
 then
-    echo "ERROR: Destination directory exists: ${DST_REPO_DIR}" 1>&2
+    echo "User typed \"${USER_ANSWER}\". Exiting..." 1>&2
     exit 1
+else
+    echo "User typed \"${USER_ANSWER}\". Proceeding..." 1>&2
 fi
 
+echo "" 1>&2
+echo "Copying necessary template files:" 1>&2
+
 # Create directory layout.
-for ITEM_DIR in \
+for ITEM_PATH in \
     pillars \
     pillars/profile \
     pillars/bootstrap \
     pillars/bootstrap/profiles \
 
 do
-    mkdir -p "${DST_REPO_DIR}/${ITEM_DIR}"
+    echo "ADD: dir  : ${ITEM_PATH}" 1>&2
+    mkdir -p "${DST_REPO_DIR}/${ITEM_PATH}"
 done
 
 # Fill in initial `*.sls` files.
@@ -61,6 +86,7 @@ for ITEM_PATH in \
 
 do
     ITEM_DIRNAME="$(dirname "${ITEM_PATH}")"
+    echo "ADD: file : ${ITEM_PATH}" 1>&2
     cp -pr "${RUNTIME_DIR}/${COMMON_SALT_STATES_REPO_ROOT_DIR}/${ITEM_PATH}" "${DST_REPO_DIR}/${ITEM_DIRNAME}"
 done
 
