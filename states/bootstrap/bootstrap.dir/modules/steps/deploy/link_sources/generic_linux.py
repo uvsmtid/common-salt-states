@@ -166,29 +166,40 @@ def set_salt_states_and_pillars_symlinks(
         }
         ,
         {
-            'symlink_name': 'overrides'
-            ,
-            'symlink_target': overrides_pillars_repo_abs_path
-        }
-        ,
-        {
             'symlink_name': 'defaults'
             ,
             'symlink_target': defaults_pillars_repo_abs_path
         }
+        ,
+        {
+            'symlink_name': 'overrides'
+            ,
+            'symlink_target': overrides_pillars_repo_abs_path
+        }
     ]:
         assert(os.path.isabs(pillars_repo_map_item['symlink_target']))
+
+        abs_target_path = os.path.join(
+            pillars_repo_map_item['symlink_target'],
+            'pillars',
+        )
+
+        if not os.path.exists(abs_target_path):
+            raise Exception('Repository does not have required subdirectory: ' + str(abs_target_path))
+
+        abs_symlink_path = os.path.join(
+            '/srv/pillars',
+            pillars_repo_map_item['symlink_name'],
+        )
+
+        if not os.path.exists(os.path.dirname(abs_symlink_path)):
+            raise Exception('Destination directory for symlink does not exist: ' + str(os.path.dirname(abs_symlink_path)))
+
         command_args = [
             'ln',
             '-snf',
-            os.path.join(
-                pillars_repo_map_item['symlink_target'],
-                'pillars',
-            ),
-            os.path.join(
-                '/srv/pillars',
-                pillars_repo_map_item['symlink_name'],
-            )
+            abs_target_path,
+            abs_symlink_path,
         ]
         call_subprocess(
             command_args,
@@ -239,69 +250,69 @@ def set_salt_states_and_pillars_symlinks(
             command_args,
         )
 
-    # Create links to all declared profiles names (plus current profile)
-    # to make sure pillar can be loaded.
-    # NOTE: Regardless whether pillars are stored in `states`, separate
-    #       `pillars` repository or separate bootstrap target profile
-    #       pillars repository, all symlinks will point to that chosen
-    #       repository (effectively, they will all load the same pillars
-    #       data).
+    # Create links to all declared profiles names (plus current profile).
+    # This has to be done on all layers of pillars to make sure
+    # they can be loaded.
     profile_names = [ profile_name ] + load_bootstrap_target_envs.keys()
 
     assert(os.path.isabs(overrides_bootstrap_target_pillars_repo_abs_path))
 
     for profile_name in profile_names:
-        # Set `overrides` symlink which point to "pillars" repository.
-        command_args = [
-            'ln',
-            '-snf',
-            os.path.join(
-                overrides_bootstrap_target_pillars_repo_abs_path,
+        for pillars_repo_map_item in [
+            # Layer `commons` points to itself (`common-salt-states.git`).
+            {
+                'symlink_name': 'commons'
+                ,
+                'symlink_target': commons_pillars_repo_abs_path
+            }
+            ,
+            # Layer `defaults` points to itself (`project_name-salt-states.git`).
+            {
+                'symlink_name': 'defaults'
+                ,
+                'symlink_target': defaults_pillars_repo_abs_path
+            }
+            ,
+            # This is a special case - the part of layered pillars
+            # which is not shared per profile_name is bootstrap target pillar.
+            # The rest are symlinked into `common-salt-states.git` and
+            # `project_name-salt-states.git` repositories.
+            {
+                'symlink_name': 'overrides'
+                ,
+                'symlink_target': overrides_bootstrap_target_pillars_repo_abs_path
+            }
+        ]:
+
+            abs_target_path = os.path.join(
+                pillars_repo_map_item['symlink_target'],
                 'pillars',
                 'profile',
-            ),
-            os.path.join(
-                '/srv/pillars/overrides/bootstrap/profiles',
+            )
+
+            if not os.path.exists(abs_target_path):
+                raise Exception('Repository does not have required subdirectory: ' + str(abs_target_path))
+
+            abs_symlink_path = os.path.join(
+                '/srv/pillars',
+                pillars_repo_map_item['symlink_name'],
+                'bootstrap/profiles',
                 profile_name,
-            ),
-        ]
-        call_subprocess(
-            command_args,
-        )
-        # Set `defaults` symlink which point to project "states" repository.
-        command_args = [
-            'ln',
-            '-snf',
-            os.path.join(
-                defaults_pillars_repo_abs_path,
-                'pillars',
-                'profile',
-            ),
-            os.path.join(
-                '/srv/pillars/defaults/bootstrap/profiles',
-                profile_name,
-            ),
-        ]
-        call_subprocess(
-            command_args,
-        )
-        # Set `commons` symlink which point to project "commons-salt-states" repository.
-        command_args = [
-            'ln',
-            '-snf',
-            os.path.join(
-                commons_pillars_repo_abs_path,
-                'pillars',
-                'profile',
-            ),
-            os.path.join(
-                '/srv/pillars/commons/bootstrap/profiles',
-                profile_name,
-            ),
-        ]
-        call_subprocess(
-            command_args,
-        )
+            )
+
+            if not os.path.exists(os.path.dirname(abs_symlink_path)):
+                raise Exception('Destination directory for symlink does not exist: ' + str(os.path.dirname(abs_symlink_path)))
+
+            command_args = [
+                'ln',
+                '-snf',
+                abs_target_path,
+                abs_symlink_path,
+            ]
+
+            call_subprocess(
+                command_args,
+            )
 
 ###############################################################################
 #
