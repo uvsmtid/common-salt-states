@@ -16,6 +16,10 @@
     file.managed:
         - makedirs: True
 
+        # TODO: Avoid composing key names. Instead use something like
+        #       `system_versions` top-level pillar key with
+        #       pairs `version_name` and `version_number`
+        #       per `project_name` sub-key.
         {% set project_version_name_key = pillar['project_name'] +'_version_name' %}
         {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
         {% if 'is_release' in pillar['dynamic_build_descriptor'] %}
@@ -25,7 +29,11 @@
         {% endif %}
         - contents: |
             project_name: {{ pillar['project_name'] }}
+            {% if project_version_name_key in pillar['dynamic_build_descriptor'] and project_version_number_key in pillar['dynamic_build_descriptor'] %}
             version: {{ pillar['dynamic_build_descriptor'][project_version_name_key] }}-{{ pillar['dynamic_build_descriptor'][project_version_number_key] }}
+            {% else %}
+            version: UNDEFINED
+            {% endif %}
             is_release: {{ is_release_value }}
 
 ###############################################################################
