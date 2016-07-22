@@ -19,7 +19,7 @@ include:
         ,
         'nexus'
         ,
-        'sonar'
+        'shared_sonarqube'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
