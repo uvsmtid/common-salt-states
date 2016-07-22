@@ -5,7 +5,7 @@
 ###############################################################################
 # <<< The `sysctl.d` dir does not exists on RHEL5.
 {% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
-
+{% if not grains['os_platform_type'].startswith('rhel5') %}
 
 sysctl_reload:
     cmd.run:
@@ -20,6 +20,7 @@ sysctl_reload:
         - group: root
         - mode: 644
 
+{% endif %}
 {% endif %}
 # >>>
 ###############################################################################
