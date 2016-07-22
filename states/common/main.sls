@@ -31,7 +31,7 @@ include:
         - common.orchestrate.wraps.jenkins_master_role
         - common.orchestrate.wraps.jenkins_slave_role
 
-        - common.orchestrate.wraps.sonarqube_role
+        - common.orchestrate.wraps.sonarqube_server_role
 
         # This wrap handles both:
         # - maven_repository_upstream_manager_role

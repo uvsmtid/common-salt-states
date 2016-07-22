@@ -36,8 +36,8 @@
         <pluginGroup>org.mortbay.jetty</pluginGroup>
 
         <!-- SonarQube -->
-        {% if 'sonarqube_role' in pillar['system_host_roles'] %}
-        {% if pillar['system_host_roles']['sonarqube_role']['assigned_hosts']|length != 0 %}
+        {% if 'sonarqube_server_role' in pillar['system_host_roles'] %}
+        {% if pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts']|length != 0 %}
         <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
         {% endif %}
         {% endif %}
@@ -198,8 +198,8 @@
         </profile>
 
     <!-- SonarQube -->
-    {% if 'sonarqube_role' in pillar['system_host_roles'] %}
-    {% if pillar['system_host_roles']['sonarqube_role']['assigned_hosts']|length != 0 %}
+    {% if 'sonarqube_server_role' in pillar['system_host_roles'] %}
+    {% if pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts']|length != 0 %}
         <profile>
             <id>sonarqube</id>
             <activation>
@@ -208,11 +208,11 @@
             <properties>
 
                 <!-- Optional URL to server. Default value is http://localhost:9000 -->
-                {% set sonarqube_role_host = 'localhost' %}
-                {% if pillar['system_host_roles']['sonarqube_role']['assigned_hosts']|length != 0 %}
-                {% set sonarqube_role_host = pillar['system_host_roles']['sonarqube_role']['assigned_hosts'][0] %}
+                {% set sonarqube_server_role_host = 'localhost' %}
+                {% if pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts']|length != 0 %}
+                {% set sonarqube_server_role_host = pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts'][0] %}
                 {% endif %}
-                <sonar.host.url>http://{{ sonarqube_role_host }}:9000/</sonar.host.url>
+                <sonar.host.url>http://{{ sonarqube_server_role_host }}:9000/</sonar.host.url>
 
                 <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
                 <sonar.scm.provider>git</sonar.scm.provider>
