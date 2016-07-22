@@ -35,7 +35,7 @@
 
         sudo salt-call \
             --out json \
-            state.sls common.orchestrate.wraps.hypervisor_role \
+            state.sls common.orchestrate.wraps.virtual_machine_hypervisor_role \
             test=False | tee salt.output.json
 
         # Capture errors from Salt.

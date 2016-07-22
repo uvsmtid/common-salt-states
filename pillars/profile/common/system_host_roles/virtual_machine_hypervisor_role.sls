@@ -13,8 +13,8 @@
 
 system_host_roles:
 
-    hypervisor_role:
-        hostname: hypervisor-role-host
+    virtual_machine_hypervisor_role:
+        hostname: virtual-machine-hypervisor-role-host
         assigned_hosts:
             {{ filter_assigned_hosts_by_minion_hosts_enabled_in_properties([
                     master_minion_id

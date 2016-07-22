@@ -20,7 +20,7 @@ include:
 
         - common.orchestrate.wraps.time_server_role
 
-        - common.orchestrate.wraps.hypervisor_role
+        - common.orchestrate.wraps.virtual_machine_hypervisor_role
 
         - common.orchestrate.wraps.depository_role
 

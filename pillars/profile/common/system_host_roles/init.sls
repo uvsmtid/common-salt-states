@@ -17,7 +17,7 @@ include:
         ,
         'time_server_role'
         ,
-        'hypervisor_role'
+        'virtual_machine_hypervisor_role'
         ,
         'depository_role'
         ,
