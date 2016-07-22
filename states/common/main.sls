@@ -16,7 +16,7 @@ include:
         - common.orchestrate.wraps.salt_minion_role
 
         - common.orchestrate.wraps.network_router_role
-        #- common.orchestrate.wraps.hostname_resolver_role
+        - common.orchestrate.wraps.hostname_resolver_role
 
         - common.orchestrate.wraps.time_server_role
 
