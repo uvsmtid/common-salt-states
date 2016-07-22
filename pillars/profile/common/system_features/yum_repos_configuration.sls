@@ -771,7 +771,7 @@ system_features:
                     {% endfor %}
 
             # SonarQube
-            sonar_qube:
+            sonarqube:
                 installation_type: conf_template
 
                 os_platform_configs:

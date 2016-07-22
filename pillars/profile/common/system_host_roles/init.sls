@@ -29,7 +29,7 @@ include:
         ,
         'jenkins_slave_role'
         ,
-        'sonar_qube_role'
+        'sonarqube_role'
         ,
         'maven_repository_upstream_manager_role'
         ,

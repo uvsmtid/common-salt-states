@@ -8,7 +8,7 @@
 
 system_features:
 
-    configure_sonar_qube:
+    configure_sonarqube:
 
         # TODO: Add list of plugins to install.
         # Each plugin is a resource_id.
