@@ -32,12 +32,12 @@ include:
 # START: Orchestratioin logic
 ###############################################################################
 
-{% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
+{% set salt_master_role_host = pillar['system_host_roles']['salt_master_role']['assigned_hosts'][0] %}
 
 # Use single host (control host) to ping all required hosts (not just minions).
 ping_all_online_hosts_for_remote_connections:
     salt.state:
-        - tgt: '{{ controller_role_host }}'
+        - tgt: '{{ salt_master_role_host }}'
         - sls: common.network.ping_hosts
         - require:
             {{ stage_flag_file_prerequisites(flag_name) }}

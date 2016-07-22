@@ -1,11 +1,11 @@
 # Custom kernel configuration.
 
-{% if grains['id'] in pillar['system_host_roles']['router_role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['network_router_role']['assigned_hosts'] %}
 
 ###############################################################################
 # <<< The `sysctl.d` dir does not exists on RHEL5.
 {% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
-
+{% if not grains['os_platform_type'].startswith('rhel5') %}
 
 sysctl_reload:
     cmd.run:
@@ -20,6 +20,7 @@ sysctl_reload:
         - group: root
         - mode: 644
 
+{% endif %}
 {% endif %}
 # >>>
 ###############################################################################

@@ -34,7 +34,7 @@ include:
 # START: Orchestratioin logic
 ###############################################################################
 
-{% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
+{% set salt_master_role_host = pillar['system_host_roles']['salt_master_role']['assigned_hosts'][0] %}
 
 # Use Salt file server to deploy private keys on required minions.
 distribute_primary_user_ssh_private_key_everywhere:
@@ -48,7 +48,7 @@ distribute_primary_user_ssh_private_key_everywhere:
 # NOTE: This will also accept host keys but only on `contoller_role`.
 distribute_primary_user_ssh_pubic_key_everywhere:
     salt.state:
-        - tgt: '{{ controller_role_host }}'
+        - tgt: '{{ salt_master_role_host }}'
         - sls: common.ssh.distribute_public_keys
         - require:
             {{ stage_flag_file_prerequisites(flag_name) }}

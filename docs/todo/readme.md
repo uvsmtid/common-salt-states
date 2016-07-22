@@ -81,7 +81,7 @@ TODO
   environment sources.
 
 * TODO: Add support for bigger resolution on Virtual Box running this command
-        on hypervisor_role:
+        on virtual_machine_hypervisor_role:
             VBoxManage setextradata global GUI/MaxGuestResolution any
 
 * TODO: Retrospectively, add `repository_role`'s items for 7Zip and Python:
@@ -122,8 +122,8 @@ new `blackbox` profile_name.
     * Setup common packages (make life more comfortable):
           salt-run -l all state.orchestrate {{ project_name }}.orchestrate.setup.common
 
-    * Configure hypervisor_role:
-          salt-run -l all state.orchestrate {{ project_name }}.orchestrate.setup.hypervisor_role
+    * Configure virtual_machine_hypervisor_role:
+          salt-run -l all state.orchestrate {{ project_name }}.orchestrate.setup.virtual_machine_hypervisor_role
       This sets /etc/resolv.conf to non-existing network address on
       Linux hypervisor (because network is not automatically configured).
       So, the following manual step is required to recover and continue:
@@ -320,7 +320,7 @@ in various paths depending on whether Windows or Cygwin uses it.
 ## Add time synchronization for minions (NTP) ##
 
 There should be a role of Time server (Linux only, normally provided by
-`hypervisor_role`) and role of Time client (all other hosts: Linux and Windows).
+`virtual_machine_hypervisor_role`) and role of Time client (all other hosts: Linux and Windows).
 
 Find a command line way to configure Windows NTP client.
 See this:

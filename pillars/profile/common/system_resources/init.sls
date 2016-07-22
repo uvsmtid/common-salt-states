@@ -9,7 +9,7 @@ include:
         ,
         'ssh_keys'
         ,
-        'sonar_qube'
+        'sonarqube'
         ,
         'wildfly'
         ,

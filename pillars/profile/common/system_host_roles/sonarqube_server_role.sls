@@ -13,8 +13,9 @@
 
 system_host_roles:
 
-    router_role:
-        hostname: router-role-host
+    # SonarQube role.
+    sonarqube_server_role:
+        hostname: sonarqube-server-role-host
         assigned_hosts:
             {{ filter_assigned_hosts_by_minion_hosts_enabled_in_properties([
                     master_minion_id

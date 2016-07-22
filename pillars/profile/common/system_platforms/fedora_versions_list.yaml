@@ -1,16 +1,11 @@
 
 ###############################################################################
-#
+# List of supported Fedora version.
 
-system_platforms:
-
-    {% for system_platform_id in [
-            'fc24',
-        ]
-    %}
-    {{ system_platform_id }}:
-        os_type: linux
-    {% endfor %}
+- 'fc21'
+- 'fc22'
+- 'fc23'
+- 'fc24'
 
 ###############################################################################
 # EOF

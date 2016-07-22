@@ -1,6 +1,6 @@
 # Salt master configuration.
 
-{% if grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['salt_master_role']['assigned_hosts'] %}
 
 ###############################################################################
 # <<< Any RedHat-originated OS

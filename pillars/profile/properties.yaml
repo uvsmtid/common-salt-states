@@ -140,6 +140,11 @@ enabled_minion_hosts:
     rhel7_minion: 192.168.40.20
     fedora_minion: 192.168.40.30
 
+    # Enable if there are shared (non-minion) hosts in the system.
+    #shared_sonarqube: W.X.Y.Z
+    #shared_jenkins: W.X.Y.Z
+    #shared_nexus: W.X.Y.Z
+
 ###############################################################################
 # EOF
 ###############################################################################

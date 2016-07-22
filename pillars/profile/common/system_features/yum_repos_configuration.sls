@@ -6,6 +6,10 @@
 {% set properties_path = profile_root.replace('.', '/') + '/properties.yaml' %}
 {% import_yaml properties_path as props %}
 
+# Load Fedora versions list.
+{% set fedora_versions_list_path = profile_root.replace('.', '/') + '/common/system_platforms/fedora_versions_list.yaml' %}
+{% import_yaml fedora_versions_list_path as fedora_versions_list %}
+
 {% if 'use_local_yum_mirrors' in props %}
 {% set use_local_yum_mirrors = props['use_local_yum_mirrors'] %}
 {% else %}
@@ -52,13 +56,7 @@ system_features:
 
                 os_platform_configs:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         repo_enabled: True
@@ -156,13 +154,7 @@ system_features:
 
                 os_platform_configs:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         # Default is enabled.
@@ -569,13 +561,7 @@ system_features:
 
                 os_platform_configs:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         repo_enabled: False
@@ -646,13 +632,7 @@ system_features:
 
                 os_platform_configs:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     # NOTE: Reusing the same config for `fc21` by `fc22`.
                     {{ system_platform_id }}:
                         repo_enabled: True
@@ -771,18 +751,12 @@ system_features:
                     {% endfor %}
 
             # SonarQube
-            sonar_qube:
+            sonarqube:
                 installation_type: conf_template
 
                 os_platform_configs:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     {{ system_platform_id }}:
                         repo_enabled: True
                         skip_if_unavailable: True

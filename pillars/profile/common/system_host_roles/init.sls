@@ -7,17 +7,19 @@ include:
 {% for sub_item in [
         'localhost_role'
         ,
+        'salt_master_role'
+        ,
+        'salt_minion_role'
+        ,
         'primary_console_role'
         ,
-        'controller_role'
+        'network_router_role'
         ,
-        'router_role'
-        ,
-        'resolver_role'
+        'hostname_resolver_role'
         ,
         'time_server_role'
         ,
-        'hypervisor_role'
+        'virtual_machine_hypervisor_role'
         ,
         'depository_role'
         ,
@@ -29,7 +31,7 @@ include:
         ,
         'jenkins_slave_role'
         ,
-        'sonar_qube_role'
+        'sonarqube_server_role'
         ,
         'maven_repository_upstream_manager_role'
         ,

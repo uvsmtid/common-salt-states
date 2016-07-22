@@ -81,7 +81,7 @@ retrieve_jenkins_rpm_package:
 jenkins_rpm_package:
     cmd.run:
         - name: 'yum install -y {{ config_temp_dir }}/jenkins/jenkins.rpm'
-        # NOTE: Do not reinstall sonar (if exists).
+        # NOTE: Do not reinstall jenkins (if exists).
         - unless: 'rpm -qi jenkins'
         - require:
             - file: retrieve_jenkins_rpm_package

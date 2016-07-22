@@ -42,7 +42,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # NOTE: This does not set IP address for physical host machine.
   #       Instead, Vagrant treats this as some sort of "global" config
   #       and assigns this IP as additional to the first virtual host.
-{% set hypervisor_host_id = pillar['system_host_roles']['hypervisor_role']['assigned_hosts'][0] %}
+{% set hypervisor_host_id = pillar['system_host_roles']['virtual_machine_hypervisor_role']['assigned_hosts'][0] %}
   config.vm.network "public_network", ip: "{{ pillar['system_hosts'][hypervisor_host_id]['hosts_networks'][sys_net_name]['ip'] }}"
 {% endif %}
 

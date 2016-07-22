@@ -34,11 +34,11 @@ include:
 # START: Orchestratioin logic
 ###############################################################################
 
-{% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
+{% set salt_master_role_host = pillar['system_host_roles']['salt_master_role']['assigned_hosts'][0] %}
 
 install_stage_flag_files_firectory:
     salt.state:
-        - tgt: '{{ controller_role_host }}'
+        - tgt: '{{ salt_master_role_host }}'
         - sls: common.orchestrate.stage_flag_files
         - require:
             {{ stage_flag_file_prerequisites(flag_name) }}

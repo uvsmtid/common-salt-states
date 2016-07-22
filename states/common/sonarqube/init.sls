@@ -19,7 +19,7 @@ sonar_package:
         - name: sonar
         # NOTE: This repo is supposed to be configured.
         #       See `pillar['system_features']['yum_repos_configuration']`.
-        - fromrepo: sonar_qube
+        - fromrepo: sonarqube
         # NOTE: The package from the official repo is not signed.
         #       This argument does not seem to work on
         #       Fedora 22 with Salt `2015.5.5` - see workaround below.
@@ -38,7 +38,7 @@ sonar_package:
 #           https://docs.saltstack.com/en/latest/ref/states/requisites.html#onfail
 ensure_sonar_package:
     cmd.run:
-        - name: 'yum -y --nogpgcheck --enablerepo=sonar_qube install sonar'
+        - name: 'yum -y --nogpgcheck --enablerepo=sonarqube install sonar'
         - onfail:
 
             # NOTE: Use `cmd` instead of `pkg` - see reason above.
@@ -160,7 +160,7 @@ deploy_sonar_service_script:
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 
 # List of resource ids for each plugin.
-{% set required_sonar_plugin_ids = pillar['system_features']['configure_sonar_qube']['install_plugins'] %}
+{% set required_sonar_plugin_ids = pillar['system_features']['configure_sonarqube']['install_plugins'] %}
 
 # Loop through each plugin and deploy it.
 {% for resource_id in required_sonar_plugin_ids %}

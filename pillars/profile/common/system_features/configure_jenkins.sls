@@ -99,7 +99,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_INIT_PIPELINE
 
@@ -140,7 +140,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
@@ -183,7 +183,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # 1. Block on any pipeline job except start of `init_pipeline`.
                 #    The job will still wait on already executing `01.01`.
@@ -226,7 +226,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
@@ -259,7 +259,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
@@ -287,7 +287,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_POLL_PIPELINE
 
@@ -325,7 +325,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # 1. Block by any pipeline jobs in `poll_pipeline`.
                 #    Blocking on any jobs is required as `init_pipeline`
@@ -501,7 +501,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_INIT_PIPELINE
 
@@ -532,7 +532,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_INIT_PIPELINE
 
@@ -563,7 +563,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_INIT_PIPELINE
 
@@ -595,7 +595,7 @@ system_features:
                 is_promotion: True
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 condition_job_list:
                     - 01.04.init_pipeline.create_build_branches
@@ -625,7 +625,7 @@ system_features:
                 is_promotion: True
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 condition_job_list:
                     - 02.04.update_pipeline.reconnect_jenkins_slaves
@@ -655,7 +655,7 @@ system_features:
                 is_promotion: True
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 condition_job_list:
                     - 03.01.maven_pipeline.maven_build_all
@@ -689,7 +689,7 @@ system_features:
                 is_promotion: True
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 condition_job_list:
 
@@ -728,7 +728,7 @@ system_features:
                 is_promotion: True
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 condition_job_list:
                     - 05.07.package_pipeline.store_bootstrap_package
@@ -763,7 +763,7 @@ system_features:
                 is_promotion: True
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 condition_job_list:
                     - 06.07.release_pipeline.merge_build
@@ -798,7 +798,7 @@ system_features:
                 is_promotion: True
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 condition_job_list:
                     - 07.04.checkout_pipeline.create_build_branches
@@ -829,7 +829,7 @@ system_features:
                 is_promotion: True
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 condition_type: manual_approval
                 promotion_icon: star-orange-e
@@ -853,7 +853,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_UPDATE_PIPELINE
 
@@ -891,7 +891,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_UPDATE_PIPELINE
 
@@ -934,7 +934,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # 1. Block on any subsequent pipeplines.
                 #    Jobs across pipelines may not have upstream/downstream
@@ -977,7 +977,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_UPDATE_PIPELINE
 
@@ -1008,7 +1008,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_UPDATE_PIPELINE
 
@@ -1086,7 +1086,7 @@ system_features:
                     build_num: -1
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # 1. Block on all jobs.
                 block_build: |
@@ -1160,7 +1160,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # 1. Block on any subsequent pipeplines.
                 #    Jobs across pipelines may not have upstream/downstream
@@ -1252,7 +1252,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # TODO: At the moment Maven jobs cannot be skipped.
                 skip_if_true: SKIP_MAVEN_PIPELINE
@@ -1289,7 +1289,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # TODO: At the moment Maven jobs cannot be skipped.
                 skip_if_true: SKIP_MAVEN_PIPELINE
@@ -1355,7 +1355,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1395,7 +1395,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1774,7 +1774,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # 1. Block on any subsequent pipeplines.
                 #    Jobs across pipelines may not have upstream/downstream
@@ -1823,7 +1823,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1856,7 +1856,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -1889,7 +1889,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_DEPLOY_PIPELINE
 
@@ -2222,7 +2222,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # 1. Block on any subsequent pipeplines.
                 #    Jobs across pipelines may not have upstream/downstream
@@ -2372,7 +2372,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_PACKAGE_PIPELINE
 
@@ -2406,7 +2406,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_PACKAGE_PIPELINE
 
@@ -2440,7 +2440,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_PACKAGE_PIPELINE
 
@@ -2474,7 +2474,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_PACKAGE_PIPELINE
 
@@ -2506,7 +2506,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_PACKAGE_PIPELINE
 
@@ -2538,7 +2538,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_PACKAGE_PIPELINE
 
@@ -2578,7 +2578,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # 1. Block on any subsequent pipeplines.
                 #    Jobs across pipelines may not have upstream/downstream
@@ -2741,7 +2741,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_RELEASE_PIPELINE
 
@@ -2775,7 +2775,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_RELEASE_PIPELINE
 
@@ -2809,7 +2809,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_RELEASE_PIPELINE
 
@@ -2843,7 +2843,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_RELEASE_PIPELINE
 
@@ -2877,7 +2877,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_RELEASE_PIPELINE
 
@@ -2909,7 +2909,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_RELEASE_PIPELINE
 
@@ -2949,7 +2949,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 # 1. Block on any subsequent pipeplines.
                 #    Jobs across pipelines may not have upstream/downstream
@@ -3079,7 +3079,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_CHECKOUT_PIPELINE
 
@@ -3113,7 +3113,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_CHECKOUT_PIPELINE
 
@@ -3147,7 +3147,7 @@ system_features:
                     build_num: {{ discard_build_num }}
 
                 restrict_to_system_role:
-                    - controller_role
+                    - salt_master_role
 
                 skip_if_true: SKIP_CHECKOUT_PIPELINE
 

@@ -63,7 +63,7 @@ include:
         ,
         'email_notifications_lists'
         ,
-        'configure_sonar_qube'
+        'configure_sonarqube'
         ,
         'sonarqube_quality_gates'
         ,

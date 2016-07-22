@@ -8,10 +8,10 @@
 # case of `offline-minion-installer` `bootstrap_mode`.
 {% set bootstrap_mode = salt['pillar.get']('bootstrap_mode', '') %}
 {% if
-       ( grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] )
+       ( grains['id'] in pillar['system_host_roles']['salt_master_role']['assigned_hosts'] )
        or
        ( bootstrap_mode == 'offline-minion-installer' )
-%} # controller_role
+%} # salt_master_role
 
 # Ensure links exist and point to the source repository on Salt master.
 {% if pillar['system_features']['source_symlinks_configuration']['feature_enabled'] %} # source_symlinks_configuration
@@ -91,7 +91,7 @@ ensure_source_link_{{ link_config_name }}_cmd:
 
 {% endif %} # source_symlinks_configuration
 
-{% endif %} # controller_role
+{% endif %} # salt_master_role
 
 {% endif %} # OS
 # >>>

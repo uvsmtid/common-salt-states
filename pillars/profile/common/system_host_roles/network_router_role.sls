@@ -13,8 +13,8 @@
 
 system_host_roles:
 
-    resolver_role:
-        hostname: resolver-role-host
+    network_router_role:
+        hostname: network-router-role-host
         assigned_hosts:
             {{ filter_assigned_hosts_by_minion_hosts_enabled_in_properties([
                     master_minion_id

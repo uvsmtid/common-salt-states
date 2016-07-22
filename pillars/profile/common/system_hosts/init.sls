@@ -15,11 +15,11 @@ include:
         ,
         'fedora_minion'
         ,
-        'jenkins'
+        'shared_jenkins'
         ,
-        'nexus'
+        'shared_nexus'
         ,
-        'sonar'
+        'shared_sonarqube'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
