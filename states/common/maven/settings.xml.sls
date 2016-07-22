@@ -208,11 +208,11 @@
             <properties>
 
                 <!-- Optional URL to server. Default value is http://localhost:9000 -->
-                {% set sonarqube_server_role_host = 'localhost' %}
+                {% set sonarqube_server_role_hostname = 'localhost' %}
                 {% if pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts']|length != 0 %}
-                {% set sonarqube_server_role_host = pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts'][0] %}
+                {% set sonarqube_server_role_hostname = pillar['system_hosts'][ pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts'][0] ]['hostname'] %}
                 {% endif %}
-                <sonar.host.url>http://{{ sonarqube_server_role_host }}:9000/</sonar.host.url>
+                <sonar.host.url>http://{{ sonarqube_server_role_hostname }}:9000/</sonar.host.url>
 
                 <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
                 <sonar.scm.provider>git</sonar.scm.provider>

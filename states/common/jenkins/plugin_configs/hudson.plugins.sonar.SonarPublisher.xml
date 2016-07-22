@@ -5,11 +5,11 @@
       <name>SonarQube</name>
       <disabled>false</disabled>
 
-      {% set sonarqube_server_role_host = 'localhost' %}
+      {% set sonarqube_server_role_hostname = 'localhost' %}
       {% if pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts']|length != 0 %}
-      {% set sonarqube_server_role_host = pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts'][0] %}
+      {% set sonarqube_server_role_hostname = pillar['system_hosts'][ pillar['system_host_roles']['sonarqube_server_role']['assigned_hosts'][0] ]['hostname'] %}
       {% endif %}
-      <serverUrl>http://{{ sonarqube_server_role_host }}:9000/</serverUrl>
+      <serverUrl>http://{{ sonarqube_server_role_hostname }}:9000/</serverUrl>
 
       <mojoVersion></mojoVersion>
       <!-- NOTE: The URL assumes DB runs on the same host with SonarQube. -->
