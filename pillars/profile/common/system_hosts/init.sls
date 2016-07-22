@@ -15,7 +15,7 @@ include:
         ,
         'fedora_minion'
         ,
-        'jenkins'
+        'shared_jenkins'
         ,
         'nexus'
         ,

@@ -142,6 +142,7 @@ enabled_minion_hosts:
 
     # Enable if there are shared (non-minion) hosts in the system.
     #shared_sonarqube: W.X.Y.Z
+    #shared_jenkins: W.X.Y.Z
 
 ###############################################################################
 # EOF
