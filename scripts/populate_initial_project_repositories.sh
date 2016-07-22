@@ -1,10 +1,11 @@
 #!/bin/sh
 ###############################################################################
-# This interactive script generates initial content
-# with required layout for Git repo with "overrides" or "defaults" pillars.
+# This interactive script generates initial content for
+# `project_name-salt-states.git` and `project_name-salt-pillars.git`
+# Git repositories with required layout.
 #
 # The required content is copied from `common-salt-states.git` into
-# the actual `project_name-salt-pillars.git` Git repo.
+# the respective Git repo.
 #
 # TODO: Add reference to documentation.
 
@@ -46,20 +47,20 @@ else
     PROJECT_NAME="${2}"
 fi
 
-PILLARS_CASE="no"
+REPO_CASE="no"
 echo "There are two cases:"
-echo "*   \"defaults\"  : create initial pillars for custom    \`project_name\` as \"defaults\""
-echo "*   \"overrides\" : create initial pillars for specific  \`profile_name\` as \"overrides\""
+echo "*   \"states\"  : create initial states for custom \`project_name\` with \"defaults\" pillars"
+echo "*   \"pillars\" : create initial pillars for specific  \`profile_name\` with \"overrides\" pillars"
 echo "Type case name exactly to proceed."
-read PILLARS_CASE
-if [ "${PILLARS_CASE}" != "defaults" ]
+read REPO_CASE
+if [ "${REPO_CASE}" == "states" ]
 then
-    echo "User typed \"${PILLARS_CASE}\". Proceeding... with \"defaults\"" 1>&2
-elif [ "${PILLARS_CASE}" != "overrides" ]
+    echo "User typed \"${REPO_CASE}\". Proceeding with \"states\"..." 1>&2
+elif [ "${REPO_CASE}" == "pillars" ]
 then
-    echo "User typed \"${PILLARS_CASE}\". Proceeding... with \"overrides\"" 1>&2
+    echo "User typed \"${REPO_CASE}\". Proceeding with \"pillars\"..." 1>&2
 else
-    echo "User typed \"${PILLARS_CASE}\". No such case. Exiting..." 1>&2
+    echo "User typed \"${REPO_CASE}\". No such case. Exiting..." 1>&2
     exit 1
 fi
 
@@ -93,6 +94,9 @@ echo "" 1>&2
 echo "Copying necessary template files:" 1>&2
 
 # Create directory layout.
+# This default layout is required to link
+# "defaults" (in case of `states` repository) and
+# "overrides" (in case of `pillars` repository).
 for ITEM_PATH in \
     pillars \
     pillars/profile \
@@ -104,7 +108,7 @@ do
     echo "ADD: dir  : ${ITEM_PATH}" 1>&2
     mkdir -p "${DST_REPO_DIR}/${ITEM_PATH}"
 
-    if [ "${PILLARS_CASE}" == "overrides" ]
+    if [ "${REPO_CASE}" == "pillars" ]
     then
         # Skip creation of subdirectory named after `project_name`.
         # Normally, if required, all overriding files with their
@@ -114,9 +118,10 @@ do
             continue
         fi
     fi
+
 done
 
-# Fill in initial `*.sls` files.
+# Fill in initial pillars (`*.sls`) files.
 for ITEM_PATH in \
     pillars/profile/properties.yaml \
     pillars/bootstrap/profiles/.gitignore \
@@ -125,9 +130,9 @@ for ITEM_PATH in \
 
 do
 
-    if [ "${PILLARS_CASE}" == "defaults" ]
+    if [ "${REPO_CASE}" == "states" ]
     then
-        # Skip `overrides.sls` which is overriden in "overrides" anyway.
+        # Skip `overrides.sls` which is overriden in "pillars" anyway.
         # And even if it is not overriden, deaults are present in "commons".
 
         # File `properties.yaml` is not skipped as it may provide useful
@@ -146,9 +151,9 @@ do
 
 done
 
-# Add template files.
-# They are only needed for "defaults" case.
-if [ "${PILLARS_CASE}" == "defaults" ]
+# Add template pillars files.
+# They are only needed for "states" case.
+if [ "${REPO_CASE}" == "states" ]
 then
 
     for ITEM_PATH in \
@@ -164,17 +169,36 @@ then
 
 fi
 
+# Add initial states.
+# They are only needed for "states" case.
+if [ "${REPO_CASE}" == "states" ]
+then
+
+    for ITEM_PATH in \
+        states/common/main.sls \
+
+    do
+        ITEM_BASENAME="$(basename "${ITEM_PATH}")"
+        DESTINATION_DIR="states/${PROJECT_NAME}"
+        echo "ADD: file : ${ITEM_PATH} => ${DESTINATION_DIR}/${ITEM_BASENAME}" 1>&2
+        cp -pr "${RUNTIME_DIR}/${COMMON_SALT_STATES_REPO_ROOT_DIR}/${ITEM_PATH}" "${DST_REPO_DIR}/${DESTINATION_DIR}/${ITEM_BASENAME}"
+    done
+
+fi
+
 # Print message for user.
 echo ""
 echo "########################################################################"
 echo ""
-echo "The initial \`pillars\` repository for \`overrides\` created."
+echo "The initial content for \`${REPO_CASE}\` repository has been generated."
 echo ""
 echo "*   Review and commit initial files:"
 echo "        cd \"${DST_REPO_DIR}\""
 echo "        git add --all"
 echo "        git commit"
 echo ""
+if [ "${REPO_CASE}" == "pillars" ]
+then
 echo "*   Customize \`properties.yaml\` and \`overrides.sls\` files:"
 echo "        vim \"${DST_REPO_DIR}/pillars/profile/properties.yaml\""
 echo "        vim \"${DST_REPO_DIR}/pillars/profile/overrides.sls\""
@@ -183,6 +207,18 @@ echo ""
 echo "*   Configure Salt master:"
 echo "        scripts/configure_salt.py \"${DST_REPO_DIR}/pillars/profile/properties.yaml\""
 echo ""
+elif [ "${REPO_CASE}" == "states" ]
+then
+echo "*   Customize \`properties.yaml\` files:"
+echo "        vim \"${DST_REPO_DIR}/pillars/profile/properties.yaml\""
+echo "    While this file is overriden in \`overrides\` pillars"
+echo "    (in \`pillars\` repository), it may still serve as initial template"
+echo "    for new \`profile_name\`s of entire \"${PROJECT_NAME}\" project."
+echo ""
+echo "*   Customize \`main.sls\` file which call various host role states:"
+echo "        vim \"${DST_REPO_DIR}/${PROJECT_NAME}/main.sls\""
+echo ""
+fi
 
 ###############################################################################
 # EOF

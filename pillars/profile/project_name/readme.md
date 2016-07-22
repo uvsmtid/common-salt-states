@@ -1,8 +1,8 @@
 
 This subdirectory contains only templates for pillars of new `project_name`s
-created by [`create_initial_overrides_pillars.sh`][1] script.
+repositories created by [`populate_initial_project_repositories.sh`][1] script.
 
 ---
 
-[1]: /scripts/create_initial_overrides_pillars.sh
+[1]: /scripts/populate_initial_project_repositories.sh
 
