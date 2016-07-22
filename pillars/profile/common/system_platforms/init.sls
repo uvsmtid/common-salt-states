@@ -4,8 +4,10 @@
 
 include:
 
+# NOTE: Fedora realeases are fast-rolling.
+#       Use the same platform definition file (while it makes sense).
 {% for sub_item in [
-        'fc24'
+        'fc00'
         ,
         'rhel5'
         ,

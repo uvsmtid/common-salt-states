@@ -2,6 +2,10 @@
 ###############################################################################
 #
 
+# Load Fedora versions list.
+{% set fedora_versions_list_path = profile_root.replace('.', '/') + '/common/system_platforms/fedora_versions_list.yaml' %}
+{% import_yaml fedora_versions_list_path as fedora_versions_list %}
+
 system_features:
 
     java_environments_configuration:
@@ -26,13 +30,7 @@ system_features:
                 # can be installed with their configuratoin.
                 os_platform_configs:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     {{ system_platform_id }}:
                     # NOTE: Reusing the same configuration for `fc21` by `fc24`.
                         JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
@@ -57,13 +55,7 @@ system_features:
 
                 os_platform_configs:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     {{ system_platform_id }}:
                     # NOTE: Reusing the same configuration for `fc21` by `fc22`.
                         JAVA_HOME: '/usr/lib/jvm/java-1.8.0-openjdk/jre'
@@ -83,13 +75,7 @@ system_features:
 
                 os_platform_configs:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     {{ system_platform_id }}:
                     # NOTE: Reusing the same configuration for `fc21` by `fc22`.
                         JAVA_HOME: '/usr/lib/jvm/java-1.7.0-openjdk/jre'

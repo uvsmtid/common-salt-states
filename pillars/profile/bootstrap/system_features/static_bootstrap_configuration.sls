@@ -2,6 +2,10 @@
 ###############################################################################
 #
 
+# Load Fedora versions list.
+{% set fedora_versions_list_path = profile_root.replace('.', '/') + '/common/system_platforms/fedora_versions_list.yaml' %}
+{% import_yaml fedora_versions_list_path as fedora_versions_list %}
+
 system_features:
 
     static_bootstrap_configuration:
@@ -16,13 +20,7 @@ system_features:
         #       per system instance.
         os_platform_package_types:
 
-            {% for system_platform_id in [
-                    'fc21',
-                    'fc22',
-                    'fc23',
-                    'fc24',
-                ]
-            %}
+            {% for system_platform_id in fedora_versions_list %}
             {{ system_platform_id }}: tar.gz
             {% endfor %}
 
@@ -56,13 +54,7 @@ system_features:
                 salt_master_template: 'salt://common/salt/master/master.conf'
                 salt_master_rpm_sources:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     {{ system_platform_id }}:
                         salt-master:
                             source_type: tar
@@ -119,13 +111,7 @@ system_features:
                 salt_minion_offline_template: 'salt://common/salt/minion/minion.offline.conf'
                 salt_minion_rpm_sources:
 
-                    {% for system_platform_id in [
-                            'fc21',
-                            'fc22',
-                            'fc23',
-                            'fc24',
-                        ]
-                    %}
+                    {% for system_platform_id in fedora_versions_list %}
                     {{ system_platform_id }}:
                         salt-master:
                             source_type: tar
