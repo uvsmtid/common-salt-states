@@ -18,7 +18,7 @@ system_features:
 
         # Managed DNS zone for this system.
         #
-        # The DNS server is configured in `resolver_role` role. See `system_host_roles`.
+        # The DNS server is configured in `hostname_resolver_role` role. See `system_host_roles`.
         domain_name: {{ project_name }}.example.com
 
         # TODO: It is better to use role name to select host (with IP)

@@ -13,7 +13,7 @@ include:
         ,
         'router_role'
         ,
-        'resolver_role'
+        'hostname_resolver_role'
         ,
         'time_server_role'
         ,

@@ -16,7 +16,7 @@ include:
 
         # TODO:
         #- common.orchestrate.wraps.router_role
-        #- common.orchestrate.wraps.resolver_role
+        #- common.orchestrate.wraps.hostname_resolver_role
 
         - common.orchestrate.wraps.time_server_role
 

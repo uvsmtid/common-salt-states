@@ -1,6 +1,6 @@
 # DHCP configuration.
 
-{% if grains['id'] in pillar['system_host_roles']['resolver_role']['assigned_hosts'] %}
+{% if grains['id'] in pillar['system_host_roles']['hostname_resolver_role']['assigned_hosts'] %}
 
 {% set hostname_res = pillar['system_features']['hostname_resolution_config'] %}
 
