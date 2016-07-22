@@ -29,7 +29,7 @@ system_hosts:
         consider_online_for_remote_connections: False
         host_networks:
             {{ primary_network['network_name'] }}:
-                ip: {{ props['enabled_minion_hosts']['sonar'] }}
+                ip: {{ props['enabled_minion_hosts']['jenkins'] }}
 
         primary_user: default_user
 
