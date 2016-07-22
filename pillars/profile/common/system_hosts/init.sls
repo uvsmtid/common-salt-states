@@ -17,7 +17,7 @@ include:
         ,
         'shared_jenkins'
         ,
-        'nexus'
+        'shared_nexus'
         ,
         'shared_sonarqube'
     ]
