@@ -7,9 +7,11 @@ include:
 {% for sub_item in [
         'localhost_role'
         ,
-        'primary_console_role'
-        ,
         'salt_master_role'
+        ,
+        'salt_minion_role'
+        ,
+        'primary_console_role'
         ,
         'network_router_role'
         ,

@@ -13,6 +13,7 @@ include:
         #- primary_console_role
 
         - common.orchestrate.wraps.salt_master_role
+        - common.orchestrate.wraps.salt_minion_role
 
         # TODO:
         #- common.orchestrate.wraps.network_router_role
@@ -39,9 +40,6 @@ include:
         - common.orchestrate.wraps.maven_repository_manager_role
 
         - common.orchestrate.wraps.openstack_client_role
-
-    # main
-        - common.orchestrate.wraps.main
 
 {% endif %}
 

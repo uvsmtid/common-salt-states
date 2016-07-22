@@ -1,0 +1,18 @@
+
+###############################################################################
+# List of hosts which are managed by Salt (Salt minions).
+
+# NOTE: The master minion is automatically added if it is enabled in
+#       properties (see `use_master_minion_template_host`).
+#       It is added under the name specified in
+#       `master_minion_id` properties key.
+#- 'master_minion_id'
+
+- 'rhel5_minion'
+- 'rhel7_minion'
+- 'fedora_minion'
+
+###############################################################################
+# EOF
+###############################################################################
+

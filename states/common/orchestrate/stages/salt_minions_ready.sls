@@ -60,11 +60,11 @@ minions_sync_all:
         - require:
             - salt: configure_minions_on_all_minions
 
-primary_configuration_for_all_minions:
+minimal_configuration_for_all_minions:
     salt.state:
         - tgt: '*'
         - sls:
-            - common.orchestrate.wraps.primary
+            - common.orchestrate.wraps.salt_minion_role.minimal
         - require:
             - salt: minions_sync_all
             {{ stage_flag_file_prerequisites(flag_name) }}
