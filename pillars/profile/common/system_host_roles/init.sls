@@ -11,7 +11,7 @@ include:
         ,
         'controller_role'
         ,
-        'router_role'
+        'network_router_role'
         ,
         'hostname_resolver_role'
         ,
