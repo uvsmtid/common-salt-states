@@ -23,7 +23,7 @@ system_features:
 
         # TODO
         hosts_by_host_role: {}
-            #controller_role:
+            #salt_master_role:
             #    username_item:
             #        username: username
 

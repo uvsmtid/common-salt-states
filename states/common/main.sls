@@ -12,7 +12,7 @@ include:
         # TODO:
         #- primary_console_role
 
-        - common.orchestrate.wraps.controller_role
+        - common.orchestrate.wraps.salt_master_role
 
         # TODO:
         #- common.orchestrate.wraps.network_router_role

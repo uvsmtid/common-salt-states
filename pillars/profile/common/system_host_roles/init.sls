@@ -9,7 +9,7 @@ include:
         ,
         'primary_console_role'
         ,
-        'controller_role'
+        'salt_master_role'
         ,
         'network_router_role'
         ,

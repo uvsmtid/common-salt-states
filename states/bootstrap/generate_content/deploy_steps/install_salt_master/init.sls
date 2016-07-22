@@ -46,7 +46,7 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
         - content: |
             {{ deploy_step }} = {
                 "step_enabled": {{ deploy_step_config['step_enabled'] }},
-                {% if selected_host_name in target_env_pillar['system_host_roles']['controller_role']['assigned_hosts'] %}
+                {% if selected_host_name in target_env_pillar['system_host_roles']['salt_master_role']['assigned_hosts'] %}
                 "is_master": True,
                 {% else %}
                 "is_master": False,

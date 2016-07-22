@@ -32,7 +32,7 @@ include:
 # START: Orchestratioin logic
 ###############################################################################
 
-{% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
+{% set salt_master_role_host = pillar['system_host_roles']['salt_master_role']['assigned_hosts'][0] %}
 
 configure_yum_repositories_everywhere:
     salt.state:

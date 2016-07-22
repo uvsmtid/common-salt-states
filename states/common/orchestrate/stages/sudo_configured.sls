@@ -35,7 +35,7 @@ include:
 # Applies only when feature is enabled.
 {% if pillar['system_features']['configure_sudo_for_specified_users']['feature_enabled'] %}
 
-{% set controller_role_host = pillar['system_host_roles']['controller_role']['assigned_hosts'][0] %}
+{% set salt_master_role_host = pillar['system_host_roles']['salt_master_role']['assigned_hosts'][0] %}
 
 configure_sudo_for_required_users:
     salt.state:

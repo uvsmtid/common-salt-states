@@ -53,7 +53,7 @@ config_file_{{ requisite_config_file_id }}_{{ deploy_step }}_hosts_file:
         - name: '{{ target_contents_dir }}/resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/hosts_file'
         - makedirs: True
         - contents: |
-            {{ get_role_ip_address_from_pillar('controller_role', target_env_pillar) }} salt
+            {{ get_role_ip_address_from_pillar('salt_master_role', target_env_pillar) }} salt
         {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - group: '{{ account_conf['username'] }}'
         - user: '{{ account_conf['username'] }}'

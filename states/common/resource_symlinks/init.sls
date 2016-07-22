@@ -8,10 +8,10 @@
 # case of `offline-minion-installer` `bootstrap_mode`.
 {% set bootstrap_mode = salt['pillar.get']('bootstrap_mode', '') %}
 {% if
-       ( grains['id'] in pillar['system_host_roles']['controller_role']['assigned_hosts'] )
+       ( grains['id'] in pillar['system_host_roles']['salt_master_role']['assigned_hosts'] )
        or
        ( bootstrap_mode == 'offline-minion-installer' )
-%} # controller_role
+%} # salt_master_role
 
 {% set config_temp_dir = pillar['posix_config_temp_dir'] %}
 
@@ -59,7 +59,7 @@ ensure_resource_repository_link_{{ resource_respository_id }}_cmd:
 
 {% endfor %} # resource_respository_id
 
-{% endif %} # controller_role
+{% endif %} # salt_master_role
 
 {% endif %} # OS
 # >>>

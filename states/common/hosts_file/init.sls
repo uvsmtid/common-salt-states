@@ -28,8 +28,8 @@ managed_hosts_file:
         - append_if_not_found: True
         - marker_start: "# <<< AUTOMATICALLY MANAGED by Salt"
         - content: |
-            # Host `salt` is the host assigned for `controller_role` role.
-            {% set selected_role_id = 'controller_role' %}
+            # Host `salt` is the host assigned for `salt_master_role` role.
+            {% set selected_role_id = 'salt_master_role' %}
             {% if pillar['system_host_roles'][selected_role_id]['assigned_hosts']|length != 0 %}
             {% set selected_minion_id = pillar['system_host_roles'][selected_role_id]['assigned_hosts'][0] %}
             {% set selected_host = pillar['system_hosts'][selected_minion_id] %}
