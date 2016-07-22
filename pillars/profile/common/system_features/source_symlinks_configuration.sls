@@ -55,7 +55,7 @@ system_features:
                 #       `/srv/states` can be set for Salt config files
                 #       generated for boostrap (not just hardcoded).
                 #       See:
-                #         docs/todo/comprehensive_artifacts_managment.md
+                #         docs/todo/comprehensive_resources_managment.md
                 abs_link_base_path: '/srv/states'
                 # Path relative to checked out sources' root:
                 rel_target_path: 'states'
