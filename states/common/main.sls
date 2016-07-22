@@ -9,8 +9,7 @@ include:
 
     # roles
 
-        # TODO:
-        #- primary_console_role
+        - common.orchestrate.wraps.primary_console_role
 
         - common.orchestrate.wraps.salt_master_role
         - common.orchestrate.wraps.salt_minion_role
