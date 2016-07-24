@@ -27,8 +27,9 @@ system_features:
         proxy_url_port: 8000
 
         proxy_username: username
-        # TODO: Use `secret_id` from `system_secrets` for `password_value`.
-        proxy_password: password_value
+        # The value is a `secret_id` from `system_secrets`
+        # to provide value in secure way.
+        proxy_password_secret_id: external_http_proxy_password
 
 ###############################################################################
 # EOF

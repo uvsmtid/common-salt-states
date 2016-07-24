@@ -25,7 +25,8 @@ There are basically three configuration parameters:
   ```
 * Authentication info:
   * `proxy_username`
-  * `proxy_password`
+  * `proxy_password_secret_id`
+
 * Automatic configuration script (which may be used for Internet browsers);
   * `auto_config_url`
 

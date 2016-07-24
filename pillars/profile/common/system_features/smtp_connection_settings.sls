@@ -11,8 +11,9 @@ system_features:
         smtp_authentication:
             enabled: False
             smtp_auth_username: username
-            # TODO: Move password to `system_secrets`.
-            smtp_auth_password: password
+            # The value is a `secret_id` from `system_secrets`
+            # to provide value in secure way.
+            smtp_auth_password_secret_id: smtp_connection_settings_auth_password
 
 ###############################################################################
 # EOF

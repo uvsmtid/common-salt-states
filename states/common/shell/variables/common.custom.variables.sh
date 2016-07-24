@@ -26,7 +26,7 @@ export SALT_PROFILE_NAME="{{ profile_name }}"
 
 # Proxy settings:
 # TODO: Use `secret_id` from `system_secrets` for `password_value`.
-export http_proxy='{{ proxy_config['proxy_url_schema'] }}{{ proxy_config['proxy_username'] }}:{{ proxy_config['proxy_password'] }}@{{ proxy_config['proxy_url_hostname'] }}:{{ proxy_config['proxy_url_port'] }}/'
+export http_proxy='{{ proxy_config['proxy_url_schema'] }}{{ proxy_config['proxy_username'] }}:{{ pillar['system_secrets'][ proxy_config['proxy_password_secret_id'] ] }}@{{ proxy_config['proxy_url_hostname'] }}:{{ proxy_config['proxy_url_port'] }}/'
 export https_proxy="${http_proxy}"
 
 {% endif %}
