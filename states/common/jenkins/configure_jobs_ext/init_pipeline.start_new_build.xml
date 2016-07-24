@@ -300,10 +300,22 @@
             #       are changed by user in the `release_pipeline`.
 
             # Retrieve version name and number.
+            # TODO: Avoid composing key names. Instead use something like
+            #       `system_versions` top-level pillar key with
+            #       pairs `version_name` and `version_number`
+            #       per `project_name` sub-key.
             {% set project_version_name_key = pillar['project_name'] +'_version_name' %}
             {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
-            export PROJECT_VERSION_NAME="{{ pillar['dynamic_build_descriptor'][project_version_name_key] }}"
-            export PROJECT_VERSION_NUMBER="{{ pillar['dynamic_build_descriptor'][project_version_number_key] }}"
+            {% if project_version_name_key in pillar['dynamic_build_descriptor'] and project_version_number_key in pillar['dynamic_build_descriptor'] %}
+            {% set project_version_name = pillar[project_version_name_key] %}
+            {% set project_version_number = pillar[project_version_number_key] %}
+            {% else %}
+            {% set project_version_name = 'UNDEFINED' %}
+            {% set project_version_number = '0.0.0.0' %}
+            {% endif %}
+
+            export PROJECT_VERSION_NAME="{{ project_version_name }}"
+            export PROJECT_VERSION_NUMBER="{{ project_version_number }}"
             echo "${PROJECT_VERSION_NAME}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${REPO_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_name"
             echo "${PROJECT_VERSION_NUMBER}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${REPO_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_number"
 

@@ -232,10 +232,21 @@
                           about different versions.
                     TODO: Think whether it should be part of Jenkins configuration instead.
                 -->
+                <!--
+                    TODO: Avoid composing key names. Instead use something like
+                          `system_versions` top-level pillar key with
+                          pairs `version_name` and `version_number`
+                          per `project_name` sub-key.
+                -->
                 {% set project_version_name_key = pillar['project_name'] +'_version_name' %}
                 {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
+                {% if project_version_name_key in pillar['dynamic_build_descriptor'] and project_version_number_key in pillar['dynamic_build_descriptor'] %}
                 {% set project_version_name = pillar[project_version_name_key] %}
                 {% set project_version_number = pillar[project_version_number_key] %}
+                {% else %}
+                {% set project_version_name = 'UNDEFINED' %}
+                {% set project_version_number = '0.0.0.0' %}
+                {% endif %}
                 <!--
                     NOTE: The build is NEVER done on for the released version.
                           Instead, we promote a built to a release.
