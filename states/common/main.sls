@@ -39,6 +39,12 @@ include:
 
         - common.orchestrate.wraps.openstack_client_role
 
+        # TODO: Add wildfly roles.
+        #- common.orchestrate.wraps.wildfly_node_1_role
+        #- common.orchestrate.wraps.wildfly_node_2_role
+
+        - common.orchestrate.wraps.vagrant_box_publisher_role
+
 {% endif %}
 
 ###############################################################################
