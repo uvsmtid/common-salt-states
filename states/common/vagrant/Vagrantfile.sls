@@ -1,6 +1,9 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Define properties (they are loaded as values to the root of pillars):
+{% set props = pillar %}
+
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
@@ -99,6 +102,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
 
     {{ selected_host_name }}.vm.box = "{{ instance_configuration['base_image'] }}"
+    {% if props['use_local_vagrant_box_publisher'] %}
+    # The URL is set to system-local server.
+    # NOTE: In this case, it is also likely that `vagrant` command
+    #       should be executed with undefined
+    #       `http_proxy` and `https_proxy` environment variables.
+    {{ selected_host_name }}.vm.box_url = 'http://{{ pillar['system_host_roles']['vagrant_box_publisher_role']['hostname'] }}/{{ instance_configuration['base_image'] }}.json'
+    {% endif %}
 
     # See libvirt configuration:
     #   https://github.com/pradels/vagrant-libvirt
