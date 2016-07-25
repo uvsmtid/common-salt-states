@@ -31,6 +31,7 @@ use_internet_http_proxy: False
 offline_mode: False
 
 use_local_yum_mirrors: False
+use_local_vagrant_box_publisher: False
 
 project_name: common
 
@@ -139,6 +140,7 @@ enabled_minion_hosts:
     rhel5_minion: 192.168.40.10
     rhel7_minion: 192.168.40.20
     fedora_minion: 192.168.40.30
+    win_serv_2012R2_minion: 192.168.40.40
 
     # Enable if there are shared (non-minion) hosts in the system.
     #shared_sonarqube: W.X.Y.Z

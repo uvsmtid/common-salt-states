@@ -47,8 +47,32 @@ system_features:
         #           https://github.com/uvsmtid/vagrant-boxes
         vagrant_boxes:
 
+            uvsmtid/centos-5.5-minimal:
+                description: https://github.com/uvsmtid/vagrant-boxes/tree/develop/centos-5.5-minimal
+                versions:
+                -   version: 1.0.1
+                    providers:
+                    -   name: libvirt
+                        resource_id: centos-5.5-minimal-1.0.1.tar.gz
+
+            uvsmtid/centos-7.0-minimal:
+                description: https://github.com/uvsmtid/vagrant-boxes/tree/develop/centos-7.0-minimal
+                versions:
+                -   version: 1.0.0
+                    providers:
+                    -   name: libvirt
+                        resource_id: centos-7.0-minimal-1.0.0.tar.gz
+
+            uvsmtid/centos-7.1-1503-gnome:
+                description: https://github.com/uvsmtid/vagrant-boxes/tree/develop/centos-7.1-1503-gnome
+                versions:
+                -   version: 1.0.1
+                    providers:
+                    -   name: libvirt
+                        resource_id: centos-7.1-1503-gnome-1.0.1-box.tar.gz
+
             uvsmtid/windows-server-2012-R2-gui:
-                description: Windows Server 2012 R2 with GUI
+                description: https://github.com/uvsmtid/vagrant-boxes/tree/develop/windows-server-2012-R2-gui
                 versions:
                 -   version: 1.0.0
                     providers:

@@ -29,8 +29,9 @@ system_hosts:
             #   - 'hansode/fedora-21-server-x86_64' # virtualbox
             #   - 'fedora:21' # docker
             base_image: 'uvsmtid/fedora-21-server-minimal' # libvirt
-            memory_size: 2048
-            cpus_number: 2
+            domain_config:
+                memory: 2048
+                cpus: 2
 
         # NOTE: Fedora is fast-moving distribution.
         #       Select `fc22`, `fc23`, `fc24`, ...

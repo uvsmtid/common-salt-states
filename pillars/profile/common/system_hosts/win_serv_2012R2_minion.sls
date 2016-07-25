@@ -8,45 +8,42 @@
 
 {% set primary_network = props['primary_network'] %}
 
-{% if 'rhel5_minion' in props['enabled_minion_hosts'].keys() %}
+{% if 'win_serv_2012R2_minion' in props['enabled_minion_hosts'].keys() %}
 
 system_hosts:
 
-    rhel5_minion:
+    win_serv_2012R2_minion:
 
         instantiated_by: vagrant_instance_configuration
         vagrant_instance_configuration:
             vagrant_provider: 'libvirt'
-            # Example values for `base_images` depending on `vagrant_provider`:
-            #   - 'uvsmtid/fedora-21-server-minimal' # libvirt
-            #   - 'uvsmtid/centos-5.5-minimal' # libvirt
-            #   - 'uvsmtid/centos-7.0-minimal' # libvirt
-            #   - 'hansode/fedora-21-server-x86_64' # virtualbox
-            #   - 'fedora:21' # docker
-            base_image: 'uvsmtid/centos-5.5-minimal' # libvirt
+            base_image: 'uvsmtid/windows-server-2012-R2-gui'
             domain_config:
                 memory: 2048
                 cpus: 2
+                video_type: qxl
+                disk_bus: ide
+                nic_model_type: rtl8139
 
-        os_platform: rhel5
+        os_platform: rhel7
 
-        hostname: rhel5-minion
+        hostname: win-serv-2012R2-minion
         resolved_in: {{ primary_network['network_name'] }}
         consider_online_for_remote_connections: True
         host_networks:
 
             {{ primary_network['network_name'] }}:
-                ip: {{ props['enabled_minion_hosts']['rhel5_minion'] }}
-                mac: 52:54:00:52:2e:75
+                ip: {{ props['enabled_minion_hosts']['win_serv_2012R2_minion'] }}
+                mac: 52:54:00:3f:ce:e6
 
             internal_net_A:
-                ip: 192.168.51.10
+                ip: 192.168.51.40
             internal_net_B:
-                ip: 192.168.52.10
+                ip: 192.168.52.40
             external_net_A:
-                ip: 192.168.61.10
+                ip: 192.168.61.40
             external_net_B:
-                ip: 192.168.62.10
+                ip: 192.168.62.40
 
         primary_user: default_user
 
