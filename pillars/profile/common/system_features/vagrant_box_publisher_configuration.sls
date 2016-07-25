@@ -63,6 +63,14 @@ system_features:
                     -   name: libvirt
                         resource_id: centos-7.0-minimal-1.0.0.tar.gz
 
+            uvsmtid/centos-7.1-1503-gnome:
+                description: https://github.com/uvsmtid/vagrant-boxes/tree/develop/centos-7.1-1503-gnome
+                versions:
+                -   version: 1.0.1
+                    providers:
+                    -   name: libvirt
+                        resource_id: centos-7.1-1503-gnome-1.0.1-box.tar.gz
+
             uvsmtid/windows-server-2012-R2-gui:
                 description: https://github.com/uvsmtid/vagrant-boxes/tree/develop/windows-server-2012-R2-gui
                 versions:
