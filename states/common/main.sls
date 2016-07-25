@@ -5,7 +5,11 @@
 
 include:
 
+#{#
+# DISABLED: Do not filter calls to roles based on `project_name`.
+#           other project may simply include this file as default.
 {% if 'common' == project_name %}
+#}#
 
     # roles
 
@@ -45,7 +49,9 @@ include:
 
         - common.orchestrate.wraps.vagrant_box_publisher_role
 
+#{#
 {% endif %}
+#}#
 
 ###############################################################################
 # EOF
