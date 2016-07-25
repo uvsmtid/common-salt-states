@@ -15,6 +15,8 @@ include:
         ,
         'fedora_minion'
         ,
+        'win_serv_2012R2_minion'
+        ,
         'shared_jenkins'
         ,
         'shared_nexus'
