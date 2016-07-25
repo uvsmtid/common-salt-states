@@ -72,6 +72,28 @@ vagrant_box_publisher_role_content_symlink:
             - file: '/var/www/html/{{ pillar['system_host_roles']['vagrant_box_publisher_role']['hostname'] }}'
             - file: vagrant_box_publisher_role_content_symlink
 
+# Vagrant box descriptors.
+{% for box_name in pillar['system_features']['vagrant_box_publisher_configuration']['vagrant_boxes'].keys() %}
+
+vagrant_box_descriptor_{{ box_name }}:
+    file.managed:
+        - source: 'salt://common/webserver/vagrant_box_publisher_role/vagrant_box_descriptor.json'
+        - template: jinja
+        - context:
+            box_name: "{{ box_name }}"
+
+        - name: '{{ vagrant_box_publisher_role_content_dir }}/{{ box_name }}.json'
+        # NOTE: If box name has namespace prefix, subdirectory must be created.
+        - makedirs: True
+
+        - user: apache
+        - group: apache
+        - mode: 660
+        - require:
+            - file: vagrant_box_publisher_role_content_dir
+
+{% endfor %}
+
 # Base directory for Apache virtual server:
 '/var/www/html/{{ pillar['system_host_roles']['vagrant_box_publisher_role']['hostname'] }}':
     file.directory:
