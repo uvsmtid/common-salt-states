@@ -4,7 +4,7 @@
 #
 
 system_secrets:
-    external_http_proxy_password: |
+    smtp_connection_settings_auth_password: |
         -----BEGIN PGP MESSAGE-----
         Version: GnuPG v1
 
