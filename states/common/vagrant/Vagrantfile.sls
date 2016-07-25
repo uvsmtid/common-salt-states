@@ -4,6 +4,15 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
+# This is the only known way to force default provider to `libvirt`
+# avoiding the "smart" default provider selection process (which chooses
+# `virtualbox`, if it is installed):
+#   https://www.vagrantup.com/docs/providers/basic_usage.html#default-provider
+# See also:
+#   http://stackoverflow.com/a/21843623/441652
+{% set vagrant_provider = pillar['system_features']['vagrant_configuration']['vagrant_provider'] %}
+ENV['VAGRANT_DEFAULT_PROVIDER'] = '{{ vagrant_provider }}'
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
@@ -20,7 +29,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # per Vagrantfile. In practice (as currently implemented with
   # single Vagrant file) entire system defined through Salt
   # must use the same Vagrant provider.
-  {% set vagrant_provider = pillar['system_features']['vagrant_configuration']['vagrant_provider'] %}
+  # As of Vagrant 1.7+, there is smart process selecting default provider:
+  #   https://www.vagrantup.com/docs/providers/basic_usage.html#default-provider
+  # It is so "smart" that it now selects `virtualbox` provider
+  # ignoring even the setting below (if `virtualbox` is installed).
+  # So, the only way to force provider (without typing `--provider`)
+  # is to set `VAGRANT_DEFAULT_PROVIDER` environment variable (see above).
   config.vm.provider "{{ vagrant_provider }}"
   config.vm.provider :{{ vagrant_provider }} do |{{ vagrant_provider }}|
 
