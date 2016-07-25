@@ -14,12 +14,20 @@ In the following document, it is assumed is set as:
 export GPG_KEY_NAME="Alexey Pakseykin (insecure test fake public) <uvsmtid@gmail.com>"
 ```
 
+NOTE:
+Create `/etc/salt/gpgkeys` directory if it is not available:
+
+```
+sudo mkdir -p /etc/salt/gpgkeys
+sudo chmod 0700 /etc/salt/gpgkeys
+```
+
 *   [`insecure_public_key.gpg`][pub_key]
 
     The key was exported using this command:
 
     ```
-    gpg \
+    sudo gpg \
         --homedir /etc/salt/gpgkeys \
         --armor \
         --export "${GPG_KEY_NAME}" \
@@ -27,7 +35,7 @@ export GPG_KEY_NAME="Alexey Pakseykin (insecure test fake public) <uvsmtid@gmail
     ```
 
     In order to generate secrets/ciphers,
-    import the public key first (for current user):
+    import the public key first (for current regular user):
 
     ```
     gpg --import states/common/system_secrets/insecure_public_key.gpg
@@ -49,7 +57,7 @@ export GPG_KEY_NAME="Alexey Pakseykin (insecure test fake public) <uvsmtid@gmail
     the other private key:
 
     ```
-    gpg \
+    sudo gpg \
         --gen-key \
         --homedir /etc/salt/gpgkeys
     ```
@@ -61,7 +69,7 @@ export GPG_KEY_NAME="Alexey Pakseykin (insecure test fake public) <uvsmtid@gmail
     Once obtained, import the private on the Salt master using this command:
 
     ```
-    gpg \
+    sudo gpg \
         --homedir /etc/salt/gpgkeys \
         --allow-secret-key-import \
         --import private_key.gpg
@@ -71,7 +79,7 @@ export GPG_KEY_NAME="Alexey Pakseykin (insecure test fake public) <uvsmtid@gmail
     required private key deployed, run this command:
 
     ```
-    gpg \
+    sudo gpg \
         --homedir /etc/salt/gpgkeys \
         --armor \
         --export-secret-keys "${GPG_KEY_NAME}" \
@@ -85,7 +93,7 @@ Salt before `2015.8.3` requires installing Python GPG support.
 For example, on Fedora 24:
 
 ```
-dnf install python2-gnupg
+sudo dnf install python2-gnupg
 ```
 
 ---
