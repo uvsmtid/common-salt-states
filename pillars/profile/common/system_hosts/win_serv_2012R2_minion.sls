@@ -18,8 +18,12 @@ system_hosts:
         vagrant_instance_configuration:
             vagrant_provider: 'libvirt'
             base_image: 'uvsmtid/windows-server-2012-R2-gui'
-            memory_size: 2048
-            cpus_number: 2
+            domain_config:
+                memory: 2048
+                cpus: 2
+                video_type: qxl
+                disk_bus: ide
+                nic_model_type: rtl8139
 
         os_platform: rhel7
 

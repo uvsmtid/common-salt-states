@@ -24,8 +24,9 @@ system_hosts:
             #   - 'hansode/fedora-21-server-x86_64' # virtualbox
             #   - 'fedora:21' # docker
             base_image: 'fedora/24-cloud-base' # libvirt
-            memory_size: 2048
-            cpus_number: 2
+            domain_config:
+                memory: 2048
+                cpus: 2
 
         os_platform: fc24
 

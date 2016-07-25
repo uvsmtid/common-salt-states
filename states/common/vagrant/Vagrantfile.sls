@@ -113,8 +113,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # See libvirt configuration:
     #   https://github.com/pradels/vagrant-libvirt
     {{ selected_host_name }}.vm.provider :{{ instance_configuration['vagrant_provider'] }} do |{{ selected_host_name }}_domain|
-        {{ selected_host_name }}_domain.memory = {{ instance_configuration['memory_size'] }}
-        {{ selected_host_name }}_domain.cpus = {{ instance_configuration['cpus_number'] }}
+        {% for domain_property_name in instance_configuration['domain_config'].keys() %}
+        {{ selected_host_name }}_domain.{{ domain_property_name }} = '{{ instance_configuration['domain_config'][domain_property_name] }}'
+        {% endfor %}
     end
 
     {% set vagrant_bootstrap_use_case = pillar['system_features']['vagrant_configuration']['vagrant_bootstrap_use_case'] %}
