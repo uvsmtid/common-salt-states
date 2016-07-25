@@ -16,6 +16,8 @@ system_features:
         vagrant_box_publisher_role_content_symlink: '/var/www/html/vagrant_box_publisher_role/content'
 
         # Default location for content of vagrant box publisher (on `vagrant_box_publisher_role`).
+        # TODO: Instead of specifying absolute path here, specify resource_repository_id
+        #       which points to absolute path with content for this repository.
         vagrant_box_publisher_role_content_dir: '/home/vagrant_box_publisher_content'
 
         # NOTE: The structure of each value per key closely follows
@@ -36,6 +38,10 @@ system_features:
         #
         #           Instead, the values are directly derived from
         #           the specified `resource_id`.
+        #
+        # TODO: `resource_repository` of specified `resource_id` has to
+        #       match with `resource_repository` id specified in
+        #       (TODO: refactor) `vagrant_box_publisher_role_content_dir`.
         #
         # NOTE: Example of boxes to start with can be found in this repository:
         #           https://github.com/uvsmtid/vagrant-boxes

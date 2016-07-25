@@ -43,6 +43,8 @@ system_features:
         local_yum_mirrors_role_content_symlink: '/var/www/html/local_yum_mirrors_role/content'
 
         # Default location for local YUM repositories (on `local_yum_mirrors_role`).
+        # TODO: Instead of specifying absolute path here, specify resource_repository_id
+        #       which points to absolute path with content for this repository.
         local_yum_mirrors_role_content_dir: '/home/local_yum_mirrors'
 
         yum_repositories:
