@@ -70,6 +70,8 @@ include:
         'wildfly_deployments'
         ,
         'enable_primary_user_auto_login'
+        ,
+        'vagrant_box_publisher_configuration'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

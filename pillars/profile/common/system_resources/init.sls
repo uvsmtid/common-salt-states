@@ -14,6 +14,8 @@ include:
         'wildfly'
         ,
         'maven'
+        ,
+        'vagrant_boxes'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

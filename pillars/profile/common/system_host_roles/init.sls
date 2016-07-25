@@ -42,6 +42,8 @@ include:
         'wildfly_node_1_role'
         ,
         'wildfly_node_2_role'
+        ,
+        'vagrant_box_publisher_role'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

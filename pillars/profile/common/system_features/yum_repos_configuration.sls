@@ -36,13 +36,15 @@ system_features:
         # NOTE: URL is not specified.
         #       Instead, access to the repositories is done via root path
         #       of hostname associated with `local_yum_mirrors_role`, e.g.:
-        #           http://local_yum_mirrors_role/
+        #           http://local-yum-mirrors-role-host/
         # NOTE: Due to big content size, this directory is
-        #       actually be a symlink to special storage location
+        #       actually a symlink to special storage location
         #       identified by `local_yum_mirrors_role_content_dir`.
         local_yum_mirrors_role_content_symlink: '/var/www/html/local_yum_mirrors_role/content'
 
         # Default location for local YUM repositories (on `local_yum_mirrors_role`).
+        # TODO: Instead of specifying absolute path here, specify resource_repository_id
+        #       which points to absolute path with content for this repository.
         local_yum_mirrors_role_content_dir: '/home/local_yum_mirrors'
 
         yum_repositories:

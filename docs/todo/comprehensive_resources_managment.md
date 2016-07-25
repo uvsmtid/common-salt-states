@@ -49,6 +49,30 @@ requirements which can be uniformily consolidated.
 
 *   TODO:
 
+    There a couple of new resource repositories (in addition to
+    simply project specific):
+    *   vagrant boxes
+    *   yum mirrors
+    They both contain large amount of data (measured in GB).
+
+    It makes sense to define them through resource repositories,
+    for example, instead of specifying path directly in the related
+    configuration, they may specify resource repository id.
+
+*   TODO:
+
+    It is also pointless to keep overrides of each git repository
+    inside this file in pillars for each project.
+
+    ```
+    pillars/profile/common/system_features/resource_repositories_configuration.sls
+    ```
+
+    It just creates a nois of different configuratin.
+    There could be a better approach.
+
+*   TODO:
+
     See: https://github.com/uvsmtid/common-salt-states/issues/2
 
     *   `system_repositories` - support any type of repository:
