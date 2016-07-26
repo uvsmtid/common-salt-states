@@ -115,7 +115,7 @@ parent_repo_name: ~
 # with assigned IP within the primary network as long as they can reach
 # master from any of the networks they are in.
 primary_network:
-    network_name: primary_net
+    network_name: primary_network
     network_ip_subnet: 192.168.40.0
     # WARNING: netmask and prefix should be consistent
     #          (they define the same thing).
