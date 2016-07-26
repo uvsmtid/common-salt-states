@@ -78,6 +78,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 {% if selected_host['instantiated_by'] %}
 
+{% set os_type = pillar['system_platforms'][ selected_host['os_platform'] ]['os_type'] %}
 {% set instantiated_by = selected_host['instantiated_by'] %}
 {% set instance_configuration = selected_host[instantiated_by] %}
 {% set network_resolved_in = selected_host['resolved_in'] %}
@@ -146,6 +147,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     {{ selected_host_name }}.vm.provision "shell", inline: "{{ boostrap_cmd }}"
 
+    # NOTE: `rsync` is not available on Windows by default.
+    {% if os_type != "windows" %}
     # Use `rsync` for synced folder.
     # Parameter `--copy-unsafe-links` is required for bootstrap directory
     # which might be a symlink.
@@ -156,6 +159,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             "--delete",
             "--copy-unsafe-links",
         ]
+    {% endif %}
 
     # Disable default sync folder.
     {{ selected_host_name }}.vm.synced_folder '.', '/vagrant', disabled: true
