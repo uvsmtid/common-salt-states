@@ -32,6 +32,8 @@ system_hosts:
             domain_config:
                 memory: 2048
                 cpus: 2
+            vagrant_communicator:
+                communicator_type: ssh
 
         # NOTE: Fedora is fast-moving distribution.
         #       Select `fc22`, `fc23`, `fc24`, ...

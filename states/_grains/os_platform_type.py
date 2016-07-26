@@ -44,6 +44,9 @@ def provide_os_platform_type():
             return { 'os_platform_type': 'rh' + platform_id }
 
     elif platform.system() == 'Windows':
+        # TODO: Differentiate various version of windows.
+        #       See this issue:
+        #           https://github.com/uvsmtid/common-salt-states/issues/17
         return { 'os_platform_type': 'win7' }
 
 ###############################################################################

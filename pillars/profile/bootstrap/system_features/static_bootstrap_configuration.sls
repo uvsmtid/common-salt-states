@@ -25,8 +25,12 @@ system_features:
             {% endfor %}
 
             rhel5: tar.gz
+
             rhel7: tar.gz
+
             win7: zip
+
+            winserv2012: zip
 
         deploy_steps_params:
             init_ip_route:
@@ -105,6 +109,9 @@ system_features:
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
 
                     win7: {} # TODO
+
+                    winserv2012: {} # TODO
+
             install_salt_minion:
                 step_enabled: True
                 salt_minion_online_template: 'salt://common/salt/minion/minion.online.conf'
@@ -162,6 +169,9 @@ system_features:
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
 
                     win7: {} # TODO
+
+                    winserv2012: {} # TODO
+
             link_sources:
                 step_enabled: True
             link_resources:

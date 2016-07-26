@@ -98,6 +98,15 @@ vagrant_environment_variables_script:
         - mode: 555
         - template: jinja
 
+vagrant_wrapper_script:
+    file.managed:
+        - source: 'salt://common/vagrant/vagrant.sh'
+        - name: '{{ vagrant_dir }}/vagrant.sh'
+        - template: jinja
+        - mode: 755
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
+
 {% endif %} # virtual_machine_hypervisor_role
 
 {% endif %}

@@ -14,6 +14,8 @@ include:
         'rhel7'
         ,
         'win7'
+        ,
+        'winserv2012'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
