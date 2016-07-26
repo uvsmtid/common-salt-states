@@ -4,6 +4,10 @@
 # Define properties (they are loaded as values to the root of pillars):
 {% set props = pillar %}
 
+# Include other macros.
+{% set resources_macro_lib = 'common/system_secrets/lib.sls' %}
+{% from resources_macro_lib import get_single_line_system_secret with context %}
+
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
@@ -160,6 +164,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # per each VM. At the moment, it should only be configured per all
     # set of VMs (outside of individual configuration).
     #{{ selected_host_name }}.vm.provider = "{{ instance_configuration['vagrant_provider'] }}"
+
+    # NOTE: SSH is not available on Windows by default.
+    #       Setting specific Vagrant communicator (e.g. `ssh`, `winrm`, etc.).
+    {% set communicator_type = instance_configuration['vagrant_communicator']['communicator_type'] %}
+    {{ selected_host_name }}.vm.communicator = "{{ communicator_type }}"
+    {% if 'password_secret_id' in instance_configuration['vagrant_communicator'] %}
+    {{ selected_host_name }}.{{ communicator_type }}.password = "{{ get_single_line_system_secret(instance_configuration['vagrant_communicator']['password_secret_id']) }}"
+    {% endif %}
+    # Loop through keys ignoring those which are processed differently.
+    {% for communicator_param in instance_configuration['vagrant_communicator'].keys() %}
+    {% if communicator_param not in [
+            'password_secret_id',
+            'communicator_type',
+        ]
+    %}
+    {{ selected_host_name }}.{{ communicator_type }}.{{ communicator_param }} = "{{ instance_configuration['vagrant_communicator'][communicator_param] }}"
+    {% endif %}
+    {% endfor %}
 
 {% for vagrant_net_name in pillar['system_features']['vagrant_configuration']['vagrant_networks'].keys() %} # vagrant_networks
 # Vagrant configuration maps `vagrant_net_name` into system net name via `system_network`.

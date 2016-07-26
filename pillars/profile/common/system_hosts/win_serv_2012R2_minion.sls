@@ -24,6 +24,10 @@ system_hosts:
                 video_type: qxl
                 disk_bus: ide
                 nic_model_type: rtl8139
+            vagrant_communicator:
+                communicator_type: winrm
+                password_secret_id: windows_server_2012_R2_gui_1_0_0_box_administrator_password
+                username: 'Administrator'
 
         os_platform: winserv2012
 

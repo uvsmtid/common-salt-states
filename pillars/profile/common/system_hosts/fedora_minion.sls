@@ -27,6 +27,8 @@ system_hosts:
             domain_config:
                 memory: 2048
                 cpus: 2
+            vagrant_communicator:
+                communicator_type: ssh
 
         os_platform: fc24
 
