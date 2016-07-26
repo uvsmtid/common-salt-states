@@ -10,14 +10,7 @@ system_platforms:
 
     # NOTE: Fedora realeases are fast-rolling.
     #       Use the same platform definition file (while it makes sense).
-    {% for fedora_version in [
-            'rhel5'
-            ,
-            'rhel7'
-            ,
-            'win7'
-        ] + fedora_versions_list
-    %}
+    {% for fedora_version in fedora_versions_list %}
     {{ fedora_version }}:
         os_type: linux
     {% endfor %}
