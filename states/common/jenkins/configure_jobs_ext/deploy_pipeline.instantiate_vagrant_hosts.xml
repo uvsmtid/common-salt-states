@@ -67,16 +67,15 @@
 
         # Vagrant configuration maps `vagrant_net_name` into system net name via `system_network`.
         {% set vagrant_net_conf = pillar['system_features']['vagrant_configuration']['vagrant_networks'][vagrant_net_name] %}
-        {% set sys_net_name = vagrant_net_conf['system_network'] %}
-        {% set sys_net_conf = pillar['system_networks'][sys_net_name] %}
+        {% set sys_net_conf = pillar['system_networks'][vagrant_net_name] %}
 
         {% if vagrant_net_conf['enabled'] %} # enabled
 
         # NOTE: If host does not list this network,
         #       the network will silently be omitted.
-        {% if sys_net_name in selected_host['host_networks'] %} # host_networks
+        {% if vagrant_net_name in selected_host['host_networks'] %} # host_networks
 
-        {% if 'mac' in selected_host['host_networks'][sys_net_name] %} # mac
+        {% if 'mac' in selected_host['host_networks'][vagrant_net_name] %} # mac
 
         # Show XML configuration of the required network.
         # Normally, after initial creation via Vagrant,
@@ -105,14 +104,14 @@
             '{{ vagrant_net_name }}' \
             add \
             ip-dhcp-host \
-            "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" \
+            "&lt;host mac='{{ selected_host['host_networks'][vagrant_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][vagrant_net_name]['ip'] }}' /&gt;" \
             --current
         sudo virsh \
             net-update \
             '{{ vagrant_net_name }}' \
             modify \
             ip-dhcp-host \
-            "&lt;host mac='{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][sys_net_name]['ip'] }}' /&gt;" \
+            "&lt;host mac='{{ selected_host['host_networks'][vagrant_net_name]['mac']|lower }}' ip='{{ selected_host['host_networks'][vagrant_net_name]['ip'] }}' /&gt;" \
             --current
         set -e
 
@@ -123,7 +122,7 @@
 
         # Make sure MAC to IP mapping is present in the output.
         sudo virsh net-dumpxml '{{ vagrant_net_name }}' \
-            | grep '{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}.*{{ selected_host['host_networks'][sys_net_name]['ip'] }}'
+            | grep '{{ selected_host['host_networks'][vagrant_net_name]['mac']|lower }}.*{{ selected_host['host_networks'][vagrant_net_name]['ip'] }}'
 
         {% endif %} # mac
 

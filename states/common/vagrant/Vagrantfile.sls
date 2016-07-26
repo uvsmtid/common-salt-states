@@ -64,7 +64,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #       Instead, Vagrant treats this as some sort of "global" config
   #       and assigns this IP as additional to the first virtual host.
 {% set hypervisor_host_id = pillar['system_host_roles']['virtual_machine_hypervisor_role']['assigned_hosts'][0] %}
-  config.vm.network "public_network", ip: "{{ pillar['system_hosts'][hypervisor_host_id]['hosts_networks'][sys_net_name]['ip'] }}"
+  config.vm.network "public_network", ip: "{{ pillar['system_hosts'][hypervisor_host_id]['hosts_networks'][vagrant_net_name]['ip'] }}"
 {% endif %}
 
 {% set project_name = pillar['project_name'] %}
@@ -191,13 +191,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% for vagrant_net_name in pillar['system_features']['vagrant_configuration']['vagrant_networks'].keys() %} # vagrant_networks
 # Vagrant configuration maps `vagrant_net_name` into system net name via `system_network`.
 {% set vagrant_net_conf = pillar['system_features']['vagrant_configuration']['vagrant_networks'][vagrant_net_name] %}
-{% set sys_net_name = vagrant_net_conf['system_network'] %}
-{% set sys_net_conf = pillar['system_networks'][sys_net_name] %}
+{% set sys_net_conf = pillar['system_networks'][vagrant_net_name] %}
 {% if vagrant_net_conf['enabled'] %} # enabled
 
 # NOTE: If host does not list this network,
 #       the network will silently be omitted.
-{% if sys_net_name in selected_host['host_networks'] %} # host_networks
+{% if vagrant_net_name in selected_host['host_networks'] %} # host_networks
     {{ selected_host_name }}.vm.network :{{ vagrant_net_conf['vagrant_net_type'] }},
 
         {% if instance_configuration['vagrant_provider'] == 'libvirt' %}
@@ -208,12 +207,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :virtualbox__intnet => '{{ vagrant_net_name }}',
         {% endif %}
 
-        :ip => '{{ selected_host['host_networks'][sys_net_name]['ip'] }}',
+        :ip => '{{ selected_host['host_networks'][vagrant_net_name]['ip'] }}',
 
-        {% if 'mac' in selected_host['host_networks'][sys_net_name] %}
+        {% if 'mac' in selected_host['host_networks'][vagrant_net_name] %}
         # NOTE: Use lowercase due to current issue with Vagrant explained her:
         #           https://github.com/vagrant-libvirt/vagrant-libvirt/issues/312#issuecomment-229963533
-        :mac => '{{ selected_host['host_networks'][sys_net_name]['mac']|lower }}',
+        :mac => '{{ selected_host['host_networks'][vagrant_net_name]['mac']|lower }}',
         {% endif %}
 
         # TODO: How to configure netmask on `virtualbox`?
