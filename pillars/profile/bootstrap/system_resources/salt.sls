@@ -205,6 +205,16 @@ system_resources:
 
     {% endif %}
 
+    # Original Salt minion installer for Windows.
+    Salt-Minion-2015.5.11-AMD64-Setup.exe:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: bootstrap/salt
+        item_base_name: Salt-Minion-2015.5.11-AMD64-Setup.exe
+        item_content_hash: md5=666697105e366191b7668dbf76e29ddc
+
 ###############################################################################
 # EOF
 ###############################################################################
