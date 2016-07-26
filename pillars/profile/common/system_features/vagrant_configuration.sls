@@ -34,36 +34,33 @@ system_features:
         #
         #   See: http://docs.vagrantup.com/v2/networking/public_network.html
         #
+        # NOTE: Each key under `vagrant_networks` should match network name
+        #       under `system_networks` (to pull IP configuration).
         vagrant_networks:
 
-            vagrant_{{ primary_network['network_name'] }}:
+            {{ primary_network['network_name'] }}:
                 enabled: True
                 vagrant_net_type: 'private_network'
                 enable_dhcp: True
-                system_network: {{ primary_network['network_name'] }}
 
-            vagrant_internal_net_A:
+            internal_net_A:
                 enabled: True
                 vagrant_net_type: 'private_network'
                 enable_dhcp: True
-                system_network: internal_net_A
-            vagrant_internal_net_B:
+            internal_net_B:
                 enabled: True
                 vagrant_net_type: 'private_network'
                 enable_dhcp: True
-                system_network: internal_net_B
 
-            vagrant_external_net_A:
+            external_net_A:
                 enabled: False
                 vagrant_net_type: 'public_network'
                 enable_dhcp: True
-                system_network: external_net_A
                 host_bridge_interface: em1
-            vagrant_external_net_B:
+            external_net_B:
                 enabled: False
                 vagrant_net_type: 'public_network'
                 enable_dhcp: True
-                system_network: external_net_B
                 host_bridge_interface: em1
 
         vagrant_providers_configs:
