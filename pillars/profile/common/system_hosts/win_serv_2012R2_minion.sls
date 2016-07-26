@@ -25,7 +25,7 @@ system_hosts:
                 disk_bus: ide
                 nic_model_type: rtl8139
 
-        os_platform: rhel7
+        os_platform: winserv2012
 
         hostname: win-serv-2012R2-minion
         resolved_in: {{ primary_network['network_name'] }}
