@@ -130,6 +130,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #       platforms within a system, will there be multiple packages?
     #       The whole idea about bootstrap is to have single package
     #       per system instance.
+    {% set default_bootstrap_cmd = 'echo WARNING: No bootstrap package provided.' %}
     {% set package_type = pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][pillar['system_hosts'][selected_host_name]['os_platform']] %}
     {% if not pillar['system_features']['source_bootstrap_configuration']['generate_packages'] %} # generate_packages
     {% set src_sync_dir = bootstrap_dir_basename + '/targets/' + project_name + '/' + profile_name %}
@@ -137,11 +138,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     {% else %} # generate_packages
     {% set src_sync_dir = bootstrap_dir_basename + '/packages/' + project_name + '/' + profile_name %}
     {% if not package_type %} # package_type
-    {% set boostrap_cmd = 'false' %}
+    {% set boostrap_cmd = default_bootstrap_cmd %}
     {% elif package_type == 'tar.gz' %} # package_type
     {% set boostrap_cmd = 'tar -xzvf /vagrant/' + bootstrap_dir_basename + '/salt-auto-install.' + package_type + ' --directory=/vagrant/' + bootstrap_dir_basename + '/ ; python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # package_type
-    {% set boostrap_cmd = 'false' %}
+    {% set boostrap_cmd = default_bootstrap_cmd %}
     {% endif %} # package_type
     {% endif %} # generate_packages
 
