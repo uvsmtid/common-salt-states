@@ -8,6 +8,12 @@
 {% set resources_macro_lib = 'common/system_secrets/lib.sls' %}
 {% from resources_macro_lib import get_single_line_system_secret with context %}
 
+# Get IP address of first host assigned to `depository_role`.
+{% set depository_role_first_host = pillar['system_host_roles']['depository_role']['assigned_hosts'][0] %}
+{% set depository_role_first_host_network_resolved_in = pillar['system_hosts'][depository_role_first_host]['resolved_in'] %}
+{% set depository_role_first_host_ip = pillar['system_hosts'][depository_role_first_host]['host_networks'][depository_role_first_host_network_resolved_in]['ip'] %}
+{% set depository_role_hostname = pillar['system_host_roles']['depository_role']['hostname'] %}
+
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
@@ -137,8 +143,32 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     {% set boostrap_cmd = 'python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # generate_packages
     {% set src_sync_dir = bootstrap_dir_basename + '/packages/' + project_name + '/' + profile_name %}
-    {% if not package_type %} # package_type
-    {% set boostrap_cmd = default_bootstrap_cmd %}
+    {% if package_type == 'powershell' %} # package_type
+    # * Set name resolution for host assigned to depository role
+    #   so that virtual hosts configured on the web server
+    #   get selected correctly by the hostname.
+    #   See also:
+    #       http://stackoverflow.com/a/11353979/441652
+    # * Run download command.
+    #   NOTE: Command `wget` in PowerShell is too slow.
+    #   See also:
+    #       http://superuser.com/a/693179
+    # * Unzip the package.
+    {% set boostrap_cmd = '
+Set-PSDebug -Trace 1
+$ip = \\"' + depository_role_first_host_ip + '\\"
+$xhost = \\"' + depository_role_hostname + '\\"
+\\"`n`t{0}`t{1}\\" -f $ip, $xhost | out-file \\"$env:windir\\\\System32\\\\drivers\\\\etc\\\\hosts\\" -enc ascii -append
+cd $home
+$url = \\"http://$xhost/test.cygwin-offline.git.zip\\"
+# wget $url -OutFile cygwin-offline.git.zip
+$client = New-Object System.Net.WebClient
+$client.DownloadFile($url, \'cygwin-offline.git.zip\')
+Add-Type -A System.IO.Compression.FileSystem
+[IO.Compression.ZipFile]::ExtractToDirectory(\'cygwin-offline.git.zip\', \'.\')
+cmd.exe /c cygwin-offline.git\\\\install.cmd
+'
+    %}
     {% elif package_type == 'tar.gz' %} # package_type
     {% set boostrap_cmd = 'tar -xzvf /vagrant/' + bootstrap_dir_basename + '/salt-auto-install.' + package_type + ' --directory=/vagrant/' + bootstrap_dir_basename + '/ ; python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # package_type
