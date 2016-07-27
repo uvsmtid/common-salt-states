@@ -6,6 +6,9 @@
 system_secrets:
     # This is a password for "Administrator" user for Vagrant box registered
     # as resource id `windows-server-2012-R2-gui-1.0.0-box.tar.gz`.
+    # NOTE:
+    # After update to use `windows-server-2012-R2-gui-2.0.0-box.tar.gz`
+    # this secret is not required anymore.
     windows_server_2012_R2_gui_1_0_0_box_administrator_password: |
         -----BEGIN PGP MESSAGE-----
         Version: GnuPG v1

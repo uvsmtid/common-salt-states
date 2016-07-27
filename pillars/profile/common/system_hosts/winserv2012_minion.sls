@@ -21,13 +21,17 @@ system_hosts:
             domain_config:
                 memory: 2048
                 cpus: 2
+                #{# Use defaults with v2.0.0 of `windows-server-2012-R2-gui`.
                 video_type: qxl
                 disk_bus: ide
                 nic_model_type: rtl8139
+                #}#
             vagrant_communicator:
                 communicator_type: winrm
+                #{# Use defaults with v2.0.0 of `windows-server-2012-R2-gui`.
                 password_secret_id: windows_server_2012_R2_gui_1_0_0_box_administrator_password
                 username: 'Administrator'
+                #}#
 
         os_platform: winserv2012
 

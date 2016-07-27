@@ -74,10 +74,10 @@ system_features:
             uvsmtid/windows-server-2012-R2-gui:
                 description: https://github.com/uvsmtid/vagrant-boxes/tree/develop/windows-server-2012-R2-gui
                 versions:
-                -   version: 1.0.0
+                -   version: 2.0.0
                     providers:
                     -   name: libvirt
-                        resource_id: windows-server-2012-R2-gui-1.0.0-box.tar.gz
+                        resource_id: windows-server-2012-R2-gui-2.0.0-box.tar.gz
 
 ###############################################################################
 # EOF

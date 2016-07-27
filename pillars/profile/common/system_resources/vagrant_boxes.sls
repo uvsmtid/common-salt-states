@@ -45,7 +45,7 @@ system_resources:
 
     # See description:
     #     https://github.com/uvsmtid/vagrant-boxes/tree/develop/windows-server-2012-R2-gui
-    windows-server-2012-R2-gui-1.0.0-box.tar.gz:
+    windows-server-2012-R2-gui-2.0.0-box.tar.gz:
         # TODO: Define this repository in resource repositories:
         #         pillars/profile/common/system_features/resource_repositories_configuration.sls
         resource_repository: vagrant_boxes
@@ -53,8 +53,8 @@ system_resources:
         enable_content_validation: True
         enable_installation: True
         item_parent_dir_path: vagrant_boxes
-        item_base_name: windows-server-2012-R2-gui-1.0.0-box.tar.gz
-        item_content_hash: sha256=b00b972e91de705705efda424e5d18922959550c5f29e4a61c6e2748fc90ba88
+        item_base_name: windows-server-2012-R2-gui-2.0.0-box.tar.gz
+        item_content_hash: sha256=e497f4b70d22c8c8d4a5deceb73a58d8413b9e4519ad4b9bf274570e74514c3d
 
 ###############################################################################
 # EOF
