@@ -4,7 +4,6 @@
 
 {% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
 
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 
 wait_for_online_jenkins_master_{{ unique_suffix }}:

@@ -165,7 +165,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 Set-PSDebug -Trace 1
 
 # TODO: Fix the problem of changing directory.
-#       Make sure download is done into temporary `config_temp_dir`.
+#       Make sure download is done into temporary `get_salt_content_temp_dir()`.
 echo $home
 Get-Location
 Set-Location -Path $home

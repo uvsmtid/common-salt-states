@@ -1,11 +1,6 @@
 # Jenkins jobs configurations.
 
-{% if grains['kernel'] == 'Linux' %} # Linux
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %} # Linux
-{% if grains['kernel'] == 'Windows' %} # Windows
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %} # Windows
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 ###############################################################################
 # <<<
@@ -98,7 +93,7 @@ include:
 
 deploy_script_for_disabling_jobs:
     file.managed:
-        - name: '{{ config_temp_dir }}/jenkins/disable_jobs_missing_in_pillars.sh'
+        - name: '{{ get_salt_content_temp_dir() }}/jenkins/disable_jobs_missing_in_pillars.sh'
         - source: 'salt://common/jenkins/disable_jobs_missing_in_pillars.sh'
         - template: jinja
         - makedirs: True
@@ -106,7 +101,7 @@ deploy_script_for_disabling_jobs:
 
 disable_jobs_missing_in_pillars:
     cmd.run:
-        - name: '{{ config_temp_dir }}/jenkins/disable_jobs_missing_in_pillars.sh'
+        - name: '{{ get_salt_content_temp_dir() }}/jenkins/disable_jobs_missing_in_pillars.sh'
         - require:
             - cmd: download_jenkins_cli_jar
             - file: deploy_script_for_disabling_jobs

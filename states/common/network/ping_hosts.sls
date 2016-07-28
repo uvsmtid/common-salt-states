@@ -1,11 +1,6 @@
 # Ping all defined hosts.
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 {% from 'common/libs/host_config_queries.sls' import is_network_checks_allowed with context %}
 
@@ -13,7 +8,7 @@
 # <<<
 {% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
 
-'{{ config_temp_dir }}/ssh/ping_host.sh':
+'{{ get_salt_content_temp_dir() }}/ssh/ping_host.sh':
     file.managed:
         - source: salt://common/network/ping_host.sh
         - template: jinja
@@ -50,11 +45,11 @@
 #------------------------------------------------------------------------------
 '{{ case_name }}_ping_remote_hosts_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/ping_host.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}"'
+        - name: '{{ get_salt_content_temp_dir() }}/ssh/ping_host.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}"'
         {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: {{ local_account_conf['username'] }}
         - require:
-            - file: '{{ config_temp_dir }}/ssh/ping_host.sh'
+            - file: '{{ get_salt_content_temp_dir() }}/ssh/ping_host.sh'
 #------------------------------------------------------------------------------
 
 {% endif %}

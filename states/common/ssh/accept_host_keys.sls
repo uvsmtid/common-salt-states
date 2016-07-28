@@ -17,12 +17,7 @@
 #       regardless which host first set them up). This state runs from
 #       all hosts.
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 {% from 'common/libs/host_config_queries.sls' import is_network_checks_allowed with context %}
 
@@ -35,7 +30,7 @@
 include:
     - common.ssh
 
-'{{ config_temp_dir }}/ssh/accept_host_keys.sh':
+'{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh':
     file.managed:
         - source: salt://common/ssh/accept_host_keys.sh
         - template: jinja
@@ -60,7 +55,7 @@ include:
 
 {% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
 
-'{{ config_temp_dir }}\accept_host_keys.sh':
+'{{ get_salt_content_temp_dir() }}\accept_host_keys.sh':
     file.managed:
         - source: salt://common/ssh/accept_host_keys.sh
         - template: jinja
@@ -74,7 +69,7 @@ include:
         # characters as binary and skips conversion of the file.
         - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe --force "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh"'
         - require:
-            - file: '{{ config_temp_dir }}\accept_host_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
 
 {% endif %}
 # >>>
@@ -116,12 +111,12 @@ include:
 
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
+        - name: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: '{{ account_conf['username'] }}'
         - require:
             - sls: common.ssh
-            - file: '{{ config_temp_dir }}/ssh/accept_host_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh'
 
 {% endif %}
 # >>>
@@ -138,7 +133,7 @@ include:
         - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         - require:
             - sls: common.ssh
-            - file: '{{ config_temp_dir }}\accept_host_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
             - cmd: 'accept_host_keys_script_dos2unix'
 
 {% endif %}
@@ -188,12 +183,12 @@ include:
 
 '{{ case_name }}_{{ selected_role_name }}_{{ selected_host['hostname'] }}_accept_ssh_key_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
+        - name: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: '{{ account_conf['username'] }}'
         - require:
             - sls: common.ssh
-            - file: '{{ config_temp_dir }}/ssh/accept_host_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh'
 
 {% endif %}
 # >>>
@@ -210,7 +205,7 @@ include:
         - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         - require:
             - sls: common.ssh
-            - file: '{{ config_temp_dir }}\accept_host_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
             - cmd: 'accept_host_keys_script_dos2unix'
 
 {% endif %}
@@ -262,12 +257,12 @@ include:
 
 '{{ case_name }}_{{ hostname }}_{{ selected_host['username'] }}_accept_ssh_key_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
+        - name: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: '{{ account_conf['username'] }}'
         - require:
             - sls: common.ssh
-            - file: '{{ config_temp_dir }}/ssh/accept_host_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh'
 
 {% endif %}
 # >>>
@@ -284,7 +279,7 @@ include:
         - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         - require:
             - sls: common.ssh
-            - file: '{{ config_temp_dir }}\accept_host_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
             - cmd: 'accept_host_keys_script_dos2unix'
 
 {% endif %}

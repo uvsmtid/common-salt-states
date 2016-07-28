@@ -12,27 +12,28 @@
 {% from resources_macro_lib import get_registered_content_item_URI with context %}
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
+
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 {% set plugin_name = pillar['system_resources'][registered_content_item_id]['plugin_name'] %}
 
-'{{ config_temp_dir }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }}_{{ unique_suffix }}':
+'{{ get_salt_content_temp_dir() }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }}_{{ unique_suffix }}':
     file.managed:
-        - name: '{{ config_temp_dir }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }}'
+        - name: '{{ get_salt_content_temp_dir() }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }}'
         - source: {{ get_registered_content_item_URI(registered_content_item_id) }}
         - source_hash: {{ get_registered_content_item_hash(registered_content_item_id) }}
         - makedirs: True
 
 install_jenkins_{{ registered_content_item_id }}_{{ unique_suffix }}:
     cmd.run:
-        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ install-plugin {{ config_temp_dir }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }} -restart'
+        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ install-plugin {{ get_salt_content_temp_dir() }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }} -restart'
         - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ list-plugins {{ plugin_name }} | grep {{ plugin_name }}'
         - require:
 
             # Prerequisite provided by the calling state:
             - cmd: '{{ registered_content_item_id }}_jenkins_plugin_installation_prerequisite_{{ unique_suffix }}'
 
-            - file: '{{ config_temp_dir }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }}_{{ unique_suffix }}'
+            - file: '{{ get_salt_content_temp_dir() }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }}_{{ unique_suffix }}'
 
 # Wait until Jenkins master restarts.
 {% set unique_item_id = registered_content_item_id + unique_suffix %}

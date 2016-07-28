@@ -1,11 +1,6 @@
 # This installs Cygwin using pre-downloaded zip package file.
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 ###############################################################################
 # <<<
@@ -30,14 +25,14 @@ include:
 # Run cygwin installation:
 install_cygwin_package:
     cmd.run:
-        - name: 'cmd /c {{ config_temp_dir }}\cygwin.distrib\repo\installer\install_cygwin.cmd'
+        - name: 'cmd /c {{ get_salt_content_temp_dir() }}\cygwin.distrib\repo\installer\install_cygwin.cmd'
         - unless: 'dir {{ cygwin_installation_completion_file_indicator }}'
         - require:
-            - file: '{{ config_temp_dir }}\cygwin.distrib\repo\installer\install_cygwin.cmd'
+            - file: '{{ get_salt_content_temp_dir() }}\cygwin.distrib\repo\installer\install_cygwin.cmd'
             - cmd: unzip_cygwin_package
 
 # Patch cygwin installer script:
-'{{ config_temp_dir }}\cygwin.distrib\repo\installer\install_cygwin.cmd':
+'{{ get_salt_content_temp_dir() }}\cygwin.distrib\repo\installer\install_cygwin.cmd':
     file.managed:
         - source: 'salt://common/cygwin/package/install_cygwin.cmd'
         - template: jinja
@@ -48,11 +43,11 @@ install_cygwin_package:
 # Unzip cygwin package:
 unzip_cygwin_package:
     cmd.run:
-        - name: 'cmd /c {{ config_temp_dir }}\unzip_cygwin_package.bat'
-        - unless: 'cd {{ config_temp_dir }}\cygwin.distrib'
+        - name: 'cmd /c {{ get_salt_content_temp_dir() }}\unzip_cygwin_package.bat'
+        - unless: 'cd {{ get_salt_content_temp_dir() }}\cygwin.distrib'
         - require:
-            - file: '{{ config_temp_dir }}\{{ pillar['system_resources']['cygwin_package_64_bit_windows']['item_base_name'] }}'
-            - file: '{{ config_temp_dir }}\unzip_cygwin_package.bat'
+            - file: '{{ get_salt_content_temp_dir() }}\{{ pillar['system_resources']['cygwin_package_64_bit_windows']['item_base_name'] }}'
+            - file: '{{ get_salt_content_temp_dir() }}\unzip_cygwin_package.bat'
 
 # Set CYGWIN environment variable.
 # According to Cygwin:
@@ -64,7 +59,7 @@ set_CYGWIN_env_var_value:
         - name: 'setx -m CYGWIN "{{ CYGWIN_env_var_value }}"'
 
 # Script to unzip the package:
-'{{ config_temp_dir }}\unzip_cygwin_package.bat':
+'{{ get_salt_content_temp_dir() }}\unzip_cygwin_package.bat':
     file.managed:
         - source: 'salt://common/cygwin/package/unzip_cygwin_package.bat'
         - makedirs: True
@@ -75,7 +70,7 @@ set_CYGWIN_env_var_value:
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 
 # Archive:
-'{{ config_temp_dir }}\{{ pillar['system_resources']['cygwin_package_64_bit_windows']['item_base_name'] }}':
+'{{ get_salt_content_temp_dir() }}\{{ pillar['system_resources']['cygwin_package_64_bit_windows']['item_base_name'] }}':
     file.managed:
         - source: {{ get_registered_content_item_URI('cygwin_package_64_bit_windows') }}
         - source_hash: {{ get_registered_content_item_hash('cygwin_package_64_bit_windows') }}

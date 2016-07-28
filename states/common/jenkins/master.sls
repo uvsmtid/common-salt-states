@@ -2,12 +2,7 @@
 
 {% if grains['id'] in pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'] %} # jenkins_master_role
 
-{% if grains['kernel'] == 'Linux' %} # Linux
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %} # Linux
-{% if grains['kernel'] == 'Windows' %} # Windows
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %} # Windows
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 ###############################################################################
 # <<<
@@ -40,14 +35,14 @@ include:
 
 retrieve_jenkins_yum_repository_key:
     file.managed:
-        - name: '{{ config_temp_dir }}/jenkins/jenkins-ci.org.key'
+        - name: '{{ get_salt_content_temp_dir() }}/jenkins/jenkins-ci.org.key'
         - source: {{ get_registered_content_item_URI('jenkins_yum_repository_rpm_verification_key') }}
         - source_hash: {{ get_registered_content_item_hash('jenkins_yum_repository_rpm_verification_key') }}
         - makedirs: True
 
 import_jenkins_yum_repository_key:
     cmd.run:
-        - name: 'rpm --import {{ config_temp_dir }}/jenkins/jenkins-ci.org.key'
+        - name: 'rpm --import {{ get_salt_content_temp_dir() }}/jenkins/jenkins-ci.org.key'
         - require:
             - file: retrieve_jenkins_yum_repository_key
 
@@ -73,14 +68,14 @@ jenkins_rpm_package:
 
 retrieve_jenkins_rpm_package:
     file.managed:
-        - name: '{{ config_temp_dir }}/jenkins/jenkins.rpm'
+        - name: '{{ get_salt_content_temp_dir() }}/jenkins/jenkins.rpm'
         - source: {{ get_registered_content_item_URI('jenkins_pre_downloaded_rpm') }}
         - source_hash: {{ get_registered_content_item_hash('jenkins_pre_downloaded_rpm') }}
         - makedirs: True
 
 jenkins_rpm_package:
     cmd.run:
-        - name: 'yum install -y {{ config_temp_dir }}/jenkins/jenkins.rpm'
+        - name: 'yum install -y {{ get_salt_content_temp_dir() }}/jenkins/jenkins.rpm'
         # NOTE: Do not reinstall jenkins (if exists).
         - unless: 'rpm -qi jenkins'
         - require:

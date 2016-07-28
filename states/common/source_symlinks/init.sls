@@ -4,6 +4,8 @@
 # <<<
 {% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %} # OS
 
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
+
 # This state can either be run on Salt master or Salt minion in
 # case of `offline-minion-installer` `bootstrap_mode`.
 {% set bootstrap_mode = salt['pillar.get']('bootstrap_mode', '') %}
@@ -16,9 +18,7 @@
 # Ensure links exist and point to the source repository on Salt master.
 {% if pillar['system_features']['source_symlinks_configuration']['feature_enabled'] %} # source_symlinks_configuration
 
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-
-'{{ config_temp_dir }}/ensure_source_link.sh':
+'{{ get_salt_content_temp_dir() }}/ensure_source_link.sh':
     file.managed:
         - source: salt://common/source_symlinks/ensure_source_link.sh
         #- template: jinja
@@ -73,9 +73,9 @@
 
 ensure_source_link_{{ link_config_name }}_cmd:
     cmd.run:
-        - name: '{{ config_temp_dir }}/ensure_source_link.sh "{{ local_path }}" "{{ link_config['abs_link_base_path'] }}" "{{ link_config['rel_target_path'] }}"'
+        - name: '{{ get_salt_content_temp_dir() }}/ensure_source_link.sh "{{ local_path }}" "{{ link_config['abs_link_base_path'] }}" "{{ link_config['rel_target_path'] }}"'
         - require:
-            - file: '{{ config_temp_dir }}/ensure_source_link.sh'
+            - file: '{{ get_salt_content_temp_dir() }}/ensure_source_link.sh'
             - file: '{{ local_path }}_{{ link_config_name }}'
 
 {% else %} # source_system_host
