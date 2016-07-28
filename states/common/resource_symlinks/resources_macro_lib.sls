@@ -65,7 +65,7 @@
     )
 -%}
 
-{{- get_registered_content_item_parent_dir_path(registered_content_item_id, pillar) -}}
+{{- get_registered_content_item_parent_dir_path_from_pillar(registered_content_item_id, pillar) -}}
 
 {%- endmacro -%}
 
@@ -93,7 +93,7 @@
     )
 -%}
 
-{{- get_registered_content_item_rel_path(registered_content_item_id, pillar) -}}
+{{- get_registered_content_item_rel_path_from_pillar(registered_content_item_id, pillar) -}}
 
 {%- endmacro -%}
 
