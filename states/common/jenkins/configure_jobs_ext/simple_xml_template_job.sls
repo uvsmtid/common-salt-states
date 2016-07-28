@@ -23,6 +23,8 @@
 
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 
+{% from 'common/libs/utils.lib.sls' import get_posix_salt_content_temp_dir with context %}
+
 # NOTE: At the moment (and it is probably right) only single host is selected
 #       from only first listed role.
 #       Basically, it means that the job can only be assigned to single host.
@@ -38,7 +40,7 @@
 {% set URI_prefix = pillar['system_features']['deploy_central_control_directory']['URI_prefix'] %}
 
 # Put job configuration:
-'{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml':
+'{{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.job.config.{{ job_name }}.xml':
     file.managed:
         - source: 'salt://{{ job_config['job_config_data']['xml_config_template'] }}'
         - template: jinja
@@ -84,24 +86,24 @@ managed_{{ job_name }}_job_environment_variables_file:
 # TODO: Make it a common macro for `simple_xml_template_job.sls` and `promotable_xml_template_job.sls`.
 add_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-job {{ job_name }}"
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
+        - name: "cat {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-job {{ job_name }}"
+        - unless: "java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
         - require:
             - cmd: download_jenkins_cli_jar
-            - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml'
+            - file: '{{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.job.config.{{ job_name }}.xml'
 
 # Update job configuration.
 # TODO: Make it a common macro for `simple_xml_template_job.sls` and `promotable_xml_template_job.sls`.
 # The update won't happen (it will be the same) if job has just been created.
 update_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-job {{ job_name }}"
+        - name: "cat {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.job.config.{{ job_name }}.xml | java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-job {{ job_name }}"
 {% if not pillar['system_features']['configure_jenkins']['rewrite_jenkins_configuration_for_jobs'] %}
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
+        - unless: "java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
 {% endif %}
         - require:
             - cmd: download_jenkins_cli_jar
-            - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ job_name }}.xml'
+            - file: '{{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.job.config.{{ job_name }}.xml'
             - cmd: add_{{ job_name }}_job_configuration_to_jenkins
 
 {% endif %} # length

@@ -13,6 +13,7 @@
 {% from resources_macro_lib import get_registered_content_item_hash with context %}
 
 {% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
+{% from 'common/libs/utils.lib.sls' import get_posix_salt_content_temp_dir with context %}
 
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 {% set plugin_name = pillar['system_resources'][registered_content_item_id]['plugin_name'] %}
@@ -26,8 +27,8 @@
 
 install_jenkins_{{ registered_content_item_id }}_{{ unique_suffix }}:
     cmd.run:
-        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ install-plugin {{ get_salt_content_temp_dir() }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }} -restart'
-        - unless: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ list-plugins {{ plugin_name }} | grep {{ plugin_name }}'
+        - name: 'java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ install-plugin {{ get_salt_content_temp_dir() }}/{{ pillar['system_resources'][registered_content_item_id]['item_base_name'] }} -restart'
+        - unless: 'java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ list-plugins {{ plugin_name }} | grep {{ plugin_name }}'
         - require:
 
             # Prerequisite provided by the calling state:
