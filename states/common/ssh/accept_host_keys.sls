@@ -21,6 +21,8 @@
 
 {% from 'common/libs/host_config_queries.sls' import is_network_checks_allowed with context %}
 
+{% from 'common/libs/utils.lib.sls' import get_windows_salt_content_temp_dir_cygwin with context %}
+
 {% if pillar['system_features']['initialize_ssh_connections']['feature_enabled'] %}
 
 ###############################################################################
@@ -67,7 +69,7 @@ include:
     cmd.run:
         # The `--force` option is requred because `dos2unix` may identify some
         # characters as binary and skips conversion of the file.
-        - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe --force "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh"'
+        - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe --force "{{ get_windows_salt_content_temp_dir_cygwin() }}/accept_host_keys.sh"'
         - require:
             - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
 
@@ -130,7 +132,7 @@ include:
     cmd.run:
         # The script file potentially does not have execute permissions.
         # Execute through bash-interpreter.
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ get_windows_salt_content_temp_dir_cygwin() }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         - require:
             - sls: common.ssh
             - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
@@ -202,7 +204,7 @@ include:
     cmd.run:
         # The script file potentially does not have execute permissions.
         # Execute through bash-interpreter.
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ get_windows_salt_content_temp_dir_cygwin() }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         - require:
             - sls: common.ssh
             - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
@@ -276,7 +278,7 @@ include:
     cmd.run:
         # The script file potentially does not have execute permissions.
         # Execute through bash-interpreter.
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ pillar['windows_config_temp_dir_cygwin'] }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ get_windows_salt_content_temp_dir_cygwin() }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         - require:
             - sls: common.ssh
             - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'

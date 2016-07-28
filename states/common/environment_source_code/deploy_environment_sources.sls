@@ -13,7 +13,8 @@ include:
 {% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 {% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
-{% set windows_config_temp_dir_cygwin = pillar['windows_config_temp_dir_cygwin'] %}
+
+{% from 'common/libs/utils.lib.sls' import get_windows_salt_content_temp_dir_cygwin with context %}
 
 {% if pillar['system_features']['deploy_environment_sources']['feature_enabled'] %}
 
@@ -105,7 +106,7 @@ convert_passwordless_ssh_config_file_to_unix_line_endings:
         - name: 'bash -c "/usr/bin/python {{ control_scripts_dir_basename }}/init.py --skip_branch_control -j environment_sources -l debug -c file://{{ path_to_sources_cygwin }}/control/conf/"'
         - cwd: '{{ path_to_sources }}'
         - env:
-            - GIT_SSH: '{{ windows_config_temp_dir_cygwin }}/passwordless_ssh_config.sh'
+            - GIT_SSH: '{{ get_windows_salt_content_temp_dir_cygwin() }}/passwordless_ssh_config.sh'
 {% endif %}
         - require:
             - sls: common.json_for_python
