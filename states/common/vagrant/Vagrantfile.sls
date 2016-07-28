@@ -14,6 +14,11 @@
 {% set depository_role_first_host_ip = pillar['system_hosts'][depository_role_first_host]['host_networks'][depository_role_first_host_network_resolved_in]['ip'] %}
 {% set depository_role_hostname = pillar['system_host_roles']['depository_role']['hostname'] %}
 
+# Access to Cygwin package inside bootstrap package.
+{% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
+{% from resources_macro_lib import get_registered_content_item_rel_path_windows with context %}
+{% set cygwin_resource_id = 'bootstrap_cygwin_package_64_bit_windows' %}
+
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
@@ -155,19 +160,52 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #   See also:
     #       http://superuser.com/a/693179
     # * Unzip the package.
+    {% set bootstrap_dir_basename_cygwin = "/cygdrive/c/Windows/System32/salt-auto-install" %}
     {% set boostrap_cmd = '
 Set-PSDebug -Trace 1
+
+# TODO: Fix the problem of changing directory.
+#       Make sure download is done into temporary `config_temp_dir`.
+echo $home
+Get-Location
+Set-Location -Path $home
+Get-Location
+
+# Add entry to the hosts file.
 $ip = \\"' + depository_role_first_host_ip + '\\"
 $xhost = \\"' + depository_role_hostname + '\\"
 \\"`n`t{0}`t{1}\\" -f $ip, $xhost | out-file \\"$env:windir\\\\System32\\\\drivers\\\\etc\\\\hosts\\" -enc ascii -append
-cd $home
-$url = \\"http://$xhost/test.cygwin-offline.git.zip\\"
-# wget $url -OutFile cygwin-offline.git.zip
+
+# Download bootstrap package.
+# TODO: Formalize this location and make sure bootstrap package is
+#       ready on `depository_role_hostname` to be downloaded.
+$bootstrap_package_name=\\"salt-auto-install.' + package_type + '\\"
+$url = \\"http://$xhost/$bootstrap_package_name\\"
+# DO NOT use `wget` - it downloads 100X slower.
+#wget $url -OutFile $bootstrap_package_name
 $client = New-Object System.Net.WebClient
-$client.DownloadFile($url, \'cygwin-offline.git.zip\')
+$client.DownloadFile($url, \\"$bootstrap_package_name\\")
+
+# Unpack bootstrap package.
 Add-Type -A System.IO.Compression.FileSystem
-[IO.Compression.ZipFile]::ExtractToDirectory(\'cygwin-offline.git.zip\', \'.\')
-cmd.exe /c cygwin-offline.git\\\\install.cmd
+[IO.Compression.ZipFile]::ExtractToDirectory(\\"$bootstrap_package_name\\", \'salt-auto-install\')
+
+# Unpack Cygwin package.
+$cygwin_package_name=\\"salt-auto-install\\\\resources\\\\depository\\\\' + project_name + '\\\\' + profile_name + '\\\\' + get_registered_content_item_rel_path_windows(cygwin_resource_id)|replace("\\", "\\\\") + '\\"
+Add-Type -A System.IO.Compression.FileSystem
+[IO.Compression.ZipFile]::ExtractToDirectory(\\"$cygwin_package_name\\", \'.\')
+
+# Run Cygwin installation script.
+$cygwin_offline_dirname = \\"cygwin-offline.git\\"
+cmd.exe /c $cygwin_offline_dirname\\\\install.cmd
+
+# Initialize Cygwin shell.
+# TODO: Move this step into `cygwin-offline` package.
+echo $path
+cmd.exe /c C:\\\\cygwin64\\\\bin\\\\mintty -
+
+# Run bootstrap script.
+cmd.exe /c C:\\\\cygwin64\\\\bin\\\\bash -c \\"/usr/bin/python ' + bootstrap_dir_basename_cygwin + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py\\"
 '
     %}
     {% endif %} # os_type
