@@ -9,12 +9,7 @@
 
 {% if grains['id'] in pillar['system_host_roles'][maven_repository_manager_role]['assigned_hosts'] %}
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 ###############################################################################
 # <<<
@@ -36,7 +31,7 @@
 
 download_nexus_archive:
     file.managed:
-        - name: '{{ config_temp_dir }}/nexus/nexus-bundle.tar.gz'
+        - name: '{{ get_salt_content_temp_dir() }}/nexus/nexus-bundle.tar.gz'
         - source: {{ get_registered_content_item_URI('nexus_maven_repository_manager') }}
         - source_hash: {{ get_registered_content_item_hash('nexus_maven_repository_manager') }}
         - makedirs: True
@@ -51,7 +46,7 @@ ensure_nexus_parent_deployment_dir:
 
 extract_nexus_archive:
     cmd.run:
-        - name: 'tar -xvf "{{ config_temp_dir }}/nexus/nexus-bundle.tar.gz"'
+        - name: 'tar -xvf "{{ get_salt_content_temp_dir() }}/nexus/nexus-bundle.tar.gz"'
         - cwd: '/usr/local'
         - unless: 'ls -ld /usr/local/nexus-{{ pillar['system_resources']['nexus_maven_repository_manager']['nexus_bundle_version_infix'] }}'
         - require:

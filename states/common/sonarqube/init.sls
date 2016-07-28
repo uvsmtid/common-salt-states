@@ -3,11 +3,11 @@
 include:
     - common.mariadb
 
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
+
 ###############################################################################
 # <<<
 {% if grains['os_platform_type'].startswith('fc') or grains['os_platform_type'].startswith('rhel7') %}
-
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
 
 # NOTE: Due to issues with some other Sonarqube versions,
 #       the decision is to use specific version and
@@ -56,14 +56,14 @@ ensure_sonar_package:
 
 retrieve_sonar_rpm_package:
     file.managed:
-        - name: '{{ config_temp_dir }}/sonar/sonar.rpm'
+        - name: '{{ get_salt_content_temp_dir() }}/sonar/sonar.rpm'
         - source: {{ get_registered_content_item_URI('sonar_pre_downloaded_rpm') }}
         - source_hash: {{ get_registered_content_item_hash('sonar_pre_downloaded_rpm') }}
         - makedirs: True
 
 sonar_package:
     cmd.run:
-        - name: 'yum install -y {{ config_temp_dir }}/sonar/sonar.rpm'
+        - name: 'yum install -y {{ get_salt_content_temp_dir() }}/sonar/sonar.rpm'
         # NOTE: Do not reinstall sonar (if exists).
         - unless: 'rpm -qi sonar'
         - require:
@@ -74,7 +74,7 @@ sonar_package:
 # Deploy SonarQube init script
 deploy_sonarqube_database_init_script:
     file.managed:
-        - name: '{{ config_temp_dir }}/sonar_init.sql'
+        - name: '{{ get_salt_content_temp_dir() }}/sonar_init.sql'
         - source: 'salt://common/sonarqube/sonar_init.sql'
         - template: jinja
         - makedirs: True
@@ -97,7 +97,7 @@ run_sonarqube_database_create:
         #          (otherwise it will repeatedly overwrite existing history).
         # NOTE: This requires mariadb fresh installation
         #       (when passord is not yet set).
-        - name: "mysql -u root < {{ config_temp_dir }}/sonar_init.sql"
+        - name: "mysql -u root < {{ get_salt_content_temp_dir() }}/sonar_init.sql"
 
         # NOTE: User should manually drop DB in order for this script to run.
         #       Unless to check for existing database.

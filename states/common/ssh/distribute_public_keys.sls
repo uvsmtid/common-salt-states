@@ -16,12 +16,7 @@
 # utility is used:
 #   http://stackoverflow.com/a/20748503/441652
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 {% set system_secrets_macro_lib = 'common/system_secrets/lib.sls' %}
 {% from system_secrets_macro_lib import get_single_line_system_secret with context %}
@@ -52,7 +47,7 @@ package_sshpass:
         - name: sshpass
         - aggregate: True
 
-'{{ config_temp_dir }}/ssh/distribute_public_keys.sh':
+'{{ get_salt_content_temp_dir() }}/ssh/distribute_public_keys.sh':
     file.managed:
         - source: salt://common/ssh/distribute_public_keys.sh
         - template: jinja
@@ -99,7 +94,7 @@ package_sshpass:
 # Distribute the key:
 '{{ case_name }}_place_public_key_on_remote_account_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
+        - name: '{{ get_salt_content_temp_dir() }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
         {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: {{ local_account_conf['username'] }}
         # Pass `password_value` in environment variable (`SSHPASS` according to `sshpass` documentation).
@@ -107,7 +102,7 @@ package_sshpass:
             - SSHPASS: '{{ selected_account['password_value'] }}'
         - require:
             - pkg: package_sshpass
-            - file: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}/ssh/distribute_public_keys.sh'
 #------------------------------------------------------------------------------
 
 {% endif %}
@@ -148,7 +143,7 @@ package_sshpass:
 # Distribute the key:
 '{{ case_name }}_place_public_key_on_remote_account_{{ selected_role_name }}_{{ selected_account['hostname'] }}_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
+        - name: '{{ get_salt_content_temp_dir() }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
         {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: {{ local_account_conf['username'] }}
         # Pass `password_value` in environment variable (`SSHPASS` according to `sshpass` documentation).
@@ -156,7 +151,7 @@ package_sshpass:
             - SSHPASS: '{{ selected_account['password_value'] }}'
         - require:
             - pkg: package_sshpass
-            - file: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}/ssh/distribute_public_keys.sh'
 #------------------------------------------------------------------------------
 
 {% endfor %} # Inner loop of 2.
@@ -199,7 +194,7 @@ package_sshpass:
 # Distribute the key:
 '{{ case_name }}_place_public_key_on_remote_account_{{ selected_account['hostname'] }}_{{ selected_account['username'] }}_cmd':
     cmd.run:
-        - name: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
+        - name: '{{ get_salt_content_temp_dir() }}/ssh/distribute_public_keys.sh "{{ selected_account['hostname'] }}" "{{ selected_account['username'] }}" "{{ os_type }}"'
         {% set local_account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: {{ local_account_conf['username'] }}
         # Pass `password_value` in environment variable (`SSHPASS` according to `sshpass` documentation).
@@ -207,7 +202,7 @@ package_sshpass:
             - SSHPASS: '{{ selected_account['password_value'] }}'
         - require:
             - pkg: package_sshpass
-            - file: '{{ config_temp_dir }}/ssh/distribute_public_keys.sh'
+            - file: '{{ get_salt_content_temp_dir() }}/ssh/distribute_public_keys.sh'
 #------------------------------------------------------------------------------
 
 {% endfor %} # Inner loop of 5.

@@ -7,12 +7,7 @@
     )
 %}
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 {% set je_config = pillar['system_features']['java_environments_configuration']['java_environments'][java_environment_id] %}
 
@@ -39,14 +34,14 @@
 
 download_rpm_package_{{ java_environment_id }}_{{ rpm_source_name }}:
     file.managed:
-        - name: '{{ config_temp_dir }}/{{ content_item_conf['item_base_name'] }}'
+        - name: '{{ get_salt_content_temp_dir() }}/{{ content_item_conf['item_base_name'] }}'
         - source: {{ get_registered_content_item_URI(rpm_source_conf['resource_id']) }}
         - source_hash: {{ get_registered_content_item_hash(rpm_source_conf['resource_id']) }}
         - makedirs: True
 
 run_rpm_command_{{ java_environment_id }}_{{ rpm_source_name }}:
     cmd.run:
-        - name: 'rpm -ihv {{ rpm_options }} "{{ config_temp_dir }}/{{ content_item_conf['item_base_name'] }}"'
+        - name: 'rpm -ihv {{ rpm_options }} "{{ get_salt_content_temp_dir() }}/{{ content_item_conf['item_base_name'] }}"'
         # NOTE: Some packages are internally named differently based on the target platform.
         - unless: 'rpm -qi {{ rpm_version }}'
         - require:

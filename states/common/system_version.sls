@@ -1,17 +1,12 @@
 # Deploy file specifying current system version.
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 {% if grains['kernel'] == 'Linux' %}
-'{{ config_temp_dir }}/system_version':
+'{{ get_salt_content_temp_dir() }}/system_version':
 {% endif %}
 {% if grains['kernel'] == 'Windows' %}
-'{{ config_temp_dir }}\system_version':
+'{{ get_salt_content_temp_dir() }}\system_version':
 {% endif %}
     file.managed:
         - makedirs: True

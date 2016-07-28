@@ -17,11 +17,13 @@ include:
 
 {% from 'common/jenkins/wait_for_online_master.sls' import wait_for_online_jenkins_master_macro with context %}
 
+{% from 'common/libs/utils.lib.sls' import get_posix_salt_content_temp_dir with context %}
+
 {% set jenkins_http_port = pillar['system_features']['configure_jenkins']['jenkins_http_port'] %}
 
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 
-'{{ pillar['posix_config_temp_dir'] }}/jenkins':
+'{{ get_posix_salt_content_temp_dir() }}/jenkins':
     file.directory:
         - makedirs: True
         - sls: common.wget

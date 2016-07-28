@@ -1,12 +1,5 @@
 # Install default Java environments.
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
-
 # Import generic template for Jenkins plugin installation.
 {% from 'common/java/java_environments.lib.sls' import install_java_environment with context %}
 

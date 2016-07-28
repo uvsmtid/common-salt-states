@@ -7,7 +7,7 @@
     )
 -%}
 
-{%- set resource_symlink = target_env_pillar['posix_config_temp_dir'] + '/repositories/' + 'all' %}
+{%- set resource_symlink = target_env_pillar['posix_salt_content_temp_dir'] + '/repositories/' + 'all' %}
 
 {{- resource_symlink -}}
 
