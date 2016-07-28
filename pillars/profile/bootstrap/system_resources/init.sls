@@ -10,6 +10,8 @@ include:
         'salt'
         ,
         'dependencies'
+        ,
+        'cygwin'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
