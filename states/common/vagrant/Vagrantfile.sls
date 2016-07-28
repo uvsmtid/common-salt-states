@@ -143,7 +143,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     {% set boostrap_cmd = 'python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # generate_packages
     {% set src_sync_dir = bootstrap_dir_basename + '/packages/' + project_name + '/' + profile_name %}
-    {% if package_type == 'powershell' %} # package_type
+    {% if package_type == 'zip' %} # package_type
+    {% if os_type == "windows" %}
     # * Set name resolution for host assigned to depository role
     #   so that virtual hosts configured on the web server
     #   get selected correctly by the hostname.
@@ -169,6 +170,7 @@ Add-Type -A System.IO.Compression.FileSystem
 cmd.exe /c cygwin-offline.git\\\\install.cmd
 '
     %}
+    {% endif %} # os_type
     {% elif package_type == 'tar.gz' %} # package_type
     {% set boostrap_cmd = 'tar -xzvf /vagrant/' + bootstrap_dir_basename + '/salt-auto-install.' + package_type + ' --directory=/vagrant/' + bootstrap_dir_basename + '/ ; python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # package_type

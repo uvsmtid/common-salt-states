@@ -28,9 +28,9 @@ system_features:
 
             rhel7: tar.gz
 
-            win7: powershell
+            win7: zip
 
-            winserv2012: powershell
+            winserv2012: zip
 
         deploy_steps_params:
             init_ip_route:

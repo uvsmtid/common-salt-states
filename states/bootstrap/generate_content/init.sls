@@ -131,12 +131,18 @@ req_file_{{ requisite_config_file_id }}_create_package_archive:
     cmd.run:
 {% set package_type = target_env_pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][target_env_pillar['system_hosts'][selected_host_name]['os_platform']] %}
 {% if not package_type %} # package_type
+        - name: 'echo "WARNING: package type is not specified - no package was generated"'
 {% elif package_type == 'tar.gz' %} # package_type
-        # Pack targets directories.
+        # Pack targets directories using `tar`.
         - name: 'tar -cvzf {{ bootstrap_dir }}/packages/{{ project_name }}/{{ profile_name }}/salt-auto-install.{{ package_type }} .'
         - cwd: '{{ bootstrap_dir }}/targets/{{ project_name }}/{{ profile_name }}'
-{% else %} # package_type
-        - name: 'echo "unsupported package type - no package was generated"'
+{% elif package_type == 'zip' %} # package_type
+        # Pack targets directories using `zip`.
+        - name: 'zip -r {{ bootstrap_dir }}/packages/{{ project_name }}/{{ profile_name }}/salt-auto-install.{{ package_type }} .'
+        - cwd: '{{ bootstrap_dir }}/targets/{{ project_name }}/{{ profile_name }}'
+{% else %} # package_typer
+        # FAIL if package type is not recognized.
+        - name: '{{ UNSUPPORTED_PACKAGE_TYPE }}'
 {% endif %} # package_type
 
 {% endif %} # generate_packages
