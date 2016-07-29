@@ -106,11 +106,13 @@ req_file_{{ requisite_config_file_id }}:
 
 {% endfor %} # deploy_step
 
+{% endfor %} # selected_host_name
+
 # Copy scripts content per each project_name and profile_name.
-req_file_{{ requisite_config_file_id }}_modules_copy_script_to_packages:
+req_file_{{ target_contents_dir }}_modules_copy_script_to_packages:
     cmd.run:
         - name: 'rsync -avp {{ bootstrap_dir }}/modules/ {{ target_contents_dir }}/modules/'
-req_file_{{ requisite_config_file_id }}_bootstrap.py_copy_script_to_packages:
+req_file_{{ target_contents_dir }}_bootstrap.py_copy_script_to_packages:
     cmd.run:
         - name: 'rsync -avp {{ bootstrap_dir }}/bootstrap.py {{ target_contents_dir }}/bootstrap.py'
 
@@ -118,7 +120,7 @@ req_file_{{ requisite_config_file_id }}_bootstrap.py_copy_script_to_packages:
 {% if pillar['system_features']['source_bootstrap_configuration']['generate_packages'] %} # generate_packages
 
 # Create destination package directory.
-req_file_{{ requisite_config_file_id }}_create_package_directory:
+req_file_{{ target_contents_dir }}_create_package_directory:
     file.directory:
         - name: '{{ bootstrap_dir }}/packages/{{ project_name }}/{{ profile_name }}'
         - makedirs: True
@@ -126,28 +128,56 @@ req_file_{{ requisite_config_file_id }}_create_package_directory:
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['primary_group'] }}'
 
-# Pack target directories depending on the package type.
-req_file_{{ requisite_config_file_id }}_create_package_archive:
-    cmd.run:
+# Optimization: remove bootstrap packages and generate only if absent.
+{% for selected_host_name in target_env_pillar['system_hosts'].keys() %} # selected_host_name
 {% set package_type = target_env_pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][target_env_pillar['system_hosts'][selected_host_name]['os_platform']] %}
+{% set result_file = bootstrap_dir + '/packages/' + project_name + '/' + profile_name + '/salt-auto-install.' + package_type %}
+bootstrap_package_{{ target_contents_dir }}_remove_package_archive_{{ selected_host_name }}_{{ package_type }}:
+    cmd.run:
 {% if not package_type %} # package_type
-        - name: 'echo "WARNING: package type is not specified - no package was generated"'
+        - name: 'echo "WARNING: package type is not specified - no package was removed"'
 {% elif package_type == 'tar.gz' %} # package_type
-        # Pack targets directories using `tar`.
-        - name: 'tar -cvzf {{ bootstrap_dir }}/packages/{{ project_name }}/{{ profile_name }}/salt-auto-install.{{ package_type }} .'
+        - name: 'rm -rf {{ result_file }}'
         - cwd: '{{ bootstrap_dir }}/targets/{{ project_name }}/{{ profile_name }}'
 {% elif package_type == 'zip' %} # package_type
-        # Pack targets directories using `zip`.
-        - name: 'zip -r {{ bootstrap_dir }}/packages/{{ project_name }}/{{ profile_name }}/salt-auto-install.{{ package_type }} .'
+        - name: 'rm -rf {{ result_file }}'
         - cwd: '{{ bootstrap_dir }}/targets/{{ project_name }}/{{ profile_name }}'
 {% else %} # package_typer
         # FAIL if package type is not recognized.
         - name: '{{ UNSUPPORTED_PACKAGE_TYPE }}'
 {% endif %} # package_type
 
-{% endif %} # generate_packages
+{% endfor %} # selected_host_name
+
+# This step generates bootstrap packages per `selected_host_name`,
+# but it only happens when specific `package_type` hasn't been generated yet.
+# Before generating new ones, all `package_type`s are deleted above.
+{% for selected_host_name in target_env_pillar['system_hosts'].keys() %} # selected_host_name
+# Pack target directories depending on the package type.
+{% set package_type = target_env_pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][target_env_pillar['system_hosts'][selected_host_name]['os_platform']] %}
+{% set result_file = bootstrap_dir + '/packages/' + project_name + '/' + profile_name + '/salt-auto-install.' + package_type %}
+bootstrap_package_{{ target_contents_dir }}_create_package_archive_{{ selected_host_name }}_{{ package_type }}:
+    cmd.run:
+{% if not package_type %} # package_type
+        - name: 'echo "WARNING: package type is not specified - no package was generated"'
+{% elif package_type == 'tar.gz' %} # package_type
+        # Pack targets directories using `tar`.
+        - name: 'tar -cvzf {{ result_file }} .'
+        - cwd: '{{ bootstrap_dir }}/targets/{{ project_name }}/{{ profile_name }}'
+        - unless: 'ls {{ result_file }}'
+{% elif package_type == 'zip' %} # package_type
+        # Pack targets directories using `zip`.
+        - name: 'zip -r {{ result_file }} .'
+        - cwd: '{{ bootstrap_dir }}/targets/{{ project_name }}/{{ profile_name }}'
+        - unless: 'ls {{ result_file }}'
+{% else %} # package_typer
+        # FAIL if package type is not recognized.
+        - name: '{{ UNSUPPORTED_PACKAGE_TYPE }}'
+{% endif %} # package_type
 
 {% endfor %} # selected_host_name
+
+{% endif %} # generate_packages
 
 {% endif %} # enabled profile_name
 
