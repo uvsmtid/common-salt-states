@@ -92,8 +92,8 @@ config_file_{{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['primary_group'] }}'
 
-# Resources used by the step.
-
+# Prepare resources for Salt master.
+{% if selected_host_name in target_env_pillar['system_host_roles']['salt_master_role']['assigned_hosts'] %}
 {% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][os_platform].keys() %}
 {% set rpm_source_config = deploy_step_config['salt_master_rpm_sources'][os_platform][rpm_source_name] %}
 {% if rpm_source_config['source_type'] %}
@@ -109,6 +109,35 @@ res_file_{{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm
         - group: '{{ account_conf['primary_group'] }}'
 {% endif %}
 {% endfor %}
+{% endif %}
+
+{% endmacro %}
+
+###############################################################################
+#
+
+{% macro prepare_resources_step_function(
+        source_env_pillar
+        ,
+        target_env_pillar
+        ,
+        deploy_step
+        ,
+        deploy_step_config
+        ,
+        project_name
+        ,
+        profile_name
+        ,
+        target_contents_dir
+        ,
+        bootstrap_dir
+    )
+%}
+
+# NOTE: The resource preparation for `install_salt_master`
+#       is `selected_host_name`-specific.
+#       It is handled by `configure_selected_host_step_function`.
 
 {% endmacro %}
 

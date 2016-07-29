@@ -109,6 +109,28 @@ req_file_{{ requisite_config_file_id }}:
 
 {% endfor %} # selected_host_name
 
+{% for deploy_step in target_env_pillar['system_features']['static_bootstrap_configuration']['deploy_steps_params'].keys() %} # deploy_step
+
+# Load the function:
+{% set deploy_step_source = 'bootstrap/generate_content/deploy_steps/' + deploy_step + '/init.sls' %}
+{% from deploy_step_source import prepare_resources_step_function with context %}
+
+# Call the function:
+{{
+    prepare_resources_step_function(
+        pillar,
+        target_env_pillar,
+        deploy_step,
+        target_env_pillar['system_features']['static_bootstrap_configuration']['deploy_steps_params'][deploy_step],
+        project_name,
+        profile_name,
+        target_contents_dir,
+        bootstrap_dir,
+    )
+}}
+
+{% endfor %} # deploy_step
+
 # Copy scripts content per each project_name and profile_name.
 req_file_{{ target_contents_dir }}_modules_copy_script_to_packages:
     cmd.run:
