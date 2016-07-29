@@ -9,6 +9,9 @@ from utils.exec_command import call_subprocess
 #
 def do(action_context):
 
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     # NOTE: Location of all resources is re-written into the new pillar.
     #       The symlinks are adjusted through `common.resource_symlinks`.

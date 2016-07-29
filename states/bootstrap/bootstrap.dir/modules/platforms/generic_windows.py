@@ -1,3 +1,6 @@
+
+import logging
+
 from actions.deploy import deploy_template_method
 from actions.build import build_template_method
 
@@ -9,6 +12,11 @@ class generic_windows_deploy(deploy_template_method):
     def init_ip_route(
         self,
     ):
+
+        # TODO: Implement for Windows.
+        logging.critical("Implement for Windows.")
+        return
+
         # This method may depend on location and format of configuration files.
         raise NotImplementedError
 
@@ -27,6 +35,11 @@ class generic_windows_deploy(deploy_template_method):
     def set_hostname(
         self,
     ):
+
+        # TODO: Implement for Windows.
+        logging.critical("Implement for Windows.")
+        return
+
         # This method may depend on location of file with persistent hostname configuration.
         raise NotImplementedError
 
@@ -69,12 +82,22 @@ class generic_windows_deploy(deploy_template_method):
     def activate_salt_master(
         self,
     ):
+
+        # TODO: Implement for Windows.
+        logging.critical("Implement for Windows.")
+        return
+
         # This method may depend on `initd` or `systemd` PID 1, for example.
         raise NotImplementedError
 
     def activate_salt_minion(
         self,
     ):
+
+        # TODO: Implement for Windows.
+        logging.critical("Implement for Windows.")
+        return
+
         # This method may depend on `initd` or `systemd` PID 1, for example.
         raise NotImplementedError
 

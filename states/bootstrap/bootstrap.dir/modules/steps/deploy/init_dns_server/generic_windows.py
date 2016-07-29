@@ -1,4 +1,7 @@
+
+import logging
 import os.path
+
 from utils.exec_command import call_subprocess
 from utils.set_network import ping_host
 
@@ -6,6 +9,10 @@ from utils.set_network import ping_host
 #
 
 def do(action_context):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     # Deploy `resolv.conf` configuration file.
     call_subprocess(

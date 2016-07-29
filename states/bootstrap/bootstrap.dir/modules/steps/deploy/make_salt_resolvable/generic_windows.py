@@ -1,4 +1,7 @@
+
+import logging
 import os.path
+
 from utils.hosts_file import do_patch
 from utils.hosts_file import do_diff
 from utils.exec_command import call_subprocess
@@ -7,6 +10,10 @@ from utils.set_network import ping_host
 ###############################################################################
 #
 def do(action_context):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     # File with source entries for `hosts` file.
     src_path = os.path.join(

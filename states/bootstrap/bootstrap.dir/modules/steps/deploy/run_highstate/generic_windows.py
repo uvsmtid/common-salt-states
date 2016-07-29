@@ -10,6 +10,10 @@ from utils.check_salt_output import process_string
 #
 def do(action_context):
 
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
+
     # Explanation per use case:
     # * `initial-online-node` - it is assumed that Salt master is already
     #    accessible and `--local` is not required.

@@ -14,6 +14,11 @@ def import_rpm_key(
     content_dir,
     rpm_key_file_path,
 ):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
+
     rpm_key_file_abs_path = get_abs_path(
         content_dir,
         rpm_key_file_path,
@@ -35,6 +40,10 @@ def import_rpm_key(
 #
 
 def do(action_context):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     # Deploy `yum.conf` configuration file.
     call_subprocess(

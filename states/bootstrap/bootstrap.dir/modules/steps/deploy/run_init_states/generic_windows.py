@@ -10,6 +10,10 @@ from utils.check_salt_output import process_string
 #
 def run_states(state_names, salt_extra_args, cmd_extra_args):
 
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
+
     # Run `saltutil.sync_all` which is required to
     # get custom grains at least.
     # We don't try to analyse output.
@@ -82,6 +86,10 @@ def run_init_states(
     extra_state_names,
 ):
 
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
+
     # Explanation per use case:
     # * `initial-online-node` - it is assumed that Salt master is already
     #    accessible and `--local` is not required.
@@ -117,6 +125,10 @@ def run_init_states(
 ###############################################################################
 #
 def do(action_context):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     run_init_states(
         action_context.run_use_case,

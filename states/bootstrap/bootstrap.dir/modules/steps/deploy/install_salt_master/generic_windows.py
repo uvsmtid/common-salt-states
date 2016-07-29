@@ -1,3 +1,6 @@
+
+import logging
+
 from utils.install_salt import deploy_salt
 from utils.install_salt import delete_all_minion_keys_on_master
 
@@ -5,6 +8,10 @@ from utils.install_salt import delete_all_minion_keys_on_master
 #
 
 def do(action_context):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     # Call comon function for salt installation.
     salt_deploy_step_config = action_context.conf_m.install_salt_master

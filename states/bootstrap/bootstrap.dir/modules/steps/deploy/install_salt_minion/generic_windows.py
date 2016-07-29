@@ -1,9 +1,15 @@
+
+import logging
 from utils.install_salt import deploy_salt
 
 ###############################################################################
 #
 
 def do(action_context):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     # Set version of Salt minion config.
     if action_context.run_use_case in [

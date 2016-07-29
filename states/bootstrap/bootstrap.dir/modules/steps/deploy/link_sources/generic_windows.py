@@ -17,6 +17,11 @@ def deploy_repos(
     link_sources_step_config,
     action_context,
 ):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
+
     # Prepare all sources in there expected directory.
     for repo_conf in link_sources_step_config['repos'].values():
 
@@ -72,6 +77,11 @@ def set_salt_states_and_pillars_symlinks(
     project_name,
     profile_name,
 ):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
+
     ###########################################################################
     # Make sure `states` symlink points to `states` repository.
 
@@ -318,6 +328,10 @@ def set_salt_states_and_pillars_symlinks(
 #
 
 def do(action_context):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     # Unpack sources into expected locations.
     deploy_repos(

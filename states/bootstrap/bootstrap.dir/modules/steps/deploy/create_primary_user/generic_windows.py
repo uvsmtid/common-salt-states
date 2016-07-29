@@ -3,10 +3,16 @@ from utils.set_accounts import add_group
 from utils.set_accounts import add_user
 from utils.set_accounts import set_password
 
+import logging
+
 ###############################################################################
 #
 
 def do(action_context):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     # The only reason why this user is created is to put sources under
     # its home directory.
