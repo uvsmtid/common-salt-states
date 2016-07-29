@@ -1,7 +1,9 @@
+#
 
 ################################################################################
+#
 
-{% macro configure_deploy_step_function(
+{% macro configure_selected_host_step_function(
         source_env_pillar
         ,
         target_env_pillar
@@ -32,7 +34,6 @@
 
 # Configuration for the step.
 {% set export_dir_path_in_config = 'resources/sources/' + project_name + '/' + profile_name %}
-{% set export_dir_path = target_contents_dir + '/' + export_dir_path_in_config %}
 set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
     file.blockreplace:
         - name: '{{ requisite_config_file_path }}'
@@ -128,8 +129,35 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
         - require:
             - file: req_file_{{ requisite_config_file_id }}
 
+{% endmacro %}
+
+###############################################################################
+#
+
+{% macro prepare_resources_step_function(
+        source_env_pillar
+        ,
+        target_env_pillar
+        ,
+        deploy_step
+        ,
+        deploy_step_config
+        ,
+        project_name
+        ,
+        profile_name
+        ,
+        target_contents_dir
+        ,
+        bootstrap_dir
+    )
+%}
+
+{% set export_dir_path_in_config = 'resources/sources/' + project_name + '/' + profile_name %}
+{% set export_dir_path = target_contents_dir + '/' + export_dir_path_in_config %}
+
 # Create base dir for all sources.
-repo_base_dir_{{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir:
+repo_base_dir_{{ target_contents_dir }}_{{ deploy_step }}_sources_dir:
     file.directory:
         - name: '{{ export_dir_path }}'
         - makedirs: True
@@ -173,7 +201,7 @@ repo_base_dir_{{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir:
 {% if export_enabled %} # export_enabled
 
 # Create export.
-repo_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
+repo_export_{{ target_contents_dir }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
     cmd.run:
 
     {% if not export_method %}
@@ -197,17 +225,17 @@ repo_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ 
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['username'] }}'
         - require:
-            - file: repo_base_dir_{{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
+            - file: repo_base_dir_{{ target_contents_dir }}_{{ deploy_step }}_sources_dir
     {% if not selected_repo_name == target_repo_name %}
         # This is required to make sure that this step overwrite `target_repo_name`
         # _after_ it has been exported.
-            - cmd: repo_empty_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ target_repo_name }}
+            - cmd: repo_empty_export_{{ target_contents_dir }}_{{ deploy_step }}_extract_sources_{{ target_repo_name }}
     {% endif %}
 
 {% else %} # export_enabled
 
 # Create an empty export.
-repo_empty_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
+repo_empty_export_{{ target_contents_dir }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
     cmd.run:
     {% if not export_method %}
         {{ FAIL_no_export_method_specified }}
@@ -225,7 +253,7 @@ repo_empty_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sourc
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['username'] }}'
         - require:
-            - file: repo_base_dir_{{ requisite_config_file_id }}_{{ deploy_step }}_sources_dir
+            - file: repo_base_dir_{{ target_contents_dir }}_{{ deploy_step }}_sources_dir
 
 {% endif %} # export_enabled
 
@@ -244,4 +272,8 @@ repo_empty_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sourc
 {% endfor %} # selected_repo_name
 
 {% endmacro %}
+
+###############################################################################
+# EOF
+###############################################################################
 

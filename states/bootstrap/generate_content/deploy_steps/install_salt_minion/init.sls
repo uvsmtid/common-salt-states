@@ -1,9 +1,12 @@
 #
 
+###############################################################################
+#
+
 # Define properties (they are loaded as values to the root of pillars):
 {% set props = pillar %}
 
-{% macro configure_deploy_step_function(
+{% macro configure_selected_host_step_function(
         source_env_pillar
         ,
         target_env_pillar
@@ -108,4 +111,36 @@ res_file_{{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm
 {% endfor %}
 
 {% endmacro %}
+
+###############################################################################
+#
+
+{% macro prepare_resources_step_function(
+        source_env_pillar
+        ,
+        target_env_pillar
+        ,
+        deploy_step
+        ,
+        deploy_step_config
+        ,
+        project_name
+        ,
+        profile_name
+        ,
+        target_contents_dir
+        ,
+        bootstrap_dir
+    )
+%}
+
+# NOTE: The resource preparation for `install_salt_minion`
+#       is `selected_host_name`-specific.
+#       It is handled by `configure_selected_host_step_function`.
+
+{% endmacro %}
+
+###############################################################################
+# EOF
+###############################################################################
 
