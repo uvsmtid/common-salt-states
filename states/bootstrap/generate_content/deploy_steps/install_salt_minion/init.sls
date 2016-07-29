@@ -1,9 +1,12 @@
 #
 
+###############################################################################
+#
+
 # Define properties (they are loaded as values to the root of pillars):
 {% set props = pillar %}
 
-{% macro configure_deploy_step_function(
+{% macro configure_selected_host_step_function(
         source_env_pillar
         ,
         target_env_pillar
@@ -108,4 +111,8 @@ res_file_{{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm
 {% endfor %}
 
 {% endmacro %}
+
+###############################################################################
+# EOF
+###############################################################################
 

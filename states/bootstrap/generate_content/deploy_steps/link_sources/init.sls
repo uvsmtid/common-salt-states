@@ -1,7 +1,8 @@
 
 ################################################################################
+#
 
-{% macro configure_deploy_step_function(
+{% macro configure_selected_host_step_function(
         source_env_pillar
         ,
         target_env_pillar
@@ -244,4 +245,8 @@ repo_empty_export_{{ requisite_config_file_id }}_{{ deploy_step }}_extract_sourc
 {% endfor %} # selected_repo_name
 
 {% endmacro %}
+
+###############################################################################
+# EOF
+###############################################################################
 

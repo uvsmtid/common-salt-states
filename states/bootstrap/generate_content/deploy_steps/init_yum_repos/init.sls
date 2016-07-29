@@ -1,7 +1,8 @@
 
 ###############################################################################
+#
 
-{% macro configure_deploy_step_function(
+{% macro configure_selected_host_step_function(
         source_env_pillar
         ,
         target_env_pillar
@@ -121,4 +122,8 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
         - user: '{{ account_conf['username'] }}'
 
 {% endmacro %}
+
+###############################################################################
+# EOF
+###############################################################################
 

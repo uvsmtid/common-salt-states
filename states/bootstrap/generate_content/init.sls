@@ -1,7 +1,8 @@
 #
 
 ###############################################################################
-# <<<
+#
+
 {% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
 
 include:
@@ -85,11 +86,11 @@ req_file_{{ requisite_config_file_id }}:
 
 # Load the function:
 {% set deploy_step_source = 'bootstrap/generate_content/deploy_steps/' + deploy_step + '/init.sls' %}
-{% from deploy_step_source import configure_deploy_step_function with context %}
+{% from deploy_step_source import configure_selected_host_step_function with context %}
 
 # Call the function:
 {{
-    configure_deploy_step_function(
+    configure_selected_host_step_function(
         pillar,
         target_env_pillar,
         selected_host_name,
@@ -184,6 +185,8 @@ bootstrap_package_{{ target_contents_dir }}_create_package_archive_{{ selected_h
 {% endfor %} # profile_name
 
 {% endif %}
-# >>>
+
+###############################################################################
+# EOF
 ###############################################################################
 
