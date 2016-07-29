@@ -8,11 +8,11 @@
 {% set resources_macro_lib = 'common/system_secrets/lib.sls' %}
 {% from resources_macro_lib import get_single_line_system_secret with context %}
 
-# Get IP address of first host assigned to `depository_role`.
-{% set depository_role_first_host = pillar['system_host_roles']['depository_role']['assigned_hosts'][0] %}
-{% set depository_role_first_host_network_resolved_in = pillar['system_hosts'][depository_role_first_host]['resolved_in'] %}
-{% set depository_role_first_host_ip = pillar['system_hosts'][depository_role_first_host]['host_networks'][depository_role_first_host_network_resolved_in]['ip'] %}
-{% set depository_role_hostname = pillar['system_host_roles']['depository_role']['hostname'] %}
+# Get IP address of first host assigned to `vagrant_box_publisher_role`.
+{% set vagrant_box_publisher_role_first_host = pillar['system_host_roles']['vagrant_box_publisher_role']['assigned_hosts'][0] %}
+{% set vagrant_box_publisher_role_first_host_network_resolved_in = pillar['system_hosts'][vagrant_box_publisher_role_first_host]['resolved_in'] %}
+{% set vagrant_box_publisher_role_first_host_ip = pillar['system_hosts'][vagrant_box_publisher_role_first_host]['host_networks'][vagrant_box_publisher_role_first_host_network_resolved_in]['ip'] %}
+{% set vagrant_box_publisher_role_hostname = pillar['system_host_roles']['vagrant_box_publisher_role']['hostname'] %}
 
 # Access to Cygwin package inside bootstrap package.
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
@@ -150,7 +150,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     {% set src_sync_dir = bootstrap_dir_basename + '/packages/' + project_name + '/' + profile_name %}
     {% if package_type == 'zip' %} # package_type
     {% if os_type == "windows" %}
-    # * Set name resolution for host assigned to depository role
+    # * Set name resolution for host assigned to `vagrant_box_publisher_role`
     #   so that virtual hosts configured on the web server
     #   get selected correctly by the hostname.
     #   See also:
@@ -172,15 +172,16 @@ Set-Location -Path $home
 Get-Location
 
 # Add entry to the hosts file.
-$ip = \\"' + depository_role_first_host_ip + '\\"
-$xhost = \\"' + depository_role_hostname + '\\"
+$ip = \\"' + vagrant_box_publisher_role_first_host_ip + '\\"
+$xhost = \\"' + vagrant_box_publisher_role_hostname + '\\"
 \\"`n`t{0}`t{1}\\" -f $ip, $xhost | out-file \\"$env:windir\\\\System32\\\\drivers\\\\etc\\\\hosts\\" -enc ascii -append
 
 # Download bootstrap package.
 # TODO: Formalize this location and make sure bootstrap package is
-#       ready on `depository_role_hostname` to be downloaded.
+#       ready on `vagrant_box_publisher_role_hostname` to be downloaded.
 $bootstrap_package_name=\\"salt-auto-install.' + package_type + '\\"
-$url = \\"http://$xhost/$bootstrap_package_name\\"
+$bootstrap_package_path=\\"/packages/' + project_name + '/' + profile_name + '/' + '$bootstrap_package_name\\"
+$url = \\"http://$xhost/$bootstrap_package_path\\"
 # DO NOT use `wget` - it downloads 100X slower.
 #wget $url -OutFile $bootstrap_package_name
 $client = New-Object System.Net.WebClient
