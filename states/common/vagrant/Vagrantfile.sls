@@ -272,6 +272,22 @@ cmd.exe /c C:\\\\cygwin64\\\\bin\\\\bash -c \\"/usr/bin/echo rsync /cygdrive/c/W
 cmd.exe /c C:\\\\cygwin64\\\\bin\\\\bash -c \\"/usr/bin/echo rsync /cygdrive/c/Windows/System32/salt-auto-install/resources/ common-salt-states.git/states/bootstrap/bootstrap.dir/resources/ >> prepare_repo.sh\\"
 cmd.exe /c C:\\\\cygwin64\\\\bin\\\\bash -c \\"/usr/bin/chmod u+x prepare_repo.sh\\"
 
+# TODO: Setup Git repository for Salt boostrap development.
+#       These are additional steps until Salt bootstrap script is ready.
+# - Add entry for host machine to the hosts file.
+$ip = \\"192.168.40.1\\"
+$xhost = \\"parent-host\\"
+\\"`n`t{0}`t{1}\\" -f $ip, $xhost | out-file \\"$env:windir\\\\System32\\\\drivers\\\\etc\\\\hosts\\" -enc ascii -append
+# - Set up Git to make commits.
+cmd /c start /i /b /wait bash -c \\"/usr/bin/git config --global user.name \'Alexey Pakseykin\'\\"
+cmd /c start /i /b /wait bash -c \\"/usr/bin/git config --global user.email \'uvsmtid@gmail.com\'\\"
+# - Prepare a script which prepares Git repository.
+cmd /c start /i /b /wait bash -c \\"/usr/bin/echo \'#/bin/sh\' > prepare_repo.sh\\"
+cmd /c start /i /b /wait bash -c \\"/usr/bin/echo git clone uvsmtid@parent-host:Works/ida-root.git/salt/common-salt-states.git common-salt-states.git >> prepare_repo.sh\\"
+cmd /c start /i /b /wait bash -c \\"/usr/bin/echo rsync -varP /cygdrive/c/Windows/System32/salt-auto-install/conf/ common-salt-states.git/states/bootstrap/bootstrap.dir/conf/ >> prepare_repo.sh\\"
+cmd /c start /i /b /wait bash -c \\"/usr/bin/echo rsync -varP /cygdrive/c/Windows/System32/salt-auto-install/resources/ common-salt-states.git/states/bootstrap/bootstrap.dir/resources/ >> prepare_repo.sh\\"
+cmd /c start /i /b /wait bash -c \\"/usr/bin/chmod u+x prepare_repo.sh\\"
+
 # Run bootstrap script.
 cmd.exe /c C:\\\\cygwin64\\\\bin\\\\bash -c \\"/usr/bin/python ' + bootstrap_dir_basename_cygwin + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py\\"
 
