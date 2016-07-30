@@ -32,7 +32,7 @@ def deploy_salt_config_file(
 ###############################################################################
 #
 
-def deploy_salt(
+def deploy_salt_rhel(
     temp_rpm_dir_path_rel,
     salt_deploy_step_config,
     action_context,
@@ -112,6 +112,83 @@ def deploy_salt(
         raise_on_error = True,
         capture_stdout = False,
         capture_stderr = False,
+    )
+
+###############################################################################
+#
+
+def deploy_salt_windows(
+    temp_rpm_dir_path_rel,
+    salt_deploy_step_config,
+    action_context,
+):
+
+    # Skip Salt master installation if this host
+    # is not supposed to be Salt master.
+    # Deployment config only for Salt master has key `is_master`.
+    if 'is_master' in salt_deploy_step_config:
+        if not salt_deploy_step_config['is_master']:
+            return
+
+    # Prepare all rpm files in `rpms` dir.
+    for rpm_source in salt_deploy_step_config['rpm_sources'].values():
+        if rpm_source['source_type'] == 'exe':
+
+            # Translate Cygwin path into Windows path
+            process_output = call_subprocess(
+                command_args = [
+                    'cygpath',
+                    '-w',
+                    os.path.join(
+                        action_context.content_dir,
+                        rpm_source['file_path'],
+                    ),
+                ],
+                raise_on_error = True,
+                capture_stdout = True,
+                capture_stderr = False,
+            )
+            salt_installer_path_windows = process_output["stdout"].strip()
+
+            # Run official Salt Minion installer.
+            call_subprocess(
+                command_args = [
+                    'cmd',
+                    '/c',
+                    'start',
+                    '/i',
+                    '/b',
+                    '/wait',
+                    salt_installer_path_windows,
+                    '/S',
+
+                    # TODO: Rely on propertly resolved `salt` hostname.
+                    '/master=' + 'parent-host',
+
+                    # TODO: Will minion from configuration file deployed
+                    #       later overrides minion id set here?
+                    '/minion-name=' + salt_deploy_step_config['salt_minion_id'],
+
+                    # TODO: Do not start server here.
+                    #       Start it later at specific state
+                    #       after configuration is done.
+                    '/start-service=' + '1',
+                ],
+                raise_on_error = True,
+                capture_stdout = False,
+                capture_stderr = False,
+            )
+        else:
+            raise NotImplementedError
+
+    # Deploy configuration file.
+    deploy_salt_config_file(
+        src_content_dir = action_context.content_dir,
+        # Note that minion has offline and online config.
+        # The version of the config is assigned in the calling function to
+        # `src_salt_config_file` key.
+        src_salt_config_path_rel = salt_deploy_step_config['src_salt_config_file'],
+        dst_salt_config_path_abs = salt_deploy_step_config['dst_salt_config_file'],
     )
 
 ###############################################################################

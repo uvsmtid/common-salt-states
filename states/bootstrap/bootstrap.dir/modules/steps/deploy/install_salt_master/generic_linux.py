@@ -1,4 +1,4 @@
-from utils.install_salt import deploy_salt
+from utils.install_salt import deploy_salt_rhel
 from utils.install_salt import delete_all_minion_keys_on_master
 
 ###############################################################################
@@ -8,7 +8,7 @@ def do(action_context):
 
     # Call comon function for salt installation.
     salt_deploy_step_config = action_context.conf_m.install_salt_master
-    deploy_salt(
+    deploy_salt_rhel(
         temp_rpm_dir_path_rel = 'rpms',
         salt_deploy_step_config = salt_deploy_step_config,
         action_context = action_context,

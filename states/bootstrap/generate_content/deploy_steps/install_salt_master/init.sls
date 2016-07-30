@@ -32,6 +32,7 @@
 %}
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
+{% set os_type = target_env_pillar['system_platforms'][os_platform]['os_type'] %}
 
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_URI_scheme_abs_links_base_dir_path_from_pillar with context %}
@@ -55,7 +56,11 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
                 "is_master": False,
                 {% endif %}
                 "src_salt_config_file": "resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/master.conf",
+                {% if os_type == 'linux' %}
                 "dst_salt_config_file": "/etc/salt/master",
+                {% elif os_type == 'windows' %}
+                "dst_salt_config_file": "/cygdrive/c/salt/conf/master",
+                {% endif %}
                 "rpm_sources": {
                     {% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][os_platform].keys() %}
                     {% set rpm_source_config = deploy_step_config['salt_master_rpm_sources'][os_platform][rpm_source_name] %}
