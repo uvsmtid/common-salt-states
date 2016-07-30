@@ -17,7 +17,9 @@
 # Access to Cygwin package inside bootstrap package.
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_registered_content_item_rel_path_windows with context %}
+{% from resources_macro_lib import get_registered_content_item_rel_path with context %}
 {% set cygwin_resource_id = 'bootstrap_cygwin_package_64_bit_windows' %}
+{% set LibYAML_resource_id = 'cygwin_bootstrap_LibYAML' %}
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
@@ -162,7 +164,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # * Unzip the package.
     {% set bootstrap_dir_basename_cygwin = "/cygdrive/c/Windows/System32/salt-auto-install" %}
     {% set boostrap_cmd = '
-Set-PSDebug -Trace 1
+Set-PSDebug -Trace 2
 
 # TODO: Fix the problem of changing directory.
 #       Make sure download is done into temporary `get_salt_content_temp_dir()`.
@@ -200,13 +202,28 @@ Add-Type -A System.IO.Compression.FileSystem
 $cygwin_offline_dirname = \\"cygwin-offline.git\\"
 cmd.exe /c $cygwin_offline_dirname\\\\install.cmd
 
+# Set PATH to add Cygwin .
+# NOTE: This required only until the end of this setup script
+#       because it is automatically by `cygwin-offline` installer
+#       for all future shell sessions.
+$env:Path += \\";C:\\\\cygwin64\\\\bin\\"
+
 # Initialize Cygwin shell.
 # TODO: Move this step into `cygwin-offline` package.
 echo $path
 cmd.exe /c C:\\\\cygwin64\\\\bin\\\\mintty -
 
+# Install LibYAML.
+# See: http://pyyaml.org/wiki/LibYAML
+$LibYAML_package_name=\\"/cygdrive/c/Windows/System32/salt-auto-install/resources/depository/' + project_name + '/' + profile_name + '/' + get_registered_content_item_rel_path(LibYAML_resource_id) + '\\"
+$LibYAML_content_subdir=\\"' + pillar['system_resources'][LibYAML_resource_id]['content_root_subdir_path_cygwin'] + '\\"
+cmd /c start /i /b /wait bash -c \\"/usr/bin/tar -xvf $LibYAML_package_name ; cd $LibYAML_content_subdir ; ./configure ; /usr/bin/make install ; \\"
+#cmd /c start /i /b /wait bash -c \\"/usr/bin/rm -rf $LibYAML_content_subdir\\"
+
 # Run bootstrap script.
 cmd.exe /c C:\\\\cygwin64\\\\bin\\\\bash -c \\"/usr/bin/python ' + bootstrap_dir_basename_cygwin + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py\\"
+
+# EOF
 '
     %}
     {% endif %} # os_type
