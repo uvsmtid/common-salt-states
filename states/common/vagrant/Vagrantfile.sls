@@ -201,7 +201,7 @@ Add-Type -A System.IO.Compression.FileSystem
 
 # Run Cygwin installation script.
 $cygwin_offline_dirname = \\"cygwin-offline.git\\"
-cmd.exe /c $cygwin_offline_dirname\\\\install.cmd
+cmd /c start /i /b /wait $cygwin_offline_dirname\\\\install.cmd
 
 # Set PATH to add Cygwin .
 # NOTE: This required only until the end of this setup script
@@ -212,7 +212,7 @@ $env:Path += \\";C:\\\\cygwin64\\\\bin\\"
 # Initialize Cygwin shell.
 # TODO: Move this step into `cygwin-offline` package.
 echo $path
-cmd.exe /c C:\\\\cygwin64\\\\bin\\\\mintty -
+cmd /c start /i /b /wait mintty /bin/bash -l -c \\"echo init\\"
 
 # Install LibYAML.
 # See: http://pyyaml.org/wiki/LibYAML
@@ -289,7 +289,7 @@ cmd /c start /i /b /wait bash -c \\"/usr/bin/echo rsync -varP /cygdrive/c/Window
 cmd /c start /i /b /wait bash -c \\"/usr/bin/chmod u+x prepare_repo.sh\\"
 
 # Run bootstrap script.
-cmd.exe /c C:\\\\cygwin64\\\\bin\\\\bash -c \\"/usr/bin/python ' + bootstrap_dir_basename_cygwin + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py\\"
+cmd /c start /i /b /wait bash -c \\"/usr/bin/python ' + bootstrap_dir_basename_cygwin + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py\\"
 
 # EOF
 '
