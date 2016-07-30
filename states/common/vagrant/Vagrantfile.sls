@@ -218,14 +218,14 @@ cmd.exe /c C:\\\\cygwin64\\\\bin\\\\mintty -
 # See: http://pyyaml.org/wiki/LibYAML
 $LibYAML_package_name=\\"/cygdrive/c/Windows/System32/salt-auto-install/resources/depository/' + project_name + '/' + profile_name + '/' + get_registered_content_item_rel_path(LibYAML_resource_id) + '\\"
 $LibYAML_content_subdir=\\"' + pillar['system_resources'][LibYAML_resource_id]['content_root_subdir_path_cygwin'] + '\\"
-cmd /c start /i /b /wait bash -c \\"/usr/bin/tar -xvf $LibYAML_package_name ; cd $LibYAML_content_subdir ; ./configure ; /usr/bin/make install ; \\"
+#cmd /c start /i /b /wait bash -c \\"/usr/bin/tar -xvf $LibYAML_package_name ; cd $LibYAML_content_subdir ; ./configure ; /usr/bin/make install ; \\"
 #cmd /c start /i /b /wait bash -c \\"/usr/bin/rm -rf $LibYAML_content_subdir\\"
 
 # Install PyYAML.
 # See: http://pyyaml.org/wiki/PyYAML
 $PyYAML_package_name=\\"/cygdrive/c/Windows/System32/salt-auto-install/resources/depository/' + project_name + '/' + profile_name + '/' + get_registered_content_item_rel_path(PyYAML_resource_id) + '\\"
 $PyYAML_content_subdir=\\"' + pillar['system_resources'][PyYAML_resource_id]['content_root_subdir_path_cygwin'] + '\\"
-cmd /c start /i /b /wait bash -c \\"export LIBRARY_PATH=/usr/local/lib ; /usr/bin/tar -xvf $PyYAML_package_name ; cd $PyYAML_content_subdir ; /usr/bin/python setup.py install ; /usr/bin/python setup.py test ; \\"
+#cmd /c start /i /b /wait bash -c \\"export LIBRARY_PATH=/usr/local/lib ; /usr/bin/tar -xvf $PyYAML_package_name ; cd $PyYAML_content_subdir ; /usr/bin/python setup.py install ; /usr/bin/python setup.py test ; \\"
 #cmd /c start /i /b /wait bash -c \\"/usr/bin/rm -rf $PyYAML_content_subdir\\"
 
 # Disable firewall to allow SSH and Salt minion connections.
