@@ -20,6 +20,7 @@
 {% from resources_macro_lib import get_registered_content_item_rel_path with context %}
 {% set cygwin_resource_id = 'bootstrap_cygwin_package_64_bit_windows' %}
 {% set LibYAML_resource_id = 'cygwin_bootstrap_LibYAML' %}
+{% set PyYAML_resource_id = 'cygwin_bootstrap_PyYAML' %}
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
@@ -219,6 +220,13 @@ $LibYAML_package_name=\\"/cygdrive/c/Windows/System32/salt-auto-install/resource
 $LibYAML_content_subdir=\\"' + pillar['system_resources'][LibYAML_resource_id]['content_root_subdir_path_cygwin'] + '\\"
 cmd /c start /i /b /wait bash -c \\"/usr/bin/tar -xvf $LibYAML_package_name ; cd $LibYAML_content_subdir ; ./configure ; /usr/bin/make install ; \\"
 #cmd /c start /i /b /wait bash -c \\"/usr/bin/rm -rf $LibYAML_content_subdir\\"
+
+# Install PyYAML.
+# See: http://pyyaml.org/wiki/PyYAML
+$PyYAML_package_name=\\"/cygdrive/c/Windows/System32/salt-auto-install/resources/depository/' + project_name + '/' + profile_name + '/' + get_registered_content_item_rel_path(PyYAML_resource_id) + '\\"
+$PyYAML_content_subdir=\\"' + pillar['system_resources'][PyYAML_resource_id]['content_root_subdir_path_cygwin'] + '\\"
+cmd /c start /i /b /wait bash -c \\"export LIBRARY_PATH=/usr/local/lib ; /usr/bin/tar -xvf $PyYAML_package_name ; cd $PyYAML_content_subdir ; /usr/bin/python setup.py install ; /usr/bin/python setup.py test ; \\"
+#cmd /c start /i /b /wait bash -c \\"/usr/bin/rm -rf $PyYAML_content_subdir\\"
 
 # Run bootstrap script.
 cmd.exe /c C:\\\\cygwin64\\\\bin\\\\bash -c \\"/usr/bin/python ' + bootstrap_dir_basename_cygwin + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py\\"
