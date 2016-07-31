@@ -162,15 +162,15 @@ def deploy_salt_windows(
                     salt_installer_path_windows,
                     '/S',
 
-                    # TODO: Rely on propertly resolved `salt` hostname.
-                    '/master=' + 'parent-host',
+                    # Rely on propertly resolved `salt` hostname.
+                    #'/master=' + 'salt',
 
-                    # TODO: Will minion from configuration file deployed
-                    #       later overrides minion id set here?
+                    # NOTE: The minion id is pre-set in from configuration
+                    #       file deployed later.
                     '/minion-name=' + salt_deploy_step_config['salt_minion_id'],
 
                     # NOTE: Do not start server here.
-                    #       Start it later at specific state
+                    #       Start it later at specific step
                     #       after configuration is done.
                     '/start-service=' + '0',
                 ],

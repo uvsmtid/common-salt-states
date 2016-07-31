@@ -1,4 +1,6 @@
+
 import os.path
+
 from utils.hosts_file import do_patch
 from utils.hosts_file import do_diff
 from utils.exec_command import call_subprocess
@@ -6,7 +8,8 @@ from utils.set_network import ping_host
 
 ###############################################################################
 #
-def do(action_context):
+
+def update_hosts_file(action_context):
 
     # File with source entries for `hosts` file.
     src_path = os.path.join(
@@ -40,6 +43,13 @@ def do(action_context):
         src_path = src_path,
         dst_path = dst_path,
     )
+
+###############################################################################
+#
+
+def do(action_context):
+
+    update_hosts_file(action_context)
 
     # Make sure `salt` hosts are ping-able.
     ping_host(
