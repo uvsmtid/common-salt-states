@@ -5,7 +5,12 @@ from platforms.generic_windows import generic_windows_build
 #
 
 class winserv2012_windows_deploy(generic_windows_deploy):
-    pass
+
+    def activate_salt_minion(
+        self,
+    ):
+        from steps.deploy.activate_salt_minion.winserv2012 import do
+        do(self)
 
 ###############################################################################
 #

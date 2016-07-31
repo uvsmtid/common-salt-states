@@ -94,10 +94,6 @@ class generic_windows_deploy(deploy_template_method):
         self,
     ):
 
-        # TODO: Implement for Windows.
-        logging.critical("Implement for Windows.")
-        return
-
         # This method may depend on `initd` or `systemd` PID 1, for example.
         raise NotImplementedError
 

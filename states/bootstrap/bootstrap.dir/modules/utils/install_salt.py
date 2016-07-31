@@ -169,10 +169,10 @@ def deploy_salt_windows(
                     #       later overrides minion id set here?
                     '/minion-name=' + salt_deploy_step_config['salt_minion_id'],
 
-                    # TODO: Do not start server here.
+                    # NOTE: Do not start server here.
                     #       Start it later at specific state
                     #       after configuration is done.
-                    '/start-service=' + '1',
+                    '/start-service=' + '0',
                 ],
                 raise_on_error = True,
                 capture_stdout = False,
