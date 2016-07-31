@@ -150,6 +150,21 @@ def deploy_salt_windows(
             )
             salt_installer_path_windows = process_output["stdout"].strip()
 
+            # Copy installer to another directory to
+            # avoid "NSIS Error" "Error launching installer" -
+            # nobody knows why this happens.
+            call_subprocess(
+                command_args = [
+                    'cp',
+                    salt_installer_path_windows,
+                    '/cygdrive/c',
+                ],
+                raise_on_error = True,
+                capture_stdout = False,
+                capture_stderr = False,
+            )
+            salt_installer_path_windows = 'C:\\' + os.path.basename(rpm_source['file_path'])
+
             # Run official Salt Minion installer.
             call_subprocess(
                 command_args = [
