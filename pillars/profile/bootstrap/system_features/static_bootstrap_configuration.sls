@@ -56,12 +56,12 @@ system_features:
             install_salt_master:
                 step_enabled: True
                 salt_master_template: 'salt://common/salt/master/master.conf'
-                salt_master_rpm_sources:
+                salt_master_package_resources:
 
                     {% for system_platform_id in fedora_versions_list %}
                     {{ system_platform_id }}:
                         salt-master:
-                            source_type: tar
+                            resource_type: tar
                             # NOTE: This RPM was created for `fc21` and simply reused here.
                             # TODO: Generate new resource for `fc24`.
                             resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
@@ -72,40 +72,40 @@ system_features:
                         # NOTE: These components come together.
                         {% if True %}
                         salt:
-                            source_type: tar
+                            resource_type: tar
                             resource_id: salt-rpms-2015.5.10-1.el5.x86_64.tar
 
                         salt-master:
-                            source_type: rpm
+                            resource_type: rpm
                             resource_id: salt-master-2015.5.10-1.el5.noarch.rpm
                         {% endif %}
 
                         PyYAML:
-                            source_type: tar
+                            resource_type: tar
                             resource_id: PyYAML-3.09-10.el5.x86_64.rpms.tar
                     rhel7:
 
                         # NOTE: These components come together.
                         {% if True %}
                         salt:
-                            source_type: tar
+                            resource_type: tar
                             resource_id: salt-rpms-2015.5.10-1.el7.x86_64.tar
 
                         salt-master:
-                            source_type: rpm
+                            resource_type: rpm
                             resource_id: salt-master-2015.5.10-1.el7.noarch.rpm
                         {% endif %}
 
                         unzip:
-                            source_type: rpm
+                            resource_type: rpm
                             resource_id: zip-3.0-10.el7.x86_64.rpm
 
                         zip:
-                            source_type: rpm
+                            resource_type: rpm
                             resource_id: unzip-6.0-13.el7.x86_64.rpm
 
                         PyYAML:
-                            source_type: tar
+                            resource_type: tar
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
 
                     win7: {} # TODO
@@ -116,12 +116,12 @@ system_features:
                 step_enabled: True
                 salt_minion_online_template: 'salt://common/salt/minion/minion.online.conf'
                 salt_minion_offline_template: 'salt://common/salt/minion/minion.offline.conf'
-                salt_minion_rpm_sources:
+                salt_minion_package_resources:
 
                     {% for system_platform_id in fedora_versions_list %}
                     {{ system_platform_id }}:
                         salt-master:
-                            source_type: tar
+                            resource_type: tar
                             # NOTE: This RPM was created for `fc21` and simply reused here.
                             # TODO: Generate new resource for `fc24`.
                             resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
@@ -132,40 +132,40 @@ system_features:
                         # NOTE: These components come together.
                         {% if True %}
                         salt:
-                            source_type: tar
+                            resource_type: tar
                             resource_id: salt-rpms-2015.5.10-1.el5.x86_64.tar
 
                         salt-minion:
-                            source_type: rpm
+                            resource_type: rpm
                             resource_id: salt-minion-2015.5.10-1.el5.noarch.rpm
                         {% endif %}
 
                         PyYAML:
-                            source_type: tar
+                            resource_type: tar
                             resource_id: PyYAML-3.09-10.el5.x86_64.rpms.tar
                     rhel7:
 
                         # NOTE: These components come together.
                         {% if True %}
                         salt:
-                            source_type: tar
+                            resource_type: tar
                             resource_id: salt-rpms-2015.5.10-1.el7.x86_64.tar
 
                         salt-minion:
-                            source_type: rpm
+                            resource_type: rpm
                             resource_id: salt-minion-2015.5.10-1.el7.noarch.rpm
                         {% endif %}
 
                         unzip:
-                            source_type: rpm
+                            resource_type: rpm
                             resource_id: zip-3.0-10.el7.x86_64.rpm
 
                         zip:
-                            source_type: rpm
+                            resource_type: rpm
                             resource_id: unzip-6.0-13.el7.x86_64.rpm
 
                         PyYAML:
-                            source_type: tar
+                            resource_type: tar
                             resource_id: PyYAML-3.10-11.el7.x86_64.rpms.tar
 
                     win7: {} # TODO
@@ -173,7 +173,7 @@ system_features:
                     winserv2012:
 
                         sal-minion:
-                            source_type: exe
+                            resource_type: exe
                             resource_id: Salt-Minion-2015.5.11-AMD64-Setup.exe
 
             link_sources:

@@ -17,41 +17,41 @@
 
 {% if not je_config['installation_type'] %}
 # Nothing to do.
-{% elif je_config['installation_type'] == 'rpm_sources' %} # installation_type
+{% elif je_config['installation_type'] == 'package_resources' %} # installation_type
 #
-{% for rpm_source_name in je_config['rpm_sources'].keys() %} # rpm_source_name
+{% for package_resource_name in je_config['package_resources'].keys() %} # package_resource_name
 
-{% set rpm_source_conf = je_config['rpm_sources'][rpm_source_name] %}
+{% set package_resource_conf = je_config['package_resources'][package_resource_name] %}
 {% set hosts_os_platform = pillar['system_hosts'][grains['id']]['os_platform'] %}
-{% set rpm_options = rpm_source_conf['rpm_options'] %}
+{% set rpm_options = package_resource_conf['rpm_options'] %}
 {% set rpm_version = je_config['os_platform_configs'][hosts_os_platform]['rpm_version'] %}
 
-{% if not rpm_source_conf['source_type'] %} # source_type
+{% if not package_resource_conf['resource_type'] %} # resource_type
 # Nothing to do.
-{% elif rpm_source_conf['source_type'] == 'rpm' %} # source_type
+{% elif package_resource_conf['resource_type'] == 'rpm' %} # resource_type
 
-{% set content_item_conf = pillar['system_resources'][rpm_source_conf['resource_id']] %}
+{% set content_item_conf = pillar['system_resources'][package_resource_conf['resource_id']] %}
 
-download_rpm_package_{{ java_environment_id }}_{{ rpm_source_name }}:
+download_rpm_package_{{ java_environment_id }}_{{ package_resource_name }}:
     file.managed:
         - name: '{{ get_salt_content_temp_dir() }}/{{ content_item_conf['item_base_name'] }}'
-        - source: {{ get_registered_content_item_URI(rpm_source_conf['resource_id']) }}
-        - source_hash: {{ get_registered_content_item_hash(rpm_source_conf['resource_id']) }}
+        - source: {{ get_registered_content_item_URI(package_resource_conf['resource_id']) }}
+        - source_hash: {{ get_registered_content_item_hash(package_resource_conf['resource_id']) }}
         - makedirs: True
 
-run_rpm_command_{{ java_environment_id }}_{{ rpm_source_name }}:
+run_rpm_command_{{ java_environment_id }}_{{ package_resource_name }}:
     cmd.run:
         - name: 'rpm -ihv {{ rpm_options }} "{{ get_salt_content_temp_dir() }}/{{ content_item_conf['item_base_name'] }}"'
         # NOTE: Some packages are internally named differently based on the target platform.
         - unless: 'rpm -qi {{ rpm_version }}'
         - require:
-            - file: download_rpm_package_{{ java_environment_id }}_{{ rpm_source_name }}
+            - file: download_rpm_package_{{ java_environment_id }}_{{ package_resource_name }}
 
-{% else %} # source_type
-{{ UNSUPPORTED_source_type }}
-{% endif %} # source_type
+{% else %} # resource_type
+{{ UNSUPPORTED_resource_type }}
+{% endif %} # resource_type
 
-{% endfor %} # rpm_source_name
+{% endfor %} # package_resource_name
 
 {% elif je_config['installation_type'] == 'yum_repositories' %} # installation_type
 

@@ -61,13 +61,13 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
                 {% elif os_type == 'windows' %}
                 "dst_salt_config_file": "/cygdrive/c/salt/conf/master",
                 {% endif %}
-                "rpm_sources": {
-                    {% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][os_platform].keys() %}
-                    {% set rpm_source_config = deploy_step_config['salt_master_rpm_sources'][os_platform][rpm_source_name] %}
-                    {% if rpm_source_config['source_type'] %}
-                    {% set file_path = get_registered_content_item_rel_path_from_pillar(rpm_source_config['resource_id'], target_env_pillar) %}
-                    "{{ rpm_source_name }}": {
-                        "source_type": "{{ rpm_source_config['source_type'] }}",
+                "package_resources": {
+                    {% for package_resource_name in deploy_step_config['salt_master_package_resources'][os_platform].keys() %}
+                    {% set package_resource_config = deploy_step_config['salt_master_package_resources'][os_platform][package_resource_name] %}
+                    {% if package_resource_config['resource_type'] %}
+                    {% set file_path = get_registered_content_item_rel_path_from_pillar(package_resource_config['resource_id'], target_env_pillar) %}
+                    "{{ package_resource_name }}": {
+                        "resource_type": "{{ package_resource_config['resource_type'] }}",
                         "file_path": "resources/bootstrap/{{ project_name }}/{{ profile_name }}/{{ file_path }}",
                     },
                     {% endif %}
@@ -99,14 +99,14 @@ config_file_{{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_
 
 # Prepare resources for Salt master.
 {% if selected_host_name in target_env_pillar['system_host_roles']['salt_master_role']['assigned_hosts'] %}
-{% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][os_platform].keys() %}
-{% set rpm_source_config = deploy_step_config['salt_master_rpm_sources'][os_platform][rpm_source_name] %}
-{% if rpm_source_config['source_type'] %}
-{% set file_path = get_registered_content_item_rel_path_from_pillar(rpm_source_config['resource_id'], target_env_pillar) %}
-res_file_{{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm_source_name }}:
+{% for package_resource_name in deploy_step_config['salt_master_package_resources'][os_platform].keys() %}
+{% set package_resource_config = deploy_step_config['salt_master_package_resources'][os_platform][package_resource_name] %}
+{% if package_resource_config['resource_type'] %}
+{% set file_path = get_registered_content_item_rel_path_from_pillar(package_resource_config['resource_id'], target_env_pillar) %}
+res_file_{{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ package_resource_name }}:
     file.managed:
         - name: '{{ target_contents_dir }}/resources/bootstrap/{{ project_name }}/{{ profile_name }}/{{ file_path }}'
-        - source: '{{ get_registered_content_item_URI_from_pillar(rpm_source_config['resource_id'], target_env_pillar) }}'
+        - source: '{{ get_registered_content_item_URI_from_pillar(package_resource_config['resource_id'], target_env_pillar) }}'
         - template: ~
         - makedirs: True
         {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}

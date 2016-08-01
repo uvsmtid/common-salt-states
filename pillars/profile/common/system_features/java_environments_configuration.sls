@@ -16,13 +16,13 @@ system_features:
                 # Installation type:
                 # - yum_repositories - pre-configured YUM repository.
                 #     This option requires additional parameter `rpm_packages`.
-                # - rpm_sources - list of content items with RPM packages.
-                #     This option requires additional parameter `rpm_sources`.
-                installation_type: rpm_sources
+                # - package_resources - list of content items package of various type.
+                #     This option requires additional parameter `package_resources`.
+                installation_type: package_resources
 
-                rpm_sources:
+                package_resources:
                     oracle_jdk:
-                        source_type: rpm
+                        resource_type: rpm
                         resource_id: oracle_jdk-7u71-linux-x64.rpm
                         rpm_options: '--nosignature'
 

@@ -50,27 +50,27 @@ def deploy_salt_rhel(
         os.makedirs(temp_rpm_dir_path_rel)
 
     # Prepare all rpm files in `rpms` dir.
-    for rpm_source in salt_deploy_step_config['rpm_sources'].values():
-        if rpm_source['source_type'] == 'zip':
+    for package_resource in salt_deploy_step_config['package_resources'].values():
+        if package_resource['resource_type'] == 'zip':
             unzip_files(
                 content_dir = action_context.content_dir,
-                zip_file_path_rel = rpm_source['file_path'],
+                zip_file_path_rel = package_resource['file_path'],
                 dst_dir = temp_rpm_dir_path_rel,
             )
-        elif rpm_source['source_type'] == 'tar':
+        elif package_resource['resource_type'] == 'tar':
             untar_files(
                 content_dir = action_context.content_dir,
-                tar_file_path_rel = rpm_source['file_path'],
+                tar_file_path_rel = package_resource['file_path'],
                 dst_dir = temp_rpm_dir_path_rel,
             )
-        elif rpm_source['source_type'] == 'rpm':
+        elif package_resource['resource_type'] == 'rpm':
             # Simply copy that file.
             call_subprocess(
                 command_args = [
                     'cp',
                     os.path.join(
                         action_context.content_dir,
-                        rpm_source['file_path'],
+                        package_resource['file_path'],
                     ),
                     temp_rpm_dir_path_rel,
                 ],
@@ -131,8 +131,8 @@ def deploy_salt_windows(
             return
 
     # Prepare all rpm files in `rpms` dir.
-    for rpm_source in salt_deploy_step_config['rpm_sources'].values():
-        if rpm_source['source_type'] == 'exe':
+    for package_resource in salt_deploy_step_config['package_resources'].values():
+        if package_resource['resource_type'] == 'exe':
 
             # Translate Cygwin path into Windows path
             process_output = call_subprocess(
@@ -141,7 +141,7 @@ def deploy_salt_windows(
                     '-w',
                     os.path.join(
                         action_context.content_dir,
-                        rpm_source['file_path'],
+                        package_resource['file_path'],
                     ),
                 ],
                 raise_on_error = True,
@@ -163,7 +163,7 @@ def deploy_salt_windows(
                 capture_stdout = False,
                 capture_stderr = False,
             )
-            salt_installer_path_windows = 'C:\\' + os.path.basename(rpm_source['file_path'])
+            salt_installer_path_windows = 'C:\\' + os.path.basename(package_resource['file_path'])
 
             # Run official Salt Minion installer.
             call_subprocess(
