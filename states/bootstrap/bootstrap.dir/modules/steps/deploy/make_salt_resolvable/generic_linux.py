@@ -1,10 +1,12 @@
 
+###############################################################################
+
 import os.path
 
 from utils.hosts_file import do_patch
 from utils.hosts_file import do_diff
 from utils.exec_command import call_subprocess
-from utils.set_network import ping_host
+from utils.set_network import ping_host_linux
 
 ###############################################################################
 #
@@ -52,7 +54,7 @@ def do(action_context):
     update_hosts_file(action_context)
 
     # Make sure `salt` hosts are ping-able.
-    ping_host(
+    ping_host_linux(
         resolvable_string = 'salt',
     )
 

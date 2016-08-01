@@ -1,7 +1,9 @@
 
+###############################################################################
+
 import logging
 
-from utils.set_network import ping_host
+from utils.set_network import ping_host_windows
 
 ###############################################################################
 #
@@ -14,12 +16,8 @@ def do(action_context):
     from steps.deploy.make_salt_resolvable.generic_linux import update_hosts_file
     update_hosts_file(action_context)
 
-    # TODO: Implement for Windows.
-    logging.critical("Implement for Windows.")
-    return
-
     # Make sure `salt` hosts are ping-able.
-    ping_host(
+    ping_host_windows(
         resolvable_string = 'salt',
     )
 

@@ -1,5 +1,8 @@
+
+###############################################################################
+
 from utils.exec_command import call_subprocess
-from utils.set_network import ping_host
+from utils.set_network import ping_host_linux
 from utils.set_network import set_net_config_var
 from utils.set_network import set_transient_route
 
@@ -23,7 +26,7 @@ def do(action_context):
     )
 
     # Test default gateway.
-    ping_host(
+    ping_host_linux(
         action_context.conf_m.init_ip_route['remote_network_ip'],
     )
 
