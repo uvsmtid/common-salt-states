@@ -1,11 +1,6 @@
 # Maven installation.
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
+{% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
 ###############################################################################
 {% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
@@ -24,8 +19,8 @@
 #       likely due to the fact that the repo is only accessible over `https`,
 #       while URL in the YUM uses `http`.
 # Download RPM for `openstack-juno` YUM repository.
-{% set local_rpm_file_name = config_temp_dir + '/' + get_registered_content_item_base_name('openstack-rdo-release-juno-1.noarch.rpm') %}
-# '{{ config_temp_dir }}/{{ get_registered_content_item_base_name('openstack-rdo-release-juno-1.noarch.rpm') }}':
+{% set local_rpm_file_name = get_salt_content_temp_dir() + '/' + get_registered_content_item_base_name('openstack-rdo-release-juno-1.noarch.rpm') %}
+# '{{ get_salt_content_temp_dir() }}/{{ get_registered_content_item_base_name('openstack-rdo-release-juno-1.noarch.rpm') }}':
 '{{ local_rpm_file_name }}':
     file.managed:
         - source: {{ get_registered_content_item_URI('openstack-rdo-release-juno-1.noarch.rpm') }}

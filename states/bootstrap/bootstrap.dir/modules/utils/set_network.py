@@ -6,7 +6,7 @@ from utils.exec_command import call_subprocess
 ###############################################################################
 #
 
-def ping_host(
+def ping_host_linux(
     # Use either hostname or IP address.
     resolvable_string,
     ping_times = 3,
@@ -15,6 +15,26 @@ def ping_host(
         command_args = [
             '/bin/ping',
             '-c',
+            str(ping_times),
+            resolvable_string,
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
+#
+
+def ping_host_windows(
+    # Use either hostname or IP address.
+    resolvable_string,
+    ping_times = 3,
+):
+    call_subprocess(
+        command_args = [
+            'ping',
+            '-n',
             str(ping_times),
             resolvable_string,
         ],

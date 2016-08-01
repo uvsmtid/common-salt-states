@@ -1,7 +1,9 @@
+#
 
 ################################################################################
+#
 
-{% macro configure_deploy_step_function(
+{% macro configure_selected_host_step_function(
         source_env_pillar
         ,
         target_env_pillar
@@ -42,4 +44,34 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
             - file: req_file_{{ requisite_config_file_id }}
 
 {% endmacro %}
+
+###############################################################################
+#
+
+{% macro prepare_resources_step_function(
+        source_env_pillar
+        ,
+        target_env_pillar
+        ,
+        deploy_step
+        ,
+        deploy_step_config
+        ,
+        project_name
+        ,
+        profile_name
+        ,
+        target_contents_dir
+        ,
+        bootstrap_dir
+    )
+%}
+
+# There is no resource preparation for `run_init_states` step.
+
+{% endmacro %}
+
+###############################################################################
+# EOF
+###############################################################################
 

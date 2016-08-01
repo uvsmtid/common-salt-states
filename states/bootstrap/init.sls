@@ -25,6 +25,18 @@ bootstrap_directory_copy:
             - group
             - mode
 
+bootstrap_file_powershell_script:
+    file.managed:
+        - name: '{{ bootstrap_dir }}/bootstrap.ps1'
+        - source: 'salt://bootstrap/bootstrap.ps1.sls'
+        - template: jinja
+        - makedirs: True
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
+        - mode: 755
+        - require:
+            - file: bootstrap_directory_copy
+
 # Because permissions are not replicated in the copy from master, we have
 # to set executable permission on the main script.
 # See:

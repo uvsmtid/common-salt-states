@@ -1,9 +1,12 @@
 #
 
+################################################################################
+#
+
 # Define properties (they are loaded as values to the root of pillars):
 {% set props = pillar %}
 
-{% macro configure_deploy_step_function(
+{% macro configure_selected_host_step_function(
         source_env_pillar
         ,
         target_env_pillar
@@ -29,6 +32,7 @@
 %}
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
+{% set os_type = target_env_pillar['system_platforms'][os_platform]['os_type'] %}
 
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_URI_scheme_abs_links_base_dir_path_from_pillar with context %}
@@ -52,7 +56,11 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
                 "is_master": False,
                 {% endif %}
                 "src_salt_config_file": "resources/conf/{{ project_name }}/{{ profile_name }}/{{ selected_host_name }}/master.conf",
+                {% if os_type == 'linux' %}
                 "dst_salt_config_file": "/etc/salt/master",
+                {% elif os_type == 'windows' %}
+                "dst_salt_config_file": "/cygdrive/c/salt/conf/master",
+                {% endif %}
                 "rpm_sources": {
                     {% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][os_platform].keys() %}
                     {% set rpm_source_config = deploy_step_config['salt_master_rpm_sources'][os_platform][rpm_source_name] %}
@@ -89,8 +97,8 @@ config_file_{{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_
         - user: '{{ account_conf['username'] }}'
         - group: '{{ account_conf['primary_group'] }}'
 
-# Resources used by the step.
-
+# Prepare resources for Salt master.
+{% if selected_host_name in target_env_pillar['system_host_roles']['salt_master_role']['assigned_hosts'] %}
 {% for rpm_source_name in deploy_step_config['salt_master_rpm_sources'][os_platform].keys() %}
 {% set rpm_source_config = deploy_step_config['salt_master_rpm_sources'][os_platform][rpm_source_name] %}
 {% if rpm_source_config['source_type'] %}
@@ -106,6 +114,39 @@ res_file_{{ requisite_config_file_id }}_{{ deploy_step }}_depository_item_{{ rpm
         - group: '{{ account_conf['primary_group'] }}'
 {% endif %}
 {% endfor %}
+{% endif %}
 
 {% endmacro %}
+
+###############################################################################
+#
+
+{% macro prepare_resources_step_function(
+        source_env_pillar
+        ,
+        target_env_pillar
+        ,
+        deploy_step
+        ,
+        deploy_step_config
+        ,
+        project_name
+        ,
+        profile_name
+        ,
+        target_contents_dir
+        ,
+        bootstrap_dir
+    )
+%}
+
+# NOTE: The resource preparation for `install_salt_master`
+#       is `selected_host_name`-specific.
+#       It is handled by `configure_selected_host_step_function`.
+
+{% endmacro %}
+
+###############################################################################
+# EOF
+###############################################################################
 

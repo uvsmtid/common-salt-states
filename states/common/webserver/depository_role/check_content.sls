@@ -31,11 +31,11 @@ def run():
 
     script_name = 'check_content.sh'
     depository_role_content_parent_dir = __pillar__['system_features']['validate_depository_role_content']['depository_role_content_parent_dir']
-    posix_config_temp_dir = __pillar__['posix_config_temp_dir']
+    posix_salt_content_temp_dir = __pillar__['posix_salt_content_temp_dir']
 
     # First, deploy the script.
     script_path = os.path.join(
-        posix_config_temp_dir,
+        posix_salt_content_temp_dir,
         script_name,
     )
     deploy_script = {

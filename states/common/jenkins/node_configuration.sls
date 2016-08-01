@@ -25,8 +25,10 @@ include:
 
 {% set os_type = pillar['system_platforms'][host_config['os_platform']]['os_type'] %}
 
+{% from 'common/libs/utils.lib.sls' import get_posix_salt_content_temp_dir with context %}
+
 # Put node configuration:
-'{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml':
+'{{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.node.config.{{ slave_name }}.xml':
     file.managed:
         - source: salt://common/jenkins/jenkins.node.config.template.xml
         - template: jinja
@@ -56,30 +58,30 @@ include:
 # Make sure node configuration does not exist:
 add_{{ slave_name }}_node_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-node {{ slave_name }}"
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-node {{ slave_name }}"
+        - name: "cat {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.node.config.{{ slave_name }}.xml | java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-node {{ slave_name }}"
+        - unless: "java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-node {{ slave_name }}"
         - require:
             - cmd: download_jenkins_cli_jar
-            - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml'
+            - file: '{{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.node.config.{{ slave_name }}.xml'
 
 # Update node configuration.
 # The update won't happen (it will be the same) if node has just been created.
 update_{{ slave_name }}_node_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-node {{ slave_name }}"
+        - name: "cat {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.node.config.{{ slave_name }}.xml | java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-node {{ slave_name }}"
 {% if not pillar['system_features']['configure_jenkins']['rewrite_jenkins_configuration_for_nodes'] %}
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-node {{ slave_name }}"
+        - unless: "java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-node {{ slave_name }}"
 {% endif %}
         - require:
             - cmd: download_jenkins_cli_jar
-            - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.node.config.{{ slave_name }}.xml'
+            - file: '{{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.node.config.{{ slave_name }}.xml'
             - cmd: add_{{ slave_name }}_node_configuration_to_jenkins
 
 # Reconnect slave node:
 {% if pillar['system_features']['configure_jenkins']['make_sure_nodes_are_connected'] %}
 reconnect_{{ slave_name }}_node_with_jenkins:
     cmd.run:
-        - name: 'java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ connect-node {{ slave_name }} -f'
+        - name: 'java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ connect-node {{ slave_name }} -f'
         - require:
             - cmd: download_jenkins_cli_jar
             - cmd: add_{{ slave_name }}_node_configuration_to_jenkins

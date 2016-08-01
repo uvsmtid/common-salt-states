@@ -23,6 +23,8 @@
 
 {% set jenkins_master_hostname = pillar['system_hosts'][pillar['system_host_roles']['jenkins_master_role']['assigned_hosts'][0]]['hostname'] %}
 
+{% from 'common/libs/utils.lib.sls' import get_posix_salt_content_temp_dir with context %}
+
 # NOTE: At the moment (and it is probably right) only single host is selected
 #       from only first listed role.
 #       Basically, it means that the job can only be assigned to single host.
@@ -38,7 +40,7 @@
 {% set URI_prefix = pillar['system_features']['deploy_central_control_directory']['URI_prefix'] %}
 
 # Put job configuration:
-{% set jenkins_job_config_file_path = pillar['posix_config_temp_dir'] + '/jenkins/jenkins.job.config.' + job_name + '.xml' %}
+{% set jenkins_job_config_file_path = get_posix_salt_content_temp_dir() + '/jenkins/jenkins.job.config.' + job_name + '.xml' %}
 jenkins_job_config_{{ job_name }}:
     file.managed:
         - name: '{{ jenkins_job_config_file_path }}'
@@ -62,7 +64,7 @@ jenkins_job_config_{{ job_name }}:
             # before configuring parent job, we need to prepare
             # configuration files for each promotion job first.
             {% for promotion_id in job_config['use_promotions'] %}
-                - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ promotion_id }}.xml'
+                - file: '{{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.job.config.{{ promotion_id }}.xml'
             {% endfor %}
         {% endif %} # use_promotions
 
@@ -98,8 +100,8 @@ jenkins_job_config_{{ job_name }}:
 # TODO: Make it a common macro for `simple_xml_template_job.sls` and `promotable_xml_template_job.sls`.
 add_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ jenkins_job_config_file_path }} | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-job {{ job_name }}"
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
+        - name: "cat {{ jenkins_job_config_file_path }} | java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ create-job {{ job_name }}"
+        - unless: "java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
         - require:
             - cmd: download_jenkins_cli_jar
             - file: jenkins_job_config_{{ job_name }}
@@ -109,9 +111,9 @@ add_{{ job_name }}_job_configuration_to_jenkins:
 # The update won't happen (it will be the same) if job has just been created.
 update_{{ job_name }}_job_configuration_to_jenkins:
     cmd.run:
-        - name: "cat {{ jenkins_job_config_file_path }} | java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-job {{ job_name }}"
+        - name: "cat {{ jenkins_job_config_file_path }} | java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ update-job {{ job_name }}"
 {% if not pillar['system_features']['configure_jenkins']['rewrite_jenkins_configuration_for_jobs'] %}
-        - unless: "java -jar {{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
+        - unless: "java -jar {{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins-cli.jar -s http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/ get-job {{ job_name }}"
 {% endif %}
         - require:
             - cmd: download_jenkins_cli_jar
@@ -132,13 +134,13 @@ detach_{{ promotion_id }}_on_{{ job_name }}:
             - http_proxy: ~
             - https_proxy: ~
         - require:
-            - file: '{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ promotion_id }}.xml'
+            - file: '{{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.job.config.{{ promotion_id }}.xml'
             - cmd: update_{{ job_name }}_job_configuration_to_jenkins
 
 # Attach promotion to parent job using updated configuration.
 attach_{{ promotion_id }}_on_{{ job_name }}:
     cmd.run:
-        - name: "curl -v -X POST --data-binary '@{{ pillar['posix_config_temp_dir'] }}/jenkins/jenkins.job.config.{{ promotion_id }}.xml' -H 'Content-Type: application/xml' 'http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/job/{{ job_name }}/promotion/createProcess?name={{ promotion_id }}'"
+        - name: "curl -v -X POST --data-binary '@{{ get_posix_salt_content_temp_dir() }}/jenkins/jenkins.job.config.{{ promotion_id }}.xml' -H 'Content-Type: application/xml' 'http://{{ jenkins_master_hostname }}:{{ jenkins_http_port }}/job/{{ job_name }}/promotion/createProcess?name={{ promotion_id }}'"
         - env:
             # Disable proxy settings for `jenkins_master_hostname`.
             - http_proxy: ~

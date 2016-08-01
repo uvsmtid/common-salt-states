@@ -60,14 +60,20 @@ system_features:
             {% set repo_name = 'common-salt-states' %}
             {{ repo_name }}:
                 export_enabled: True
-                export_method: clone
+                # NOTE: Use `checkout-index` if generation speed is required.
+                #export_method: clone
+                #export_method: checkout-index
+                export_method: checkout-index
                 export_format: dir
 
             {% if project_name != 'common' %}
             {% set repo_name = project_name + '-salt-states' %}
             {{ repo_name }}:
                 export_enabled: True
-                export_method: clone
+                # NOTE: Use `checkout-index` if generation speed is required.
+                #export_method: clone
+                #export_method: checkout-index
+                export_method: checkout-index
                 export_format: dir
             {% endif %}
 
@@ -108,7 +114,10 @@ system_features:
             {{ repo_name }}:
                 # This repo is replaced by "target" pillar repository.
                 export_enabled: False
-                export_method: clone
+                # NOTE: Use `checkout-index` if generation speed is required.
+                #export_method: clone
+                #export_method: checkout-index
+                export_method: checkout-index
                 export_format: dir
 
             # We only need to export pillars for target environment
@@ -119,7 +128,10 @@ system_features:
                 # the repository is adjusted to point to the branch
                 # with corresponding profile.
                 export_enabled: True
-                export_method: clone
+                # NOTE: Use `checkout-index` if generation speed is required.
+                #export_method: clone
+                #export_method: checkout-index
+                export_method: checkout-index
                 export_format: dir
                 target_repo_name: {{ project_name }}-salt-pillars
 

@@ -2,6 +2,8 @@
 
 include:
 
+    - common.vagrant.publish_bootstrap_package
+
 {% for selected_host_name in pillar['system_hosts'].keys() %}
 
 {% set selected_host = pillar['system_hosts'][selected_host_name] %}

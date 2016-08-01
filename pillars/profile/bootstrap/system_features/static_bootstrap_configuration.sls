@@ -170,7 +170,11 @@ system_features:
 
                     win7: {} # TODO
 
-                    winserv2012: {} # TODO
+                    winserv2012:
+
+                        sal-minion:
+                            source_type: exe
+                            resource_id: Salt-Minion-2015.5.11-AMD64-Setup.exe
 
             link_sources:
                 step_enabled: True

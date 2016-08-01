@@ -1,7 +1,9 @@
+#
 
-################################################################################
+###############################################################################
+#
 
-{% macro configure_deploy_step_function(
+{% macro configure_selected_host_step_function(
         source_env_pillar
         ,
         target_env_pillar
@@ -51,6 +53,30 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
         - require:
             - file: req_file_{{ requisite_config_file_id }}
 
+{% endmacro %}
+
+###############################################################################
+#
+
+{% macro prepare_resources_step_function(
+        source_env_pillar
+        ,
+        target_env_pillar
+        ,
+        deploy_step
+        ,
+        deploy_step_config
+        ,
+        project_name
+        ,
+        profile_name
+        ,
+        target_contents_dir
+        ,
+        bootstrap_dir
+    )
+%}
+
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_registered_content_item_URI_from_pillar with context %}
 {% from resources_macro_lib import get_registered_content_item_hash_from_pillar with context %}
@@ -69,6 +95,7 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
 #                for all resource items are different.
 
 {% set resource_respositories = target_env_pillar['system_features']['resource_repositories_configuration']['resource_respositories'] %}
+{% set resource_base_dir_rel_path = 'resources/depository/' + project_name + '/' + profile_name %}
 
 # Download resources for the project_name/profile_name.
 # Resources are shared among all hosts in the same project_name/profile_name.
@@ -84,7 +111,7 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
 #       using `bootstrap_package_use_cases` list in bootstrap configuration.
 {% if get_registered_content_item_bootstrap_use_cases_from_pillar(content_item_id, target_env_pillar) != 'False' %}
 
-res_file_{{ content_item_id }}_{{ project_name }}_{{ profile_name }}_{{ selected_host_name }}:
+res_file_{{ content_item_id }}_{{ project_name }}_{{ profile_name }}:
     file.managed:
         # TODO: Resource location should be adjusted through symlinks just like symlinks to sources.
         #       At the moment all resources during `deploy` appear in
@@ -106,4 +133,8 @@ res_file_{{ content_item_id }}_{{ project_name }}_{{ profile_name }}_{{ selected
 {% endfor %}
 
 {% endmacro %}
+
+###############################################################################
+# EOF
+###############################################################################
 

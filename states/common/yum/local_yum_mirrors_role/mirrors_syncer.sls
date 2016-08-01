@@ -6,13 +6,6 @@
 # which happens to have (sometimes) access to both Internet and repos server.
 #
 
-{% if grains['kernel'] == 'Linux' %}
-{% set config_temp_dir = pillar['posix_config_temp_dir'] %}
-{% endif %}
-{% if grains['kernel'] == 'Windows' %}
-{% set config_temp_dir = pillar['windows_config_temp_dir'] %}
-{% endif %}
-
 ###############################################################################
 # [[[ Any Linux
 {% if not grains['os_platform_type'].startswith('win') %}

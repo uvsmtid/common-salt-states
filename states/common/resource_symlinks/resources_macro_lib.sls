@@ -7,7 +7,7 @@
     )
 -%}
 
-{%- set resource_symlink = target_env_pillar['posix_config_temp_dir'] + '/repositories/' + 'all' %}
+{%- set resource_symlink = target_env_pillar['posix_salt_content_temp_dir'] + '/repositories/' + 'all' %}
 
 {{- resource_symlink -}}
 
@@ -42,7 +42,7 @@
 {%- endmacro -%}
 
 ###############################################################################
-# item_parent_dir_path
+# item_parent_dir_path | posix
 ###############################################################################
 
 {%- macro get_registered_content_item_parent_dir_path_from_pillar(
@@ -65,12 +65,40 @@
     )
 -%}
 
-{{- get_registered_content_item_parent_dir_path(registered_content_item_id, pillar) -}}
+{{- get_registered_content_item_parent_dir_path_from_pillar(registered_content_item_id, pillar) -}}
 
 {%- endmacro -%}
 
 ###############################################################################
-# item_rel_path
+# item_parent_dir_path | windows
+###############################################################################
+
+{%- macro get_registered_content_item_parent_dir_path_windows_from_pillar(
+        registered_content_item_id
+        ,
+        pillar_data
+    )
+-%}
+
+{%- set registered_content_item_config = pillar_data['system_resources'][registered_content_item_id] -%}
+
+{{- registered_content_item_config['item_parent_dir_path']|replace("/", "\\") -}}
+
+{%- endmacro -%}
+
+#------------------------------------------------------------------------------
+
+{%- macro get_registered_content_item_parent_dir_windows_path(
+        registered_content_item_id
+    )
+-%}
+
+{{- get_registered_content_item_parent_dir_path_windows_from_pillar(registered_content_item_id, pillar) -}}
+
+{%- endmacro -%}
+
+###############################################################################
+# item_rel_path | posix
 ###############################################################################
 
 {%- macro get_registered_content_item_rel_path_from_pillar(
@@ -93,7 +121,35 @@
     )
 -%}
 
-{{- get_registered_content_item_rel_path(registered_content_item_id, pillar) -}}
+{{- get_registered_content_item_rel_path_from_pillar(registered_content_item_id, pillar) -}}
+
+{%- endmacro -%}
+
+###############################################################################
+# item_rel_path | windows
+###############################################################################
+
+{%- macro get_registered_content_item_rel_path_windows_from_pillar(
+        registered_content_item_id
+        ,
+        pillar_data
+    )
+-%}
+
+{{- get_registered_content_item_parent_dir_path_windows_from_pillar(registered_content_item_id, pillar_data) -}}
+\
+{{- get_registered_content_item_base_name_from_pillar(registered_content_item_id, pillar_data) -}}
+
+{%- endmacro -%}
+
+#------------------------------------------------------------------------------
+
+{%- macro get_registered_content_item_rel_path_windows(
+        registered_content_item_id
+    )
+-%}
+
+{{- get_registered_content_item_rel_path_windows_from_pillar(registered_content_item_id, pillar) -}}
 
 {%- endmacro -%}
 

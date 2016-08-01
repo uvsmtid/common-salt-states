@@ -3,10 +3,21 @@
 
 # Define properties (they are loaded as values to the root of pillars):
 {% set props = pillar %}
+{% set project_name = pillar['project_name'] %}
+{% set profile_name = pillar['profile_name'] %}
+{% set target_env_pillar = pillar['bootstrap_target_envs'][project_name + '.' + profile_name] %}
 
 # Include other macros.
 {% set resources_macro_lib = 'common/system_secrets/lib.sls' %}
 {% from resources_macro_lib import get_single_line_system_secret with context %}
+{% set resources_macro_lib = 'common/libs/utils.lib.sls' %}
+{% from resources_macro_lib import get_windows_salt_content_temp_dir_from_pillar with context %}
+
+# Get IP address of first host assigned to `vagrant_box_publisher_role`.
+{% set vagrant_box_publisher_role_first_host = pillar['system_host_roles']['vagrant_box_publisher_role']['assigned_hosts'][0] %}
+{% set vagrant_box_publisher_role_first_host_network_resolved_in = pillar['system_hosts'][vagrant_box_publisher_role_first_host]['resolved_in'] %}
+{% set vagrant_box_publisher_role_first_host_ip = pillar['system_hosts'][vagrant_box_publisher_role_first_host]['host_networks'][vagrant_box_publisher_role_first_host_network_resolved_in]['ip'] %}
+{% set vagrant_box_publisher_role_hostname = pillar['system_host_roles']['vagrant_box_publisher_role']['hostname'] %}
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
@@ -66,9 +77,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 {% set hypervisor_host_id = pillar['system_host_roles']['virtual_machine_hypervisor_role']['assigned_hosts'][0] %}
   config.vm.network "public_network", ip: "{{ pillar['system_hosts'][hypervisor_host_id]['hosts_networks'][vagrant_net_name]['ip'] }}"
 {% endif %}
-
-{% set project_name = pillar['project_name'] %}
-{% set profile_name = pillar['profile_name'] %}
 
 {% set bootstrap_dir_basename = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 
@@ -137,8 +145,61 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     {% set boostrap_cmd = 'python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # generate_packages
     {% set src_sync_dir = bootstrap_dir_basename + '/packages/' + project_name + '/' + profile_name %}
-    {% if not package_type %} # package_type
-    {% set boostrap_cmd = default_bootstrap_cmd %}
+    {% if package_type == 'zip' %} # package_type
+    {% if os_type == "windows" %}
+    # * Set name resolution for host assigned to `vagrant_box_publisher_role`
+    #   so that virtual hosts configured on the web server
+    #   get selected correctly by the hostname.
+    #   See also:
+    #       http://stackoverflow.com/a/11353979/441652
+    # * Run download command.
+    #   NOTE: Command `wget` in PowerShell is too slow.
+    #   See also:
+    #       http://superuser.com/a/693179
+    # * Unzip the package.
+    {% set download_base_dir = get_windows_salt_content_temp_dir_from_pillar(target_env_pillar)|replace("\\", "\\\\") %}
+    {% set bootstrap_base_dir = download_base_dir + '\\\\salt-auto-install' %}
+    {% set boostrap_cmd = '
+Set-PSDebug -Strict -Trace 2
+
+# Change to directory with temporary Salt content.
+New-Item -ItemType Directory -Force -Path \\"' + download_base_dir + '\\"
+Get-Location
+Set-Location -Path \\"' + download_base_dir + '\\"
+Get-Location
+
+# Add entry to the hosts file.
+$ip = \\"' + vagrant_box_publisher_role_first_host_ip + '\\"
+$xhost = \\"' + vagrant_box_publisher_role_hostname + '\\"
+\\"`n`t{0}`t{1}\\" -f $ip, $xhost | out-file \\"$env:windir\\\\System32\\\\drivers\\\\etc\\\\hosts\\" -enc ascii -append
+
+# Download bootstrap package.
+# TODO: Formalize this location and make sure bootstrap package is
+#       ready on `vagrant_box_publisher_role_hostname` to be downloaded.
+$bootstrap_package_name=\\"salt-auto-install.' + package_type + '\\"
+$bootstrap_package_path=\\"/packages/' + project_name + '/' + profile_name + '/' + '$bootstrap_package_name\\"
+$url = \\"http://$xhost/$bootstrap_package_path\\"
+# DO NOT use `wget` - it downloads 100X slower.
+#wget $url -OutFile $bootstrap_package_name
+$client = New-Object System.Net.WebClient
+$client.DownloadFile($url, \\"$bootstrap_package_name\\")
+
+# Unpack bootstrap package.
+$bootstrap_base_dir=\\"' + bootstrap_base_dir + '\\"
+Add-Type -A System.IO.Compression.FileSystem
+[IO.Compression.ZipFile]::ExtractToDirectory(\\"$bootstrap_package_name\\", \\"$bootstrap_base_dir\\")
+
+# Run bootstrap powershell wrapper on Windows.
+$vagrant_bootstrap_use_case=\\"' + vagrant_bootstrap_use_case + '\\"
+$project_name=\\"' + project_name + '\\"
+$profile_name=\\"' + profile_name + '\\"
+$selected_host_name=\\"' + selected_host_name + '\\"
+Invoke-Expression \\"$bootstrap_base_dir\\\\bootstrap.ps1 deploy $vagrant_bootstrap_use_case $project_name $profile_name $selected_host_name\\"
+
+# EOF
+'
+    %}
+    {% endif %} # os_type
     {% elif package_type == 'tar.gz' %} # package_type
     {% set boostrap_cmd = 'tar -xzvf /vagrant/' + bootstrap_dir_basename + '/salt-auto-install.' + package_type + ' --directory=/vagrant/' + bootstrap_dir_basename + '/ ; python /vagrant/' + bootstrap_dir_basename + '/bootstrap.py deploy ' + vagrant_bootstrap_use_case + ' conf/' + project_name + '/' + profile_name + '/' + selected_host_name + '.py' %}
     {% else %} # package_type
