@@ -132,12 +132,16 @@ req_file_{{ requisite_config_file_id }}:
 {% endfor %} # deploy_step
 
 # Copy scripts content per each project_name and profile_name.
-req_file_{{ target_contents_dir }}_modules_copy_script_to_packages:
+{% for item_path in [
+        'modules/',
+        'bootstrap.py',
+        'bootstrap.ps1',
+    ]
+%}
+req_file_{{ target_contents_dir }}_{{ item_path }}__copy_to_packages:
     cmd.run:
-        - name: 'rsync -avp {{ bootstrap_dir }}/modules/ {{ target_contents_dir }}/modules/'
-req_file_{{ target_contents_dir }}_bootstrap.py_copy_script_to_packages:
-    cmd.run:
-        - name: 'rsync -avp {{ bootstrap_dir }}/bootstrap.py {{ target_contents_dir }}/bootstrap.py'
+        - name: 'rsync -avp {{ bootstrap_dir }}/{{ item_path }} {{ target_contents_dir }}/{{ item_path }}'
+{% endfor %}
 
 # Check whether generation of packages is required (time consuming).
 {% if pillar['system_features']['source_bootstrap_configuration']['generate_packages'] %} # generate_packages
