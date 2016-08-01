@@ -156,6 +156,86 @@ def stop_service_initd(
     )
 
 ###############################################################################
+#
+
+def enable_service_powershell(
+    service_name,
+    raise_on_error = True,
+):
+
+    call_subprocess(
+        command_args = [
+            'powershell',
+            'Set-Service',
+            '-StartupType',
+            'automatic',
+            service_name,
+        ],
+        raise_on_error = raise_on_error,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
+#
+
+def disable_service_powershell(
+    service_name,
+    raise_on_error = True,
+):
+
+    call_subprocess(
+        command_args = [
+            'powershell',
+            'Set-Service',
+            '-StartupType',
+            'manual',
+            service_name,
+        ],
+        raise_on_error = raise_on_error,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
+#
+
+def start_service_powershell(
+    service_name,
+    raise_on_error = True,
+):
+
+    call_subprocess(
+        command_args = [
+            'powershell',
+            'Start-Service',
+            service_name,
+        ],
+        raise_on_error = raise_on_error,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
+#
+
+def stop_service_powershell(
+    service_name,
+    raise_on_error = True,
+):
+
+    call_subprocess(
+        command_args = [
+            'powershell',
+            'Stop-Service',
+            service_name,
+        ],
+        raise_on_error = raise_on_error,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
 # EOF
 ###############################################################################
 

@@ -8,7 +8,13 @@ from utils.check_salt_output import process_string
 
 ###############################################################################
 #
-def run_states(state_names, salt_extra_args, cmd_extra_args):
+
+def run_states(
+    state_names,
+    salt_extra_args,
+    cmd_extra_args,
+    salt_call_path = 'salt-call',
+):
 
     # Run `saltutil.sync_all` which is required to
     # get custom grains at least.
@@ -16,7 +22,7 @@ def run_states(state_names, salt_extra_args, cmd_extra_args):
     # If something is not synced yet, next `state.sls` should fail.
     process_output = call_subprocess(
         command_args = [
-            'salt-call',
+            salt_call_path,
             '--out',
             'json',
             '--log-level',
@@ -37,7 +43,7 @@ def run_states(state_names, salt_extra_args, cmd_extra_args):
         # whether they are applicable on this particular minion.
         process_output = call_subprocess(
             command_args = [
-                'salt-call',
+                salt_call_path,
                 '--out',
                 'json',
                 '--log-level',
@@ -70,6 +76,7 @@ def run_states(state_names, salt_extra_args, cmd_extra_args):
 
 ###############################################################################
 #
+
 def run_init_states(
     # TODO: Use better value for use case than None.
     #       At the moment `run_use_case` is expected to specify
@@ -80,6 +87,7 @@ def run_init_states(
     salt_extra_args,
     cmd_extra_args,
     extra_state_names,
+    salt_call_path = 'salt-call',
 ):
 
     # Explanation per use case:
@@ -112,10 +120,12 @@ def run_init_states(
         ] + extra_state_names,
         salt_extra_args = salt_extra_args,
         cmd_extra_args = cmd_extra_args,
+        salt_call_path = salt_call_path,
     )
 
 ###############################################################################
 #
+
 def do(action_context):
 
     run_init_states(

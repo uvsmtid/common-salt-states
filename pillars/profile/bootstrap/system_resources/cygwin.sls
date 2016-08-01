@@ -12,9 +12,9 @@ system_resources:
         bootstrap_use_cases: True
         enable_content_validation: True
         enable_installation: True
-        item_parent_dir_path: common/cygwin
-        item_base_name: cygwin-offline.git.v0.0.0-1-gdbdcd25.zip
-        item_content_hash: 948c27875cd400b620623912f5d29cbc
+        item_parent_dir_path: bootstrap/cygwin
+        item_base_name: cygwin-offline.git-v0.0.0-14-ge0ee0ea.cygwin-v2.5.2.zip
+        item_content_hash: 0a7ef5a0883c52b12248ff3f57d24a33
 
 ###############################################################################
 # EOF

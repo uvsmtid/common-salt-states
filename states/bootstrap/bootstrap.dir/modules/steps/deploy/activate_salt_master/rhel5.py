@@ -7,7 +7,7 @@ from utils.process_zero import stop_service_initd as stop_service
 from utils.process_zero import enable_service_initd as enable_service
 from utils.process_zero import start_service_initd as start_service
 
-from utils.set_network import ping_host
+from utils.set_network import ping_host_linux
 
 ###############################################################################
 #
@@ -32,7 +32,7 @@ def ensure_salt_master_activation(service_name):
     start_service(service_name)
 
     # Just a 5 sec delay introduced through `ping` to let service start.
-    ping_host(
+    ping_host_linux(
         'salt',
         5,
     )

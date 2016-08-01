@@ -1,14 +1,13 @@
+#
 
-###############################################################################
-
-from steps.deploy.init_ip_route.rhel5 import do as do_rhel5
+import logging
 
 ###############################################################################
 #
 
 def do(action_context):
-    # At the moment, there is no difference with `rhel5`.    
-    do_rhel5(action_context)
+
+    logging.critical('NOT IMPLEMENTED: TODO: This step requires support various archivers depending on their existance on clean target platform. Currently, unpacked directory is used.')
 
 ###############################################################################
 # EOF

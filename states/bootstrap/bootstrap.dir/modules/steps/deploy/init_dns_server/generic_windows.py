@@ -1,14 +1,20 @@
 
 ###############################################################################
 
+import logging
 import os.path
+
 from utils.exec_command import call_subprocess
-from utils.set_network import ping_host_linux
+from utils.set_network import ping_host_windows
 
 ###############################################################################
 #
 
 def do(action_context):
+
+    # TODO: Implement for Windows.
+    logging.critical("Implement for Windows.")
+    return
 
     # Deploy `resolv.conf` configuration file.
     call_subprocess(
@@ -26,7 +32,7 @@ def do(action_context):
     )
 
     # Make sure remote hosts are ping-able.
-    ping_host_linux(
+    ping_host_windows(
         resolvable_string = action_context.conf_m.init_dns_server['remote_hostname'],
     )
 
