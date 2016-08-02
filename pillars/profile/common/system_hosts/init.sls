@@ -24,6 +24,8 @@ include:
         'shared_sonarqube'
         ,
         'shared_vagrant_box_publisher'
+        ,
+        'shared_local_yum_mirrors'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

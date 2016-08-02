@@ -146,6 +146,7 @@ enabled_minion_hosts:
     #shared_sonarqube: W.X.Y.Z
     #shared_jenkins: W.X.Y.Z
     #shared_nexus: W.X.Y.Z
+    #shared_local_yum_mirrors: W.X.Y.Z
     #shared_vagrant_box_publisher: W.X.Y.Z
 
 ###############################################################################
