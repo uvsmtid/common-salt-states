@@ -22,6 +22,8 @@ include:
         'shared_nexus'
         ,
         'shared_sonarqube'
+        ,
+        'shared_vagrant_box_publisher'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
