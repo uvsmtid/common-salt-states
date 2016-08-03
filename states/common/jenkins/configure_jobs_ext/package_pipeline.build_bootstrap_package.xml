@@ -34,29 +34,21 @@
         #######################################################################
         # Select target.
 
-        BOOTSTRAP_TARGET_ENVIRONMENT="${TARGET_PROFILE_NAME:-}"
-        if [ -z "${BOOTSTRAP_TARGET_ENVIRONMENT}" ]
+        BOOTSTRAP_TARGET_PROFILE="${TARGET_PROFILE_NAME:-}"
+        if [ -z "${BOOTSTRAP_TARGET_PROFILE}" ]
         then
             # No selected target environment. Use local environment then.
-            BOOTSTRAP_TARGET_ENVIRONMENT="${SALT_PROFILE_NAME}"
+            BOOTSTRAP_TARGET_PROFILE="${SALT_PROFILE_NAME}"
         fi
 
         #######################################################################
         # Build bootstrap package.
 
-        # NOTE: Overwrite `enable_bootstrap_target_envs` to limit to
-        #       specific profile only.
-        sudo salt-call \
-            --out json \
-            state.sls bootstrap.generate_content \
-            pillar="{ enable_bootstrap_target_envs: [ ${BOOTSTRAP_TARGET_ENVIRONMENT} ] }" \
-            test=False | tee salt.output.json
+        {% set common_states_repo_id = 'common-salt-states' %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][common_states_repo_id]['git'] %}
+        export COMMON_STATES_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
-        # Capture errors from Salt.
-        # At the moment salt does not return exit/error code.
-        # See: https://github.com/saltstack/salt/issues/18510
-        /srv/states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py \
-            salt.output.json
+        "${COMMON_STATES_REPO_PATH}/scripts/generate_bootstrap_package.sh" "${BOOTSTRAP_TARGET_PROFILE}"
 
         #######################################################################
         # Script footer
