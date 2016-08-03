@@ -112,36 +112,6 @@ pillar_roots:
 # ...
 ```
 
-### `this_system_keys` ###
-
-Other parameters are framework-specific:
-*   [`project_name`][9]
-*   [`profile_name`][10]
-*   [`master_minion_id`][11]
-*   [`default_username`][12]
-
-```
-# ...
-
-this_system_keys:
-
-    # Salt master orchestrates only one `project_name`:
-    project_name: project_name
-
-    # Profile can be named after the same host which is used as Salt master.
-    profile_name: this_system
-
-    # Specify id of the Salt minion which is collocated with Salt master.
-    master_minion_id: master_minion_id
-
-    # Specify name of the user which is used by default.
-    # This is the user who has `~/Works/common-salt-states.git` repository
-    # under its home directory.
-    default_username: default_username
-
-# ...
-```
-
 ## Next steps ##
 
 See [Salt runtime][14] document.
@@ -149,8 +119,4 @@ See [Salt runtime][14] document.
 # [footer] #
 
 [2]: /docs/framework.md
-[9]: /docs/configs/common/this_system_keys/project_name/readme.md
-[10]: /docs/configs/common/this_system_keys/profile_name/readme.md
-[11]: /docs/configs/common/this_system_keys/master_minion_id/readme.md
-[12]: /docs/configs/common/this_system_keys/default_username/readme.md
 [14]: /docs/salt_runtime.md

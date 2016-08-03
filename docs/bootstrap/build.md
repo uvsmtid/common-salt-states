@@ -232,32 +232,7 @@ in addition to those mentioned in [Salt configuration][7] document
 
 ## Salt master configuration ##
 
-*   Make sure Salt master configuration has all these keys set correctly:
-
-    *   `this_system_keys:project`
-
-        It should specify current project `project_name`.
-
-    *   `this_system_keys:profile`
-
-        It should specify current profile `SRC_env_profile`.
-
-	TODO: Explain how to run `configure_salt.py` script.
-
-    ```
-    this_system_keys:
-        project: project_name
-        profile: SRC_env_profile
-    ```
-
-*   Make sure both Salt master and Salt minion are restarted after all
-    changes to the settings.
-
-    For example, on Linux with `systemd`:
-
-    ```
-    sudo systemctl restart salt-master salt-minion
-    ```
+TODO: Explain how to run `configure_salt.py` script.
 
 ## Symlinks for repositories ##
 
