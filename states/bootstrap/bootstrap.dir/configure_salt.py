@@ -179,9 +179,9 @@ def main():
         #       than None)?
         run_use_case = None,
         states_repo_abs_path = props['repo_path_states'],
-        overrides_pillars_repo_abs_path = props['repo_path_pillars'],
+        overrides_profile_pillars_repo_abs_path = props['repo_path_profile_pillars'],
         projects_states_repo_abs_paths = props['projects_states_repo_paths'],
-        overrides_bootstrap_target_pillars_repo_abs_path = props['repo_path_bootstrap_target_pillars'],
+        overrides_bootstrap_target_profile_pillars_repo_abs_path = props['repo_path_bootstrap_target_profile_pillars'],
         project_name = props['project_name'],
         profile_name = props['profile_name'],
     )

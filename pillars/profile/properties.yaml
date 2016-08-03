@@ -55,7 +55,7 @@ default_username: username
 symlinks_map:
     # Emulate (via symlinks) existence source and target pillars repositories.
     # NOTE: For normal projects, these lines should be removed.
-    #       Instead, keys `repo_path_pillars` and `repo_path_bootstrap_target_pillars`
+    #       Instead, keys `repo_path_profile_pillars` and `repo_path_bootstrap_target_profile_pillars`
     #       should point to valid separate source and target pillars repositories.
     # Example map entry:
     #     '/path/to/symlink': '/path/to/target'
@@ -81,11 +81,11 @@ developer_mode: False
 # known by Salt (in `/srv` directory) to the required data in repositories.
 repo_path_states: '/home/username/Works/common-salt-states.git'
 
-repo_path_pillars: '/home/username/Works/common-salt-pillars.git'
+repo_path_profile_pillars: '/home/username/Works/common-salt-pillars.git'
 
 # The `bootstrap-target` pillars repository is always used if
 # bootstrap package has to be generated.
-repo_path_bootstrap_target_pillars: '/home/username/Works/common-salt-pillars.bootstrap-target.git'
+repo_path_bootstrap_target_profile_pillars: '/home/username/Works/common-salt-pillars.bootstrap-target.git'
 
 # Additional symlinks from common states repo to project states repos.
 projects_states_repo_paths:

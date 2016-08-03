@@ -65,9 +65,9 @@ def set_salt_states_and_pillars_symlinks(
     #       than None)?
     run_use_case,
     states_repo_abs_path,
-    overrides_pillars_repo_abs_path,
+    overrides_profile_pillars_repo_abs_path,
     projects_states_repo_abs_paths,
-    overrides_bootstrap_target_pillars_repo_abs_path,
+    overrides_bootstrap_target_profile_pillars_repo_abs_path,
     project_name,
     profile_name,
 ):
@@ -173,7 +173,7 @@ def set_salt_states_and_pillars_symlinks(
         {
             'symlink_name': 'overrides'
             ,
-            'symlink_target': overrides_pillars_repo_abs_path
+            'symlink_target': overrides_profile_pillars_repo_abs_path
         }
     ]:
         assert(os.path.isabs(pillars_repo_map_item['symlink_target']))
@@ -233,7 +233,7 @@ def set_salt_states_and_pillars_symlinks(
         command_args = [
             'mkdir',
             '-p',
-            os.path.dirname(overrides_bootstrap_target_pillars_repo_abs_path),
+            os.path.dirname(overrides_bootstrap_target_profile_pillars_repo_abs_path),
         ]
         call_subprocess(
             command_args,
@@ -242,14 +242,14 @@ def set_salt_states_and_pillars_symlinks(
         command_args = [
             'ln',
             '-snf',
-            overrides_pillars_repo_abs_path,
-            overrides_bootstrap_target_pillars_repo_abs_path,
+            overrides_profile_pillars_repo_abs_path,
+            overrides_bootstrap_target_profile_pillars_repo_abs_path,
         ]
         call_subprocess(
             command_args,
         )
 
-    assert(os.path.isabs(overrides_bootstrap_target_pillars_repo_abs_path))
+    assert(os.path.isabs(overrides_bootstrap_target_profile_pillars_repo_abs_path))
 
     # TODO: Create single symlink directly within `/srv` directory.
     #       This symlink is then listed in `file_roots` as
@@ -277,7 +277,7 @@ def set_salt_states_and_pillars_symlinks(
         {
             'symlink_name': 'overrides'
             ,
-            'symlink_target': overrides_bootstrap_target_pillars_repo_abs_path
+            'symlink_target': overrides_bootstrap_target_profile_pillars_repo_abs_path
         }
     ]:
 
@@ -351,9 +351,9 @@ def do(action_context):
         #       than None)?
         run_use_case = action_context.run_use_case,
         states_repo_abs_path = states_destination_dir,
-        overrides_pillars_repo_abs_path = pillars_destination_dir,
+        overrides_profile_pillars_repo_abs_path = pillars_destination_dir,
         projects_states_repo_abs_paths = action_context.conf_m.link_sources['projects_states_repo_abs_paths'],
-        overrides_bootstrap_target_pillars_repo_abs_path = action_context.conf_m.link_sources['overrides_bootstrap_target_pillars_repo_abs_path'],
+        overrides_bootstrap_target_profile_pillars_repo_abs_path = action_context.conf_m.link_sources['overrides_bootstrap_target_profile_pillars_repo_abs_path'],
         project_name = action_context.conf_m.project_name,
         profile_name = action_context.conf_m.profile_name,
     )

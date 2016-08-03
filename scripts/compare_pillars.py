@@ -122,7 +122,7 @@ def main():
     process_output = call_subprocess(
         command_args,
         capture_stdout = True,
-        cwd = props['repo_path_bootstrap_target_pillars'],
+        cwd = props['repo_path_bootstrap_target_profile_pillars'],
     )
     initial_branch = process_output['stdout'].strip()
     assert(initial_branch != 'HEAD')
@@ -140,7 +140,7 @@ def main():
             ]
             call_subprocess(
                 command_args,
-                cwd = props['repo_path_bootstrap_target_pillars'],
+                cwd = props['repo_path_bootstrap_target_profile_pillars'],
             )
 
             # Make sure pillars are updated.
@@ -197,7 +197,7 @@ def main():
         ]
         call_subprocess(
             command_args,
-            cwd = props['repo_path_bootstrap_target_pillars'],
+            cwd = props['repo_path_bootstrap_target_profile_pillars'],
         )
 
     logging.info('-------')

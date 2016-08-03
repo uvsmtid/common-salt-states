@@ -66,7 +66,7 @@ set_config_{{ requisite_config_file_id }}_{{ deploy_step }}:
                 #       Luckily default renderring syntax in Jinja
                 #       for None and booleans match Python one.
                 'projects_states_repo_abs_paths': {{ target_env_pillar['projects_states_repo_paths'] }},
-                'overrides_bootstrap_target_pillars_repo_abs_path': '{{ target_env_pillar['repo_path_bootstrap_target_pillars'] }}',
+                'overrides_bootstrap_target_profile_pillars_repo_abs_path': '{{ target_env_pillar['repo_path_bootstrap_target_profile_pillars'] }}',
 
                 # Configure each extracted respository.
                 'repos': {
