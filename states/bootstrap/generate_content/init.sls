@@ -16,14 +16,6 @@ include:
 # Define properties (they are loaded as values to the root of pillars):
 {% set props = pillar %}
 
-# Note that `load_bootstrap_target_envs` is only available when Salt
-# configuration (for either master or minion) contains necessary configuration.
-# In addition to that, the limit on which target environments are generated
-# is also placed by `enable_bootstrap_target_envs` key in pillar.
-# See:
-#   * docs/configs/common/this_system_keys/load_bootstrap_target_envs/readme.md
-#   * docs/pillars/{# project_name #}/enable_bootstrap_target_envs/readme.md
-{% set load_bootstrap_target_envs = props['load_bootstrap_target_envs'] %}
 {% set project_name = props['project_name'] %}
 
 # Download file for pretty conversion.
@@ -36,16 +28,7 @@ pretty_yaml2json_script:
         - group: '{{ account_conf['primary_group'] }}'
         - mode: 755
 
-{% for profile_name in load_bootstrap_target_envs.keys() %} # profile_name
-
-{% if profile_name in pillar['enable_bootstrap_target_envs'] %} # enabled profile_name
-
-# Define root for pillar data.
-# Note that currently selected profile_name for currently selected project
-# is not loaded under `bootstrap_target_envs` pillar key.
-# See:
-#   * docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
-{% set target_env_pillar = pillar['bootstrap_target_envs'][project_name + '.' + profile_name] %}
+{% set target_env_pillar = pillar['bootstrap_target_profile'] %}
 
 {% set target_contents_dir = bootstrap_dir + '/targets/' + project_name + '/' + profile_name %}
 
@@ -205,10 +188,6 @@ bootstrap_package_{{ target_contents_dir }}_create_package_archive_{{ selected_h
 {% endfor %} # selected_host_name
 
 {% endif %} # generate_packages
-
-{% endif %} # enabled profile_name
-
-{% endfor %} # profile_name
 
 {% endif %}
 

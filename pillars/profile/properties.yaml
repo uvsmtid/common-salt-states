@@ -50,11 +50,6 @@ use_master_minion_template_host: True
 
 default_username: username
 
-# Specify dict of target profile names (mapped into any value).
-# TODO: Add link to docs.
-load_bootstrap_target_envs:
-    develop: ~
-
 # Map between absolute path of symlink to absolut path of its target.
 # This is used for initial setup of various symbolic links.
 symlinks_map:

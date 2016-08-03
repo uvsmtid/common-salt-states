@@ -2308,9 +2308,9 @@ system_features:
                             Note that SOURCE_PROFILE is determined automatically.
                         parameter_type: choice
                         parameter_value:
-                            {% for target_profile_name in props['load_bootstrap_target_envs'].keys() %}
-                            - {{ target_profile_name }}
-                            {% endfor %}
+                            # TODO: Provide list of pre-configured
+                            #       names of `bootstrap_target_profile`.
+                            []
                     PACKAGE_LABEL:
                         parameter_description: |
                             Short meaningful string to differentiate this build.

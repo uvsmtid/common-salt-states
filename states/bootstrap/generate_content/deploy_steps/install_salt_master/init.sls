@@ -90,7 +90,6 @@ config_file_{{ requisite_config_file_id }}_{{ deploy_step }}_salt_master_config_
             master_minion_id: '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['target_master_minion_id'] }}'
             default_username: '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['target_default_username'] }}'
             resources_links_dir: '{{ get_URI_scheme_abs_links_base_dir_path_from_pillar('salt://', target_env_pillar) }}'
-            load_bootstrap_target_envs: ~
         - template: jinja
         - makedirs: True
         {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}

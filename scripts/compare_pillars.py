@@ -170,7 +170,7 @@ def main():
             # Save profile pillars in memory.
             project_name = pillars['local']['project_name']
             pillar_name_path = 'profile.' + profile_name + '.yaml'
-            pillar_path_to_content[ pillar_name_path ] = pillars['local']['bootstrap_target_envs'][ project_name + '.' + profile_name ]
+            pillar_path_to_content[ pillar_name_path ] = pillars['local']['bootstrap_target_profile']
 
             # Save pillars in a named file.
             pillar_name_stream = None

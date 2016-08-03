@@ -2,7 +2,7 @@
 
 ###############################################################################
 #
-{%- macro get_resource_symlink_for_bootstrap_target_env(
+{%- macro get_resource_symlink_for_bootstrap_target_profile(
         target_env_pillar
     )
 -%}
@@ -262,7 +262,7 @@
 At the moment, any `bootstrap_mode` requires rewrite of resource locations.
 -#}
 {%- if 'bootstrap_mode' in pillar -%}
-{%- set resource_repository_target_path = get_resource_symlink_for_bootstrap_target_env(pillar) -%}
+{%- set resource_repository_target_path = get_resource_symlink_for_bootstrap_target_profile(pillar) -%}
 {%- else -%}
 {%- set resource_repository_target_path = resource_repository_config['abs_resource_target_path'] -%}
 {%- endif -%}

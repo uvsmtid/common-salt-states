@@ -182,7 +182,6 @@ def main():
         overrides_pillars_repo_abs_path = props['repo_path_pillars'],
         projects_states_repo_abs_paths = props['projects_states_repo_paths'],
         overrides_bootstrap_target_pillars_repo_abs_path = props['repo_path_bootstrap_target_pillars'],
-        load_bootstrap_target_envs = props['load_bootstrap_target_envs'],
         project_name = props['project_name'],
         profile_name = props['profile_name'],
     )

@@ -143,11 +143,9 @@ to configure Salt.
 
 *   `pillars/bootstrap`
 
-    This is a special template configuration which
-    loads pillars data for other project_names/profile_names.
-    The templates depend on [load_bootstrap_target_envs][4]
-    Salt configuration.
-
+    TODO:
+    This shouldn't be in the pillar.
+    It should be done via filesystem paths overlays in `file_roots`.
 
 ## `scripts` ##
 
@@ -159,7 +157,6 @@ the source code itself.
 [1]: /docs/getting_started.md
 [2]: http://docs.saltstack.com/en/latest/topics/targeting/grains.html#writing-grains
 [3]: /docs/bootstrap/readme.md
-[4]: /docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
 
 [5]: /docs/states/readme.md
 [6]: /docs/pillars/readme.md
