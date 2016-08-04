@@ -29,10 +29,10 @@
 %}
 
 {% set bootstrap_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
-{% from bootstrap_macro_lib import get_resource_symlink_for_bootstrap_target_profile_pillar with context %}
+{% from bootstrap_macro_lib import get_resource_symlink_for_bootstrap_target_profile with context %}
 
 {% set os_platform = target_env_pillar['system_hosts'][selected_host_name]['os_platform'] %}
-{% set resource_symlink = get_resource_symlink_for_bootstrap_target_profile_pillar(target_env_pillar) %}
+{% set resource_symlink = get_resource_symlink_for_bootstrap_target_profile(target_env_pillar) %}
 {% set resource_base_dir_rel_path = 'resources/depository/' + project_name + '/' + profile_name %}
 
 # Config for the step.

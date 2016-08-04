@@ -60,14 +60,19 @@ system_features:
                 # Path relative to checked out sources' root:
                 rel_target_path: 'states'
 
-            salt_pillars_roots_overrides:
-                repo_name: '{{ project_name }}-salt-pillars'
-                abs_link_base_path: '/srv/pillars/overrides'
+            salt_pillars_root_commons:
+                repo_name: 'common-salt-states'
+                abs_link_base_path: '/srv/pillars/commons/pillars'
                 rel_target_path: 'pillars'
 
-            salt_pillars_roots_defaults:
+            salt_pillars_root_defaults:
                 repo_name: '{{ project_name }}-salt-states'
-                abs_link_base_path: '/srv/pillars/defaults'
+                abs_link_base_path: '/srv/pillars/defaults/pillars'
+                rel_target_path: 'pillars'
+
+            salt_pillars_root_overrides:
+                repo_name: '{{ project_name }}-salt-pillars'
+                abs_link_base_path: '/srv/pillars/overrides/pillars'
                 rel_target_path: 'pillars'
 
             # Project-specific states.
@@ -81,14 +86,19 @@ system_features:
 
             # Pillars for bootstrap environments.
 
-            {{ project_name }}.{{ profile_name }}_bootstrap_profiles_overrides:
-                repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
-                abs_link_base_path: '/srv/pillars/overrides/bootstrap/profiles/{{ profile_name }}'
+            bootstrap_target_profile_commons:
+                repo_name: 'common-salt-states'
+                abs_link_base_path: '/srv/pillars/commons/bootstrap_target_profile/bootstrap_target_profile'
                 rel_target_path: 'pillars/profile'
 
-            {{ project_name }}.{{ profile_name }}_bootstrap_profiles_defaults:
+            bootstrap_target_profile_defaults:
                 repo_name: '{{ project_name }}-salt-states'
-                abs_link_base_path: '/srv/pillars/defaults/bootstrap/profiles/{{ profile_name }}'
+                abs_link_base_path: '/srv/pillars/defaults/bootstrap_target_profile/bootstrap_target_profile'
+                rel_target_path: 'pillars/profile'
+
+            bootstrap_target_profile_overrides:
+                repo_name: '{{ project_name }}-salt-pillars.bootstrap-target'
+                abs_link_base_path: '/srv/pillars/overrides/bootstrap_target_profile/bootstrap_target_profile'
                 rel_target_path: 'pillars/profile'
 
             # NOTE: In order to access the following paths from Salt master,

@@ -29,6 +29,11 @@ pretty_yaml2json_script:
         - mode: 755
 
 {% set target_env_pillar = pillar['bootstrap_target_profile'] %}
+{% set profile_name = target_env_pillar['profile_name'] %}
+
+{% if project_name != target_env_pillar['project_name'] %}
+{{ FAIL_HERE_project_name_does_not_match }}
+{% endif %}
 
 {% set target_contents_dir = bootstrap_dir + '/targets/' + project_name + '/' + profile_name %}
 

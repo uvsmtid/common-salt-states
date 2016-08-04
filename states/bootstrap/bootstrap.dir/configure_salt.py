@@ -230,9 +230,12 @@ def main():
 
     # - Set `pillar_roots`.
     salt_master_conf['pillar_roots']['base'] = [
-        '/srv/pillars/overrides',
-        '/srv/pillars/defaults',
-        '/srv/pillars/commons',
+        '/srv/pillars/overrides/pillars',
+        '/srv/pillars/defaults/pillars',
+        '/srv/pillars/commons/pillars',
+        '/srv/pillars/overrides/bootstrap_target_profile',
+        '/srv/pillars/defaults/bootstrap_target_profile',
+        '/srv/pillars/commons/bootstrap_target_profile',
     ]
 
     # - Set additional configuration.
