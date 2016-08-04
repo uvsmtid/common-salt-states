@@ -117,7 +117,7 @@ On Linux `/srv/pillars` should be a symlink to a directory in this repository, f
 ```
 /srv/pillars -> /home/[username]/Works/[project_name]-salt-pillars.git/pillars
 ```
-TODO: Update when pillars are split to "defaults" and "overrides".
+TODO: Update after pillars are split into "commons"/"defaults"/"overrides".
 
 NOTE: This is not a default Salt setup.
 See [this document][1] for detailed installation instructions

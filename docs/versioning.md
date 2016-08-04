@@ -47,10 +47,11 @@ Public API of the framework are the following components:
 *   Paths to files under [`pillars`][4] directory.
 
     Because efficient use and maintenance of pillars requires
-    use of defaults and overrides which depend on file path overlaps.
+    use of "commons"/"defaults"/"overrides" which depend on
+    file path overlaps.
 
 Technically, even key values (as opposed to key name) provided as
-defaults in [`pillars`][4] directory may cause problems for
+"commons"/"defaults" in [`pillars`][4] directory may cause problems for
 some `project_name`s (as it affects state execution logic).
 Again, this highlights the difficulty of tracking such cases explained above.
 Such cases are simply ignored (by this definition of public API).
