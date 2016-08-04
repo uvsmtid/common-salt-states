@@ -122,7 +122,7 @@ def main():
     process_output = call_subprocess(
         command_args,
         capture_stdout = True,
-        cwd = props['repo_path_bootstrap_target_pillars'],
+        cwd = props['repo_path_bootstrap_target_profile_pillars'],
     )
     initial_branch = process_output['stdout'].strip()
     assert(initial_branch != 'HEAD')
@@ -140,7 +140,7 @@ def main():
             ]
             call_subprocess(
                 command_args,
-                cwd = props['repo_path_bootstrap_target_pillars'],
+                cwd = props['repo_path_bootstrap_target_profile_pillars'],
             )
 
             # Make sure pillars are updated.
@@ -170,7 +170,7 @@ def main():
             # Save profile pillars in memory.
             project_name = pillars['local']['project_name']
             pillar_name_path = 'profile.' + profile_name + '.yaml'
-            pillar_path_to_content[ pillar_name_path ] = pillars['local']['bootstrap_target_envs'][ project_name + '.' + profile_name ]
+            pillar_path_to_content[ pillar_name_path ] = pillars['local']['bootstrap_target_profile']
 
             # Save pillars in a named file.
             pillar_name_stream = None
@@ -197,7 +197,7 @@ def main():
         ]
         call_subprocess(
             command_args,
-            cwd = props['repo_path_bootstrap_target_pillars'],
+            cwd = props['repo_path_bootstrap_target_profile_pillars'],
         )
 
     logging.info('-------')

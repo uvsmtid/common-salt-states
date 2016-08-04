@@ -14,7 +14,6 @@
 # Define properties (they are loaded as values to the root of pillars):
 {% set props = pillar %}
 
-{% set load_bootstrap_target_envs = props['load_bootstrap_target_envs'] %}
 {% set project_name = props['project_name'] %}
 
 # NOTE: There is no native way (for clean OSes) for host Linux to
@@ -30,16 +29,8 @@
 {% set bootstrap_files_dir = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
-{% for profile_name in load_bootstrap_target_envs.keys() %} # profile_name
-
-{% if profile_name in pillar['enable_bootstrap_target_envs'] %} # enabled profile_name
-
 # Define root for pillar data.
-# Note that currently selected profile_name for currently selected project
-# is not loaded under `bootstrap_target_envs` pillar key.
-# See:
-#   * docs/configs/bootstrap/this_system_keys/load_bootstrap_target_envs/readme.md
-{% set target_env_pillar = pillar['bootstrap_target_envs'][project_name + '.' + profile_name] %}
+{% set target_env_pillar = pillar['bootstrap_target_profile'] %}
 
 {% set target_contents_dir = bootstrap_dir + '/targets/' + project_name + '/' + profile_name %}
 
@@ -64,10 +55,6 @@ bootstrap_package_{{ target_contents_dir }}_copy_package_archive_{{ selected_hos
         - name: 'cp -up {{ source_file }} {{ destination_file }}'
 
 {% endfor %} # selected_host_name
-
-{% endif %} # enabled profile_name
-
-{% endfor %} # profile_name
 
 {% endif %} # virtual_machine_hypervisor_role
 {% endif %} # vagrant_box_publisher_role

@@ -1,32 +1,40 @@
 #!/bin/sh
 #
-# This is just a handy script to generate bootstrap package
-# limited for current (local) target environment only.
+# This is a handy script to generate bootstrap package.
+# There are two arguments:
 #
-# The script must be run:
-# - from root of `common-salt-states.git`
-# - with `sudo --preserve-env`
 
 set -e
 set -u
-set -x
 
-echo "WARNING: if not done so, this script must be run with \`sudo --preserve-env\` to preserve \`SALT_PROFILE_NAME\` environment variable" 1>&2
+# Get absolute path to the script.
+# See: http://stackoverflow.com/q/4774054/441652
+SCRIPT_DIR_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-echo "SALT_PROFILE_NAME=${SALT_PROFILE_NAME}" 1>&2
-
-CHECK_SALT_OUTPUT_SCRIPT="states/bootstrap/bootstrap.dir/modules/utils/check_salt_output.py"
-
-if [ ! -f "${CHECK_SALT_OUTPUT_SCRIPT}" ]
+BOOTSTRAP_TARGET_PROFILE="${SALT_PROFILE_NAME}"
+if [ -n "${1+x}" ]
 then
-    echo "Error: run from root of \`common-salt-states.git\` - script not found: ${CHECK_SALT_OUTPUT_SCRIPT}" 1>&2
+    BOOTSTRAP_TARGET_PROFILE="${1}"
 fi
 
-salt-call \
+echo "BOOTSTRAP_TARGET_PROFILE=${BOOTSTRAP_TARGET_PROFILE}" 1>&2
+
+CHECK_SALT_OUTPUT_SCRIPT="${SCRIPT_DIR_PATH}/check_salt_output.py"
+
+# Retrieve absolute path to repo with `bootstrap_target_profile_pillars`:
+BOOTSTRAP_TARGET_PROFILE_REPO="$(sudo salt-call --out txt pillar.get repo_path_bootstrap_target_profile_pillars | cut -d' ' -f2)"
+
+# Checkout required branch within repository.
+cd "${BOOTSTRAP_TARGET_PROFILE_REPO}"
+git checkout "${BOOTSTRAP_TARGET_PROFILE}"
+cd -
+
+# Run bootstrap generation.
+sudo salt-call \
     --out json \
     state.sls bootstrap.generate_content \
-    pillar="{ enable_bootstrap_target_envs: [ ${SALT_PROFILE_NAME} ] }" \
     test=False | tee salt.output.json
 
+# Check Salt output for errors.
 "${CHECK_SALT_OUTPUT_SCRIPT}" salt.output.json
 

@@ -112,9 +112,12 @@
         # Clean all files and directories not known/managed by Git.
         # Ignored files are _also_ known/managed by Git -
         # option `-x` removes them as well.
+        # TODO: The clean does not need to consider symlinks
+        #       "commons"/"defaults"/"overrids" created within
+        #       repositories because they are not created there anymore.
         # NOTE: The exception are
         #       (symlinks configured by `configure_salt.py` script):
-        #       - symlinks in defaults and overrides pillars
+        #       - symlinks in `defaults` and `overrides` pillars
         #         repositories which point to bootstrap profiles
         #       - `main.sls` symlink from common states repository
         #       - project_name symlink from common states repository

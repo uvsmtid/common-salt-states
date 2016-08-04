@@ -8,7 +8,7 @@
 
 {% set primary_network = props['primary_network'] %}
 
-{% set host_id = 'shared_sonarqube' %}
+{% set host_id = 'shared_vagrant_box_publisher' %}
 {% if host_id in props['enabled_minion_hosts'].keys() %}
 
 # NOTE: This is not a minion (managed host).

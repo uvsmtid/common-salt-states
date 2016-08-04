@@ -8,7 +8,8 @@
 
 {% set primary_network = props['primary_network'] %}
 
-{% if 'shared_jenkins' in props['enabled_minion_hosts'].keys() %}
+{% set host_id = 'shared_jenkins' %}
+{% if host_id in props['enabled_minion_hosts'].keys() %}
 
 # NOTE: This is not a minion (managed host).
 #       This host is only defined to point to some specific IP address
@@ -16,7 +17,7 @@
 
 system_hosts:
 
-    shared_jenkins:
+    {{ host_id }}:
         instantiated_by: ~
 
         # NOTE: Exact platform is not required for non-minion hosts.
@@ -24,12 +25,12 @@ system_hosts:
         #       (Linux in this case).
         os_platform: rhel5
 
-        hostname: shared-jenkins
+        hostname: {{ host_id|replace("_", "-") }}
         resolved_in: {{ primary_network['network_name'] }}
         consider_online_for_remote_connections: False
         host_networks:
             {{ primary_network['network_name'] }}:
-                ip: {{ props['enabled_minion_hosts']['shared_jenkins'] }}
+                ip: {{ props['enabled_minion_hosts'][host_id] }}
 
         primary_user: default_user
 

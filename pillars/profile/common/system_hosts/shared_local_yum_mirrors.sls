@@ -8,7 +8,7 @@
 
 {% set primary_network = props['primary_network'] %}
 
-{% set host_id = 'shared_sonarqube' %}
+{% set host_id = 'shared_local_yum_mirrors' %}
 {% if host_id in props['enabled_minion_hosts'].keys() %}
 
 # NOTE: This is not a minion (managed host).

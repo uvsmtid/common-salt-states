@@ -251,10 +251,6 @@ salt '*' test.ping
 [6]: http://docs.saltstack.com/en/latest/topics/installation/rhel.html
 [7]: https://copr.fedoraproject.org/coprs/saltstack/salt-el5/
 [8]: https://copr.fedoraproject.org/coprs/saltstack/salt-el5/repo/epel-5/saltstack-salt-el5-epel-5.repo
-[9]: /docs/configs/common/this_system_keys/project_name/readme.md
-[10]: /docs/configs/common/this_system_keys/profile_name/readme.md
-[11]: /docs/configs/common/this_system_keys/master_minion_id/readme.md
-[12]: /docs/configs/common/this_system_keys/default_username/readme.md
 [13]: /pillars
 [14]: /docs/salt_runtime.md
 

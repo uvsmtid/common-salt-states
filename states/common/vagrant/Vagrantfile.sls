@@ -5,7 +5,7 @@
 {% set props = pillar %}
 {% set project_name = pillar['project_name'] %}
 {% set profile_name = pillar['profile_name'] %}
-{% set target_env_pillar = pillar['bootstrap_target_envs'][project_name + '.' + profile_name] %}
+{% set target_env_pillar = pillar['bootstrap_target_profile'] %}
 
 # Include other macros.
 {% set resources_macro_lib = 'common/system_secrets/lib.sls' %}

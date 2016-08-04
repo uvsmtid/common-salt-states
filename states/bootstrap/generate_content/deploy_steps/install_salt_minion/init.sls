@@ -90,7 +90,6 @@ config_file_{{ requisite_config_file_id }}_{{ deploy_step }}_salt_minion_{{ mini
             master_minion_id: '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['target_master_minion_id'] }}'
             default_username: '{{ target_env_pillar['system_features']['target_bootstrap_configuration']['target_default_username'] }}'
             resources_links_dir: '{{ get_URI_scheme_abs_links_base_dir_path_from_pillar('salt://', target_env_pillar) }}'
-            load_bootstrap_target_envs: ~
 
             # NOTE: For Windows installer sets some different configs:
             {% if os_type == 'windows' %}

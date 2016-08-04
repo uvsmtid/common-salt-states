@@ -47,7 +47,7 @@ There are three types of repositories defined within this framework:
     *   `project_name-salt-states` is required as part of the project.
 
         In case of framework development, only `common-salt-states`
-        repository is required ([`project_name`][1] variable is set
+        repository is required (`project_name` variable is set
         to `common` then).
 
     *   Other additional repositories with Salt states are optional and
@@ -73,6 +73,5 @@ There are three types of repositories defined within this framework:
 
 # [footer] #
 
-[1]: /docs/configs/common/this_system_keys/project_name/readme.md
 [2]: /docs/bootstrap/deploy.md
 

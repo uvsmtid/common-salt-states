@@ -10,7 +10,7 @@ than entries inside `system_resources` are looked up under this URI.
 ## Possible values ##
 
 Character `~` designates NULL (or null) in YAML. It means that prefix is
-undefined and states may use their defaults.
+undefined and states may use hardcoded default values.
 
 Anything else specifies string URI prefix. The string is not interpreted
 anyhow. It is used in concatenation with item's path components. If full

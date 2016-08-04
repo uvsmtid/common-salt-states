@@ -9,8 +9,8 @@ base:
         # Load `profile` directory.
         - profile
 
-        # Load other `profile_name`s for bootstrap target environments.
-        - bootstrap.bootstrap_target_envs
+        # Load other `profile_name` for bootstrap target environments.
+        - bootstrap
 
 ###############################################################################
 # EOF

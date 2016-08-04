@@ -36,13 +36,8 @@ pillars repository (or a branch within it):
     Target pillar is the same familiar pillar data for the target
     environment where bootstrap package is to be deployed.
 
-    It is loaded under [`bootstrap_target_envs`][15] top-level field in
-    the source pillar. Therefore, it can also be seen by running
-    the same command - look for `bootstrap_target_envs` key:
+    TODO: It is loaded under `bootstrap_target_profile`.
 
-    ```
-    sudo salt-call pillar.items | grep 'bootstrap_target_envs'
-    ```
 
 To compliacate things more, it is theoretically possible that source
 environment is configured to manage one project and target environment
@@ -130,7 +125,8 @@ in addition to those mentioned in [Salt configuration][7] document
     ```
     ~/Works/${project_name}-salt-pillars.git
     ```
-    TODO: Update after pillars are split into "defaults" and "overrides".
+
+    TODO: Update after pillars are split into "commons"/"defaults"/"overrides".
 
     Make repository is switched to correct branch name.
 
@@ -144,7 +140,8 @@ in addition to those mentioned in [Salt configuration][7] document
     ```
     ~/Works/${project_name}-salt-pillars.git/pillars
     ```
-    TODO: Update after pillars are split into "defaults" and "overrides".
+
+    TODO: Update after pillars are split into "commons"/"defaults"/"overrides".
 
     Make repository is switched to correct branch name.
 
@@ -156,7 +153,8 @@ in addition to those mentioned in [Salt configuration][7] document
     ```
     ~/Works/${project_name}-salt-pillars.git/pillars/profile
     ```
-    TODO: Update after pillars are split into "defaults" and "overrides".
+
+    TODO: Update after pillars are split into "commons"/"defaults"/"overrides".
 
     Make repository is switched to correct branch name.
 
@@ -177,11 +175,7 @@ in addition to those mentioned in [Salt configuration][7] document
     Obviously, these repositories should be accessible
     in the source environment.
 
-    Make sure all these keys set correctly:
-
-    *   `enable_bootstrap_target_envs`
-
-        It should list at least target profile `TRG_env_profile`.
+    TODO: Explain how to run `configure_salt.py` script.
 
 *   Mofify source bootstrap configuration in pillar.
 
@@ -191,11 +185,7 @@ in addition to those mentioned in [Salt configuration][7] document
     ~/Works/${project_name}-salt-pillars.git/pillars/profile/bootstrap/system_features/source_bootstrap_configuration.sls
     ```
 
-    Make sure all these keys set correctly:
-
-    *   `enable_bootstrap_target_envs`
-
-        It should list at least target profile `TRG_env_profile`.
+    TODO: Explain how to run `configure_salt.py` script.
 
 *   These changes do NOT need to be committed.
 
@@ -245,36 +235,7 @@ in addition to those mentioned in [Salt configuration][7] document
 
 ## Salt master configuration ##
 
-*   Make sure Salt master configuration has all these keys set correctly:
-
-    *   `this_system_keys:project`
-
-        It should specify current project `project_name`.
-
-    *   `this_system_keys:profile`
-
-        It should specify current profile `SRC_env_profile`.
-
-    *   `this_system_keys:load_bootstrap_target_envs`
-
-        It should list at least one target profile `TRG_env_profile`.
-
-    ```
-    this_system_keys:
-        project: project_name
-        profile: SRC_env_profile
-        load_bootstrap_target_envs:
-            TRG_env_profile: ~
-    ```
-
-*   Make sure both Salt master and Salt minion are restarted after all
-    changes to the settings.
-
-    For example, on Linux with `systemd`:
-
-    ```
-    sudo systemctl restart salt-master salt-minion
-    ```
+TODO: Explain how to run `configure_salt.py` script.
 
 ## Symlinks for repositories ##
 
@@ -345,7 +306,6 @@ There are two options for `generate_packages` field of
 [12]: /docs/pillars/bootstrap/system_features/static_bootstrap_configuration/readme.md
 [13]: /pillars/profile/bootstrap/system_features/static_bootstrap_configuration.sls
 [14]: /docs/pillars/common/system_hosts/_id/primary_user/readme.md
-[15]: /docs/pillars/bootstrap/bootstrap_target_envs/readme.md
 [16]: /docs/pillars/bootstrap/system_features/source_bootstrap_configuration/readme.md
 [17]: /pillars/profile/bootstrap/system_features/target_bootstrap_configuration.sls
 [18]: /pillars/profile/bootstrap/system_features/source_bootstrap_configuration.sls

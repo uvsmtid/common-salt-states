@@ -1,11 +1,23 @@
 
 ## Description ##
 
-*   The front-end script is `bootstrap.py` (bootstrap script).
+*   Examples of command line to run bootstrap script:
 
-*   Script accepts the following parameters:
+    *   Linux (`bash`):
 
-    *   `$1` = bootstrap action, for example: `deploy`.
+        ```
+        python bootstrap.py deploy initial-online-node conf/${PROJECT_NAME}/${PROFILE_NAME}/${HOST_ID}.py
+        ```
+
+    *   Windows (`cmd`):
+
+        ```
+        powershell -file bootstrap.ps1 deploy initial-online-node conf\%PROJECT_NAME%\%PROFILE_NAME%\%HOST_ID%.py
+        ```
+
+*   The bootstrap scripts arguments are:
+
+    *   `$1`|`%1` = bootstrap action, for example: `deploy`.
 
         NOTE:
 
@@ -17,7 +29,7 @@
             See [design document][1] for explanation what `deploy` and `build`
             action mean and [implementation document][2] for details.
 
-    *   `$2` = bootstrap use case, for example:
+    *   `$2`|`%2` = bootstrap use case, for example:
 
         *   `initial-online-node` to configure Salt services.
 
@@ -26,7 +38,7 @@
 
         See the [design document][1] for explanation.
 
-    *   `$3` = bootstrap script configuration file.
+    *   `$3`|`%3` = bootstrap script configuration file.
 
         Bootstrap script configuration file is just a Python script
         which explains `.py` extensions.
@@ -36,14 +48,25 @@
 
         The required one can be described as parameterized path
         relative to bootstrap package root directory:
-        ```
-        conf/${PROJECT_NAME}/${PROFILE_NAME}/${HOST_ID}.py
-        ```
 
-        *   `PROJECT_NAME` corresponds to [project_name][3] in Salt config file.
-        *   `PROFILE_NAME` corresponds to [profile_name][4] in Salt config file.
+        *   Linux:
+
+            ```
+            conf/${PROJECT_NAME}/${PROFILE_NAME}/${HOST_ID}.py
+            ```
+
+        *   Windows:
+
+            ```
+            conf\%PROJECT_NAME%\%PROFILE_NAME%\%HOST_ID%.py
+            ```
+        The variables composing the path to configuration file have
+        the following meaning:
+
+        *   `PROJECT_NAME` corresponds to `project_name` in pillars.
+        *   `PROFILE_NAME` corresponds to `profile_name` in pillars.
         *   `HOST_ID` corresponds to one of the [system_hosts][5] in
-            Salt pillar configuration data for target system.
+            pillars for the target system.
 
 ## Example ##
 
@@ -52,6 +75,11 @@ script to run bootstrap script with exact parameters.
 
 Note that the output of bootstrap script may be long and it does not
 capture it automatically. Therefore, add stdout/stderr redirection.
+
+TODO:
+Instead of specifying examples here,
+include examples (to be modified) into bootstrap package directly.
+Explain how to use them.
 
 ### Linux ###
 
@@ -78,7 +106,5 @@ TODO
 
 [1]: /docs/bootstrap/design.md
 [2]: /docs/bootstrap/implementation.md
-[3]: /docs/configs/common/this_system_keys/project_name/readme.md
-[4]: /docs/configs/common/this_system_keys/profile_name/readme.md
 [5]: /docs/pillars/common/system_hosts/readme.md
 
