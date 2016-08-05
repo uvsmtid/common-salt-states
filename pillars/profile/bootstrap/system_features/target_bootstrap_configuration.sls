@@ -51,7 +51,7 @@ system_features:
             {{ repo_name }}:
                 # NOTE: We don't need to export root repository.
                 export_enabled: False
-                export_method: clone
+                export_method: ~
                 export_format: dir
             {% endif %}
 
