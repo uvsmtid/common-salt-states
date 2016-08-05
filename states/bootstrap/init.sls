@@ -37,6 +37,30 @@ bootstrap_file_powershell_script:
         - require:
             - file: bootstrap_directory_copy
 
+bootstrap_file_linux_run_script:
+    file.managed:
+        - name: '{{ bootstrap_dir }}/run_bootstrap.sh'
+        - source: 'salt://bootstrap/bootstrap.dir/run_bootstrap.sh.sls'
+        - template: jinja
+        - makedirs: True
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
+        - mode: 755
+        - require:
+            - file: bootstrap_directory_copy
+
+bootstrap_file_windows_run_script:
+    file.managed:
+        - name: '{{ bootstrap_dir }}/run_bootstrap.cmd'
+        - source: 'salt://bootstrap/bootstrap.dir/run_bootstrap.cmd.sls'
+        - template: jinja
+        - makedirs: True
+        - user: '{{ account_conf['username'] }}'
+        - group: '{{ account_conf['primary_group'] }}'
+        - mode: 755
+        - require:
+            - file: bootstrap_directory_copy
+
 # Because permissions are not replicated in the copy from master, we have
 # to set executable permission on the main script.
 # See:
