@@ -6,20 +6,28 @@
 {% from resources_macro_lib import get_registered_content_item_rel_path with context %}
 
 {% set cygwin_resource_id = 'bootstrap_cygwin_package_64_bit_windows' %}
+
+# DISABLED: Both LibYAML and PyYAML are pre-installed with Cygwin.
+{% if False %}
 {% set LibYAML_resource_id = 'cygwin_bootstrap_LibYAML' %}
 {% set PyYAML_resource_id = 'cygwin_bootstrap_PyYAML' %}
+{% endif %}
 
 Set-PSDebug -Strict -Trace 2
 $ErrorActionPreference = "Stop"
 
 $bootstrap_action = "$($args[0])"
 $bootstrap_use_case = "$($args[1])"
-$project_name = "$($args[2])"
-$profile_name = "$($args[3])"
-$selected_host_name = "$($args[4])"
+$host_config_file_path_windows = "$($args[2])"
+
+# NOTE: Spaces between function name and parentheses are not allowed.
+$selected_host_name = "$( [io.path]::GetFileNameWithoutExtension( $( Split-Path $host_config_file_path_windows -Leaf ) ) )"
+
+$profile_name = "$( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Leaf )"
+$project_name = "$( Split-Path $( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Parent ) -Leaf )"
 
 # Get path to script directory.
-$bootstrap_base_dir = split-path -parent $MyInvocation.MyCommand.Definition
+$bootstrap_base_dir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 # Change to directory of the script.
 Get-Location
@@ -48,24 +56,34 @@ cmd /c start /i /b /wait mintty /bin/bash -l -c "echo init"
 
 # Convert path to Cygwin.
 $bootstrap_base_dir_cygwin = "$(cygpath -u $bootstrap_base_dir)"
+$host_config_file_path_cygwin = "$(cygpath -u $host_config_file_path_windows)"
+
+
+# DISABLED: Both LibYAML and PyYAML are pre-installed with Cygwin.
+{% if False %} # libyaml
 
 # Install LibYAML.
 # See: http://pyyaml.org/wiki/LibYAML
 $LibYAML_package_name = "resources/depository/$project_name/$profile_name/{{ get_registered_content_item_rel_path(LibYAML_resource_id) }}"
 $LibYAML_content_subdir = "{{ pillar['system_resources'][LibYAML_resource_id]['content_root_subdir_path_cygwin'] }}"
-#cmd /c start /i /b /wait bash -c "/usr/bin/tar -xvf $LibYAML_package_name ; cd $LibYAML_content_subdir ; ./configure ; /usr/bin/make install ; "
-#cmd /c start /i /b /wait bash -c "/usr/bin/rm -rf $LibYAML_content_subdir"
+cmd /c start /i /b /wait bash -c "/usr/bin/tar -xvf $LibYAML_package_name ; cd $LibYAML_content_subdir ; ./configure ; /usr/bin/make install ; "
+cmd /c start /i /b /wait bash -c "/usr/bin/rm -rf $LibYAML_content_subdir"
 
 # Install PyYAML.
 # See: http://pyyaml.org/wiki/PyYAML
 $PyYAML_package_name = "resources/depository/$project_name/$profile_name/{{ get_registered_content_item_rel_path(PyYAML_resource_id) }}"
 $PyYAML_content_subdir = "{{ pillar['system_resources'][PyYAML_resource_id]['content_root_subdir_path_cygwin'] }}"
-#cmd /c start /i /b /wait bash -c "export LIBRARY_PATH=/usr/local/lib ; /usr/bin/tar -xvf $PyYAML_package_name ; cd $PyYAML_content_subdir ; /usr/bin/python setup.py install ; /usr/bin/python setup.py test ; "
-#cmd /c start /i /b /wait bash -c "/usr/bin/rm -rf $PyYAML_content_subdir"
+cmd /c start /i /b /wait bash -c "export LIBRARY_PATH=/usr/local/lib ; /usr/bin/tar -xvf $PyYAML_package_name ; cd $PyYAML_content_subdir ; /usr/bin/python setup.py install ; /usr/bin/python setup.py test ; "
+cmd /c start /i /b /wait bash -c "/usr/bin/rm -rf $PyYAML_content_subdir"
+
+{% endif %} # libyaml
 
 # Disable firewall to allow SSH and Salt minion connections.
 # TODO: Move disabling firewall to Salt bootstrap package.
 Set-NetFirewallProfile -All -Enabled False
+
+# TODO: DISABLE: The SSH service is installed by Salt states.
+{% if True %} # sshd_setup
 
 # Install OpenSSH and start `sshd` service.
 # NOTE: The `ssh-host-config` works perfectly but in a newly created session.
@@ -91,8 +109,14 @@ cmd /c start /i /b /wait bash -c "echo ssh-host-config --yes --cygwin winsymlink
 cmd /c start /i /b /wait bash -c "echo cygrunsrv -S sshd >> setup_sshd.sh"
 cmd /c start /i /b /wait bash -c "chmod u+x setup_sshd.sh"
 
-# TODO: Setup Git repository for Salt boostrap development.
-#       These are additional steps until Salt bootstrap script is ready.
+{% endif %} # sshd_setup
+
+# TODO: DISABLE: The bootstrap script is ready.
+{% if True %} # bootstrap_dev_setup
+
+# Setup Git repository for Salt boostrap development.
+# These are additional steps until Salt bootstrap script is ready.
+
 # - Add entry for host machine to the hosts file.
 $ip = "192.168.40.1"
 $xhost = "parent-host"
@@ -107,15 +131,10 @@ cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo rsync conf/ common-salt-states
 cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo rsync resources/ common-salt-states.git/states/bootstrap/bootstrap.dir/resources/ >> prepare_repo.sh"
 cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/chmod u+x prepare_repo.sh"
 
-# Run bootstrap script.
-# TODO: Change bootstrap script to use these parameters explicitly rather
-#       than being embedded into the path of host configuration file:
-#       - project_name
-#       - profile_name
-#       - selected_host_name
-#       This will make argument list to this PowerShell script the same
-#       as it is with Python one.
-cmd /c start /i /b /wait bash -c "/usr/bin/python $bootstrap_base_dir_cygwin/bootstrap.py $bootstrap_action $bootstrap_use_case conf/$project_name/$profile_name/$selected_host_name.py"
+{% endif %} # bootstrap_dev_setup
+
+# Run actual (Python) bootstrap script.
+cmd /c start /i /b /wait bash -c "/usr/bin/python $bootstrap_base_dir_cygwin/bootstrap.py $bootstrap_action $bootstrap_use_case $host_config_file_path_cygwin"
 
 ###############################################################################
 # EOF

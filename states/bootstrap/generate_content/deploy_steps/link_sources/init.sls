@@ -186,6 +186,7 @@ repo_base_dir_{{ target_contents_dir }}_{{ deploy_step }}_sources_dir:
 # Branch name, enabling export, and export method come from target environment.
 {% set export_enabled = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['export_enabled'] %}
 {% set export_method = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['export_method'] %}
+{% set export_format = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['export_format'] %}
 
 {% if 'target_repo_name' in target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name] %}
 {% set target_repo_name = target_env_pillar['system_features']['target_bootstrap_configuration']['export_sources'][selected_repo_name]['target_repo_name'] %}
@@ -233,19 +234,23 @@ repo_export_{{ target_contents_dir }}_{{ deploy_step }}_extract_sources_{{ selec
 
 {% else %} # export_enabled
 
-# Create an empty export.
+# Create a fake empty export.
 repo_empty_export_{{ target_contents_dir }}_{{ deploy_step }}_extract_sources_{{ selected_repo_name }}:
     cmd.run:
-    {% if not export_method %}
-        {{ FAIL_no_export_method_specified }}
-    {% elif export_method == 'git-archive' %}
+    # NOTE: The `export_format` and `export_method` are
+    #       not changable independently.
+    #       They depend on each other, for example,
+    #       `export_method=git-archive` requires `export_format=tar`.
+    # TODO: The valid combinations of ``export_format` and `export_method`
+    #       are not checked.
+    {% if not export_format %} # export_format
+        {{ FAIL_no_export_format_specified }}
+    {% elif export_format == 'tar' %}
         - name: 'tar -c -T /dev/null -f "{{ export_dir_path }}/{{ target_repo_name }}.tar"'
-    {% elif export_method == 'checkout-index' %}
-        - name: 'mkdir -p "{{ export_dir_path }}/{{ target_repo_name }}"'
-    {% elif export_method == 'clone' %}
+    {% elif export_format == 'dir' %}
         - name: 'mkdir -p "{{ export_dir_path }}/{{ target_repo_name }}"'
     {% else %}
-        {{ FAIL_unknown_export_method }}
+        {{ FAIL_unknown_export_format }}
     {% endif %}
     {% set account_conf = source_env_pillar['system_accounts'][ source_env_pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         # User and Group are from source env pillar - where the package is build.

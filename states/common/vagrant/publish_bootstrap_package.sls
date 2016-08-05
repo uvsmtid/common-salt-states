@@ -31,6 +31,7 @@
 
 # Define root for pillar data.
 {% set target_env_pillar = pillar['bootstrap_target_profile'] %}
+{% set profile_name = target_env_pillar['profile_name'] %}
 
 {% set target_contents_dir = bootstrap_dir + '/targets/' + project_name + '/' + profile_name %}
 

@@ -36,6 +36,9 @@ system_resources:
         item_base_name: PyYAML-3.09-10.el5.x86_64.rpms.tar
         item_content_hash: md5=10c7855bdaafae965725d697d99d6b6b
 
+    # DISABLED: Both LibYAML and PyYAML are pre-installed with Cygwin.
+    {% if False %} # libyaml
+
     # 'uvsmtid/windows-server-2012-R2-gui`.
     # Downloaded from:
     #   http://pyyaml.org/wiki/LibYAML
@@ -67,6 +70,8 @@ system_resources:
         item_content_hash: md5=f50e08ef0fe55178479d3a618efe21db
         # Relative path to subdirectory to unpacked content.
         content_root_subdir_path_cygwin: PyYAML-3.11
+
+    {% endif %} # libyaml
 
     ###########################################################################
     # `zip`/`unzip`
