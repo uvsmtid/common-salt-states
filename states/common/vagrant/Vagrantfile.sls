@@ -194,7 +194,7 @@ $vagrant_bootstrap_use_case=\\"' + vagrant_bootstrap_use_case + '\\"
 $project_name=\\"' + project_name + '\\"
 $profile_name=\\"' + profile_name + '\\"
 $selected_host_name=\\"' + selected_host_name + '\\"
-Invoke-Expression \\"$bootstrap_base_dir\\\\bootstrap.ps1 deploy $vagrant_bootstrap_use_case $project_name $profile_name $selected_host_name\\"
+Invoke-Expression \\"$bootstrap_base_dir\\\\bootstrap.ps1 deploy $vagrant_bootstrap_use_case conf\\\\$project_name\\\\$profile_name\\\\$selected_host_name.py\\"
 
 # EOF
 '

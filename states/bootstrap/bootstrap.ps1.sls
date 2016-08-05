@@ -14,12 +14,16 @@ $ErrorActionPreference = "Stop"
 
 $bootstrap_action = "$($args[0])"
 $bootstrap_use_case = "$($args[1])"
-$project_name = "$($args[2])"
-$profile_name = "$($args[3])"
-$selected_host_name = "$($args[4])"
+$host_config_file_path_windows = "$($args[2])"
+
+# NOTE: Spaces between function name and parentheses are not allowed.
+$selected_host_name = "$( [io.path]::GetFileNameWithoutExtension( $( Split-Path $host_config_file_path_windows -Leaf ) ) )"
+
+$profile_name = "$( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Leaf )"
+$project_name = "$( Split-Path $( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Parent ) -Leaf )"
 
 # Get path to script directory.
-$bootstrap_base_dir = split-path -parent $MyInvocation.MyCommand.Definition
+$bootstrap_base_dir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 # Change to directory of the script.
 Get-Location
@@ -48,6 +52,7 @@ cmd /c start /i /b /wait mintty /bin/bash -l -c "echo init"
 
 # Convert path to Cygwin.
 $bootstrap_base_dir_cygwin = "$(cygpath -u $bootstrap_base_dir)"
+$host_config_file_path_cygwin = "$(cygpath -u $host_config_file_path_windows)"
 
 # Install LibYAML.
 # See: http://pyyaml.org/wiki/LibYAML
@@ -107,15 +112,8 @@ cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo rsync conf/ common-salt-states
 cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo rsync resources/ common-salt-states.git/states/bootstrap/bootstrap.dir/resources/ >> prepare_repo.sh"
 cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/chmod u+x prepare_repo.sh"
 
-# Run bootstrap script.
-# TODO: Change bootstrap script to use these parameters explicitly rather
-#       than being embedded into the path of host configuration file:
-#       - project_name
-#       - profile_name
-#       - selected_host_name
-#       This will make argument list to this PowerShell script the same
-#       as it is with Python one.
-cmd /c start /i /b /wait bash -c "/usr/bin/python $bootstrap_base_dir_cygwin/bootstrap.py $bootstrap_action $bootstrap_use_case conf/$project_name/$profile_name/$selected_host_name.py"
+# Run actual (Python) bootstrap script.
+cmd /c start /i /b /wait bash -c "/usr/bin/python $bootstrap_base_dir_cygwin/bootstrap.py $bootstrap_action $bootstrap_use_case $host_config_file_path_cygwin"
 
 ###############################################################################
 # EOF
