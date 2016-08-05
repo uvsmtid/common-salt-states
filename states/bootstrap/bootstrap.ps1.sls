@@ -20,12 +20,6 @@ $bootstrap_action = "$($args[0])"
 $bootstrap_use_case = "$($args[1])"
 $host_config_file_path_windows = "$($args[2])"
 
-# NOTE: Spaces between function name and parentheses are not allowed.
-$selected_host_name = "$( [io.path]::GetFileNameWithoutExtension( $( Split-Path $host_config_file_path_windows -Leaf ) ) )"
-
-$profile_name = "$( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Leaf )"
-$project_name = "$( Split-Path $( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Parent ) -Leaf )"
-
 # Get path to script directory.
 $bootstrap_base_dir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
@@ -33,6 +27,23 @@ $bootstrap_base_dir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Get-Location
 Set-Location -Path "$bootstrap_base_dir"
 Get-Location
+
+$host_config_file_path_windows
+#if(![System.IO.File]::Exists($host_config_file_path_windows)){
+if(-Not (Test-Path $host_config_file_path_windows) ){
+    $host_config_file_path_windows
+    "does NOT exists"
+    exit 1
+} else {
+    $host_config_file_path_windows
+    "exists"
+}
+
+# NOTE: Spaces between function name and parentheses are not allowed.
+$selected_host_name = "$( [io.path]::GetFileNameWithoutExtension( $( Split-Path $host_config_file_path_windows -Leaf ) ) )"
+
+$profile_name = "$( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Leaf )"
+$project_name = "$( Split-Path $( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Parent ) -Leaf )"
 
 # Unpack Cygwin package.
 $cygwin_package_name = "resources\depository\$project_name\$profile_name\{{ get_registered_content_item_rel_path_windows(cygwin_resource_id)|replace("\\", "\\") }}"
@@ -104,7 +115,7 @@ Set-NetFirewallProfile -All -Enabled False
 #cmd /c start /i /b /wait bash -c "/usr/bin/editrights -u vagrant -a SeServiceLogonRight"
 #cmd /c start /i /b /wait bash -c "ssh-host-config --yes --cygwin winsymlinks:nativestrict --name sshd --pwd vagrant"
 #cmd /c start /i /b /wait bash -c "cygrunsrv -S sshd"
-cmd /c start /i /b /wait bash -c "echo \'#/bin/sh\' > setup_sshd.sh"
+cmd /c start /i /b /wait bash -c "echo '#!/bin/sh' > setup_sshd.sh"
 cmd /c start /i /b /wait bash -c "echo ssh-host-config --yes --cygwin winsymlinks:nativestrict --name sshd --pwd vagrant >> setup_sshd.sh"
 cmd /c start /i /b /wait bash -c "echo cygrunsrv -S sshd >> setup_sshd.sh"
 cmd /c start /i /b /wait bash -c "chmod u+x setup_sshd.sh"
@@ -125,8 +136,9 @@ $xhost = "parent-host"
 cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/git config --global user.name \'Alexey Pakseykin\'"
 cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/git config --global user.email \'uvsmtid@gmail.com\'"
 # - Prepare a script which prepares Git repository.
-cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo > prepare_repo.sh"
-cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo git clone uvsmtid@parent-host:Works/ida.git/salt/common-salt-states.git common-salt-states.git >> prepare_repo.sh"
+cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo '#!/bin/sh' > prepare_repo.sh"
+# TODO: Parameterize location of repository.
+cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo git clone uvsmtid@parent-host:Works/ida-root.git/salt/common-salt-states.git common-salt-states.git >> prepare_repo.sh"
 cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo rsync conf/ common-salt-states.git/states/bootstrap/bootstrap.dir/conf/ >> prepare_repo.sh"
 cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/echo rsync resources/ common-salt-states.git/states/bootstrap/bootstrap.dir/resources/ >> prepare_repo.sh"
 cmd.exe /c C:\cygwin64\bin\bash -c "/usr/bin/chmod u+x prepare_repo.sh"

@@ -6,6 +6,7 @@ import platform
 
 ###############################################################################
 #
+
 def provide_os_platform_type():
 
     if False:
@@ -44,13 +45,24 @@ def provide_os_platform_type():
             return { 'os_platform_type': 'rh' + platform_id }
 
     elif platform.system() == 'Windows':
-        # TODO: Differentiate various version of windows.
-        #       See this issue:
-        #           https://github.com/uvsmtid/common-salt-states/issues/17
-        return { 'os_platform_type': 'win7' }
+
+        platform_string = platform.platform()
+        detected_platform = None
+
+        # At the moment we only know how to differentiate Windows Server 2012.
+        # TODO: Add other Windows versions when such minions are available.
+
+        # NOTE: Function `platform.platform()` returns
+        #       `Windows-2012Server-6.2.9200` for Windows Server 2012 R2.
+        re_match = re.match('.*2012Server.*', platform_string)
+        if re_match:
+            detected_platform = 'winserv2012'
+
+        return { 'os_platform_type': str(detected_platform) }
 
 ###############################################################################
 #
+
 if __name__ == '__main__':
     print provide_os_platform_type()
 

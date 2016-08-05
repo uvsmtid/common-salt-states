@@ -124,6 +124,8 @@ req_file_{{ requisite_config_file_id }}:
         'modules/',
         'bootstrap.py',
         'bootstrap.ps1',
+        'run_bootstrap.sh',
+        'run_bootstrap.cmd',
     ]
 %}
 req_file_{{ target_contents_dir }}_{{ item_path }}__copy_to_packages:

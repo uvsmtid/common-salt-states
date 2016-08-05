@@ -70,37 +70,24 @@
 
 ## Example ##
 
-In order to avoid specifying long command line, create a simple wrapper
-script to run bootstrap script with exact parameters.
+In order to avoid specifying long command line,
+use one of the generated wrapper script which pre-set
+the arguments for bootstrap script:
 
-Note that the output of bootstrap script may be long and it does not
-capture it automatically. Therefore, add stdout/stderr redirection.
+*   Linux: `run_bootstrap.sh`
 
-TODO:
-Instead of specifying examples here,
-include examples (to be modified) into bootstrap package directly.
-Explain how to use them.
+*   Windows: `run_bootstrap.cmd`
 
-### Linux ###
+NOTE:
+In both cases, it is required to open the script in the editor and
+uncomment one of the `HOST_ID` assignment to match the host where
+bootstrap script is supposed to run.
 
-```
-#!/bin/sh
-
-PROJECT_NAME=lemur
-PROFILE_NAME=prod-env
-HOST_ID=sirius_42
-
-python ./bootstrap.py \
-    deploy \
-    offline-minion-installer \
-    conf/"${PROJECT_NAME}"/"${PROFILE_NAME}"/"${HOST_ID}.py" \
-    2>&1 | tee bootstrap.log
-
-```
-
-### Windows ###
-
-TODO
+NOTE:
+It is possible to generate such wrapper for each `HOST_ID` pre-set,
+but that approach would remove the conscious step of selecting
+which `HOST_ID` this machine is supposed to match. In other words,
+it may lead to erroneous execution simply by running wrongly selected script.
 
 # [footer] #
 
