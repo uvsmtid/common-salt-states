@@ -20,12 +20,6 @@ $bootstrap_action = "$($args[0])"
 $bootstrap_use_case = "$($args[1])"
 $host_config_file_path_windows = "$($args[2])"
 
-# NOTE: Spaces between function name and parentheses are not allowed.
-$selected_host_name = "$( [io.path]::GetFileNameWithoutExtension( $( Split-Path $host_config_file_path_windows -Leaf ) ) )"
-
-$profile_name = "$( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Leaf )"
-$project_name = "$( Split-Path $( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Parent ) -Leaf )"
-
 # Get path to script directory.
 $bootstrap_base_dir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
@@ -33,6 +27,23 @@ $bootstrap_base_dir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Get-Location
 Set-Location -Path "$bootstrap_base_dir"
 Get-Location
+
+$host_config_file_path_windows
+#if(![System.IO.File]::Exists($host_config_file_path_windows)){
+if(-Not (Test-Path $host_config_file_path_windows) ){
+    $host_config_file_path_windows
+    "does NOT exists"
+    exit 1
+} else {
+    $host_config_file_path_windows
+    "exists"
+}
+
+# NOTE: Spaces between function name and parentheses are not allowed.
+$selected_host_name = "$( [io.path]::GetFileNameWithoutExtension( $( Split-Path $host_config_file_path_windows -Leaf ) ) )"
+
+$profile_name = "$( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Leaf )"
+$project_name = "$( Split-Path $( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Parent ) -Leaf )"
 
 # Unpack Cygwin package.
 $cygwin_package_name = "resources\depository\$project_name\$profile_name\{{ get_registered_content_item_rel_path_windows(cygwin_resource_id)|replace("\\", "\\") }}"
