@@ -2,7 +2,7 @@
 # Use Cases #
 
 Ultimately, all Use Cases set up Salt minion. This is inevitable because
-only Salt minion is able to execute all configuration steps.
+only Salt minion is the only software able to execute all configuration steps.
 
 However, there some differences of the state the system should be after
 running the bootstrap script. They are called bootstrap use cases:

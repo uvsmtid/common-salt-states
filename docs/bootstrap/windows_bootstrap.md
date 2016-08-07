@@ -2,12 +2,13 @@
 The preference is to keep "clean base OS".
 
 Because Windows cannot run Python by default, it cannot be used
-as entry point bootstrap script. However, using Windows-specific
+as entry point into bootstrap script. However, using Windows-specific
 shell language (like `cmd` or PowerShell) for entire bootstrap runtime
-requires undesired expertise in them.
+logic requires undesired expertise in them (and Python is much more mature).
 
 The approach is to run minimal `PowerShell` script to install Cygwin and then
-run normal bootstrap script using Python provided by Cygwin.
+run normal bootstrap script using Python provided by Cygwin. In other words,
+the bootstrap packages mandatorily installs Cygwin on Windows first.
 
 # Vagrant #
 
@@ -15,7 +16,7 @@ run normal bootstrap script using Python provided by Cygwin.
 
 For non-VirtualBox Vagrant provider (specifically, `libvirt`)
 with Linux host and Windows guest, there is no opton for Vagrant
-Synced Folders native to one of them.
+Synced Folders native to both host and guest.
 
 *   [NFS][1]:
 
@@ -36,16 +37,18 @@ Synced Folders native to one of them.
 
 ## Workaround using HTTP ##
 
-It seems like the best option is `rsync`, but t requires Cygwin
-pre-installed on Windows which moves setup away from "clean base OS".
+It seems like the best option is `rsync`, but it requires Cygwin
+pre-installed on Windows before bootstrap package is even uploaded to Windows
+(which moves setup away from "clean base OS"). This is not an option.
 
-The solution is to "pull" instead of "push" -
-download bootstrap content on guest from HTTP server on host.
-In short, use HTTP instead `rsync`.
+The solution is to "pull" (download) instead of "push" (upload) -
+run script on guest Windows to download bootstrap content from
+known HTTP server. In short, use HTTP client instead `rsync` source.
 
-There is native `bitsadmin` tool (see [here][5] and [here][6] how)
+There is a native `bitsadmin` tool (see [here][5] and [here][6] how)
 on Windows for HTTP download. Another alternative is
-[`wget` command in PowerShell][7].
+[`wget` command in PowerShell][7], or other commands.
+The main point is to use existing software for download client.
 
 ---
 

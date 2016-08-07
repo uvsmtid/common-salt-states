@@ -1,4 +1,8 @@
 
+NOTE:
+This document is mostly Linux-specific.
+See [another document][win] for Windows.
+
 ## Intro ##
 
 In order for bootstrap package to work, it has to contain Salt with all
@@ -144,3 +148,4 @@ like `salt-master` or `salt-minion` in [this pillar file][2].
 [2]: /pillars/profile/bootstrap/system_features/static_bootstrap_configuration.sls
 [3]: https://repo.saltstack.com/#rhel
 
+[win]: /docs/bootstrap/windows_bootstrap.md
