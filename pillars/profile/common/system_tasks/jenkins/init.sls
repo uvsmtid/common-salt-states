@@ -9,6 +9,7 @@
 include:
 
 {% for sub_item in [
+        '__-__-init_pipeline-clean_old_build'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
