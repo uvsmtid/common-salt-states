@@ -9,33 +9,7 @@
 include:
 
 {% for sub_item in [
-        'main'
-        ,
-        'common_pillar_schema_version'
-        ,
-        'system_build_descriptor'
-        ,
-        'system_maven_artifacts'
-        ,
-        'system_platforms'
-        ,
-        'system_secrets'
-        ,
-        'system_accounts'
-        ,
-        'system_hosts'
-        ,
-        'system_host_roles'
-        ,
-        'system_networks'
-        ,
-        'system_resources'
-        ,
-        'system_features'
-        ,
-        'system_orchestrate_stages'
-        ,
-        'system_tasks'
+        'jenkins'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
