@@ -91,13 +91,13 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
 
                     job_list:
-                        - __.__.init_pipeline.clean_old_build
-                        - __.__.poll_pipeline.propose_build
-                        - 00.01.poll_pipeline.verify_approval
-                        - 01.01.init_pipeline.start_new_build
-                        - 05.01.package_pipeline.create_new_package
-                        - 06.01.release_pipeline.release_build
-                        - 07.01.checkout_pipeline.checkout_build_branches
+                        - __-__-init_pipeline-clean_old_build
+                        - __-__-poll_pipeline-propose_build
+                        - 00-01-poll_pipeline-verify_approval
+                        - 01-01-init_pipeline-start_new_build
+                        - 05-01-package_pipeline-create_new_package
+                        - 06-01-release_pipeline-release_build
+                        - 07-01-checkout_pipeline-checkout_build_branches
 
             {% if False %} # DISABLED: Not so useful list.
             maven:
@@ -109,14 +109,14 @@ system_features:
                     xml_config_template: 'common/jenkins/configure_views_ext/list_view.xml'
 
                     job_list:
-                        - 03.01.maven_pipeline.maven_build_all
-                        - 03.02.maven_pipeline.verify_maven_data
+                        - 03-01-maven_pipeline-maven_build_all
+                        - 03-02-maven_pipeline-verify_maven_data
                         {% for maven_repo_name in maven_repo_names %}
-                        - 03.03.maven_pipeline.{{ maven_job_name_prefix }}.{{ maven_repo_name }}
+                        - 03-03-maven_pipeline-{{ maven_job_name_prefix }}-{{ maven_repo_name }}
                         {% endfor %}
             {% endif %}
 
-            00.poll_pipeline:
+            00-poll_pipeline:
 
                 enabled: True
 
@@ -124,19 +124,9 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 00.01.poll_pipeline.verify_approval
+                    first_job_name: 00-01-poll_pipeline-verify_approval
 
-            01.init_pipeline:
-
-                enabled: True
-
-                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
-                view_config_data:
-                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
-
-                    first_job_name: 01.01.init_pipeline.start_new_build
-
-            02.update_pipeline:
+            01-init_pipeline:
 
                 enabled: True
 
@@ -144,19 +134,9 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 02.01.update_pipeline.restart_master_salt_services
+                    first_job_name: 01-01-init_pipeline-start_new_build
 
-            03.maven_pipeline:
-
-                enabled: True
-
-                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
-                view_config_data:
-                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
-
-                    first_job_name: 03.01.maven_pipeline.maven_build_all
-
-            04.deploy_pipeline:
+            02-update_pipeline:
 
                 enabled: True
 
@@ -164,19 +144,9 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 04.01.deploy_pipeline.register_generated_resources
+                    first_job_name: 02-01-update_pipeline-restart_master_salt_services
 
-            05.package_pipeline:
-
-                enabled: True
-
-                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
-                view_config_data:
-                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
-
-                    first_job_name: 05.01.package_pipeline.create_new_package
-
-            06.release_pipeline:
+            03-maven_pipeline:
 
                 enabled: True
 
@@ -184,9 +154,9 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 06.01.release_pipeline.release_build
+                    first_job_name: 03-01-maven_pipeline-maven_build_all
 
-            07.checkout_pipeline:
+            04-deploy_pipeline:
 
                 enabled: True
 
@@ -194,7 +164,37 @@ system_features:
                 view_config_data:
                     xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
 
-                    first_job_name: 07.01.checkout_pipeline.checkout_build_branches
+                    first_job_name: 04-01-deploy_pipeline-register_generated_resources
+
+            05-package_pipeline:
+
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: 05-01-package_pipeline-create_new_package
+
+            06-release_pipeline:
+
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: 06-01-release_pipeline-release_build
+
+            07-checkout_pipeline:
+
+                enabled: True
+
+                view_config_function_source: 'common/jenkins/configure_views_ext/simple_xml_template_view.sls'
+                view_config_data:
+                    xml_config_template: 'common/jenkins/configure_views_ext/build_pipeline_view.xml'
+
+                    first_job_name: 07-01-checkout_pipeline-checkout_build_branches
 
         #######################################################################
         #
