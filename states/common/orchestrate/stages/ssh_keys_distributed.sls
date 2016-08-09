@@ -65,6 +65,6 @@ accept_all_ssh_host_keys_everywhere:
             - salt: distribute_primary_user_ssh_pubic_key_everywhere
 
 ###############################################################################
-# END
+# EOF
 ###############################################################################
 
