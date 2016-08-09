@@ -1,0 +1,130 @@
+
+###############################################################################
+
+{
+
+    "$schema": "http://json-schema.org/draft-04/schema#",
+
+    "title": "profile",
+
+    "description": "All data stored in pillar.",
+
+    "$ref": "#/definitions/profile",
+
+    "required": [
+
+        "bootstrap_target_profile",
+
+        "properties",
+
+        "system_resources",
+        "system_features",
+        "system_host_roles",
+        "system_hosts",
+        "system_platforms",
+        "system_networks",
+        "system_maven_artifacts",
+        "system_secrets",
+        "system_accounts",
+        "dynamic_build_descriptor",
+        "system_orchestrate_stages",
+
+        "windows_salt_content_temp_dir",
+        "posix_salt_content_temp_dir",
+        "windows_salt_content_temp_dir_cygwin",
+        "common_pillar_schema_version",
+
+        "master",
+
+    ],
+
+    "additionalProperties": {
+
+        # Recursive/nested bootstrap target profile.
+        # NOTE: The recursion can only be one level deep.
+        "bootstrap_target_profile": {
+            "$ref": "#/definitions/profile",
+        },
+
+    },
+
+    ###########################################################################
+
+    "definitions": {
+
+        "profile": {
+
+            "type": "object",
+
+            "properties": {
+
+                "properties": {
+                    "type": "object",
+                },
+
+                "system_resources": {
+                    # TODO: Define fields the object consists of.
+                    "type": "object",
+                },
+                "system_features": {
+                    "type": "object",
+                },
+                "system_host_roles": {
+                    "type": "object",
+                },
+                "system_hosts": {
+                    "$ref": "file:system_hosts/schema.json",
+                },
+                "system_platforms": {
+                    "type": "object",
+                },
+                "system_networks": {
+                    "type": "object",
+                },
+                "system_maven_artifacts": {
+                    "type": "object",
+                },
+                "system_secrets": {
+                    "type": "object",
+                },
+                "system_accounts": {
+                    "type": "object",
+                },
+                "dynamic_build_descriptor": {
+                    "type": "object",
+                },
+                "system_orchestrate_stages": {
+                    "type": "object",
+                },
+
+                # TODO: Move the following data under some `system_*` key.
+                "windows_salt_content_temp_dir": {
+                    "type": "string",
+                },
+                "posix_salt_content_temp_dir": {
+                    "type": "string",
+                },
+                "windows_salt_content_temp_dir_cygwin": {
+                    "type": "string",
+                },
+                "common_pillar_schema_version": {
+                    "type": "string",
+                },
+
+                # TODO: Should master configuration be disabled in pillars?
+                "master": {
+                    "type": "object",
+                },
+
+            },
+
+        },
+
+    },
+
+}
+
+###############################################################################
+# EOF
+###############################################################################
+
