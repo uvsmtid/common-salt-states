@@ -68,11 +68,11 @@
         {% set package_type = pillar['system_features']['static_bootstrap_configuration']['os_platform_package_types'][pillar['system_hosts'][selected_host_name]['os_platform']] %}
         {% set bootstrap_dir_basename = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
         {% if not pillar['system_features']['source_bootstrap_configuration']['generate_packages'] %} # generate_packages
-        {% set bootstrap_source_path = bootstrap_dir_basename + '/targets/' + pillar['project_name'] %}
+        {% set bootstrap_source_path = bootstrap_dir_basename + '/targets/' + pillar['properties']['project_name'] %}
         # Source is bootstrap package file.
         BOOTSTRAP_SOURCE_PATH="{{ bootstrap_source_path }}/${BOOTSTRAP_TARGET_ENVIRONMENT}/salt-auto-install.{{package_type}}"
         {% else %} # generate_packages
-        {% set bootstrap_source_path = bootstrap_dir_basename + '/packages/' + pillar['project_name'] %}
+        {% set bootstrap_source_path = bootstrap_dir_basename + '/packages/' + pillar['properties']['project_name'] %}
         # Source is bootstrap content directory.
         BOOTSTRAP_SOURCE_PATH="{{ bootstrap_source_path }}/${BOOTSTRAP_TARGET_ENVIRONMENT}"
         {% endif %} # generate_packages

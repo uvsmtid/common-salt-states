@@ -2,9 +2,8 @@
 # vi: set ft=ruby :
 
 # Define properties (they are loaded as values to the root of pillars):
-{% set props = pillar %}
-{% set project_name = pillar['project_name'] %}
-{% set profile_name = pillar['profile_name'] %}
+{% set project_name = pillar['properties']['project_name'] %}
+{% set profile_name = pillar['properties']['profile_name'] %}
 {% set target_env_pillar = pillar['bootstrap_target_profile'] %}
 
 # Include other macros.
@@ -115,7 +114,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "{{ selected_host_name }}" do |{{ selected_host_name }}|
 
     {{ selected_host_name }}.vm.box = "{{ instance_configuration['base_image'] }}"
-    {% if props['use_local_vagrant_box_publisher'] %}
+    {% if pillar['properties']['use_local_vagrant_box_publisher'] %}
     # The URL is set to system-local server.
     # NOTE: In this case, it is also likely that `vagrant` command
     #       should be executed with undefined

@@ -187,8 +187,8 @@
         # Update commit ids of submodules in the top-level repository.
         # This will point all submodules at the ids at the release point.
 
-        {% if pillar['parent_repo_name'] %}
-        {% set parent_repo_id = pillar['parent_repo_name'] %}
+        {% if pillar['properties']['parent_repo_name'] %}
+        {% set parent_repo_id = pillar['properties']['parent_repo_name'] %}
 
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][parent_repo_id]['git'] %}
         export PARENT_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
@@ -298,8 +298,8 @@
         #       repository will yeild in dynamic build descriptor which
         #       points to a commit within parent repo _before_ the release.
 
-        {% if pillar['parent_repo_name'] %}
-        {% set parent_repo_id = pillar['parent_repo_name'] %}
+        {% if pillar['properties']['parent_repo_name'] %}
+        {% set parent_repo_id = pillar['properties']['parent_repo_name'] %}
 
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][parent_repo_id]['git'] %}
         export PARENT_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
@@ -361,8 +361,8 @@
         #       However, the tagged commit of the parent cannot be garbage
         #       collected because it is tagged anyway.
 
-        {% if pillar['parent_repo_name'] %}
-        {% set parent_repo_id = pillar['parent_repo_name'] %}
+        {% if pillar['properties']['parent_repo_name'] %}
+        {% set parent_repo_id = pillar['properties']['parent_repo_name'] %}
 
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][parent_repo_id]['git'] %}
         export PARENT_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"

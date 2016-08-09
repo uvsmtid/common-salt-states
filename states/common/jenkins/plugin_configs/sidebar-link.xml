@@ -29,7 +29,7 @@
     -->
     <hudson.plugins.sidebar__link.LinkAction>
       <url>/</url>
-      <text>project_name: {{ pillar['project_name'] }}</text>
+      <text>project_name: {{ pillar['properties']['project_name'] }}</text>
       <!--
         NOTE: Set image to some known resource shipped with Jenkins.
       -->

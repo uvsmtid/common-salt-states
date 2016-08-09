@@ -9,10 +9,10 @@
 {% set resources_macro_lib = 'common/resource_symlinks/resources_macro_lib.sls' %}
 {% from resources_macro_lib import get_URI_scheme_abs_links_base_dir_path_from_pillar with context %}
 
-{% set project_name = pillar['project_name'] %}
-{% set profile_name = pillar['profile_name'] %}
-{% set master_minion_id = pillar['master_minion_id'] %}
-{% set default_username = pillar['default_username'] %}
+{% set project_name = pillar['properties']['project_name'] %}
+{% set profile_name = pillar['properties']['profile_name'] %}
+{% set master_minion_id = pillar['properties']['master_minion_id'] %}
+{% set default_username = pillar['properties']['default_username'] %}
 
 /etc/salt/master:
     file.managed:

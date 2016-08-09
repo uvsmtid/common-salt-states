@@ -13,10 +13,7 @@ include:
 {% set bootstrap_files_dir = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
-# Define properties (they are loaded as values to the root of pillars):
-{% set props = pillar %}
-
-{% set project_name = props['project_name'] %}
+{% set project_name = properties['properties']['project_name'] %}
 
 # Download file for pretty conversion.
 pretty_yaml2json_script:
@@ -29,9 +26,9 @@ pretty_yaml2json_script:
         - mode: 755
 
 {% set target_env_pillar = pillar['bootstrap_target_profile'] %}
-{% set profile_name = target_env_pillar['profile_name'] %}
+{% set profile_name = target_env_pillar['properties']['profile_name'] %}
 
-{% if project_name != target_env_pillar['project_name'] %}
+{% if project_name != target_env_pillar['properties']['project_name'] %}
 {{ FAIL_HERE_project_name_does_not_match }}
 {% endif %}
 

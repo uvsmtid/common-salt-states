@@ -14,7 +14,7 @@
 
 class_visualizer_project_file:
     file.managed:
-        - name: '{{ account_conf['posix_user_home_dir'] }}/{{ pillar['project_name'] }}.class_visualizer.xml'
+        - name: '{{ account_conf['posix_user_home_dir'] }}/{{ pillar['properties']['project_name'] }}.class_visualizer.xml'
         - source: 'salt://common/class_visualizer/project.class_visualizer.xml'
         - template: jinja
         - user: {{ account_conf['username'] }}

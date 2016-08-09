@@ -7,7 +7,7 @@
 
 {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
 
-{% if pillar['use_internet_http_proxy'] %}
+{% if pillar['properties']['use_internet_http_proxy'] %}
 
 set_gnome_system_proxy:
     cmd.run:

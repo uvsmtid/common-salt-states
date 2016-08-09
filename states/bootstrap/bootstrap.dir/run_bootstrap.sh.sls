@@ -19,8 +19,8 @@ BOOTSTRAP_USE_CASE=initial-online-node
 unset HOST_ID
 
 {% set target_env_pillar = pillar['bootstrap_target_profile'] %}
-PROJECT_NAME="{{ target_env_pillar['project_name'] }}"
-PROFILE_NAME="{{ target_env_pillar['profile_name'] }}"
+PROJECT_NAME="{{ target_env_pillar['properties']['project_name'] }}"
+PROFILE_NAME="{{ target_env_pillar['properties']['profile_name'] }}"
 
 # NOTE: Uncomment required `HOST_ID` assignment before running the script.
 #------------------------------------------------------------------------------

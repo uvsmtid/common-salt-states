@@ -16,7 +16,7 @@ export PATH="${PATH}:/sbin:/usr/sbin"
 ###############################################################################
 
 # Set variable to indicate which pillar profile is used.
-{% set profile_name = pillar['profile_name'] %}
+{% set profile_name = pillar['properties']['profile_name'] %}
 export SALT_PROFILE_NAME="{{ profile_name }}"
 
 ###############################################################################
