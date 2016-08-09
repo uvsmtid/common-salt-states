@@ -14,8 +14,8 @@ REM # NOTE: Set different bootstrpap use case, if required.
 set BOOTSTRAP_USE_CASE=initial-online-node
 
 {% set target_env_pillar = pillar['bootstrap_target_profile'] %}
-set PROJECT_NAME={{ target_env_pillar['project_name'] }}
-set PROFILE_NAME={{ target_env_pillar['profile_name'] }}
+set PROJECT_NAME={{ target_env_pillar['properties']['project_name'] }}
+set PROFILE_NAME={{ target_env_pillar['properties']['profile_name'] }}
 
 REM NOTE: Uncomment required `HOST_ID` assignment before running the script.
 REM #------------------------------------------------------------------------------

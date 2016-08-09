@@ -15,7 +15,7 @@
 #       See: https://github.com/saltstack/salt/issues/6955#issuecomment-118001643
 
 # NOTE: Use `json` to make sure None does not become just a string `None`.
-{{ props|json }}
+properties: {{ props|json }}
 
 ###############################################################################
 # EOF

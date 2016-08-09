@@ -238,8 +238,8 @@
                           pairs `version_name` and `version_number`
                           per `project_name` sub-key.
                 -->
-                {% set project_version_name_key = pillar['project_name'] +'_version_name' %}
-                {% set project_version_number_key = pillar['project_name'] + '_version_number' %}
+                {% set project_version_name_key = pillar['properties']['project_name'] +'_version_name' %}
+                {% set project_version_number_key = pillar['properties']['project_name'] + '_version_number' %}
                 {% if project_version_name_key in pillar['dynamic_build_descriptor'] and project_version_number_key in pillar['dynamic_build_descriptor'] %}
                 {% set project_version_name = pillar[project_version_name_key] %}
                 {% set project_version_number = pillar[project_version_number_key] %}

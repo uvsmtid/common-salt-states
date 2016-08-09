@@ -82,11 +82,11 @@
         #           one restore point will override another.
         #           This is worse - parent won't be restored.
         #       Out of two cases, we allow the first one to avoid the second.
-        {% if pillar['parent_repo_name'] %}
+        {% if pillar['properties']['parent_repo_name'] %}
         {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% if False %} # DISABLED: See comment above.
         # Parent repo is defined and it is the first.
-        {% set repo_list = [ pillar['parent_repo_name'] ] + pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+        {% set repo_list = [ pillar['properties']['parent_repo_name'] ] + pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
         {% endif %}
         {% else %}
         # This profile does not define parent repo.

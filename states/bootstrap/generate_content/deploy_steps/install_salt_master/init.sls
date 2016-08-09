@@ -3,9 +3,6 @@
 ################################################################################
 #
 
-# Define properties (they are loaded as values to the root of pillars):
-{% set props = pillar %}
-
 {% macro configure_selected_host_step_function(
         source_env_pillar
         ,

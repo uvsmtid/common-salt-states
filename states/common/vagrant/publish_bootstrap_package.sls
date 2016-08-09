@@ -11,10 +11,7 @@
 {% if grains['id'] in pillar['system_host_roles']['virtual_machine_hypervisor_role']['assigned_hosts'] %} # virtual_machine_hypervisor_role
 {% if grains['id'] in pillar['system_host_roles']['vagrant_box_publisher_role']['assigned_hosts'] %} # vagrant_box_publisher_role
 
-# Define properties (they are loaded as values to the root of pillars):
-{% set props = pillar %}
-
-{% set project_name = props['project_name'] %}
+{% set project_name = pillar['properties']['project_name'] %}
 
 # NOTE: There is no native way (for clean OSes) for host Linux to
 #       upload file to Windows guest using Vagrant (e.g. no implementation
@@ -31,7 +28,7 @@
 
 # Define root for pillar data.
 {% set target_env_pillar = pillar['bootstrap_target_profile'] %}
-{% set profile_name = target_env_pillar['profile_name'] %}
+{% set profile_name = target_env_pillar['properties']['profile_name'] %}
 
 {% set target_contents_dir = bootstrap_dir + '/targets/' + project_name + '/' + profile_name %}
 

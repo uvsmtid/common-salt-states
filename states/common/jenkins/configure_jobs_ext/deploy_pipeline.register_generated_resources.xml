@@ -96,11 +96,11 @@
         # - Save parent repo first
         #   (as commits in childs will change what parent should contain).
 
-        {% if pillar['parent_repo_name'] %}
+        {% if pillar['properties']['parent_repo_name'] %}
         # Parent repo is defined and it is the first.
         # TODO: This `repo_list` makes this parent repo committed twice.
         #       Try to leave only its last occurrence in the list.
-        {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() + [ pillar['parent_repo_name'] ] %}
+        {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() + [ pillar['properties']['parent_repo_name'] ] %}
         {% else %}
         # This profile does not define parent repo.
         {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}

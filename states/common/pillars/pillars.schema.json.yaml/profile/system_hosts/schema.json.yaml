@@ -1,0 +1,55 @@
+
+###############################################################################
+
+{
+
+    "$schema": "http://json-schema.org/draft-04/schema#",
+
+    "title": "system_hosts",
+
+    "description": "List of hosts known to the system.",
+
+    "type": "object",
+
+    # All properties follow `system_host` description.
+    "patternProperties": {
+        "^.*$": {
+            "$ref": "#/definitions/system_host",
+        },
+    },
+
+    ###########################################################################
+
+    "definitions": {
+
+        "system_host": {
+
+            "title": "system_host",
+
+            "description": "Host description.",
+
+            "type": "object",
+
+            "properties": {
+                "hostname": {
+                    "type": "string",
+                },
+            },
+
+            "required": [
+                "hostname",
+            ],
+
+            # Allow additional properties.
+            "additionalProperties": true,
+
+        },
+
+    },
+
+}
+
+###############################################################################
+# EOF
+###############################################################################
+

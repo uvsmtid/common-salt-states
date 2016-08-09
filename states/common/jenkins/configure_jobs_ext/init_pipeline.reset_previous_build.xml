@@ -128,7 +128,7 @@
         %}
         git clean -e '/pillars/bootstrap/profiles' -d -x --force
         {% elif repo_name == 'common-salt-states' %}
-        git clean -e '/states/main.sls' -e '/states/{{ pillar['project_name'] }}' -d -x --force
+        git clean -e '/states/main.sls' -e '/states/{{ pillar['properties']['project_name'] }}' -d -x --force
         {% else %}
         git clean -d -x --force
         {% endif %}

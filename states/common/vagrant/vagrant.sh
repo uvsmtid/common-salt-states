@@ -18,10 +18,7 @@
 set -e
 set -u
 
-# Define properties (they are loaded as values to the root of pillars):
-{% set props = pillar %}
-
-{% if props['use_local_vagrant_box_publisher'] %}
+{% if pillar['properties']['use_local_vagrant_box_publisher'] %}
 unset http_proxy
 unset https_proxy
 {% endif %}

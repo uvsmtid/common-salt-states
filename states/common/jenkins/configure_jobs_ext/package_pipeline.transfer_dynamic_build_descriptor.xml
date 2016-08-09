@@ -52,7 +52,7 @@
         # Get necessary info.
 
         # Get location of pillars (source profile) repo.
-        {% set source_profile_repo_id = pillar['project_name'] + '-salt-pillars' %}
+        {% set source_profile_repo_id = pillar['properties']['project_name'] + '-salt-pillars' %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][source_profile_repo_id]['git'] %}
         export SOURCE_PROFILE_REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
@@ -80,7 +80,7 @@
         #       descriptor captured at the start of `release_pipeline`.
         #       For other pipelines some defaults are expected to be set.
 
-        echo "${RELEASE_VERSION_NAME}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_name"
+        echo "${RELEASE_VERSION_NAME}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['properties']['project_name'] }}_version_name"
 
         # Version number is different.
         # It is only set when variable `RELEASE_VERSION_NUMBER` is set.
@@ -91,7 +91,7 @@
             #       and check that we are not re-releasing
             #       with the same version.
 
-            echo "${RELEASE_VERSION_NUMBER}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_number"
+            echo "${RELEASE_VERSION_NUMBER}" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['properties']['project_name'] }}_version_number"
 
             # Variable `is_release` indicates whether sources actually correspond
             # to a release (true) and not simply build on top of
@@ -120,7 +120,7 @@
             echo "FALSE" | python ${KEY_SETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "is_release"
 
             # Make sure version number is set.
-            VERSION_NUMBER="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['project_name'] }}_version_number")"
+            VERSION_NUMBER="$(python ${KEY_GETTER_PYTHON_SCRIPT} ${JOB_DYN_BUILD_DESC_PATH} "{{ pillar['properties']['project_name'] }}_version_number")"
             test -n "${VERSION_NUMBER}"
 
         fi

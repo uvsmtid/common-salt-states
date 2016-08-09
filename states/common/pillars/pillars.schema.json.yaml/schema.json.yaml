@@ -1,0 +1,41 @@
+
+###############################################################################
+
+{
+    # Last time it was checked JSON schema draft is v4:
+    #   http://json-schema.org/documentation.html
+    "$schema": "http://json-schema.org/draft-04/schema#",
+
+    "title": "pillars",
+
+    "description": "Output of Salt's `pillar.items` function via `salt-call`.",
+
+    "type": "object",
+
+    "properties": {
+        "local": {
+            "$ref": "file:profile/schema.json",
+        },
+    },
+
+    # NOTE: The `local` key is artificial and appears in
+    #       `salt-call` output as the top-level key.
+    "required": [
+        "local",
+    ],
+
+    # There must be no additional artificial top-level keys.
+    "additionalProperties": false,
+
+    ###########################################################################
+
+    "definitions": {
+
+    },
+
+}
+
+###############################################################################
+# EOF
+###############################################################################
+

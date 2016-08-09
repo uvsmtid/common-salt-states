@@ -13,9 +13,9 @@ set -u
 
 ###############################################################################
 
-{% if pillar['parent_repo_name'] %}
+{% if pillar['properties']['parent_repo_name'] %}
 # Parent repo is defined and it is the first.
-{% set repo_list = [ pillar['parent_repo_name'] ] + pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
+{% set repo_list = [ pillar['properties']['parent_repo_name'] ] + pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
 {% else %}
 # This profile does not define parent repo.
 {% set repo_list = pillar['system_features']['deploy_environment_sources']['source_repositories'].keys() %}
@@ -85,8 +85,8 @@ export BUILD_BRANCH="{{ pillar['dynamic_build_descriptor']['build_branches'][rep
 test "${CURRENT_BRANCH}" == "${BUILD_BRANCH}"
 
 # Retrieve version name and number.
-{% set project_version_name_key = pillar['project_name'] +'_version_name' %}
-{% set project_version_number_key = pillar['project_name'] + '_version_number' %}
+{% set project_version_name_key = pillar['properties']['project_name'] +'_version_name' %}
+{% set project_version_number_key = pillar['properties']['project_name'] + '_version_number' %}
 export PROJECT_VERSION_NAME="{{ pillar['dynamic_build_descriptor'][project_version_name_key] }}"
 export PROJECT_VERSION_NUMBER="{{ pillar['dynamic_build_descriptor'][project_version_number_key] }}"
 
