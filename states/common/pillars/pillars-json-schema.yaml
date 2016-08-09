@@ -44,9 +44,9 @@
 
         },
 
-        "pillars_data": {
+        "profile": {
 
-            "title": "pillars_data",
+            "title": "profile",
 
             "description": "All data stored in pillar.",
 
@@ -64,6 +64,11 @@
                 },
                 "system_hosts": {
                     "$ref": "#/definitions/system_hosts",
+                },
+
+                # Recursive/nested bootstrap target profile.
+                "bootstrap_target_profile": {
+                    "$ref": "#/definitions/profile",
                 },
             },
 
@@ -84,14 +89,16 @@
     "type": "object",
 
     "properties": {
-        "local": { "$ref": "#/definitions/pillars_data" },
+        "local": { "$ref": "#/definitions/profile" },
     },
 
+    # NOTE: The `local` key is artificial and appears in
+    #       `salt-call` output as the top-level key.
     "required": [
         "local",
     ],
 
-    # Prohibit additional properties.
+    # There must be no additional artificial top-level keys.
     "additionalProperties": false,
 }
 
