@@ -1,16 +1,47 @@
 #!/usr/bin/env python
 
-# This script generates CSV table - a join of:
+###############################################################################
+#
+# This script outputs a CSV table to STDOUT.
+# It may use pre-saved YAML file with pillars or get current data by
+# querying Salt (if the current host is a Salt minion):
+#
+#   # Use pre-saved file with pillars.
+#   > ./join_hosts_roles_networks.py pillars.yaml > hosts_roles_networks.csv
+#   # Query current pillars from Salt.
+#   > ./join_hosts_roles_networks.py > hosts_roles_networks.csv
+#
+# The table is a join of the following objects from pillars:
 # * `system_hosts`
 # * `system_host_roles`
-# * `system_network`
+# * `system_networks`
+#
+# In other words, the original data from pillars
+# is denormalized into CSV table.
+#
+# The script uses few transformations:
+#   *   JSON loaded data to Python object.
+#           See:
+#               *   http://stackoverflow.com/q/1305532/441652
+#   *   The Python objects are use SQLAlchemy Object-Relational Mapping (ORM)
+#       to map their data into SQLite DB.
+#           Install the following packages first:
+#               python-sqlalchemy
+#   *   The database is then queried to join all three tables.
+#
+###############################################################################
 
 import os
 import csv
 import sys
 import yaml
-import datetime
+import pprint
+import sqlite3
 import logging
+import datetime
+import sqlalchemy
+
+from sqlalchemy.ext.declarative import declarative_base
 
 ################################################################################
 # Import non-standard modules.
@@ -38,75 +69,237 @@ import utils.set_log
 from utils.exec_command import call_subprocess
 
 ################################################################################
-#
+# Some globals.
 
-def join_data():
-    pass
+# In-memory SQLite database.
+engine = sqlalchemy.create_engine('sqlite://')
+
+################################################################################
+# Model for ORM mapping.
+
+Base = declarative_base()
+
+class host_role_to_host_class(Base):
+
+    __tablename__ = 'host_roles_to_hosts'
+
+    host_role_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('host_roles.id'))
+    host_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('hosts.id'))
+
+    __table_args__ = (
+        sqlalchemy.PrimaryKeyConstraint('host_role_id', 'host_id'),
+        {},
+    )
+
+    # See: http://stackoverflow.com/a/38929089/441652
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+class network_to_host_class(Base):
+
+    __tablename__ = 'networks_to_hosts'
+
+    network_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('networks.id'))
+    host_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('hosts.id'))
+
+    __table_args__ = (
+        sqlalchemy.PrimaryKeyConstraint('network_id', 'host_id'),
+        {},
+    )
+
+    # See: http://stackoverflow.com/a/38929089/441652
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+class host_class(Base):
+
+    __tablename__ = 'hosts'
+
+    id = sqlalchemy.Column(sqlalchemy.String, primary_key = True)
+    hostname = sqlalchemy.Column(sqlalchemy.String)
+    consider_online_for_remote_connections = sqlalchemy.Column(sqlalchemy.Boolean())
+
+    host_roles_relationship = sqlalchemy.orm.relationship(
+        'host_role_class',
+        secondary = 'host_roles_to_hosts',
+        back_populates = 'hosts_relationship',
+    )
+
+    host_networks_relationship = sqlalchemy.orm.relationship(
+        'network_class',
+        secondary = 'networks_to_hosts',
+        back_populates = 'hosts_relationship',
+    )
+
+    # See: http://stackoverflow.com/a/38929089/441652
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+class host_role_class(Base):
+
+    __tablename__ = 'host_roles'
+
+    id = sqlalchemy.Column(sqlalchemy.String, primary_key = True)
+    hostname = sqlalchemy.Column(sqlalchemy.String)
+
+    hosts_relationship = sqlalchemy.orm.relationship(
+        'host_class',
+        secondary = 'host_roles_to_hosts',
+        back_populates = 'host_roles_relationship',
+    )
+
+    # See: http://stackoverflow.com/a/38929089/441652
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
+
+class network_class(Base):
+
+    __tablename__ = 'networks'
+
+    id = sqlalchemy.Column(sqlalchemy.String, primary_key = True)
+    broadcast = sqlalchemy.Column(sqlalchemy.String)
+    gateway = sqlalchemy.Column(sqlalchemy.String)
+    netmask = sqlalchemy.Column(sqlalchemy.String)
+    netprefix = sqlalchemy.Column(sqlalchemy.String)
+    subnet = sqlalchemy.Column(sqlalchemy.String)
+
+    hosts_relationship = sqlalchemy.orm.relationship(
+        'host_class',
+        secondary = 'networks_to_hosts',
+        back_populates = 'host_networks_relationship',
+    )
+
+    # See: http://stackoverflow.com/a/38929089/441652
+    def __init__(self, **entries):
+        self.__dict__.update(entries)
 
 ################################################################################
 #
 
-def load_pillars():
+def load_database(pillars):
 
-    # Run Salt's `pillar.items` and captrue its output.
-    command_args = [
-        'sudo',
-        'salt-call',
-        '--out=yaml',
-        'pillar.items',
-    ]
-    process_output = call_subprocess(
-        command_args,
-        capture_stdout = True,
+    Base.metadata.create_all(engine)
+
+    DBSession = sqlalchemy.orm.sessionmaker(bind = engine)
+    session = DBSession()
+
+    for host_id in pillars['system_hosts'].keys():
+        host_d = pillars['system_hosts'][host_id]
+        host_d['id'] = host_id
+        host_o = host_class(**host_d)
+        session.add(host_o)
+        for network_id in host_d['host_networks']:
+            network_to_host_d = {}
+            network_to_host_d['network_id'] = network_id
+            network_to_host_d['host_id'] = host_id
+            network_to_host_o = network_to_host_class(**network_to_host_d)
+            session.add(network_to_host_o)
+
+    for host_role_id in pillars['system_host_roles'].keys():
+        host_role_d = pillars['system_host_roles'][host_role_id]
+        host_role_d['id'] = host_role_id
+        host_role_o = host_role_class(**host_role_d)
+        session.add(host_role_o)
+        for host_id in host_role_d['assigned_hosts']:
+            host_role_to_host_d = {}
+            host_role_to_host_d['host_role_id'] = host_role_id
+            host_role_to_host_d['host_id'] = host_id
+            host_role_to_host_o = host_role_to_host_class(**host_role_to_host_d)
+            session.add(host_role_to_host_o)
+
+    for network_id in pillars['system_networks'].keys():
+        network_d = pillars['system_networks'][network_id]
+        network_d['id'] = network_id
+        network_o = network_class(**network_d)
+        session.add(network_o)
+
+    session.commit()
+
+    return session
+
+################################################################################
+#
+
+def query_database(session):
+
+    a_host_class = sqlalchemy.orm.aliased(host_class)
+    b_host_class = sqlalchemy.orm.aliased(host_class)
+
+    query = (
+        session.query(
+            host_class,
+            host_role_class,
+            network_class,
+        )
+        .join(a_host_class, host_role_class.hosts_relationship)
+        .join(b_host_class, network_class.hosts_relationship)
     )
 
-    # Parse profile pillars content.
-    salt_output = process_output['stdout']
+    return query
+
+################################################################################
+#
+
+def write_query_to_csv(query):
+
+    writer = csv.writer(sys.stdout)
+
+    # Get list of columns for header.
+    column_names = []
+    for desc in query.column_descriptions:
+        column_names += [
+            desc['type'].__table__.name + '.' + c
+            for c in desc['type'].__table__.columns.keys()
+        ]
+
+    # Write header to CSV file.
+    writer.writerow(column_names)
+
+    # Write all rows to CSV file.
+    for row in query:
+        values = []
+        for item in row:
+            for col in item.__table__.columns:
+                values.append(item.__dict__[col.name])
+
+        writer.writerow(values)
+
+################################################################################
+#
+
+def load_pillars(
+    file_path = None,
+):
+
+    salt_output = None
+
+    if file_path is None:
+
+        # Run Salt's `pillar.items` and captrue its output.
+        command_args = [
+            'sudo',
+            'salt-call',
+            '--out=yaml',
+            'pillar.items',
+        ]
+        process_output = call_subprocess(
+            command_args,
+            capture_stdout = True,
+        )
+
+        # Parse profile pillars content.
+        salt_output = process_output['stdout']
+
+    else:
+
+        with open(file_path, 'r') as data_file:
+            salt_output = data_file.read()
+
     pillars = yaml.load(salt_output)
 
     # Return profile pillars loaded in memory.
+    # NOTE: Output of `salt-call` contain first-level key `local`.
     return pillars['local']
-
-################################################################################
-#
-
-def write_data():
-    pass
-
-    # Open CSV output file.
-    result_csv_file = open('result.csv', "w")
-    result_writer = csv.writer(result_csv_file, delimiter=',', quotechar='"')
-
-    # List of tab names to generate reporting data for.
-    # Currently, only two tabs can be handled by generating functions.
-    tab_list = [
-    ]
-
-    # Order in which rows are sorted in result output.
-    # This is supposed to be a static data (seldom updated).
-    rows_order = [
-    ]
-
-    # Write header.
-    header = [ "tab" ] + [ "row" ] + map(str, months_list)
-    logging.info("header = " + str(header))
-    result_writer.writerow (
-        [ "tab" ] + [ "row" ] + map(str, months_list)
-    )
-
-
-    # Generate table.
-    for tab_name in tab_list:
-        for row_name in rows_order:
-            if row_name not in rows_per_tab_config[tab_name].keys():
-                logging.debug("row is not part of tab configuration tab / row: " + str(tab_name) + " / " + str(row_name))
-                continue
-
-            column_values = [ tab_name, row_name ]
-
-            row_config = rows_per_tab_config[tab_name][row_name]
-
-            result_writer.writerow(column_values)
 
 ################################################################################
 #
@@ -128,9 +321,20 @@ def main():
     # Set log level.
     utils.set_log.setLoggingLevel('debug')
 
-    pillars = load_pillars()
+    # Debug SQL.
+    logging.basicConfig()
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
-    print_yaml(pillars)
+    pillars = None
+    if len(sys.argv) >= 2:
+        pillars = load_pillars(sys.argv[1])
+    else:
+        pillars = load_pillars()
+
+    session = load_database(pillars)
+    query = query_database(session)
+    write_query_to_csv(query)
+    session.close()
 
 ###############################################################################
 # MAIN
