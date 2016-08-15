@@ -72,6 +72,8 @@ include:
         'enable_primary_user_auto_login'
         ,
         'vagrant_box_publisher_configuration'
+        ,
+        'cygwin_settings'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
