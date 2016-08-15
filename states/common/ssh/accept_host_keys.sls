@@ -55,7 +55,9 @@ include:
 include:
     - common.ssh
 
-{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+
+{% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 
 '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh':
     file.managed:

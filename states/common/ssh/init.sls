@@ -38,7 +38,9 @@ ssh_server:
 
 {% if pillar['system_resources']['cygwin_package_64_bit_windows']['enable_installation'] %}
 
-{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+
+{% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 
 include:
     - common.cygwin.package

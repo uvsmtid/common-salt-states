@@ -83,7 +83,9 @@ last_command_non_zero_exit_code_functions_script:
 
 {% if cygwin_content_config['enable_installation'] %}
 
-{% set cygwin_root_dir = cygwin_content_config['installation_directory'] %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+
+{% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 
 '{{ cygwin_root_dir }}\etc\profile.d\common.custom.prompt.sh':
     file.managed:

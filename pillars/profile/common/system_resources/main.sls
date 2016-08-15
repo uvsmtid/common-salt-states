@@ -416,30 +416,17 @@ system_resources:
         item_content_hash: md5=cac92727c33bec0a79965c61bbb1c82f
 
     # Pre-downloaded Cygwin package with required components.
-    # NOTE: This package contains additional metadata used by
-    #       state which installs Cygwin using Salt.
-    #       This is different from `bootstrap_cygwin_package_64_bit_windows`
+    # NOTE: This is different from `bootstrap_cygwin_package_64_bit_windows`
     #       (see below) which is used to bootstrap Salt using Cygwin
     #       (installing Cygwin before Salt is installed).
-    # TODO: Move additional metadata into dedicated
-    #       sub-key of `system_features`.
     cygwin_package_64_bit_windows:
         resource_repository: common-resources
         bootstrap_use_cases: False
         enable_content_validation: True
         enable_installation: True
-        installation_directory: 'C:\cygwin64'
-        # Checking existance of this file confirms existing installation.
-        completion_file_indicator: 'C:\cygwin64\installed.txt'
         item_parent_dir_path: common/cygwin
         item_base_name: 2014-02-13-T03-11-40.056190700.cygwin.distrib.zip
         item_content_hash: md5=9c37559140d5510ce768f7b0fb7daff0
-        # See docs for CYGWIN environment variable:
-        #   http://cygwin.com/cygwin-ug-net/using-cygwinenv.html
-        CYGWIN_env_var_items_list:
-            # Windows NTFS native symlink can be used in both inside and
-            # outside of Cygwin:
-            - winsymlinks:nativestrict
 
     # Another way to use cygwin is to create a local mirror and use cygwin
     # setup utility. However, it uses over 20+G of space.
