@@ -109,6 +109,8 @@ last_command_non_zero_exit_code_functions_script:
     file.replace:
         - pattern: '^([^#]*)PS1='
         - repl: '#\1PS1='
+        # NOTE: Disable MULTILINE flag (default).
+        - flags: 0
         - show_changes: True
         - require:
             - sls: common.cygwin.package
@@ -132,6 +134,8 @@ convert_profile_file_to_unix_line_endings:
     file.replace:
         - pattern: '^([^#]*)PS1='
         - repl: '#\1PS1='
+        # NOTE: Disable MULTILINE flag (default).
+        - flags: 0
         - show_changes: True
         - require:
             - sls: common.cygwin.package
