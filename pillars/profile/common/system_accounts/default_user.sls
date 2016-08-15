@@ -19,10 +19,10 @@ system_accounts:
         primary_group: {{ default_username }}
 
         posix_user_home_dir: '/home/{{ default_username }}'
-        posix_user_home_dir_windows: ~ # N/A
+        posix_user_home_dir_windows: 'C:\cygwin64\home\{{ default_username }}'
 
-        windows_user_home_dir: ~ # N/A
-        windows_user_home_dir_cygwin: ~ # N/A
+        windows_user_home_dir: 'C:\Users\{{ default_username }}'
+        windows_user_home_dir_cygwin: '/cygdrive/c/Users/{{ default_username }}'
 
 ###############################################################################
 # EOF

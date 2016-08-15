@@ -24,7 +24,7 @@ def do(action_context):
     )
 
     # Add user to `administrators` group.
-    add_user_windows(
+    add_user_to_group_windows(
         user_name = action_context.conf_m.create_primary_user['primary_user'],
         group_name = 'administrators',
     )
