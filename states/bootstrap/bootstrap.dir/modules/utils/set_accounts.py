@@ -129,6 +129,49 @@ def set_password(
     )
 
 ###############################################################################
+#
+
+def add_user_windows(
+    user_name,
+    user_password,
+):
+
+    # Create user.
+    call_subprocess(
+        command_args = [
+            'net',
+            'user',
+            user_name,
+            user_password,
+            '/ADD',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
+#
+
+def add_user_to_group_windows(
+    user_name,
+    group_name,
+):
+
+    call_subprocess(
+        command_args = [
+            'net',
+            'localgroup',
+            group_name,
+            user_name,
+            '/ADD',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
 # EOF
 ###############################################################################
 
