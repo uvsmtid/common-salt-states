@@ -174,7 +174,13 @@ system_features:
 
                         sal-minion:
                             resource_type: exe
+                            # Update to 2016.3.2 for Windows support of
+                            # `cmd.run` with `runas` option.
+                            {% if False %}
                             resource_id: Salt-Minion-2015.5.11-AMD64-Setup.exe
+                            {% else %}
+                            resource_id: Salt-Minion-2016.3.2-AMD64-Setup.exe
+                            {% endif %}
 
             link_sources:
                 step_enabled: True

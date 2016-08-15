@@ -53,8 +53,17 @@ def provide_os_platform_type():
         # TODO: Add other Windows versions when such minions are available.
 
         # NOTE: Function `platform.platform()` returns
-        #       `Windows-2012Server-6.2.9200` for Windows Server 2012 R2.
+        #       (depending on Salt minion version):
+        #       - 2015.5.11:
+        #           `Windows-2012Server-6.2.9200` for Windows Server 2012 R2.
+        #       - 2015.8.11:
+        #           `Windows-8.1-6.3.9600` for Windows Server 2012 R2.
+
         re_match = re.match('.*2012Server.*', platform_string)
+        if re_match:
+            detected_platform = 'winserv2012'
+
+        re_match = re.match('Windows-8.1-6.3.9600', platform_string)
         if re_match:
             detected_platform = 'winserv2012'
 

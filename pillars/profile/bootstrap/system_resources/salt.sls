@@ -205,7 +205,9 @@ system_resources:
 
     {% endif %}
 
-    # Original Salt minion installer for Windows.
+    # Update to 2016.3.2 for Windows support of
+    # `cmd.run` with `runas` option.
+    {% if False %}
     Salt-Minion-2015.5.11-AMD64-Setup.exe:
         resource_repository: common-resources
         bootstrap_use_cases: True
@@ -214,6 +216,16 @@ system_resources:
         item_parent_dir_path: bootstrap/salt
         item_base_name: Salt-Minion-2015.5.11-AMD64-Setup.exe
         item_content_hash: md5=666697105e366191b7668dbf76e29ddc
+    {% else %}
+    Salt-Minion-2016.3.2-AMD64-Setup.exe:
+        resource_repository: common-resources
+        bootstrap_use_cases: True
+        enable_content_validation: True
+        enable_installation: True
+        item_parent_dir_path: bootstrap/salt
+        item_base_name: Salt-Minion-2016.3.2-AMD64-Setup.exe
+        item_content_hash: md5=2c140f5adbae52bed40f58adec160296
+    {% endif %}
 
 ###############################################################################
 # EOF
