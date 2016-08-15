@@ -6,6 +6,8 @@
 {% from resources_macro_lib import get_registered_content_item_rel_path with context %}
 
 {% set cygwin_resource_id = 'bootstrap_cygwin_package_64_bit_windows' %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+{% set cygwin_installation_directory = cygwin_settings['installation_directory'] %}
 
 # DISABLED: Both LibYAML and PyYAML are pre-installed with Cygwin.
 {% if False %}
@@ -84,7 +86,6 @@ cmd /c start /i /b /wait mintty /bin/bash -l -c "echo init"
 # Convert path to Cygwin.
 $bootstrap_base_dir_cygwin = "$(cygpath -u $bootstrap_base_dir)"
 $host_config_file_path_cygwin = "$(cygpath -u $host_config_file_path_windows)"
-
 
 # DISABLED: Both LibYAML and PyYAML are pre-installed with Cygwin.
 {% if False %} # libyaml
