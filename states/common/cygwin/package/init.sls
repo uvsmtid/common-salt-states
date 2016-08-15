@@ -14,6 +14,8 @@
 # <<<
 {% if grains['os_platform_type'].startswith('win') %}
 
+{% if pillar['system_features']['cygwin_settings']['cygwin_installation_method'] != 'bootstrap' %} # cygwin_installation_method
+
 {% if pillar['system_resources']['cygwin_package_64_bit_windows']['enable_installation'] %}
 
 {% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
@@ -95,8 +97,16 @@ add_cygwin_bin_path_to_PATH:
 
 {% endif %}
 
+{% else %} # cygwin_installation_method
+
+cygwin_package_dummy:
+    cmd.run:
+        - name: 'echo cygwin_package_dummy'
+
+{% endif %} # cygwin_installation_method
+
 {% endif %}
+
 # >>>
 ###############################################################################
-
 
