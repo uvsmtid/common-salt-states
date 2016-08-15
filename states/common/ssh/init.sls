@@ -52,14 +52,19 @@ include:
 
 {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
 
-# Provide SSH server start file per user:
-'{{ account_conf['windows_user_home_dir'] }}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\sshd_start.cmd':
-    file.managed:
-        - source: salt://common/ssh/sshd_start.cmd
-        - template: jinja
+# Run command to for first user login (to create home directory):
+run_login_shell:
+    cmd.run:
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "echo test"'
         - require:
-            - file: '{{ cygwin_root_dir }}\home\{{ account_conf['username'] }}\sshd\sshd_config'
             - sls: common.cygwin.package
+
+# Make sure directory exists:
+'{{ cygwin_root_dir }}\home\{{ account_conf['username'] }}':
+    file.exists:
+        - require:
+            - sls: common.cygwin.package
+            - cmd: run_login_shell
 
 # Provide SSH server configuration:
 '{{ cygwin_root_dir }}\home\{{ account_conf['username'] }}\sshd\sshd_config':
@@ -71,18 +76,13 @@ include:
             - file: '{{ cygwin_root_dir }}\home\{{ account_conf['username'] }}'
             - sls: common.cygwin.package
 
-# Make sure directory exists:
-'{{ cygwin_root_dir }}\home\{{ account_conf['username'] }}':
-    file.exists:
+# Provide SSH server start file per user:
+'{{ account_conf['windows_user_home_dir'] }}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\sshd_start.cmd':
+    file.managed:
+        - source: salt://common/ssh/sshd_start.cmd
+        - template: jinja
         - require:
-            - sls: common.cygwin.package
-            - cmd: run_login_shell
-
-# Run command to for first user login (to create home directory):
-run_login_shell:
-    cmd.run:
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "echo test"'
-        - require:
+            - file: '{{ cygwin_root_dir }}\home\{{ account_conf['username'] }}\sshd\sshd_config'
             - sls: common.cygwin.package
 
 {% endif %}
