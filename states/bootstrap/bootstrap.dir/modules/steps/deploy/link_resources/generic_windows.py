@@ -10,7 +10,8 @@ from utils.exec_command import call_subprocess
 def do(action_context):
 
     # TODO: Implement for Windows.
-    logging.critical("Implement for Windows.")
+    # NOTE: This step is required for standalone (masterless) Salt minion.
+    logging.critical("Implement for Windows: link_resources")
     return
 
     # NOTE: Location of all resources is re-written into the new pillar.

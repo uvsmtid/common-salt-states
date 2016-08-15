@@ -14,7 +14,7 @@ class generic_windows_deploy(deploy_template_method):
     ):
 
         # TODO: Implement for Windows.
-        logging.critical("Implement for Windows.")
+        logging.critical("Implement for Windows: init_ip_route")
         return
 
         # This method may depend on location and format of configuration files.
@@ -82,10 +82,6 @@ class generic_windows_deploy(deploy_template_method):
     def activate_salt_master(
         self,
     ):
-
-        # TODO: Implement for Windows.
-        logging.critical("Implement for Windows.")
-        return
 
         # This method may depend on `initd` or `systemd` PID 1, for example.
         raise NotImplementedError

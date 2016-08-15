@@ -11,7 +11,7 @@ from utils.check_salt_output import process_string
 def do(action_context):
 
     # TODO: Implement for Windows.
-    logging.critical("Implement for Windows.")
+    logging.critical("Implement for Windows: run_highstate")
     return
 
     # Explanation per use case:

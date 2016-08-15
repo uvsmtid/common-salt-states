@@ -13,7 +13,7 @@ from utils.set_network import ping_host_windows
 def do(action_context):
 
     # TODO: Implement for Windows.
-    logging.critical("Implement for Windows.")
+    logging.critical("Implement for Windows: init_dns_server")
     return
 
     # Deploy `resolv.conf` configuration file.

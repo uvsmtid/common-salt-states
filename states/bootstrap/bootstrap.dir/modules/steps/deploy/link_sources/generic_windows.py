@@ -19,7 +19,8 @@ def deploy_repos(
 ):
 
     # TODO: Implement for Windows.
-    logging.critical("Implement for Windows.")
+    # NOTE: This step is required for standalone (masterless) Salt minion.
+    logging.critical("Implement for Windows: link_sources")
     return
 
     # TODO: Make this generic with Linux.
@@ -43,7 +44,8 @@ def set_salt_states_and_pillars_symlinks(
 ):
 
     # TODO: Implement for Windows.
-    logging.critical("Implement for Windows.")
+    # NOTE: This step is required for standalone (masterless) Salt minion.
+    logging.critical("Implement for Windows: link_sources")
     return
 
     # TODO: Make this generic with Linux.
@@ -54,7 +56,8 @@ def set_salt_states_and_pillars_symlinks(
 def do(action_context):
 
     # TODO: Implement for Windows.
-    logging.critical("Implement for Windows.")
+    # NOTE: This step is required for standalone (masterless) Salt minion.
+    logging.critical("Implement for Windows: link_sources")
     return
 
     # TODO: Make this generic with Linux.
