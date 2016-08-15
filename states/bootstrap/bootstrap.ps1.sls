@@ -54,6 +54,10 @@ Add-Type -A System.IO.Compression.FileSystem
 $cygwin_offline_dirname = "cygwin-offline.git"
 cmd /c start /i /b /wait "$cygwin_offline_dirname\install.cmd"
 
+# Set inheritence to avoid permission hell.
+# See http://stackoverflow.com/a/22453562/441652
+icacls C:\cygwin64 /q /c /t /reset
+
 # Set PATH to add Cygwin .
 # NOTE: This required only until the end of this setup script
 #       because it is automatically by `cygwin-offline` installer
