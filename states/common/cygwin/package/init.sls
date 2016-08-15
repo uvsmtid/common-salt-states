@@ -14,11 +14,9 @@
 # <<<
 {% if grains['os_platform_type'].startswith('win') %}
 
-{% if pillar['system_features']['cygwin_settings']['cygwin_installation_method'] != 'bootstrap' %} # cygwin_installation_method
-
-{% if pillar['system_resources']['cygwin_package_64_bit_windows']['enable_installation'] %}
-
 {% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+
+{% if cygwin_settings['cygwin_installation_method'] != 'bootstrap' %} # cygwin_installation_method
 
 {% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 
@@ -97,8 +95,6 @@ add_cygwin_bin_path_to_PATH:
         - name: 'echo %PATH% | findstr /I /C:";{{ cygwin_bin_path }};" > nul || setx -m PATH "%PATH%;{{ cygwin_bin_path }};"'
         - require:
             - cmd: install_cygwin_package
-
-{% endif %}
 
 {% else %} # cygwin_installation_method
 

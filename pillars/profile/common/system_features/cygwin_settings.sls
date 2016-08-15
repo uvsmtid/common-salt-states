@@ -11,6 +11,9 @@ system_features:
         # `cygwin_package_64_bit_windows` resource id.
         # However, the latest approach is to install Cygwin immediately
         # during bootstrap (bootstrap pacakge installs it right away).
+        #
+        # If Cygwin is completely absent on the target system
+        # (by any installation method), set it to None (~).
         cygwin_installation_method: bootstrap
 
         installation_directory: 'C:\cygwin64'

@@ -36,9 +36,9 @@ ssh_server:
 
 # OpenSSH server on Windows depends on Cygwin installation:
 
-{% if pillar['system_resources']['cygwin_package_64_bit_windows']['enable_installation'] %}
-
 {% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+
+{% if cygwin_settings['cygwin_installation_method'] %}
 
 {% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 

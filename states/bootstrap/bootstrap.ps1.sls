@@ -58,6 +58,18 @@ cmd /c start /i /b /wait "$cygwin_offline_dirname\install.cmd"
 # See http://stackoverflow.com/a/22453562/441652
 icacls C:\cygwin64 /q /c /t /reset
 
+# Insert line to set `CYGWIN TODO` environment variable.
+# See: http://stackoverflow.com/a/23125468/441652
+# The content of the `Cygwin.bat` file runs `bash` after `chdir` command -
+# we set `CYGWIN` variable right after `chdir` before `bash`.
+{% set CYGWIN_env_var_value = " ".join(cygwin_settings['CYGWIN_env_var_items_list']) %}
+$lines = Get-Content "{{ cygwin_installation_directory }}\Cygwin.bat"
+$pos = [array]::indexof($lines, $lines -match "chdir") # Could use a regex here.
+$newLines = $lines[0..$pos], "set CYGWIN={{ CYGWIN_env_var_value }}", $lines[($pos + 1)..($lines.Length - 1)]
+$newLines | Set-Content "{{ cygwin_installation_directory }}\Cygwin.bat"
+# Also, set it in the global environment variables.
+setx -m CYGWIN "{{ CYGWIN_env_var_value }}"
+
 # Set PATH to add Cygwin .
 # NOTE: This required only until the end of this setup script
 #       because it is automatically by `cygwin-offline` installer
