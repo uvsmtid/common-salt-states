@@ -157,12 +157,20 @@ git_aware_bash_promt_functions_script:
     file.managed:
         - name: '{{ cygwin_root_dir }}\lib\git_aware_prompt\git_aware_prompt_func.sh'
         - source: 'salt://common/shell/prompt/git_aware_prompt_func.sh'
-        - mode: 555
+        # NOTE: `mode` is not supported on Windows.
+        #- mode: 555
+        - makedirs: True
         - makedirs: True
 
 convert_git_aware_bash_promt_functions_script_line_endings:
     cmd.run:
         - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\lib\git_aware_prompt\git_aware_prompt_func.sh && {{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\lib\git_aware_prompt\git_aware_prompt_func.sh'
+        - require:
+            - file: git_aware_bash_promt_functions_script
+
+set_execute_permissions_git_aware_bash_promt_functions_script:
+    cmd.run:
+        - name: '{{ cygwin_root_dir }}\bin\chmod 555 {{ cygwin_root_dir }}\lib\git_aware_prompt\git_aware_prompt_func.sh'
         - require:
             - file: git_aware_bash_promt_functions_script
 
@@ -176,12 +184,19 @@ last_command_non_zero_exit_code_functions_script:
     file.managed:
         - name: '{{ cygwin_root_dir }}\lib\last_command_exit_code_prompt\last_command_exit_code_prompt_func.sh'
         - source: 'salt://common/shell/prompt/last_command_exit_code_prompt_func.sh'
-        - mode: 555
+        # NOTE: `mode` is not supported on Windows.
+        #- mode: 555
         - makedirs: True
 
 last_command_non_zero_exit_code_functions_script_line_endings:
     cmd.run:
         - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\lib\last_command_exit_code_prompt\last_command_exit_code_prompt_func.sh && {{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\lib\last_command_exit_code_prompt\last_command_exit_code_prompt_func.sh'
+        - require:
+            - file: last_command_non_zero_exit_code_functions_script
+
+set_execute_permissions_last_command_non_zero_exit_code_functions_script:
+    cmd.run:
+        - name: '{{ cygwin_root_dir }}\bin\chmod 555 {{ cygwin_root_dir }}\lib\last_command_exit_code_prompt\last_command_exit_code_prompt_func.sh'
         - require:
             - file: last_command_non_zero_exit_code_functions_script
 
