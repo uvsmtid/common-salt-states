@@ -147,6 +147,25 @@ def set_hostname_windows(
     )
 
 ###############################################################################
+#
+
+def disable_windows_firewall(
+):
+
+    call_subprocess(
+        command_args = [
+            'powershell',
+            'Set-NetFirewallProfile',
+            '-All',
+            '-Enabled',
+            'False',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
 # EOF
 ###############################################################################
 

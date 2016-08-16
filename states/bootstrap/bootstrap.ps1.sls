@@ -107,7 +107,6 @@ cmd /c start /i /b /wait bash -c "/usr/bin/rm -rf $PyYAML_content_subdir"
 {% endif %} # libyaml
 
 # Disable firewall to allow SSH and Salt minion connections.
-# TODO: Move disabling firewall to Salt bootstrap package.
 Set-NetFirewallProfile -All -Enabled False
 
 # For some reasons directory `/var` does not show `x` permissions for `all`.
