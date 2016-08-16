@@ -78,8 +78,8 @@ class generic_windows_deploy(deploy_template_method):
         self,
     ):
 
-        # This method may depend on `initd` or `systemd` PID 1, for example.
-        raise NotImplementedError
+        from steps.deploy.activate_salt_master.generic_windows import do
+        do(self)
 
     def activate_salt_minion(
         self,
