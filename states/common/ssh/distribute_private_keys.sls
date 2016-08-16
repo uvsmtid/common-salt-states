@@ -40,6 +40,9 @@ include:
 {% set public_key_res_id = pillar['system_features']['initialize_ssh_connections']['ssh_public_key_res_id'] %}
 {% set private_key_res_id = pillar['system_features']['initialize_ssh_connections']['ssh_private_key_res_id'] %}
 
+{% set system_secrets_macro_lib = 'common/system_secrets/lib.sls' %}
+{% from system_secrets_macro_lib import get_single_line_system_secret with context %}
+
 # 1. Primary user for this minion.
 #
 # TODO: It's code duplication due to poor Python logic/loop support in Jinja templates:
@@ -50,6 +53,7 @@ include:
 {% set selected_role_name = 'none' %}
 {% set primary_user = pillar['system_hosts'][grains['id']]['primary_user'] %}
 {% for account_conf in [ pillar['system_accounts'][ primary_user ] ] %}
+
 
 ###############################################################################
 # <<<
@@ -104,6 +108,7 @@ include:
         - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
         - source: {{ get_registered_content_item_URI(private_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
+        - user: {{ account_conf['username'] }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -113,6 +118,7 @@ include:
         - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
         - source: {{ get_registered_content_item_URI(public_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
+        - user: {{ account_conf['username'] }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -120,6 +126,10 @@ include:
 {{ case_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions:
     cmd.run:
         - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "chown {{ account_conf['username'] }} ~/.ssh/id_rsa ~/.ssh/id_rsa.pub ; chmod 600 ~/.ssh/id_rsa; chmod 644 ~/.ssh/id_rsa.pub "'
+        # NOTE: Option `runas` is not supported before `2016.3.0`.
+        #       It used to be `user` instead.
+        - runas: {{ account_conf['username'] }}
+        - password: {{ get_single_line_system_secret(account_conf['password_secret']) }}
         - require:
             - file: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
             - file: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
@@ -196,6 +206,7 @@ include:
         - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
         - source: {{ get_registered_content_item_URI(private_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(private_key_res_id) }}
+        - user: {{ account_conf['username'] }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -205,6 +216,7 @@ include:
         - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
         - source: {{ get_registered_content_item_URI(public_key_res_id) }}
         - source_hash: {{ get_registered_content_item_hash(public_key_res_id) }}
+        - user: {{ account_conf['username'] }}
         - makedirs: True
         - require:
             - sls: common.cygwin.package
@@ -212,6 +224,10 @@ include:
 {{ case_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions:
     cmd.run:
         - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "chown {{ account_conf['username'] }} ~/.ssh/id_rsa ~/.ssh/id_rsa.pub ; chmod 600 ~/.ssh/id_rsa; chmod 644 ~/.ssh/id_rsa.pub "'
+        # NOTE: Option `runas` is not supported before `2016.3.0`.
+        #       It used to be `user` instead.
+        - runas: {{ account_conf['username'] }}
+        - password: {{ get_single_line_system_secret(account_conf['password_secret']) }}
         - require:
             - file: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
             - file: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub'
