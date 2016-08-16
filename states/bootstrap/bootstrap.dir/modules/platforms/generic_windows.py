@@ -35,13 +35,8 @@ class generic_windows_deploy(deploy_template_method):
     def set_hostname(
         self,
     ):
-
-        # TODO: Implement for Windows.
-        logging.critical("Implement for Windows.")
-        return
-
-        # This method may depend on location of file with persistent hostname configuration.
-        raise NotImplementedError
+        from steps.deploy.set_hostname.generic_windows import do
+        do(self)
 
     def create_primary_user(
         self,
