@@ -13,7 +13,7 @@ include:
 {% set bootstrap_files_dir = pillar['system_features']['static_bootstrap_configuration']['bootstrap_files_dir'] %}
 {% set bootstrap_dir = user_home_dir + '/' + bootstrap_files_dir %}
 
-{% set project_name = properties['properties']['project_name'] %}
+{% set project_name = pillar['properties']['project_name'] %}
 
 # Download file for pretty conversion.
 pretty_yaml2json_script:

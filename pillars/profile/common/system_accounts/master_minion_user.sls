@@ -18,6 +18,9 @@ system_accounts:
 
         primary_group: {{ default_username }}
 
+        # NOTE: Salt master minion cannot be Windows.
+        #       Therefore, no Windows home directory is set.
+
         posix_user_home_dir: '/home/{{ default_username }}'
         posix_user_home_dir_windows: ~ # N/A
 

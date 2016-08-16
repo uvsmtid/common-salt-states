@@ -28,7 +28,9 @@ shell:
 
 {% set cygwin_content_config = pillar['system_resources']['cygwin_package_64_bit_windows'] %}
 
-{% if cygwin_content_config['enable_installation'] %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+
+{% if cygwin_settings['cygwin_installation_method'] %}
 
 include:
     - common.cygwin.package

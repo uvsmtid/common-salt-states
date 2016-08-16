@@ -9,7 +9,9 @@ IF NOT %errorlevel%==0 (
     EXIT /B 1
 )
 
-{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+
+{% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 
 REM Run the setup providing list of all required components.
 REM Note: the `^` character makes `cmd` interpreter concatenate lines.

@@ -29,9 +29,11 @@ include:
 
 {% set cygwin_content_config = pillar['system_resources']['cygwin_package_64_bit_windows'] %}
 
-{% if cygwin_content_config['enable_installation'] %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
 
-{% set cygwin_root_dir = cygwin_content_config['installation_directory'] %}
+{% if cygwin_settings['cygwin_installation_method'] %}
+
+{% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 
 '{{ cygwin_root_dir }}\etc\profile.d\common.custom.aliases.sh':
     file.managed:

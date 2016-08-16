@@ -14,10 +14,13 @@
 # <<<
 {% if grains['os_platform_type'].startswith('win') %}
 
-{% if pillar['system_resources']['cygwin_package_64_bit_windows']['enable_installation'] %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
 
-{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
-{% set cygwin_installation_completion_file_indicator = pillar['system_resources']['cygwin_package_64_bit_windows']['completion_file_indicator'] %}
+{% if cygwin_settings['cygwin_installation_method'] != 'bootstrap' %} # cygwin_installation_method
+
+{% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
+
+{% set cygwin_installation_completion_file_indicator = cygwin_settings['completion_file_indicator'] %}
 
 include:
     - common.7zip
@@ -53,7 +56,7 @@ unzip_cygwin_package:
 # According to Cygwin:
 #   http://cygwin.com/cygwin-ug-net/using-cygwinenv.html
 #   "It contains the options listed below, separated by blank characters."
-{% set CYGWIN_env_var_value = " ".join(pillar['system_resources']['cygwin_package_64_bit_windows']['CYGWIN_env_var_items_list']) %}
+{% set CYGWIN_env_var_value = " ".join(cygwin_settings['CYGWIN_env_var_items_list']) %}
 set_CYGWIN_env_var_value:
     cmd.run:
         - name: 'setx -m CYGWIN "{{ CYGWIN_env_var_value }}"'
@@ -86,17 +89,23 @@ set_CYGWIN_env_var_value:
 
 # NOTE: Double backward slashes `\\` is somehow required here.
 #       Otherwise `\v` becomes a special character and PATH is not set.
-{% set cygwin_bin_path = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] + '\\bin' %}
+{% set cygwin_bin_path = cygwin_settings['installation_directory'] + '\\bin' %}
 add_cygwin_bin_path_to_PATH:
     cmd.run:
         - name: 'echo %PATH% | findstr /I /C:";{{ cygwin_bin_path }};" > nul || setx -m PATH "%PATH%;{{ cygwin_bin_path }};"'
         - require:
             - cmd: install_cygwin_package
 
-{% endif %}
+{% else %} # cygwin_installation_method
+
+cygwin_package_dummy:
+    cmd.run:
+        - name: 'echo cygwin_package_dummy'
+
+{% endif %} # cygwin_installation_method
 
 {% endif %}
+
 # >>>
 ###############################################################################
-
 

@@ -1,26 +1,18 @@
 
 ###############################################################################
 
-import logging
-
-###############################################################################
-#
-
-def import_rpm_key(
-    content_dir,
-    rpm_key_file_path,
-):
-
-    logging.warning("Ignore the step for Windows.")
-    return
-
 ###############################################################################
 #
 
 def do(action_context):
 
-    logging.warning("Ignore the step for Windows.")
-    return
+    # NOTE: Skip for non-master minions.
+    if not action_context.conf_m.activate_salt_master['is_salt_master']:
+        return
+
+    # Windows cannot be Salt master. 
+    logging.critical("Windows cannot be salt master.")
+    raise NotImplementedError
 
 ###############################################################################
 # EOF

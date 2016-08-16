@@ -12,7 +12,9 @@ include:
 
 {% from 'common/libs/utils.lib.sls' import get_salt_content_temp_dir with context %}
 
-{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+
+{% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 
 {% from 'common/libs/utils.lib.sls' import get_windows_salt_content_temp_dir_cygwin with context %}
 

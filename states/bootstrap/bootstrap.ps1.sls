@@ -6,6 +6,8 @@
 {% from resources_macro_lib import get_registered_content_item_rel_path with context %}
 
 {% set cygwin_resource_id = 'bootstrap_cygwin_package_64_bit_windows' %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
+{% set cygwin_installation_directory = cygwin_settings['installation_directory'] %}
 
 # DISABLED: Both LibYAML and PyYAML are pre-installed with Cygwin.
 {% if False %}
@@ -54,6 +56,22 @@ Add-Type -A System.IO.Compression.FileSystem
 $cygwin_offline_dirname = "cygwin-offline.git"
 cmd /c start /i /b /wait "$cygwin_offline_dirname\install.cmd"
 
+# Set inheritence to avoid permission hell.
+# See http://stackoverflow.com/a/22453562/441652
+icacls C:\cygwin64 /q /c /t /reset
+
+# Insert line to set `CYGWIN TODO` environment variable.
+# See: http://stackoverflow.com/a/23125468/441652
+# The content of the `Cygwin.bat` file runs `bash` after `chdir` command -
+# we set `CYGWIN` variable right after `chdir` before `bash`.
+{% set CYGWIN_env_var_value = " ".join(cygwin_settings['CYGWIN_env_var_items_list']) %}
+$lines = Get-Content "{{ cygwin_installation_directory }}\Cygwin.bat"
+$pos = [array]::indexof($lines, $lines -match "chdir") # Could use a regex here.
+$newLines = $lines[0..$pos], "set CYGWIN={{ CYGWIN_env_var_value }}", $lines[($pos + 1)..($lines.Length - 1)]
+$newLines | Set-Content "{{ cygwin_installation_directory }}\Cygwin.bat"
+# Also, set it in the global environment variables.
+setx -m CYGWIN "{{ CYGWIN_env_var_value }}"
+
 # Set PATH to add Cygwin .
 # NOTE: This required only until the end of this setup script
 #       because it is automatically by `cygwin-offline` installer
@@ -68,7 +86,6 @@ cmd /c start /i /b /wait mintty /bin/bash -l -c "echo init"
 # Convert path to Cygwin.
 $bootstrap_base_dir_cygwin = "$(cygpath -u $bootstrap_base_dir)"
 $host_config_file_path_cygwin = "$(cygpath -u $host_config_file_path_windows)"
-
 
 # DISABLED: Both LibYAML and PyYAML are pre-installed with Cygwin.
 {% if False %} # libyaml
@@ -90,8 +107,11 @@ cmd /c start /i /b /wait bash -c "/usr/bin/rm -rf $PyYAML_content_subdir"
 {% endif %} # libyaml
 
 # Disable firewall to allow SSH and Salt minion connections.
-# TODO: Move disabling firewall to Salt bootstrap package.
 Set-NetFirewallProfile -All -Enabled False
+
+# For some reasons directory `/var` does not show `x` permissions for `all`.
+# This is required by SSH service installation script.
+cmd /c start /i /b /wait bash -c "chmod -R a+X /var"
 
 # TODO: DISABLE: The SSH service is installed by Salt states.
 {% if True %} # sshd_setup

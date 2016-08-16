@@ -25,6 +25,8 @@
 
 {% if pillar['system_features']['initialize_ssh_connections']['feature_enabled'] %}
 
+{% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
+
 ###############################################################################
 # <<<
 {% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
@@ -32,11 +34,11 @@
 include:
     - common.ssh
 
-'{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh':
+'accept_host_keys_script_deploy':
     file.managed:
+        - name: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh'
         - source: salt://common/ssh/accept_host_keys.sh
         - template: jinja
-        {% set account_conf = pillar['system_accounts'][ pillar['system_hosts'][ grains['id'] ]['primary_user'] ] %}
         - user: {{ account_conf['username'] }}
         - group: {{ account_conf['primary_group'] }}
         - mode: 544
@@ -55,23 +57,44 @@ include:
 include:
     - common.ssh
 
-{% set cygwin_root_dir = pillar['system_resources']['cygwin_package_64_bit_windows']['installation_directory'] %}
+{% set cygwin_settings = pillar['system_features']['cygwin_settings'] %}
 
-'{{ get_salt_content_temp_dir() }}\accept_host_keys.sh':
+{% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
+
+{% set system_secrets_macro_lib = 'common/system_secrets/lib.sls' %}
+{% from system_secrets_macro_lib import get_single_line_system_secret with context %}
+
+unlock_accept_host_keys_script_permissions:
+    cmd.run:
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "if [ -f {{ get_windows_salt_content_temp_dir_cygwin() }}/ssh/accept_host_keys.sh ] ; then chmod 777 {{ get_windows_salt_content_temp_dir_cygwin() }}/ssh/accept_host_keys.sh ; fi"'
+        # NOTE: Option `runas` is not supported before `2016.3.0`.
+        #       It used to be `user` instead.
+        - runas: {{ account_conf['username'] }}
+        - password: {{ get_single_line_system_secret(account_conf['password_secret']) }}
+
+'accept_host_keys_script_deploy':
     file.managed:
+        - name: '{{ get_salt_content_temp_dir() }}\ssh\accept_host_keys.sh'
         - source: salt://common/ssh/accept_host_keys.sh
         - template: jinja
         - makedirs: True
         - require:
             - sls: common.ssh
+            - cmd: unlock_accept_host_keys_script_permissions
 
 'accept_host_keys_script_dos2unix':
     cmd.run:
         # The `--force` option is requred because `dos2unix` may identify some
         # characters as binary and skips conversion of the file.
-        - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe --force "{{ get_windows_salt_content_temp_dir_cygwin() }}/accept_host_keys.sh"'
+        - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe --force "{{ get_salt_content_temp_dir() }}\ssh\accept_host_keys.sh"'
         - require:
-            - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
+            - file: 'accept_host_keys_script_deploy'
+
+'accept_host_keys_script_permissions':
+    cmd.run:
+        - name: '{{ cygwin_root_dir }}\bin\chmod 555 "{{ get_salt_content_temp_dir() }}\ssh\accept_host_keys.sh"'
+        - require:
+            - file: 'accept_host_keys_script_deploy'
 
 {% endif %}
 # >>>
@@ -91,7 +114,7 @@ include:
 
 {% set host_config = pillar['system_hosts'][host_id] %}
 
-{% if is_network_checks_allowed(host_id) == 'True' %}
+{% if is_network_checks_allowed(host_id) == 'True' %} # online
 
 # Compose expected data object:
 {% set account_conf = pillar['system_accounts'][ host_config['primary_user'] ] %}
@@ -118,7 +141,7 @@ include:
         - user: '{{ account_conf['username'] }}'
         - require:
             - sls: common.ssh
-            - file: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh'
+            - file: 'accept_host_keys_script_deploy'
 
 {% endif %}
 # >>>
@@ -132,10 +155,10 @@ include:
     cmd.run:
         # The script file potentially does not have execute permissions.
         # Execute through bash-interpreter.
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ get_windows_salt_content_temp_dir_cygwin() }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ get_windows_salt_content_temp_dir_cygwin() }}/ssh/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         - require:
             - sls: common.ssh
-            - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
+            - file: 'accept_host_keys_script_deploy'
             - cmd: 'accept_host_keys_script_dos2unix'
 
 {% endif %}
@@ -144,7 +167,7 @@ include:
 
 #------------------------------------------------------------------------------
 
-{% endif %}
+{% endif %} # online
 
 {% endfor %} # Outter loop of 1.
 # End of 1.
@@ -162,7 +185,7 @@ include:
 
 {% set host_config = pillar['system_hosts'][minion_id] %}
 
-{% if is_network_checks_allowed(minion_id) == 'True' %}
+{% if is_network_checks_allowed(minion_id) == 'True' %} # online
 
 {% for user_config in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_host_role'][selected_role_name].values() %}
 
@@ -190,7 +213,7 @@ include:
         - user: '{{ account_conf['username'] }}'
         - require:
             - sls: common.ssh
-            - file: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh'
+            - file: 'accept_host_keys_script_deploy'
 
 {% endif %}
 # >>>
@@ -204,10 +227,10 @@ include:
     cmd.run:
         # The script file potentially does not have execute permissions.
         # Execute through bash-interpreter.
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ get_windows_salt_content_temp_dir_cygwin() }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ get_windows_salt_content_temp_dir_cygwin() }}/ssh/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         - require:
             - sls: common.ssh
-            - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
+            - file: 'accept_host_keys_script_deploy'
             - cmd: 'accept_host_keys_script_dos2unix'
 
 {% endif %}
@@ -218,7 +241,7 @@ include:
 
 {% endfor %} # Inner loop of 2.
 
-{% endif %} # "online"
+{% endif %} # online
 
 {% endfor %} # `minion_id`
 
@@ -236,7 +259,7 @@ include:
 
 {% set host_config = pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_hostname'][hostname] %}
 
-{% if is_network_checks_allowed(None) == 'True' %}
+{% if is_network_checks_allowed(None) == 'True' %} # online
 
 {% for user_config in pillar['system_features']['initialize_ssh_connections']['extra_public_key_deployment_destinations']['hosts_by_hostname'][hostname]['user_configs'].values() %}
 
@@ -264,7 +287,7 @@ include:
         - user: '{{ account_conf['username'] }}'
         - require:
             - sls: common.ssh
-            - file: '{{ get_salt_content_temp_dir() }}/ssh/accept_host_keys.sh'
+            - file: 'accept_host_keys_script_deploy'
 
 {% endif %}
 # >>>
@@ -278,10 +301,10 @@ include:
     cmd.run:
         # The script file potentially does not have execute permissions.
         # Execute through bash-interpreter.
-        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ get_windows_salt_content_temp_dir_cygwin() }}/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l "{{ get_windows_salt_content_temp_dir_cygwin() }}/ssh/accept_host_keys.sh" "{{ selected_host['hostname'] }}" "{{ selected_host['username'] }}"'
         - require:
             - sls: common.ssh
-            - file: '{{ get_salt_content_temp_dir() }}\accept_host_keys.sh'
+            - file: 'accept_host_keys_script_deploy'
             - cmd: 'accept_host_keys_script_dos2unix'
 
 {% endif %}

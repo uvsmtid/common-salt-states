@@ -123,6 +123,49 @@ def set_transient_route(
     )
 
 ###############################################################################
+#
+
+def set_hostname_windows(
+    hostname,
+):
+
+    # NOTE: Unfortunately for Windows,
+    #       the name will only become effective after restart.
+    call_subprocess(
+        command_args = [
+            'powershell',
+            'Rename-Computer',
+            '-NewName',
+            hostname,
+            # NOTE: Command complains that NetBIOS names are
+            #       limited to 15 bytes. We force it - what else we can do?
+            '-Force',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
+#
+
+def disable_windows_firewall(
+):
+
+    call_subprocess(
+        command_args = [
+            'powershell',
+            'Set-NetFirewallProfile',
+            '-All',
+            '-Enabled',
+            'False',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
 # EOF
 ###############################################################################
 
