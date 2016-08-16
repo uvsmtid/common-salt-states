@@ -110,6 +110,10 @@ cmd /c start /i /b /wait bash -c "/usr/bin/rm -rf $PyYAML_content_subdir"
 # TODO: Move disabling firewall to Salt bootstrap package.
 Set-NetFirewallProfile -All -Enabled False
 
+# For some reasons directory `/var` does not show `x` permissions for `all`.
+# This is required by SSH service installation script.
+cmd /c start /i /b /wait bash -c "chmod -R a+X /var"
+
 # TODO: DISABLE: The SSH service is installed by Salt states.
 {% if True %} # sshd_setup
 

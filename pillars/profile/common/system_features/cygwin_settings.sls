@@ -30,6 +30,14 @@ system_features:
             # outside of Cygwin:
             - winsymlinks:nativestrict
 
+        # There are two methods to setup SSH:
+        #   - user
+        #       This method sets SSH server as application auto-started
+        #       as user logs in.
+        #   - service
+        #       This is the standard method to set up Windows service.
+        cygwin_ssh_service_setup_method: service
+
 ###############################################################################
 # EOF
 ###############################################################################
