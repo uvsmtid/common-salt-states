@@ -103,6 +103,14 @@ include:
 
 {% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 
+'{{ case_name }}_unlock_ssh_key_permissions':
+    cmd.run:
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "if [ -f ~/.ssh/id_rsa ] ; then chmod 666 ~/.ssh/id_rsa ; fi && if [ -f ~/.ssh/id_rsa.pub ] ; then chmod 666 ~/.ssh/id_rsa.pub ; fi"'
+        # NOTE: Option `runas` is not supported before `2016.3.0`.
+        #       It used to be `user` instead.
+        - runas: {{ account_conf['username'] }}
+        - password: {{ get_single_line_system_secret(account_conf['password_secret']) }}
+
 '{{ case_name }}_{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
         - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
@@ -112,6 +120,7 @@ include:
         - makedirs: True
         - require:
             - sls: common.cygwin.package
+            - cmd: '{{ case_name }}_unlock_ssh_key_permissions'
 
 '{{ case_name }}_{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
@@ -122,6 +131,7 @@ include:
         - makedirs: True
         - require:
             - sls: common.cygwin.package
+            - cmd: '{{ case_name }}_unlock_ssh_key_permissions'
 
 {{ case_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions:
     cmd.run:
@@ -201,6 +211,14 @@ include:
 
 {% set cygwin_root_dir = cygwin_settings['installation_directory'] %}
 
+{{ case_name }}_unlock_ssh_key_permissions:
+    cmd.run:
+        - name: '{{ cygwin_root_dir }}\bin\bash.exe -l -c "if [ -f ~/.ssh/id_rsa ] ; then chmod 666 ~/.ssh/id_rsa ; fi && if [ -f ~/.ssh/id_rsa.pub ] ; then chmod 666 ~/.ssh/id_rsa.pub ; fi"'
+        # NOTE: Option `runas` is not supported before `2016.3.0`.
+        #       It used to be `user` instead.
+        - runas: {{ account_conf['username'] }}
+        - password: {{ get_single_line_system_secret(account_conf['password_secret']) }}
+
 '{{ case_name }}_{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa':
     file.managed:
         - name: '{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa'
@@ -210,6 +228,7 @@ include:
         - makedirs: True
         - require:
             - sls: common.cygwin.package
+            - cmd: '{{ case_name }}_unlock_ssh_key_permissions'
 
 '{{ case_name }}_{{ account_conf['posix_user_home_dir_windows'] }}\.ssh\id_rsa.pub':
     file.managed:
@@ -220,6 +239,7 @@ include:
         - makedirs: True
         - require:
             - sls: common.cygwin.package
+            - cmd: '{{ case_name }}_unlock_ssh_key_permissions'
 
 {{ case_name }}_{{ account_conf['username'] }}_ensure_key_files_permissions:
     cmd.run:
