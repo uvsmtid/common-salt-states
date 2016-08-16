@@ -77,7 +77,22 @@ set shiftwidth=4
 " Scroll cursor to the center
 " on each search iteration (and every move of the cursor).
 " See: http://stackoverflow.com/a/7406937/441652
-:set scrolloff=999
+" NOTE: Use next approach instead of this (they do not work together)
+"       to make sure cursor is centered during searches even at EOF.
+":set scrolloff=999
+
+" See: http://stackoverflow.com/a/12838570/441652
+" Avoids updating the screen before commands are completed
+set lazyredraw
+" Remap navigation commands to center view on cursor using zz
+nnoremap <C-U> 11kzz
+nnoremap <C-D> 11jzz
+nnoremap j jzz
+nnoremap k kzz
+nnoremap # #zz
+nnoremap * *zz
+nnoremap n nzz
+nnoremap N Nzz
 
 " Make 'paste' mode default
 set paste
