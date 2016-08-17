@@ -132,8 +132,12 @@ convert_profile_file_to_unix_line_endings:
             - file: '{{ cygwin_root_dir }}\etc\profile'
 
 # Suppress setting PS1 in `/etc/bash.bashrc`.
-'{{ cygwin_root_dir }}\etc\bash.bashrc':
+# NOTE: Somehow `file.replace` function just does not work as expected.
+{% set use_sed_command_instead_of_replace = True %}
+{% if not use_sed_command_instead_of_replace %}
+comment_out_PS1_setting_in_system_bashrc:
     file.replace:
+        - name: '{{ cygwin_root_dir }}\etc\bash.bashrc'
         - pattern: '^([^#]*)PS1='
         - repl: '#\1PS1='
         # NOTE: Disable MULTILINE flag (default).
@@ -141,13 +145,23 @@ convert_profile_file_to_unix_line_endings:
         - show_changes: True
         - require:
             - sls: common.cygwin.package
+{% else %}
+comment_out_PS1_setting_in_system_bashrc:
+    cmd.run:
+        - name: '{{ cygwin_root_dir }}\bin\sed.exe -isalt.backup "s/^\([^#]*\)PS1=/#\1PS1=/g" /etc/bash.bashrc'
+        - require:
+            - sls: common.cygwin.package
+{% endif %}
 
 convert_bashrc_file_to_unix_line_endings:
     cmd.run:
         - name: '{{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\etc\bash.bashrc && {{ cygwin_root_dir }}\bin\dos2unix.exe {{ cygwin_root_dir }}\etc\bash.bashrc'
         - require:
-            - file: '{{ cygwin_root_dir }}\etc\bash.bashrc'
-
+            {% if not use_sed_command_instead_of_replace %}
+            - file: comment_out_PS1_setting_in_system_bashrc
+            {% else %}
+            - cmd: comment_out_PS1_setting_in_system_bashrc
+            {% endif %}
 
 {% endif %}
 
