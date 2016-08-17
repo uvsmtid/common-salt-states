@@ -37,6 +37,8 @@ include:
 
     - common.packages_per_os_platfrom_type
 
+    - common.windows_power
+
 {% endif %}
 
 {% endif %}
