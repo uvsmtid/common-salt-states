@@ -71,6 +71,7 @@ def main():
     finally:
         props_file.close()
 
+    # Compose data for XML file.
     em = builder.ElementMaker()
     network_e = em.network
     name_e = em.name
@@ -83,6 +84,7 @@ def main():
         ip_e(address = props['primary_network']['network_ip_gateway'], netmask = props['primary_network']['network_ip_netmask']),
     )
 
+    # Write XML file.
     et = etree.ElementTree(xml)
     xml_desc, xml_path = tempfile.mkstemp()
     os.close(xml_desc)
@@ -90,7 +92,13 @@ def main():
     with open(xml_path, 'w') as xml_file:
         et.write(xml_file, pretty_print=True)
 
+    # Not sure what is the best command, so run both.
     call(['virsh', 'net-create', xml_path])
+    call(['virsh', 'net-define', xml_path])
+
+    # NOTE: It may happen that network is already created.
+    #       Make sure it is started.
+    call(['virsh', 'net-start', 'primary_network'])
 
 ###############################################################################
 #
