@@ -28,6 +28,14 @@ include:
         'P-07-promotion-checkout_pipeline_passed'
         ,
         'P-__-promotion-bootstrap_package_approved'
+        ,
+        '00-01-poll_pipeline-verify_approval'
+        ,
+        '00-02-poll_pipeline-reset_previous_build'
+        ,
+        '00-03-poll_pipeline-update_sources'
+        ,
+        '00-04-poll_pipeline-propose_build'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
