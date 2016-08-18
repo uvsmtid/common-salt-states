@@ -64,6 +64,42 @@ include:
         '03-03-maven_pipeline-maven_job_name_prefix-maven_repo_name'
         ,
         '__-__-maven_pipeline-full_test_report'
+        ,
+        '04-01-deploy_pipeline-register_generated_resources'
+        ,
+        '04-02-deploy_pipeline-transfer_dynamic_build_descriptor'
+        ,
+        '04-03-deploy_pipeline-build_bootstrap_package'
+        ,
+        '04-04-deploy_pipeline-configure_vagrant'
+        ,
+        '04-05-deploy_pipeline-destroy_vagrant_hosts'
+        ,
+        '04-06-deploy_pipeline-remove_salt_minion_keys'
+        ,
+        '04-07-deploy_pipeline-instantiate_vagrant_hosts'
+        ,
+        '04-08-deploy_pipeline-run_salt_orchestrate'
+        ,
+        '04-09-deploy_pipeline-run_salt_highstate'
+        ,
+        '04-10-deploy_pipeline-reconnect_jenkins_slaves'
+        ,
+        '__-__-deploy_pipeline-build_bootstrap_package'
+        ,
+        '__-__-deploy_pipeline-configure_vagrant'
+        ,
+        '__-__-deploy_pipeline-destroy_vagrant_hosts'
+        ,
+        '__-__-deploy_pipeline-instantiate_vagrant_hosts'
+        ,
+        '__-__-deploy_pipeline-reconnect_jenkins_slaves'
+        ,
+        '__-__-deploy_pipeline-remove_salt_minion_keys'
+        ,
+        '__-__-deploy_pipeline-run_salt_highstate'
+        ,
+        '__-__-deploy_pipeline-run_salt_orchestrate'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
