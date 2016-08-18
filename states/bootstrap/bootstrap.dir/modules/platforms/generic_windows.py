@@ -13,12 +13,8 @@ class generic_windows_deploy(deploy_template_method):
         self,
     ):
 
-        # TODO: Implement for Windows.
-        logging.critical("Implement for Windows: init_ip_route")
-        return
-
-        # This method may depend on location and format of configuration files.
-        raise NotImplementedError
+        from steps.deploy.init_ip_route.generic_windows import do
+        do(self)
 
     def init_dns_server(
         self,

@@ -166,6 +166,51 @@ def disable_windows_firewall(
     )
 
 ###############################################################################
+# Set default getway (this is both transient and persistent for Windows).
+
+def set_route_windows(
+    network_destination,
+    network_mask,
+    router_address,
+):
+
+    # Set route.
+    # See: http://serverfault.com/a/790434/134406
+    # NOTE: We ignore error code
+    #       (just in case the route already exists).
+    call_subprocess(
+        command_args = [
+            'route',
+            '-p',
+            'add',
+            network_destination,
+            'mask',
+            network_mask,
+            router_address,
+        ],
+        raise_on_error = False,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+    # Update route
+    # (just in case the route existed and only needs to be changed).
+    call_subprocess(
+        command_args = [
+            'route',
+            '-p',
+            'change',
+            network_destination,
+            'mask',
+            network_mask,
+            router_address,
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
 # EOF
 ###############################################################################
 
