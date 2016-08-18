@@ -36,6 +36,14 @@ include:
         '00-03-poll_pipeline-update_sources'
         ,
         '00-04-poll_pipeline-propose_build'
+        ,
+        '01-01-init_pipeline-start_new_build'
+        ,
+        '01-02-init_pipeline-reset_previous_build'
+        ,
+        '01-03-init_pipeline-describe_repositories_state'
+        ,
+        '01-04-init_pipeline-create_build_branches'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
