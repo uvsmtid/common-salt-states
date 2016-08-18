@@ -158,6 +158,7 @@ system_tasks:
                         Specify author email for Git commits.
                         The value will be used with `--author` option for all Git commits made automatically.
                         Substring can be used if it is uniquely identifies author within existing commits.
+                        Full format: `First Last &lt;email@example.com&gt;`
                     parameter_type: string
                     parameter_value: '_'
                 PARENT_BUILD_TITLE:
