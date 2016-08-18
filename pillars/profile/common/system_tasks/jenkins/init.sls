@@ -44,6 +44,18 @@ include:
         '01-03-init_pipeline-describe_repositories_state'
         ,
         '01-04-init_pipeline-create_build_branches'
+        ,
+        '02-01-update_pipeline-restart_master_salt_services'
+        ,
+        '02-02-update_pipeline-configure_jenkins_jobs'
+        ,
+        '02-03-update_pipeline-run_salt_highstate'
+        ,
+        '02-04-update_pipeline-reconnect_jenkins_slaves'
+        ,
+        '__-__-update_pipeline-configure_jenkins_jobs'
+        ,
+        '__-__-update_pipeline-restart_master_salt_services'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
