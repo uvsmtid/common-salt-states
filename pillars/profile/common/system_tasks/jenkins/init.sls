@@ -114,6 +114,20 @@ include:
         '05-06-package_pipeline-build_bootstrap_package'
         ,
         '05-07-package_pipeline-store_bootstrap_package'
+        ,
+        '06-01-release_pipeline-release_build'
+        ,
+        '06-02-release_pipeline-reset_previous_build'
+        ,
+        '06-03-release_pipeline-describe_repositories_state'
+        ,
+        '06-04-release_pipeline-create_build_branches'
+        ,
+        '06-05-release_pipeline-transfer_dynamic_build_descriptor'
+        ,
+        '06-06-release_pipeline-tag_build'
+        ,
+        '06-07-release_pipeline-merge_build'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
