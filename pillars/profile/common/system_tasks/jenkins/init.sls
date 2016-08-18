@@ -100,6 +100,20 @@ include:
         '__-__-deploy_pipeline-run_salt_highstate'
         ,
         '__-__-deploy_pipeline-run_salt_orchestrate'
+        ,
+        '05-01-package_pipeline-create_new_package'
+        ,
+        '05-02-package_pipeline-reset_previous_build'
+        ,
+        '05-03-package_pipeline-describe_repositories_state'
+        ,
+        '05-04-package_pipeline-create_build_branches'
+        ,
+        '05-05-package_pipeline-transfer_dynamic_build_descriptor'
+        ,
+        '05-06-package_pipeline-build_bootstrap_package'
+        ,
+        '05-07-package_pipeline-store_bootstrap_package'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
