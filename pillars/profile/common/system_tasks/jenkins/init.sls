@@ -128,6 +128,14 @@ include:
         '06-06-release_pipeline-tag_build'
         ,
         '06-07-release_pipeline-merge_build'
+        ,
+        '07-01-checkout_pipeline-checkout_build_branches'
+        ,
+        '07-02-checkout_pipeline-reset_previous_build'
+        ,
+        '07-03-checkout_pipeline-describe_repositories_state'
+        ,
+        '07-04-checkout_pipeline-create_build_branches'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
