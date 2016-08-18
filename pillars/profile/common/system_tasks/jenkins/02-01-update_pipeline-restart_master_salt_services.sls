@@ -43,7 +43,7 @@ system_tasks:
             skip_script_execution: {{ skip_script_execution }}
 
             input_fingerprinted_artifacts:
-                01-01-init_pipeline-start_new_build: initial-init_pipeline-dynamic_build_descriptor.yaml
+                01-01-init_pipeline-start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
             parameterized_job_triggers:
                 job_not_faild:

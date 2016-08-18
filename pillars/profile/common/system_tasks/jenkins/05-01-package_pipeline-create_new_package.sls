@@ -60,8 +60,8 @@ system_tasks:
             archive_artifacts:
                 # NOTE: We re-archive the same file which is
                 #       restored from parent build.
-                - initial-init_pipeline-dynamic_build_descriptor.yaml
-                - initial-package_pipeline-dynamic_build_descriptor.yaml
+                - initial.init_pipeline.dynamic_build_descriptor.yaml
+                - initial.package_pipeline.dynamic_build_descriptor.yaml
 
             # NOTE: Even if we need to re-use this artifact from
             #       `init_pipeline-start_new_build` for association,
