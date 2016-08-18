@@ -15,16 +15,22 @@ system_host_roles:
 
     # Primary console is the machine which user/developer
     # interacts with to control the rest of the system.
-    # It should normally be a barebone machine and may
-    # share roles like `salt_master_role`, `virtual_machine_hypervisor_role`, etc.
-    # For example, it should normally provide graphical environment
+    # For example, it normally (not necessarily) provides graphical environment
     # (to use browser to access Jenkins), it may provide
-    # X server to run remote apps with graphical interface.
+    # X server to run remote apps with graphical interface,
+    # shell is configured with informative prompts, etc.
     primary_console_role:
         hostname: primary-console-role-host
         assigned_hosts:
+            # NOTE: We include all default minions for demo.
             {{ filter_assigned_hosts_by_minion_hosts_enabled_in_properties([
-                    master_minion_id
+                    master_minion_id,
+
+                    'rhel5_minion',
+                    'rhel7_minion',
+                    'fedora_minion',
+                    'winserv2012_minion',
+
                 ], props)
             }}
 

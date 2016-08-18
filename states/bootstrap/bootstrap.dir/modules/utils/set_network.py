@@ -166,6 +166,93 @@ def disable_windows_firewall(
     )
 
 ###############################################################################
+# Set default getway (this is both transient and persistent for Windows).
+
+def set_route_windows(
+    network_destination,
+    network_mask,
+    router_address,
+):
+
+    # Set route.
+    # See: http://serverfault.com/a/790434/134406
+    # NOTE: We ignore error code
+    #       (just in case the route already exists).
+    call_subprocess(
+        command_args = [
+            'route',
+            '-p',
+            'add',
+            network_destination,
+            'mask',
+            network_mask,
+            router_address,
+        ],
+        raise_on_error = False,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+    # Update route
+    # (just in case the route existed and only needs to be changed).
+    call_subprocess(
+        command_args = [
+            'route',
+            '-p',
+            'change',
+            network_destination,
+            'mask',
+            network_mask,
+            router_address,
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
+# Set DNS servers on Windows.
+
+# This is both transient and persistent setting.
+def set_dns_server_windows(
+    dns_server_ip,
+):
+
+    # See: http://stackoverflow.com/a/38374786/441652
+
+    # Clear DNS servers.
+    call_subprocess(
+        command_args = [
+            'wmic',
+            'nicconfig',
+            'where',
+            '(IPEnabled=True)',
+            'call',
+            'SetDNSServerSearchOrder',
+            '()',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+    # Set DNS server.
+    call_subprocess(
+        command_args = [
+            'wmic',
+            'nicconfig',
+            'where',
+            '(IPEnabled=True)',
+            'call',
+            'SetDNSServerSearchOrder',
+            '("' + dns_server_ip + '")',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
 # EOF
 ###############################################################################
 
