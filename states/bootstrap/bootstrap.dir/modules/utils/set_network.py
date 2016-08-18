@@ -211,6 +211,48 @@ def set_route_windows(
     )
 
 ###############################################################################
+# Set DNS servers on Windows.
+
+# This is both transient and persistent setting.
+def set_dns_server_windows(
+    dns_server_ip,
+):
+
+    # See: http://stackoverflow.com/a/38374786/441652
+
+    # Clear DNS servers.
+    call_subprocess(
+        command_args = [
+            'wmic',
+            'nicconfig',
+            'where',
+            '(IPEnabled=True)',
+            'call',
+            'SetDNSServerSearchOrder',
+            '()',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+    # Set DNS server.
+    call_subprocess(
+        command_args = [
+            'wmic',
+            'nicconfig',
+            'where',
+            '(IPEnabled=True)',
+            'call',
+            'SetDNSServerSearchOrder',
+            '("' + dns_server_ip + '")',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
 # EOF
 ###############################################################################
 
