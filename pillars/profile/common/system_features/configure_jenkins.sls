@@ -65,19 +65,16 @@ system_features:
         #
         make_sure_nodes_are_connected: False
 
-        # See: docs/pillars/common/system_features/configure_jenkins/job_configs/readme.md
-        job_configs: {}
-
         # Documetnation.
         #   _id:
-        #       # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/readme.md
+        #       # docs/pillars/common/system_tasks/jenkins_tasks/_id/readme.md
         #
         #       timer_spec:
-        #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/timer_spec/readme.md
+        #           # docs/pillars/common/system_tasks/jenkins_tasks/_id/timer_spec/readme.md
         #
         #       TODO: `trigger_jobs` is outdated, it is `parameterized_job_triggers` now
         #       trigger_jobs:
-        #           # docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_jobs/readme.md
+        #           # docs/pillars/common/system_tasks/jenkins_tasks/_id/trigger_jobs/readme.md
         #
 
         view_configs:

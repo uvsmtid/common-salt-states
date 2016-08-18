@@ -68,8 +68,8 @@ how to generate bootstrap package.
 
 # [footer] #
 
-[1]: /docs/pillars/common/system_features/configure_jenkins/job_configs/_id/trigger_jobs/readme.md
-[2]: /docs/pillars/common/system_features/configure_jenkins/job_configs/_id/timer_spec/readme.md
+[1]: /docs/pillars/common/system_tasks/jenkins_tasks/_id/trigger_jobs/readme.md
+[2]: /docs/pillars/common/system_tasks/jenkins_tasks/_id/timer_spec/readme.md
 [3]: /pillars/profile
 [4]: /docs/pillars/common/bootstrap_mode/readme.md
 [5]: /docs/pillars/common/system_hosts/_id/consider_online_for_remote_connections/readme.md
