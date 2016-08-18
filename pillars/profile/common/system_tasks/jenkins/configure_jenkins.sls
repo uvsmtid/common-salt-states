@@ -165,6 +165,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'poll_pipeline.reset_previous_build' %}
         00.02.{{ job_template_id }}:
 
@@ -209,6 +215,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'poll_pipeline.update_sources' %}
         00.03.{{ job_template_id }}:
 
@@ -249,6 +261,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'poll_pipeline.propose_build' %}
         00.04.{{ job_template_id }}:
@@ -291,6 +309,10 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
 
         {% set skip_script_execution = False %}
 
@@ -481,6 +503,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'init_pipeline.reset_previous_build' %}
         01.02.{{ job_template_id }}:
 
@@ -525,6 +553,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'init_pipeline.describe_repositories_state' %}
         01.03.{{ job_template_id }}:
 
@@ -566,6 +600,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'init_pipeline.create_build_branches' %}
         01.04.{{ job_template_id }}:
@@ -1000,6 +1040,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'update_pipeline.configure_jenkins_jobs' %}
         __.__.{{ job_template_id }}:
 
@@ -1048,6 +1094,10 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
 
         {% set skip_script_execution = False %}
 
@@ -1105,6 +1155,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'update_pipeline.configure_jenkins_jobs' %}
         02.02.{{ job_template_id }}:
 
@@ -1146,6 +1202,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'update_pipeline.run_salt_highstate' %}
         02.03.{{ job_template_id }}:
@@ -1190,6 +1252,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'update_pipeline.reconnect_jenkins_slaves' %}
         02.04.{{ job_template_id }}:
@@ -1242,6 +1310,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'maven_pipeline.full_test_report' %}
         __.__.{{ job_template_id }}:
@@ -1323,6 +1397,10 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
 
         {% set skip_script_execution = False %}
 
@@ -1429,6 +1507,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'maven_pipeline.verify_maven_data' %}
         03.02.{{ job_template_id }}:
 
@@ -1475,6 +1559,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% for maven_repo_name in maven_repo_names %}
 
@@ -1551,6 +1641,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.build_bootstrap_package' %}
         __.__.{{ job_template_id }}:
 
@@ -1602,6 +1698,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.configure_vagrant' %}
         __.__.{{ job_template_id }}:
 
@@ -1650,6 +1752,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'deploy_pipeline.destroy_vagrant_hosts' %}
         __.__.{{ job_template_id }}:
@@ -1722,6 +1830,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.remove_salt_minion_keys' %}
         __.__.{{ job_template_id }}:
 
@@ -1792,6 +1906,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'deploy_pipeline.instantiate_vagrant_hosts' %}
         __.__.{{ job_template_id }}:
@@ -1864,6 +1984,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.run_salt_orchestrate' %}
         __.__.{{ job_template_id }}:
 
@@ -1931,6 +2057,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.run_salt_highstate' %}
         __.__.{{ job_template_id }}:
 
@@ -1995,6 +2127,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.reconnect_jenkins_slaves' %}
         __.__.{{ job_template_id }}:
 
@@ -2052,6 +2190,10 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
 
         {% set skip_script_execution = False %}
 
@@ -2115,6 +2257,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.transfer_dynamic_build_descriptor' %}
         04.02.{{ job_template_id }}:
 
@@ -2158,6 +2306,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'deploy_pipeline.build_bootstrap_package' %}
         04.03.{{ job_template_id }}:
@@ -2203,6 +2357,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.configure_vagrant' %}
         04.04.{{ job_template_id }}:
 
@@ -2244,6 +2404,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'deploy_pipeline.destroy_vagrant_hosts' %}
         04.05.{{ job_template_id }}:
@@ -2309,6 +2475,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.remove_salt_minion_keys' %}
         04.06.{{ job_template_id }}:
 
@@ -2372,6 +2544,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'deploy_pipeline.instantiate_vagrant_hosts' %}
         04.07.{{ job_template_id }}:
@@ -2437,6 +2615,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.run_salt_orchestrate' %}
         04.08.{{ job_template_id }}:
 
@@ -2497,6 +2681,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.run_salt_highstate' %}
         04.09.{{ job_template_id }}:
 
@@ -2554,6 +2744,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'deploy_pipeline.reconnect_jenkins_slaves' %}
         04.10.{{ job_template_id }}:
 
@@ -2607,6 +2803,10 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
 
         {% set skip_script_execution = False %}
 
@@ -2769,6 +2969,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'package_pipeline.reset_previous_build' %}
         05.02.{{ job_template_id }}:
 
@@ -2816,6 +3022,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'package_pipeline.describe_repositories_state' %}
         05.03.{{ job_template_id }}:
 
@@ -2860,6 +3072,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'package_pipeline.create_build_branches' %}
         05.04.{{ job_template_id }}:
@@ -2906,6 +3124,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'package_pipeline.transfer_dynamic_build_descriptor' %}
         05.05.{{ job_template_id }}:
 
@@ -2949,6 +3173,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'package_pipeline.build_bootstrap_package' %}
         05.06.{{ job_template_id }}:
 
@@ -2991,6 +3221,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'package_pipeline.store_bootstrap_package' %}
         05.07.{{ job_template_id }}:
@@ -3037,6 +3273,10 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
 
         {% set skip_script_execution = False %}
 
@@ -3212,6 +3452,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'release_pipeline.reset_previous_build' %}
         06.02.{{ job_template_id }}:
 
@@ -3259,6 +3505,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'release_pipeline.describe_repositories_state' %}
         06.03.{{ job_template_id }}:
 
@@ -3303,6 +3555,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'release_pipeline.create_build_branches' %}
         06.04.{{ job_template_id }}:
@@ -3349,6 +3607,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'release_pipeline.transfer_dynamic_build_descriptor' %}
         06.05.{{ job_template_id }}:
 
@@ -3394,6 +3658,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'release_pipeline.tag_build' %}
         06.06.{{ job_template_id }}:
 
@@ -3436,6 +3706,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'release_pipeline.merge_build' %}
         06.07.{{ job_template_id }}:
@@ -3482,6 +3758,10 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
 
         {% set skip_script_execution = False %}
 
@@ -3624,6 +3904,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'checkout_pipeline.reset_previous_build' %}
         07.02.{{ job_template_id }}:
 
@@ -3671,6 +3957,12 @@ system_tasks:
 
     jenkins_tasks:
 
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
+
         {% set job_template_id = 'checkout_pipeline.describe_repositories_state' %}
         07.03.{{ job_template_id }}:
 
@@ -3715,6 +4007,12 @@ system_tasks:
 system_tasks:
 
     jenkins_tasks:
+
+        # If set to `-1`, keep forever.
+        {% set discard_build_days = 64 %}
+        {% set discard_build_num = 128 %}
+
+        {% set skip_script_execution = False %}
 
         {% set job_template_id = 'checkout_pipeline.create_build_branches' %}
         07.04.{{ job_template_id }}:
