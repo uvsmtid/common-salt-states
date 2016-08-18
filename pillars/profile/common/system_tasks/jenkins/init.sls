@@ -56,6 +56,14 @@ include:
         '__-__-update_pipeline-configure_jenkins_jobs'
         ,
         '__-__-update_pipeline-restart_master_salt_services'
+        ,
+        '03-01-maven_pipeline-maven_build_all'
+        ,
+        '03-02-maven_pipeline-verify_maven_data'
+        ,
+        '03-03-maven_pipeline-maven_job_name_prefix-maven_repo_name'
+        ,
+        '__-__-maven_pipeline-full_test_report'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
