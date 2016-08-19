@@ -28,7 +28,7 @@
 # NOTE: At the moment (and it is probably right) only single host is selected
 #       from only first listed role.
 #       Basically, it means that the job can only be assigned to single host.
-{% set restricted_to_role = pillar['system_features']['configure_jenkins']['job_configs'][job_name]['restrict_to_system_role'][0] %}
+{% set restricted_to_role = pillar['system_tasks']['jenkins_tasks'][job_name]['restrict_to_system_role'][0] %}
 {% if pillar['system_host_roles'][restricted_to_role]['assigned_hosts']|length != 0 %}
 {% set assigned_slave_host = pillar['system_host_roles'][restricted_to_role]['assigned_hosts'][0] %}
 {% set assigned_slave_host_config = pillar['system_hosts'][assigned_slave_host] %}
