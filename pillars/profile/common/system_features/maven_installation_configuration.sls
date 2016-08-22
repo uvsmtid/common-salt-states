@@ -20,6 +20,10 @@ system_features:
         activate_profiles:
             []
 
+        # Location of template file for `settings.xml`
+        # specific to project_name.
+        settings_xml_template_url: 'salt://common/maven/settings.xml.sls'
+
 ###############################################################################
 # EOF
 ###############################################################################
