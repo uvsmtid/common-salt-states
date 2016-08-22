@@ -26,7 +26,7 @@ include:
             'minions_refresh_pillar',
             'configure_minions_on_all_minions',
             'minions_sync_all',
-            'primary_configuration_for_all_minions',
+            'minimal_configuration_for_all_minions',
         ]
     )
 }}

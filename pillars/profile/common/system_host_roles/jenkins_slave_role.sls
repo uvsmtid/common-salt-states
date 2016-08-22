@@ -24,6 +24,8 @@ system_host_roles:
                     'rhel5_minion'
                     ,
                     'rhel7_minion'
+                    ,
+                    'winserv2012_minion'
                 ], props)
             }}
 

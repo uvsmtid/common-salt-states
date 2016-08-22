@@ -14,12 +14,10 @@
 {% set nexus_url_port_part = primary_maven_repository_manager_config['maven_repo_url_port_part'] %}
 {% set nexus_url_releases_path_part = primary_maven_repository_manager_config['maven_repo_url_releases_path_part'] %}
 {% set nexus_url_snapshots_path_part = primary_maven_repository_manager_config['maven_repo_url_snapshots_path_part'] %}
-{% set nexus_url_bdamas_path_part = primary_maven_repository_manager_config['maven_repo_url_bdamas_path_part'] %}
 
 {% set define_deployment_url = True %}
 {% set nexus_releases_deployment_url = nexus_url_scheme_part + primary_maven_repository_manager_role_hostname + nexus_url_port_part + nexus_url_releases_path_part %}
 {% set nexus_snapshots_deployment_url = nexus_url_scheme_part + primary_maven_repository_manager_role_hostname + nexus_url_port_part + nexus_url_snapshots_path_part %}
-{% set nexus_bdamas_deployment_url = nexus_url_scheme_part + primary_maven_repository_manager_role_hostname + nexus_url_port_part + nexus_url_bdamas_path_part %}
 
 {% else %} <!-- primary_maven_repository_manager -->
 
@@ -77,7 +75,7 @@
         <mirror>
             <!-- This sends everything else to /public of upstream repository. -->
             <id>nexus-mirror</id>
-            <mirrorOf>*,!releaseDeployRepo,!snapshotDeployRepo, !bdamasDeployRepo</mirrorOf>
+            <mirrorOf>*,!releaseDeployRepo,!snapshotDeployRepo</mirrorOf>
             <url>{{ proxy_maven_repository_manager_url }}</url>
         </mirror>
 
@@ -129,24 +127,6 @@
                         <updatePolicy>always</updatePolicy>
                     </snapshots>
                 </repository>
-                <repository>                                                    
-                    <id>bdamasDeployRepo</id>                                  
-                    <name>Nexus Repository Manager</name>                       
-                                                                                
-                    <!-- Example                                                
-                    <url>http://nexus:8081/nexus/content/repositories/trt</url>
-                    -->                                                         
-                    <url>{{ nexus_bdamas_deployment_url }}</url>              
-                                                                                
-                    <releases>                                                  
-                        <enabled>true</enabled>                                 
-                        <updatePolicy>always</updatePolicy>                     
-                    </releases>                                                 
-                    <snapshots>                                                 
-                        <enabled>false</enabled>                                
-                        <updatePolicy>always</updatePolicy>                     
-                    </snapshots>                                                
-                </repository> 
             </repositories>
 {% endif %}
         </profile>

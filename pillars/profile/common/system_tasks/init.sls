@@ -9,7 +9,7 @@
 include:
 
 {% for sub_item in [
-        'jenkins'
+        'jenkins_tasks'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

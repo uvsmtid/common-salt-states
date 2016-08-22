@@ -62,7 +62,10 @@ maven_distribution_permissions:
 maven_configuration_file:
     file.managed:
         - name: '{{ account_conf['posix_user_home_dir'] }}/.m2/settings.xml'
-        - source: 'salt://common/maven/settings.xml.sls'
+        # Use pillars-configured location of template so that
+        # each project_name can substitute it by its own.
+        #- source: 'salt://common/maven/settings.xml.sls'
+        - source: '{{ pillar['system_features']['maven_installation_configuration']['settings_xml_template_url'] }}'
         - template: jinja
         - makedirs: True
         - user: '{{ account_conf['username'] }}'
