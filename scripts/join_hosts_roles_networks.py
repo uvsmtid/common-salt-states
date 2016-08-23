@@ -79,12 +79,12 @@ engine = sqlalchemy.create_engine('sqlite://')
 
 Base = declarative_base()
 
-class host_role_to_host_class(Base):
+class host_roles_to_hosts_class(Base):
 
-    __tablename__ = 'host_roles_to_hosts'
+    __tablename__ = 'host_roles_to_hosts_table'
 
-    host_role_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('host_roles.id'))
-    host_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('hosts.id'))
+    host_role_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('host_roles_table.id'))
+    host_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('hosts_table.id'))
 
     __table_args__ = (
         sqlalchemy.PrimaryKeyConstraint('host_role_id', 'host_id'),
@@ -95,12 +95,12 @@ class host_role_to_host_class(Base):
     def __init__(self, **entries):
         self.__dict__.update(entries)
 
-class network_to_host_class(Base):
+class networks_to_hosts_class(Base):
 
-    __tablename__ = 'networks_to_hosts'
+    __tablename__ = 'networks_to_hosts_table'
 
-    network_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('networks.id'))
-    host_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('hosts.id'))
+    network_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('networks_table.id'))
+    host_id = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey('hosts_table.id'))
 
     __table_args__ = (
         sqlalchemy.PrimaryKeyConstraint('network_id', 'host_id'),
@@ -111,23 +111,23 @@ class network_to_host_class(Base):
     def __init__(self, **entries):
         self.__dict__.update(entries)
 
-class host_class(Base):
+class hosts_class(Base):
 
-    __tablename__ = 'hosts'
+    __tablename__ = 'hosts_table'
 
     id = sqlalchemy.Column(sqlalchemy.String, primary_key = True)
     hostname = sqlalchemy.Column(sqlalchemy.String)
     consider_online_for_remote_connections = sqlalchemy.Column(sqlalchemy.Boolean())
 
     host_roles_relationship = sqlalchemy.orm.relationship(
-        'host_role_class',
-        secondary = 'host_roles_to_hosts',
+        'host_roles_class',
+        secondary = 'host_roles_to_hosts_table',
         back_populates = 'hosts_relationship',
     )
 
-    host_networks_relationship = sqlalchemy.orm.relationship(
-        'network_class',
-        secondary = 'networks_to_hosts',
+    hosts_networks_relationship = sqlalchemy.orm.relationship(
+        'networks_class',
+        secondary = 'networks_to_hosts_table',
         back_populates = 'hosts_relationship',
     )
 
@@ -135,26 +135,26 @@ class host_class(Base):
     def __init__(self, **entries):
         self.__dict__.update(entries)
 
-class host_role_class(Base):
+class host_roles_class(Base):
 
-    __tablename__ = 'host_roles'
+    __tablename__ = 'host_roles_table'
 
     id = sqlalchemy.Column(sqlalchemy.String, primary_key = True)
     hostname = sqlalchemy.Column(sqlalchemy.String)
 
     hosts_relationship = sqlalchemy.orm.relationship(
-        'host_class',
-        secondary = 'host_roles_to_hosts',
-        back_populates = 'host_roles_relationship',
+        'hosts_class',
+        secondary = 'host_roles_to_hosts_table',
+        #back_populates = 'host_roles_relationship',
     )
 
     # See: http://stackoverflow.com/a/38929089/441652
     def __init__(self, **entries):
         self.__dict__.update(entries)
 
-class network_class(Base):
+class networks_class(Base):
 
-    __tablename__ = 'networks'
+    __tablename__ = 'networks_table'
 
     id = sqlalchemy.Column(sqlalchemy.String, primary_key = True)
     broadcast = sqlalchemy.Column(sqlalchemy.String)
@@ -164,9 +164,9 @@ class network_class(Base):
     subnet = sqlalchemy.Column(sqlalchemy.String)
 
     hosts_relationship = sqlalchemy.orm.relationship(
-        'host_class',
-        secondary = 'networks_to_hosts',
-        back_populates = 'host_networks_relationship',
+        'hosts_class',
+        secondary = 'networks_to_hosts_table',
+        back_populates = 'hosts_networks_relationship',
     )
 
     # See: http://stackoverflow.com/a/38929089/441652
@@ -184,33 +184,38 @@ def load_database(pillars):
     session = DBSession()
 
     for host_id in pillars['system_hosts'].keys():
+        logging.info('host_id: ' + host_id)
         host_d = pillars['system_hosts'][host_id]
         host_d['id'] = host_id
-        host_o = host_class(**host_d)
+        host_o = hosts_class(**host_d)
         session.add(host_o)
         for network_id in host_d['host_networks']:
+            logging.info('host_id:network_id: ' + host_id + ':' + network_id)
             network_to_host_d = {}
             network_to_host_d['network_id'] = network_id
             network_to_host_d['host_id'] = host_id
-            network_to_host_o = network_to_host_class(**network_to_host_d)
+            network_to_host_o = networks_to_hosts_class(**network_to_host_d)
             session.add(network_to_host_o)
 
     for host_role_id in pillars['system_host_roles'].keys():
+        logging.info('host_role_id: ' + host_role_id)
         host_role_d = pillars['system_host_roles'][host_role_id]
         host_role_d['id'] = host_role_id
-        host_role_o = host_role_class(**host_role_d)
+        host_role_o = host_roles_class(**host_role_d)
         session.add(host_role_o)
         for host_id in host_role_d['assigned_hosts']:
+            logging.info('host_role_id:host_id: ' + host_role_id + ':' + host_id)
             host_role_to_host_d = {}
             host_role_to_host_d['host_role_id'] = host_role_id
             host_role_to_host_d['host_id'] = host_id
-            host_role_to_host_o = host_role_to_host_class(**host_role_to_host_d)
+            host_role_to_host_o = host_roles_to_hosts_class(**host_role_to_host_d)
             session.add(host_role_to_host_o)
 
     for network_id in pillars['system_networks'].keys():
+        logging.info('network_id: ' + network_id)
         network_d = pillars['system_networks'][network_id]
         network_d['id'] = network_id
-        network_o = network_class(**network_d)
+        network_o = networks_class(**network_d)
         session.add(network_o)
 
     session.commit()
@@ -222,17 +227,30 @@ def load_database(pillars):
 
 def query_database(session):
 
-    a_host_class = sqlalchemy.orm.aliased(host_class)
-    b_host_class = sqlalchemy.orm.aliased(host_class)
+    # Because the same table is used in different context,
+    # we are forced to use aliases.
+    a_hosts_class = sqlalchemy.orm.aliased(hosts_class)
+    b_hosts_class = sqlalchemy.orm.aliased(hosts_class)
 
     query = (
         session.query(
-            host_class,
-            host_role_class,
-            network_class,
+            a_hosts_class,
+            b_hosts_class,
+            host_roles_class,
+            networks_class,
         )
-        .join(a_host_class, host_role_class.hosts_relationship)
-        .join(b_host_class, network_class.hosts_relationship)
+        .join(a_hosts_class, host_roles_class.hosts_relationship)
+        .join(b_hosts_class, networks_class.hosts_relationship)
+        # Not sure how to join `a_hosts_class` and `b_hosts_class` -
+        # there are conflicting columns ids - `filter` does the job.
+        .filter(a_hosts_class.id == b_hosts_class.id)
+        .with_entities(
+            # Reduce number of identical columns by selecting only
+            # one aliased entity.
+            a_hosts_class,
+            host_roles_class,
+            networks_class,
+        )
     )
 
     return query
@@ -274,6 +292,8 @@ def load_pillars(
     salt_output = None
 
     if file_path is None:
+
+        logging.info("File path with pillars is not specified - getting pillars from Salt.")
 
         # Run Salt's `pillar.items` and captrue its output.
         command_args = [
