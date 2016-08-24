@@ -74,6 +74,8 @@ include:
         'vagrant_box_publisher_configuration'
         ,
         'cygwin_settings'
+        ,
+        'selinux_settings'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

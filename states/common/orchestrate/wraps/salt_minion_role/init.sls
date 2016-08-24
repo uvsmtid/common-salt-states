@@ -43,6 +43,8 @@ include:
 
     - common.custom_root_ca
 
+    - common.selinux
+
 {% endif %}
 
 {% endif %}
