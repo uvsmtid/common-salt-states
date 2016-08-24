@@ -26,6 +26,8 @@ include:
 
     - common.git
 
+    - common.yum
+
     # Prepare seamless SSH connectivity.
     - common.ssh.distribute_private_keys
     # NOTE: Distribution of public keys is done from control host.
