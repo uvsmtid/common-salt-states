@@ -16,6 +16,8 @@ include:
         'maven'
         ,
         'vagrant_boxes'
+        ,
+        'infra'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
