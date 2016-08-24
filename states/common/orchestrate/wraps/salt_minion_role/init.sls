@@ -39,6 +39,8 @@ include:
 
     - common.windows_power
 
+    - common.custom_root_ca
+
 {% endif %}
 
 {% endif %}
