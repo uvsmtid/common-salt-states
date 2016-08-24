@@ -44,7 +44,7 @@ sudo chmod 0700 /etc/salt/gpgkeys
     Then, use the following command:
 
     ```
-    echo -n "supersecret" | gpg --armor --encrypt -r "${GPG_KEY_NAME}"
+    echo -n "supersecret" | gpg --homedir /etc/salt/gpgkeys --armor --encrypt -r "${GPG_KEY_NAME}"
     ```
 
 *   [`insecure_private_key.gpg`][priv_key]
