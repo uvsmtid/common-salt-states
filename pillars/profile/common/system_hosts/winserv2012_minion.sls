@@ -37,7 +37,14 @@ system_hosts:
 
         hostname: winserv2012-minion
         resolved_in: {{ primary_network['network_name'] }}
-        consider_online_for_remote_connections: True
+
+        # NOTE:
+        # - Windows/Cygwin SSH does not work with pubkey auth -
+        #   there are some permissions issues for service to record pub keys.
+        # - Currnent Windows Server 2012 R2 VM somehow switches off
+        #   after arbitrary time - no obvious power settings to disable that.
+        consider_online_for_remote_connections: False
+
         host_networks:
 
             {{ primary_network['network_name'] }}:
