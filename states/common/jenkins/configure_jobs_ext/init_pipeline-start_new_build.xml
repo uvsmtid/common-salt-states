@@ -307,8 +307,8 @@
             {% set project_version_name_key = pillar['properties']['project_name'] +'_version_name' %}
             {% set project_version_number_key = pillar['properties']['project_name'] + '_version_number' %}
             {% if project_version_name_key in pillar['dynamic_build_descriptor'] and project_version_number_key in pillar['dynamic_build_descriptor'] %}
-            {% set project_version_name = pillar[project_version_name_key] %}
-            {% set project_version_number = pillar[project_version_number_key] %}
+            {% set project_version_name = pillar['dynamic_build_descriptor'][project_version_name_key] %}
+            {% set project_version_number = pillar['dynamic_build_descriptor'][project_version_number_key] %}
             {% else %}
             {% set project_version_name = 'UNDEFINED' %}
             {% set project_version_number = '0.0.0.0' %}
