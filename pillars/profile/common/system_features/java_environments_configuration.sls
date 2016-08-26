@@ -51,7 +51,7 @@ system_features:
                 installation_type: yum_repositories
 
                 rpm_packages:
-                    - java-1.8.0-openjdk
+                    - java-1.8.0-openjdk-devel
 
                 os_platform_configs:
 
@@ -71,7 +71,7 @@ system_features:
                 installation_type: yum_repositories
 
                 rpm_packages:
-                    - java-1.7.0-openjdk
+                    - java-1.7.0-openjdk-devel
 
                 os_platform_configs:
 
