@@ -45,6 +45,8 @@ include:
 
     - common.selinux
 
+    - common.java
+
 {% endif %}
 
 {% endif %}
