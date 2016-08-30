@@ -23,6 +23,10 @@ pack_everything = {
 
 # Example configuration for `deploy` action
 
+unlock_node = {
+    'step_enabled': False,
+}
+
 init_ip_route = {
     'step_enabled': False,
 }

@@ -33,6 +33,8 @@ system_features:
             winserv2012: zip
 
         deploy_steps_params:
+            unlock_node:
+                step_enabled: True
             init_ip_route:
                 step_enabled: True
             init_dns_server:

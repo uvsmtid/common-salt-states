@@ -11,6 +11,8 @@ class deploy_template_method (action_context):
 
     action_step_to_use_case_map = {
 
+        "unlock_node": "always",
+
         "init_ip_route": "always",
 
         "init_dns_server": "always",
@@ -69,6 +71,7 @@ class deploy_template_method (action_context):
     # See base class for pythondoc.
 
     action_step_ordered_execution_list = [
+        "unlock_node",
         "init_ip_route",
         "init_dns_server",
         "make_salt_resolvable",
