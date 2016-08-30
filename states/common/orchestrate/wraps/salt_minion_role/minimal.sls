@@ -15,6 +15,8 @@ include:
 
     {% endif %}
 
+    - common.hostname
+
 {% endif %}
 
 {% endif %}
