@@ -39,7 +39,7 @@ system_hosts:
         #       Select `fc22`, `fc23`, `fc24`, ...
         os_platform: fc24
 
-        hostname: {{ master_minion_id }}
+        hostname: {{ master_minion_id|replace("_", "-") }}
         # The master minion host is defined in `primary_network`
         # which is not controlled by Salt (directly or indirectly, e.g.
         # through configuration of some virtualized networks) and

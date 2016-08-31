@@ -8,11 +8,12 @@
 
 {% set primary_network = props['primary_network'] %}
 
-{% if 'fedora_minion' in props['enabled_minion_hosts'].keys() %}
+{% set host_id = 'fedora_minion' %}
+{% if host_id in props['enabled_minion_hosts'].keys() %}
 
 system_hosts:
 
-    fedora_minion:
+    {{ host_id }}:
 
         instantiated_by: vagrant_instance_configuration
         vagrant_instance_configuration:
@@ -32,13 +33,13 @@ system_hosts:
 
         os_platform: fc24
 
-        hostname: fedora-minion
+        hostname: {{ host_id|replace("_", "-") }}
         resolved_in: {{ primary_network['network_name'] }}
         consider_online_for_remote_connections: True
         host_networks:
 
             {{ primary_network['network_name'] }}:
-                ip: {{ props['enabled_minion_hosts']['fedora_minion'] }}
+                ip: {{ props['enabled_minion_hosts'][host_id] }}
                 mac: 52:54:00:88:1c:4b
 
             internal_net_A:

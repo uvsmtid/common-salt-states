@@ -8,11 +8,12 @@
 
 {% set primary_network = props['primary_network'] %}
 
+{% set host_id = 'winserv2012_minion' %}
 {% if 'winserv2012_minion' in props['enabled_minion_hosts'].keys() %}
 
 system_hosts:
 
-    winserv2012_minion:
+    {{ host_id }}:
 
         instantiated_by: vagrant_instance_configuration
         vagrant_instance_configuration:
@@ -35,7 +36,7 @@ system_hosts:
 
         os_platform: winserv2012
 
-        hostname: winserv2012-minion
+        hostname: {{ host_id|replace("_", "-") }}
         resolved_in: {{ primary_network['network_name'] }}
 
         # NOTE:
@@ -48,7 +49,7 @@ system_hosts:
         host_networks:
 
             {{ primary_network['network_name'] }}:
-                ip: {{ props['enabled_minion_hosts']['winserv2012_minion'] }}
+                ip: {{ props['enabled_minion_hosts'][host_id] }}
                 mac: 52:54:00:3f:ce:e6
 
             internal_net_A:

@@ -9,7 +9,8 @@
 {% set primary_network = props['primary_network'] %}
 
 # NOTE: `localhost_host` is always defined.
-{% if 'localhost_host' %}
+{% set host_id = 'localhost_host' %}
+{% if host_id %}
 
 # NOTE: This is not a minion (managed host).
 #       This host is only defined to point to some specific IP address
@@ -20,7 +21,7 @@
 
 system_hosts:
 
-    localhost_host:
+    {{ host_id }}:
         instantiated_by: ~
 
         # NOTE: Exact platform is not required for non-minion hosts.
@@ -28,7 +29,7 @@ system_hosts:
         #       (Linux in this case).
         os_platform: rhel7
 
-        hostname: localhost-host
+        hostname: {{ host_id|replace("_", "-") }}
         resolved_in: localhost_net
         # NOTE: Any host can be connected to itself via localhost address.
         consider_online_for_remote_connections: True

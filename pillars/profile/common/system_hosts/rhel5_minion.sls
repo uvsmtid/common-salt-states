@@ -8,11 +8,12 @@
 
 {% set primary_network = props['primary_network'] %}
 
-{% if 'rhel5_minion' in props['enabled_minion_hosts'].keys() %}
+{% set host_id = 'rhel5_minion' %}
+{% if host_id in props['enabled_minion_hosts'].keys() %}
 
 system_hosts:
 
-    rhel5_minion:
+    {{ host_id }}:
 
         instantiated_by: vagrant_instance_configuration
         vagrant_instance_configuration:
@@ -32,13 +33,13 @@ system_hosts:
 
         os_platform: rhel5
 
-        hostname: rhel5-minion
+        hostname: {{ host_id|replace("_", "-") }}
         resolved_in: {{ primary_network['network_name'] }}
         consider_online_for_remote_connections: True
         host_networks:
 
             {{ primary_network['network_name'] }}:
-                ip: {{ props['enabled_minion_hosts']['rhel5_minion'] }}
+                ip: {{ props['enabled_minion_hosts'][host_id] }}
                 mac: 52:54:00:52:2e:75
 
             internal_net_A:
