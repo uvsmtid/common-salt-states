@@ -41,6 +41,11 @@ def install_rpms(
         command_args = [
             'rpm',
             '-Uv',
+            # Option `--nodeps` is required, otherwise `rpm`
+            # complains due to chain of dependencies on the same package with
+            # different version. It is assumed that such operation is safe
+            # as the host will can be fixed under Salt managment.
+            '--nodeps',
             # Option `--replacepkgs` is required, otherwise `rpm -U`
             # will exit with non-zero error code if package is
             # already updated.
