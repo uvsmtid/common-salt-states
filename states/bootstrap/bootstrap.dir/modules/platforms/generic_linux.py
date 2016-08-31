@@ -6,6 +6,12 @@ from actions.build import build_template_method
 
 class generic_linux_deploy(deploy_template_method):
 
+    def unlock_node(
+        self,
+    ):
+        from steps.deploy.unlock_node.generic_linux import do
+        do(self)
+
     def init_ip_route(
         self,
     ):

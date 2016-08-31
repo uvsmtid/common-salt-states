@@ -9,10 +9,16 @@ from actions.build import build_template_method
 
 class generic_windows_deploy(deploy_template_method):
 
+
+    def unlock_node(
+        self,
+    ):
+        from steps.deploy.unlock_node.generic_windows import do
+        do(self)
+
     def init_ip_route(
         self,
     ):
-
         from steps.deploy.init_ip_route.generic_windows import do
         do(self)
 
@@ -73,14 +79,12 @@ class generic_windows_deploy(deploy_template_method):
     def activate_salt_master(
         self,
     ):
-
         from steps.deploy.activate_salt_master.generic_windows import do
         do(self)
 
     def activate_salt_minion(
         self,
     ):
-
         # This method may depend on `initd` or `systemd` PID 1, for example.
         raise NotImplementedError
 
