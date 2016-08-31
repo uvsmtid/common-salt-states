@@ -11,10 +11,12 @@
 {% set pillars_macro_lib = 'lib/pillars_macro_lib.sls' %}
 {% from pillars_macro_lib import filter_assigned_hosts_by_minion_hosts_enabled_in_properties with context %}
 
+{% set host_role_id = 'wildfly_node_2_role' %}
+
 system_host_roles:
 
-    wildfly_node_2_role:
-        hostname: wildfly-node-2-role
+    {{ host_role_id }}:
+        hostname: {{ host_role_id|replace("_", "-") }}
         assigned_hosts:
             {{ filter_assigned_hosts_by_minion_hosts_enabled_in_properties([
                 ], props)

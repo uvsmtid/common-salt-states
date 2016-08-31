@@ -15,10 +15,12 @@
 {% set minions_list_path = profile_root.replace('.', '/') + '/common/system_hosts/minions_list.yaml' %}
 {% import_yaml minions_list_path as minions_list %}
 
+{% set host_role_id = 'salt_minion_role' %}
+
 system_host_roles:
 
-    salt_minion_role:
-        hostname: salt-minion-role-host
+    {{ host_role_id }}:
+        hostname: {{ host_role_id|replace("_", "-") }}
         assigned_hosts:
             {{ list_enabled_salt_managed_minions(props, minions_list) }}
 

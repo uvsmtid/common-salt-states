@@ -12,7 +12,7 @@
                 {
                         "name": "{{ box_provider_config['name'] }}",
                         {% set resource_config = pillar['system_resources'][ box_provider_config['resource_id'] ] %}
-                        "url": "http://vagrant-box-publisher-role-host/{{ resource_config['item_parent_dir_path'] }}/{{ resource_config['item_base_name'] }}",
+                        "url": "http://vagrant-box-publisher-role/{{ resource_config['item_parent_dir_path'] }}/{{ resource_config['item_base_name'] }}",
                         {% set checksum_info = resource_config['item_content_hash'].split('=') %}
                         "checksum_type": "{{ checksum_info[0] }}",
                         "checksum": "{{ checksum_info[1] }}"

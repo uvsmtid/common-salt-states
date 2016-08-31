@@ -11,10 +11,12 @@
 {% set pillars_macro_lib = 'lib/pillars_macro_lib.sls' %}
 {% from pillars_macro_lib import filter_assigned_hosts_by_minion_hosts_enabled_in_properties with context %}
 
+{% set host_role_id = 'maven_repository_downstream_manager_role' %}
+
 system_host_roles:
 
-    maven_repository_downstream_manager_role:
-        hostname: maven-repository-downstream-manager-role-host
+    {{ host_role_id }}:
+        hostname: {{ host_role_id|replace("_", "-") }}
         # NOTE: These should be hosts different from `upstream`.
         assigned_hosts:
             {{ filter_assigned_hosts_by_minion_hosts_enabled_in_properties([
