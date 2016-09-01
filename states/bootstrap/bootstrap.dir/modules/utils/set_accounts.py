@@ -188,7 +188,12 @@ def add_user_to_group_windows(
             user_name,
             '/ADD',
         ],
-        raise_on_error = True,
+        # Unfortunately, Windows doesn't have an easy way to
+        # trivally check whether user is in a group.
+        # So, this code simply ignores the error when adding user to a group.
+        # However, it will also fail silently in other cases.
+        # TODO: This is a quick and dirty way to avoid failures. Check instead.
+        raise_on_error = False,
         capture_stdout = False,
         capture_stderr = False,
     )
