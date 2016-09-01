@@ -106,7 +106,7 @@ grub_configuration_file:
         - name: {{ grub_configuration_file_path }}
 {% endif %}
 {% if grains['system_boot_type'] == 'UEFI' %}
-{% set grub_configuration_file_path = '/boot/efi/EFI/fedora/grub.cfg' %}
+{% set grub_configuration_file_path = '/boot/efi/EFI/' + grain['os'].lower() + '/grub.cfg' %}
 grub_configuration_file:
     file.exists:
         - name: {{ grub_configuration_file_path }}
