@@ -29,6 +29,15 @@ if has("autocmd")
   augroup END
 endif
 
+" FORCE: Set `expandtab` to override any other plugin.
+" Prefer to live with spaces instead of tabs (rare) rather
+" than tabs instead of spaces.
+" See: http://stackoverflow.com/a/39244476/441652
+augroup expandtabFTW
+    autocmd!
+    autocmd FileType * setlocal expandtab
+augroup END
+
 if has("cscope") && filereadable("/usr/bin/cscope")
    set csprg=/usr/bin/cscope
    set csto=0
