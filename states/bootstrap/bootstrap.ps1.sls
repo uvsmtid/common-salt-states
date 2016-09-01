@@ -31,7 +31,6 @@ Set-Location -Path "$bootstrap_base_dir"
 Get-Location
 
 $host_config_file_path_windows
-#if(![System.IO.File]::Exists($host_config_file_path_windows)){
 if(-Not (Test-Path $host_config_file_path_windows) ){
     $host_config_file_path_windows
     "does NOT exists"
@@ -48,8 +47,12 @@ $profile_name = "$( Split-Path $( Split-Path $host_config_file_path_windows -Par
 $project_name = "$( Split-Path $( Split-Path $( Split-Path $host_config_file_path_windows -Parent ) -Parent ) -Leaf )"
 
 # Unpack Cygwin package.
+# Remove any existing directory first.
 $cygwin_package_name = "resources\depository\$project_name\$profile_name\{{ get_registered_content_item_rel_path_windows(cygwin_resource_id)|replace("\\", "\\") }}"
 Add-Type -A System.IO.Compression.FileSystem
+if(Test-Path "$bootstrap_base_dir\cygwin-offline.git") {
+    Remove-Item "$bootstrap_base_dir\cygwin-offline.git" -Force -Recurse
+}
 [IO.Compression.ZipFile]::ExtractToDirectory("$bootstrap_base_dir\$cygwin_package_name", "$bootstrap_base_dir")
 
 # Run Cygwin installation script.

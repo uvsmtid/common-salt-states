@@ -1,3 +1,6 @@
+
+###############################################################################
+
 import logging
 from utils.exec_command import call_subprocess
 
@@ -136,19 +139,38 @@ def add_user_windows(
     user_password,
 ):
 
-    # Create user.
-    call_subprocess(
+    # Avoid adding users if it already exits.
+    # See: http://stackoverflow.com/a/25510883/441652
+    # It is unreliable (if one username is substring of another),
+    # but it's practical enough.
+    process_output = call_subprocess(
         command_args = [
-            'net',
-            'user',
-            user_name,
-            user_password,
-            '/ADD',
+            'powershell',
+            'if (& net users | select-string "' + user_name + '" ) { "exists" } else { "nope" }',
         ],
         raise_on_error = True,
-        capture_stdout = False,
+        capture_stdout = True,
         capture_stderr = False,
     )
+    returned_answer = process_output['stdout'].strip()
+
+    logging.debug("returned_answer: " + str(returned_answer))
+
+    if returned_answer != "exists":
+
+        # Create user.
+        call_subprocess(
+            command_args = [
+                'net',
+                'user',
+                user_name,
+                user_password,
+                '/ADD',
+            ],
+            raise_on_error = True,
+            capture_stdout = False,
+            capture_stderr = False,
+        )
 
 ###############################################################################
 #
@@ -166,7 +188,12 @@ def add_user_to_group_windows(
             user_name,
             '/ADD',
         ],
-        raise_on_error = True,
+        # Unfortunately, Windows doesn't have an easy way to
+        # trivally check whether user is in a group.
+        # So, this code simply ignores the error when adding user to a group.
+        # However, it will also fail silently in other cases.
+        # TODO: This is a quick and dirty way to avoid failures. Check instead.
+        raise_on_error = False,
         capture_stdout = False,
         capture_stderr = False,
     )
