@@ -145,6 +145,27 @@ def disable_server_manager_windows(
     )
 
 ###############################################################################
+#
+
+def rearm_license_windows(
+):
+
+    call_subprocess(
+        command_args = [
+            'cmd',
+            '/c',
+            'start',
+            '/i',
+            '/b',
+            'slmgr.vbs',
+            '/rearm',
+        ],
+        raise_on_error = True,
+        capture_stdout = False,
+        capture_stderr = False,
+    )
+
+###############################################################################
 # EOF
 ###############################################################################
 
