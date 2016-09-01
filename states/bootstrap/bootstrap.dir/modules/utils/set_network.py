@@ -1,6 +1,8 @@
 
 ###############################################################################
 
+import logging
+
 from utils.exec_command import call_subprocess
 
 ###############################################################################
@@ -129,22 +131,39 @@ def set_hostname_windows(
     hostname,
 ):
 
-    # NOTE: Unfortunately for Windows,
-    #       the name will only become effective after restart.
-    call_subprocess(
+    # Get current hostname.
+    process_output = call_subprocess(
         command_args = [
             'powershell',
-            'Rename-Computer',
-            '-NewName',
-            hostname,
-            # NOTE: Command complains that NetBIOS names are
-            #       limited to 15 bytes. We force it - what else we can do?
-            '-Force',
+            'hostname',
         ],
         raise_on_error = True,
-        capture_stdout = False,
+        capture_stdout = True,
         capture_stderr = False,
     )
+    current_hostname = process_output["stdout"].strip()
+
+    logging.debug("hostname: '" + str(current_hostname) + "' required: " + str(hostname))
+
+    # Avoid chaning hostname if it matches required.
+    if current_hostname != hostname:
+
+        # NOTE: Unfortunately for Windows,
+        #       the name will only become effective after restart.
+        call_subprocess(
+            command_args = [
+                'powershell',
+                'Rename-Computer',
+                '-NewName',
+                hostname,
+                # NOTE: Command complains that NetBIOS names are
+                #       limited to 15 bytes. We force it - what else we can do?
+                '-Force',
+            ],
+            raise_on_error = True,
+            capture_stdout = False,
+            capture_stderr = False,
+        )
 
 ###############################################################################
 #
