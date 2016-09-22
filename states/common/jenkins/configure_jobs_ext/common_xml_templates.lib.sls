@@ -10,7 +10,16 @@
     {% for trigger_config_name in job_config['parameterized_job_triggers'].keys() %}
     {% set trigger_config = job_config['parameterized_job_triggers'][trigger_config_name] %}
         <hudson.plugins.parameterizedtrigger.BuildTriggerConfig>
-          #{# NOTE: By default `propagate_build_paramterers` is `False` #}#
+          #{#
+                NOTE: By default `propagate_build_paramterers` is `False`.
+
+                NOTE: If `propagate_build_parameters` is `False`,
+                      the promotion may fail.
+                      This happens if the job/project in the `projects` tag
+                      below has never been built before. In order to fix
+                      the failure, build the job/project manually once.
+          #}#
+
           {% if 'propagate_build_paramterers' in job_config and not job_config['propagate_build_paramterers'] %}
           <configs class="empty-list"/>
           {% else %}
