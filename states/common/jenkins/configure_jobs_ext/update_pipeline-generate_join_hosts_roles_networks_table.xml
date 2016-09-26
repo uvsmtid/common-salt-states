@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<project>
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_job_configuration with context %}
+  {{ common_job_configuration(job_config, job_environ) }}
+
+  {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import job_multiple_scm_configuration with context %}
+  {{ job_multiple_scm_configuration(job_config, job_environ) }}
+
+  <builders>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import copy_artifacts with context %}
+    {{ copy_artifacts(job_config, job_environ) }}
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import add_job_environment_variables with context %}
+    {{ add_job_environment_variables(job_config, job_environ) }}
+
+    <hudson.tasks.Shell>
+      <command>
+
+        {% from 'common/libs/host_config_queries.sls' import get_system_host_primary_user_posix_home with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import locate_dynamic_build_descriptor with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import update_dynamic_build_descriptor with context %}
+
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_header with context %}
+        {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import common_build_script_footer with context %}
+
+        #######################################################################
+        # Script header
+
+        {{ common_build_script_header(job_config, job_environ) }}
+
+        #######################################################################
+
+        {% set repo_id = 'common-salt-states' %}
+        {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
+        REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
+
+        # Capture STDOUT with table output in CSV format:
+        ${REPO_PATH}/scripts/join_hosts_roles_networks.py | tee join_hosts_roles_networks.csv
+
+        #######################################################################
+        # Script footer
+
+        {{ common_build_script_footer(job_config, job_environ) }}
+
+        #######################################################################
+
+      </command>
+    </hudson.tasks.Shell>
+  </builders>
+
+  <publishers>
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import archive_artifacts with context %}
+    {{ archive_artifacts(job_config, job_environ) }}
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import parameterized_job_triggers_macro with context %}
+    {{ parameterized_job_triggers_macro(job_config, job_environ) }}
+
+    {% from 'common/jenkins/configure_jobs_ext/common_xml_templates.lib.sls' import send_email_notifications with context %}
+    {{ send_email_notifications(job_config, job_environ) }}
+
+  </publishers>
+
+  <buildWrappers>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.7.2"/>
+  </buildWrappers>
+
+</project>
+

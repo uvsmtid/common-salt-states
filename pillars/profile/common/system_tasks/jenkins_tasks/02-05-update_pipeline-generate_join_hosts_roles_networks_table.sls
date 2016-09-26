@@ -12,8 +12,8 @@ system_tasks:
 
         {% set skip_script_execution = False %}
 
-        {% set job_template_id = 'update_pipeline-reconnect_jenkins_slaves' %}
-        02-04-{{ job_template_id }}:
+        {% set job_template_id = 'update_pipeline-generate_join_hosts_roles_networks_table' %}
+        02-05-{{ job_template_id }}:
 
             enabled: True
 
@@ -23,15 +23,8 @@ system_tasks:
                 build_days: {{ discard_build_days }}
                 build_num: {{ discard_build_num }}
 
-            # NOTE: This job is special.
-            #       While many other jobs run through Jenkins Slaves
-            #       (even if this Slave may run on Jenkins Master),
-            #       this job is actually executed by Jenkins Master.
-            #       This is required to be able to keep connection
-            #       while executing reconnection for Slaves.
-            force_jenkins_master: True
             restrict_to_system_role:
-                - jenkins_master_role
+                - salt_master_role
 
             skip_if_true: SKIP_UPDATE_PIPELINE
 
@@ -40,11 +33,14 @@ system_tasks:
             input_fingerprinted_artifacts:
                 01-01-init_pipeline-start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
 
+            # This is the final job in the pipeline.
+            {% if False %}
             parameterized_job_triggers:
                 job_not_faild:
                     condition: UNSTABLE_OR_BETTER
                     trigger_jobs:
-                        - 02-05-update_pipeline-generate_join_hosts_roles_networks_table
+                        []
+            {% endif %}
 
             job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
             job_config_data:
