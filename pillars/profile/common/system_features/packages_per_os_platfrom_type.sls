@@ -30,6 +30,9 @@ system_features:
             # This is used by `invoke.py` script from `git-group`.
             - python-lxml
 
+            # This is used by `join_hosts_roles_networks.py` script.
+            - python-sqlalchemy
+
 ###############################################################################
 # EOF
 ###############################################################################
