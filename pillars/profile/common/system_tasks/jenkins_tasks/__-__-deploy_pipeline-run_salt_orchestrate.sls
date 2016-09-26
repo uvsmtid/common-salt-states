@@ -17,6 +17,8 @@ system_tasks:
 
             enabled: True
 
+            send_email_notifications: False
+
             job_group_name: standalone_group
 
             discard_old_builds:
