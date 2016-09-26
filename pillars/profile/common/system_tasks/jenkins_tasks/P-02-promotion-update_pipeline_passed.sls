@@ -17,7 +17,11 @@ system_tasks:
                 - salt_master_role
 
             condition_job_list:
+                - 02-01-update_pipeline-restart_master_salt_services
+                - 02-02-update_pipeline-configure_jenkins_jobs
+                - 02-03-update_pipeline-run_salt_highstate
                 - 02-04-update_pipeline-reconnect_jenkins_slaves
+                - 02-05-update_pipeline-generate_join_hosts_roles_networks_table
 
             condition_type: downstream_passed
             accept_unstable: True

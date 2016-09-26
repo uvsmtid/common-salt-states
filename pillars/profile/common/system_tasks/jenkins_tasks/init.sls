@@ -53,9 +53,13 @@ include:
         ,
         '02-04-update_pipeline-reconnect_jenkins_slaves'
         ,
-        '__-__-update_pipeline-configure_jenkins_jobs'
+        '02-05-update_pipeline-generate_join_hosts_roles_networks_table'
         ,
         '__-__-update_pipeline-restart_master_salt_services'
+        ,
+        '__-__-update_pipeline-configure_jenkins_jobs'
+        ,
+        '__-__-update_pipeline-generate_join_hosts_roles_networks_table'
         ,
         '03-01-maven_pipeline-maven_build_all'
         ,

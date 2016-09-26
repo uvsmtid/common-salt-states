@@ -12,39 +12,41 @@ system_tasks:
 
         {% set skip_script_execution = False %}
 
-        {% set job_template_id = 'update_pipeline-reconnect_jenkins_slaves' %}
-        02-04-{{ job_template_id }}:
+        {% set job_template_id = 'update_pipeline-generate_join_hosts_roles_networks_table' %}
+        __-__-{{ job_template_id }}:
 
             enabled: True
 
-            job_group_name: update_pipeline_group
+            send_email_notifications: False
+
+            job_group_name: standalone_group
 
             discard_old_builds:
                 build_days: {{ discard_build_days }}
                 build_num: {{ discard_build_num }}
 
-            # NOTE: This job is special.
-            #       While many other jobs run through Jenkins Slaves
-            #       (even if this Slave may run on Jenkins Master),
-            #       this job is actually executed by Jenkins Master.
-            #       This is required to be able to keep connection
-            #       while executing reconnection for Slaves.
-            force_jenkins_master: True
             restrict_to_system_role:
-                - jenkins_master_role
+                - salt_master_role
 
             skip_if_true: SKIP_UPDATE_PIPELINE
 
-            skip_script_execution: {{ skip_script_execution }}
+            # NOTE: Standalone (outside of pipeline) jobs are executed on demand.
+            skip_script_execution: False
 
+            # NOTE: This is a standalone job and does not associate.
+            {% if False %}
             input_fingerprinted_artifacts:
                 01-01-init_pipeline-start_new_build: initial.init_pipeline.dynamic_build_descriptor.yaml
+            {% endif %}
 
+            # NOTE: This is a standalone job.
+            {% if False %}
             parameterized_job_triggers:
                 job_not_faild:
                     condition: UNSTABLE_OR_BETTER
                     trigger_jobs:
-                        - 02-05-update_pipeline-generate_join_hosts_roles_networks_table
+                        []
+            {% endif %}
 
             job_config_function_source: 'common/jenkins/configure_jobs_ext/simple_xml_template_job.sls'
             job_config_data:
