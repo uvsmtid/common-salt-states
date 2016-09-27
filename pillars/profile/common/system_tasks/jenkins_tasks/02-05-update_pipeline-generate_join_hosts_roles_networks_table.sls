@@ -46,6 +46,28 @@ system_tasks:
             job_config_data:
                 xml_config_template: 'common/jenkins/configure_jobs_ext/{{ job_template_id }}.xml'
 
+            # List of profile names (one per line) to generate the table for.
+            # Note that the local branches named after the listed profile names
+            # are supposed to be already pre-created in bootstrap target profile repository.
+            # NOTE: The table for this system profile_name is ALWAYS generated.
+            target_profile_name_list:
+                []
+
+            build_parameters:
+
+                TARGET_PROFILE_NAME:
+                    parameter_description: |
+                        Specify target profile to fetch data for the table.
+                        Selecting `_` (default) means generating table
+                        for ALL profile names specified in `target_profile_name_list`
+                        (which is statically configured in pillars).
+                        Specifying profile_name in `TARGET_PROFILE_NAME` reduces number of generated
+                        tables to the single one (without `target_profile_name_list`).
+                        NOTE: The table for this system profile_name is ALWAYS generated.
+                    parameter_type: string
+                    parameter_value:
+                        _
+
 ###############################################################################
 # EOF
 ###############################################################################

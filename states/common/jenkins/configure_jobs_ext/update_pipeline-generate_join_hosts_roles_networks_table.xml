@@ -38,8 +38,34 @@
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
 
+        #----------------------------------------------------------------------
+
+        # The first step is to generate table for current profile.
+        ${REPO_PATH}/scripts/get_pillars_for_profile.sh
+
         # Capture STDOUT with table output in CSV format:
-        ${REPO_PATH}/scripts/join_hosts_roles_networks.py | tee join_hosts_roles_networks.csv
+        ${REPO_PATH}/scripts/join_hosts_roles_networks.py salt.pillars.json | tee join_hosts_roles_networks.csv
+        # Make a copy of file reflecting profile_name in its name:
+        cp join_hosts_roles_networks.csv join_hosts_roles_networks.${SALT_PROFILE_NAME}.csv
+
+        #----------------------------------------------------------------------
+
+        # If `TARGET_PROFILE_NAME` is `_`,
+        # run through `target_profile_name_list`.
+        # Otherwise, create additional table specified in `TARGET_PROFILE_NAME`.
+
+        if [ "${TARGET_PROFILE_NAME}" == '_' ]
+        then
+            {% for target_profile_name in job_config['target_profile_name_list'] %}
+            ${REPO_PATH}/scripts/get_pillars_for_profile.sh "{{ target_profile_name }}"
+            ${REPO_PATH}/scripts/join_hosts_roles_networks.py salt.pillars.json | tee join_hosts_roles_networks.{{ target_profile_name }}.csv
+            {% endfor %}
+
+            echo "loop completed"
+        else
+            ${REPO_PATH}/scripts/get_pillars_for_profile.sh "${TARGET_PROFILE_NAME}"
+            ${REPO_PATH}/scripts/join_hosts_roles_networks.py salt.pillars.json | tee join_hosts_roles_networks.${TARGET_PROFILE_NAME}.csv
+        fi
 
         #######################################################################
         # Script footer

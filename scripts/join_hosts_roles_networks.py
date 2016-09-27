@@ -345,6 +345,8 @@ def main():
     logging.basicConfig()
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
+    # Pillars can be supplied inside file (Salt output for `pillar.items`)
+    # or not (script will get pillars from Salt).
     pillars = None
     if len(sys.argv) >= 2:
         pillars = load_pillars(sys.argv[1])
