@@ -318,8 +318,10 @@ def load_pillars(
     pillars = yaml.load(salt_output)
 
     # Return profile pillars loaded in memory.
+    # We process `bootstrap_target_profile` to be able to
+    # generate table for any other profile_name (by switching branch).
     # NOTE: Output of `salt-call` contain first-level key `local`.
-    return pillars['local']
+    return pillars['local']['bootstrap_target_profile']
 
 ################################################################################
 #
