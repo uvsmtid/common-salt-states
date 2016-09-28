@@ -34,6 +34,20 @@
 
         #######################################################################
 
+        #----------------------------------------------------------------------
+
+        # Capture current branch in bootstrap target repository.
+
+        # Retrieve absolute path to repo with `bootstrap_target_profile_pillars`:
+        BOOTSTRAP_TARGET_PROFILE_REPO="$(sudo salt-call --out txt pillar.get properties:repo_path_bootstrap_target_profile_pillars | cut -d' ' -f2)"
+        cd "${BOOTSTRAP_TARGET_PROFILE_REPO}"
+        CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+        # HEAD value means that repository is at detached head.
+        test "${CURRENT_BRANCH}" != "HEAD"
+        cd -
+
+        #----------------------------------------------------------------------
+
         {% set repo_id = 'common-salt-states' %}
         {% set repo_config = pillar['system_features']['deploy_environment_sources']['source_repositories'][repo_id]['git'] %}
         REPO_PATH="{{ get_system_host_primary_user_posix_home(repo_config['source_system_host']) }}/{{ repo_config['origin_uri_ssh_path'] }}"
@@ -66,6 +80,13 @@
             ${REPO_PATH}/scripts/get_pillars_for_profile.sh "${TARGET_PROFILE_NAME}"
             ${REPO_PATH}/scripts/join_hosts_roles_networks.py salt.pillars.json | tee join_hosts_roles_networks.${TARGET_PROFILE_NAME}.csv
         fi
+
+        #----------------------------------------------------------------------
+
+        # Restore branch in bootstrap target repository.
+        cd "${BOOTSTRAP_TARGET_PROFILE_REPO}"
+        git checkout "${CURRENT_BRANCH}"
+        cd -
 
         #######################################################################
         # Script footer
