@@ -17,6 +17,9 @@ include:
 
     - common.hostname
 
+    # This configures DNS resolver (DNS client) and sets DNS domain.
+    - common.resolver
+
 {% endif %}
 
 {% endif %}

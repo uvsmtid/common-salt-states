@@ -5,7 +5,13 @@
 # _before_ DHCP (`virtual_machine_hypervisor_role` hosts all services, `hostname_resolver_role` does not resolve
 # before fully up).
 
-{% if grains['id'] in pillar['system_host_roles']['virtual_machine_hypervisor_role']['assigned_hosts'] or grains['id'] in pillar['system_host_roles']['hostname_resolver_role']['assigned_hosts'] %}
+# NOTE:
+# When there is no Salt-managed DHCP server for the system,
+# the modification of `resolv.conf` is applicable for all minions.
+# Maybe some minions can survive using auto-generated `resolv.conf`,
+# but external DNS, for example, may not be set there.
+
+#{# {% if grains['id'] in pillar['system_host_roles']['virtual_machine_hypervisor_role']['assigned_hosts'] or grains['id'] in pillar['system_host_roles']['hostname_resolver_role']['assigned_hosts'] %} #}
 
 ###############################################################################
 # <<< Any RedHat-originated OS
@@ -25,5 +31,5 @@
 # >>>
 ###############################################################################
 
-{% endif %}
+#{# {% endif %} #}
 
