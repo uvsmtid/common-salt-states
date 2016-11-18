@@ -12,8 +12,8 @@
 
 {% set yum_repo_os_platform_config = yum_repo_conf['os_platform_configs'][host_config['os_platform']] %}
 
-[{{ yum_repo_name }}]
-name={{ yum_repo_name }} - {{ host_config['os_platform'] }}
+[{{ yum_repo_name }}-auto-salt]
+name={{ yum_repo_name }}-auto-salt - {{ host_config['os_platform'] }}
 
 {% if 'orig_yum_repo_baseurl' in yum_repo_os_platform_config %}
 # Original baseurl as comment:
