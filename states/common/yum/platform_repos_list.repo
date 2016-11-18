@@ -15,6 +15,11 @@
 [{{ yum_repo_name }}]
 name={{ yum_repo_name }} - {{ host_config['os_platform'] }}
 
+{% if 'orig_yum_repo_baseurl' in yum_repo_os_platform_config %}
+# Original baseurl as comment:
+#baseurl={{ yum_repo_os_platform_config['orig_yum_repo_baseurl'] }}
+{% endif %}
+
 {% if 'use_local_yum_mirrors' in yum_repo_os_platform_config and yum_repo_os_platform_config['use_local_yum_mirrors'] %}
 # Using generic hostname of `local_yum_mirrors_role`.
 baseurl=http://local-yum-mirrors-role/{{ yum_repo_os_platform_config['rsync_mirror_local_destination_path_prefix'] }}{{ yum_repo_os_platform_config['rsync_mirror_internet_source_rel_path'] }}
@@ -28,6 +33,11 @@ baseurl={{ yum_repo_os_platform_config['yum_repo_baseurl'] }}
 enabled=1
 {% else %}
 enabled=0
+{% endif %}
+
+{% if 'orig_repo_key_url' in yum_repo_os_platform_config %}
+# Original gpgkey as comment:
+#gpgkey={{ yum_repo_os_platform_config['orig_repo_key_url'] }}
 {% endif %}
 
 {% if 'yum_repo_key_url' in yum_repo_os_platform_config %}

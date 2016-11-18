@@ -64,10 +64,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/$releasever/Everything/$basearch/os/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/releases/{{ os_platform_to_release_ver[system_platform_id] }}/Everything/x86_64/os/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-{{ os_platform_to_release_ver[system_platform_id] }}-x86_64'
@@ -110,10 +109,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -133,10 +131,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/os/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/os/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -164,10 +161,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/$releasever/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$releasever-$basearch'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/fedora/linux/updates/{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-{{ os_platform_to_release_ver[system_platform_id] }}-x86_64'
@@ -211,10 +207,9 @@ system_features:
                         repo_enabled: False
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -235,10 +230,9 @@ system_features:
                         repo_enabled: False
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/updates/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/updates/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -264,10 +258,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -289,10 +282,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/addons/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/addons/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -317,10 +309,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -340,10 +331,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/extras/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/extras/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -368,10 +358,9 @@ system_features:
                         repo_enabled: False
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -391,10 +380,9 @@ system_features:
                         repo_enabled: False
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/centosplus/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/centosplus/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -420,10 +408,9 @@ system_features:
                         repo_enabled: False
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7'
@@ -445,10 +432,9 @@ system_features:
                         repo_enabled: False
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://mirror.centos.org/centos/$releasever/contrib/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://mirror.centos.org/centos/{{ os_platform_to_release_ver[system_platform_id] }}/contrib/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5'
@@ -473,10 +459,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/7/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7'
@@ -495,10 +480,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://download.fedoraproject.org/pub/epel/5/x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-5'
@@ -531,10 +515,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-$releasever-$basearch/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-$releasever-$basearch/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://yum.postgresql.org/9.3/redhat/rhel-{{ os_platform_to_release_ver[system_platform_id] }}-x86_64/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-93'
@@ -569,10 +552,9 @@ system_features:
                         repo_enabled: False
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-$releasever/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'https://repos.fedorapeople.org/repos/openstack/openstack-juno/fedora-{{ os_platform_to_release_ver[system_platform_id] }}/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
@@ -599,10 +581,9 @@ system_features:
                         repo_enabled: False
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/'
-                        yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/'
+                        orig_yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://repos.fedorapeople.org/repos/openstack/openstack-juno/epel-7/'
                         yum_repo_key_url: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
@@ -640,10 +621,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
-                        yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
+                        orig_yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
@@ -670,10 +650,9 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
-                        yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
+                        orig_yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://pkg.jenkins-ci.org/redhat/'
                         yum_repo_key_url: 'http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key'
@@ -720,12 +699,14 @@ system_features:
 
                         # These are URLs for official
                         # repsositories supporting RHEL only.
-                        #{#
-                        yum_repo_baseurl: 'https://repo.saltstack.com/yum/redhat/5/x86_64/2015.5/'
-                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/5/x86_64/2015.5/SALTSTACK-EL5-GPG-KEY.pub'
-                        yum_repo_baseurl: 'https://repo.saltstack.com/yum/redhat/7/x86_64/2015.5/'
-                        yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/7/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
-                        #}#
+                        {% if not system_platform_id %}
+                        {% elif system_platform_id == 'rhel5' %}
+                        orig_yum_repo_baseurl: 'https://repo.saltstack.com/yum/redhat/5/x86_64/2015.5/'
+                        orig_yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/5/x86_64/2015.5/SALTSTACK-EL5-GPG-KEY.pub'
+                        {% elif system_platform_id == 'rhel7' %}
+                        orig_yum_repo_baseurl: 'https://repo.saltstack.com/yum/redhat/7/x86_64/2015.5/'
+                        orig_yum_repo_key_url: 'https://repo.saltstack.com/yum/redhat/7/x86_64/2015.5/SALTSTACK-GPG-KEY.pub'
+                        {% endif %}
                         # URLs renderred exactly (based on template params):
                         # NOTE: Avoid using HTTPS due to issues with proxy.
                         #       Luckily, these repos are available via HTTP.
@@ -763,9 +744,8 @@ system_features:
                         repo_enabled: True
                         skip_if_unavailable: True
 
-                        #{# Original:
-                        yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm/'
-                        #}#
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm/'
                         # URLs renderred exactly (based on template params):
                         yum_repo_baseurl: 'http://downloads.sourceforge.net/project/sonar-pkg/rpm/'
 
