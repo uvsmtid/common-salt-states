@@ -764,6 +764,45 @@ system_features:
                     {% endfor %}
 
 
+            # Insynq
+            # https://www.insynchq.com/
+            insync:
+                installation_type: conf_template
+
+                os_platform_configs:
+
+                    {% for system_platform_id in fedora_versions_list %}
+                    {{ system_platform_id }}:
+
+                        repo_enabled: True
+                        skip_if_unavailable: True
+
+                        # Original:
+                        orig_yum_repo_baseurl: 'http://yum.insynchq.com/fedora/$releasever/'
+                        orig_yum_repo_key_url: 'https://d2t3ff60b2tol4.cloudfront.net/repomd.xml.key'
+
+                        # URLs renderred exactly (based on template params):
+                        yum_repo_baseurl: 'http://yum.insynchq.com/fedora/$releasever/'
+                        yum_repo_key_url: 'https://d2t3ff60b2tol4.cloudfront.net/repomd.xml.key'
+
+                        yum_repo_gpgcheck: True
+
+                        # TODO: Define these parameters for offline automatic key registration.
+                        #key_file_resource_id: jenkins_yum_repository_rpm_verification_key
+                        #key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
+
+                        # TODO: Use global `use_local_yum_mirrors` switch
+                        #       when rsync-able URL parts are define.
+                        #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
+                        use_local_yum_mirrors: False
+
+                        # TODO: Define rsync-able URL parts.
+                        #rsync_mirror_internet_source_base_url: ''
+                        #rsync_mirror_internet_source_rel_path: ''
+                        #rsync_mirror_local_destination_path_prefix: 'insync/'
+
+                    {% endfor %}
+
 ###############################################################################
 # EOF
 ###############################################################################
