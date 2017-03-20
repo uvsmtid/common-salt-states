@@ -59,8 +59,7 @@ symlinks_map:
     #       should point to valid separate source and target pillars repositories.
     # Example map entry:
     #     '/path/to/symlink': '/path/to/target'
-    '/home/username/Works/common-salt-pillars.git': '/home/username/Works/common-salt-states.git'
-    '/home/username/Works/common-salt-pillars.bootstrap-target.git': '/home/username/Works/common-salt-states.git'
+    '/home/username/Works/common-salt-states.git': '/home/username/Works/project_name-root.git/salt/common-salt-pillars.git'
 
 # Developer mode sets priority to deploy locally build binaries
 # (rather than those which are supplied by dynamic build descriptor).
@@ -98,7 +97,7 @@ projects_states_repo_paths:
 
 # If set, it specifies repository which is considered parent
 # to all repositories (to track releases).
-parent_repo_name: ~
+parent_repo_name: project_name-root
 
 # Primary network which is NOT controlled by Salt (directly or indirectly,
 # e.g. through configuration of some virtualized networks) and exist

@@ -250,14 +250,14 @@ system_features:
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/common-salt-states.git'
+                    origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git/salt/common-salt-states.git'
 
             {% if project_name != 'common' %}
             '{{ project_name }}-salt-states':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-states.git'
+                    origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git/salt/{{ project_name }}-salt-states.git'
 
             {% endif %}
 
@@ -267,14 +267,14 @@ system_features:
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/common-salt-resources.git'
+                    origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git/salt/common-salt-resources.git'
 
             {% if project_name != 'common' %}
             '{{ project_name }}-salt-resources':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-resources.git'
+                    origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git/salt/{{ project_name }}-salt-resources.git'
 
             {% endif %}
 
@@ -284,13 +284,13 @@ system_features:
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.git'
+                    origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git/salt/{{ project_name }}-salt-pillars.git'
 
             '{{ project_name }}-salt-pillars.bootstrap-target':
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/{{ project_name }}-salt-pillars.bootstrap-target.git'
+                    origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git/salt/{{ project_name }}-salt-pillars.bootstrap-target.git'
 
             # Repository with build history.
 
@@ -298,7 +298,7 @@ system_features:
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/build-history.git'
+                    origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git/build-history.git'
 
             # Maven component repositories.
 
@@ -308,7 +308,7 @@ system_features:
                 git:
                     source_system_host: '{{ master_minion_id }}'
 
-                    origin_uri_ssh_path: 'Works/{{ maven_repo_name }}.git'
+                    origin_uri_ssh_path: 'Works/{{ props['parent_repo_name'] }}.git/maven/{{ maven_repo_name }}.git'
 
             {% endfor %}
 

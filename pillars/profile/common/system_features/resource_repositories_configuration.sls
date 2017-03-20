@@ -51,7 +51,7 @@ system_features:
                 # Both `abs_resource_base_path` and fully concatenated
                 # `URI_prefix` specify base dir path relative to which value of
                 # `item_parent_dir_path` key in registered content is specified.
-                abs_resource_target_path: '/home/{{ default_username }}/Works/common-salt-resources.git'
+                abs_resource_target_path: '/home/{{ default_username }}/Works/{{ props['parent_repo_name'] }}.git/salt/common-salt-resources.git'
 
             {% if project_name != 'common' %}
             {{ project_name }}-resources:
@@ -60,7 +60,7 @@ system_features:
 
                 rel_resource_link_path: 'resource_roots/{{ project_name }}-resources'
 
-                abs_resource_target_path: '/home/{{ default_username }}/Works/{{ project_name }}-salt-resources.git'
+                abs_resource_target_path: '/home/{{ default_username }}/Works/{{ props['parent_repo_name'] }}.git/salt/{{ project_name }}-salt-resources.git'
             {% endif %}
 
             # TODO: Add additional resource repositories below.
