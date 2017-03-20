@@ -13,10 +13,27 @@
 set -e
 set -u
 
-# Get pillars repo path.
+REPO_CASE="no"
+echo "There are two cases:"
+echo "*   \"states\"  : create initial states for custom \`project_name\` with \"defaults\" pillars"
+echo "*   \"pillars\" : create initial pillars for specific  \`profile_name\` with \"overrides\" pillars"
+echo "Type case name exactly to proceed."
+read REPO_CASE
+if [ "${REPO_CASE}" == "states" ]
+then
+    echo "User typed \"${REPO_CASE}\". Proceeding with \"states\"..." 1>&2
+elif [ "${REPO_CASE}" == "pillars" ]
+then
+    echo "User typed \"${REPO_CASE}\". Proceeding with \"pillars\"..." 1>&2
+else
+    echo "User typed \"${REPO_CASE}\". No such case. Exiting..." 1>&2
+    exit 1
+fi
+
+# Get repo path.
 if [ -z "${1:-}" ]
 then
-    echo "Enter absolute path to pillars repository:"
+    echo "Enter absolute path to project ${REPO_CASE} repository:"
     read DST_REPO_DIR
     # TODO: Sanitize input.
 else
@@ -45,23 +62,6 @@ then
     # TODO: Sanitize input.
 else
     PROJECT_NAME="${2}"
-fi
-
-REPO_CASE="no"
-echo "There are two cases:"
-echo "*   \"states\"  : create initial states for custom \`project_name\` with \"defaults\" pillars"
-echo "*   \"pillars\" : create initial pillars for specific  \`profile_name\` with \"overrides\" pillars"
-echo "Type case name exactly to proceed."
-read REPO_CASE
-if [ "${REPO_CASE}" == "states" ]
-then
-    echo "User typed \"${REPO_CASE}\". Proceeding with \"states\"..." 1>&2
-elif [ "${REPO_CASE}" == "pillars" ]
-then
-    echo "User typed \"${REPO_CASE}\". Proceeding with \"pillars\"..." 1>&2
-else
-    echo "User typed \"${REPO_CASE}\". No such case. Exiting..." 1>&2
-    exit 1
 fi
 
 # Hardcoded relative path to `common-salt-states` repository root.
@@ -98,10 +98,8 @@ echo "Copying necessary template files:" 1>&2
 # "defaults" (in case of `states` repository) and
 # "overrides" (in case of `pillars` repository).
 for ITEM_PATH in \
-    pillars \
-    pillars/profile \
-    pillars/bootstrap \
-    pillars/bootstrap/profiles \
+    "pillars" \
+    "pillars/profile" \
     "pillars/profile/${PROJECT_NAME}" \
 
 do
@@ -124,7 +122,6 @@ done
 # Fill in initial pillars (`*.sls`) files.
 for ITEM_PATH in \
     pillars/profile/properties.yaml \
-    pillars/bootstrap/profiles/.gitignore \
     pillars/profile/overrides.sls \
     .gitignore \
 
@@ -164,6 +161,7 @@ then
         ITEM_BASENAME="$(basename "${ITEM_PATH}")"
         DESTINATION_DIR="pillars/profile/${PROJECT_NAME}"
         echo "ADD: file : ${ITEM_PATH} => ${DESTINATION_DIR}/${ITEM_BASENAME}" 1>&2
+        mkdir -p "$(dirname "${DST_REPO_DIR}/${DESTINATION_DIR}/${ITEM_BASENAME}")"
         cp -pr "${RUNTIME_DIR}/${COMMON_SALT_STATES_REPO_ROOT_DIR}/${ITEM_PATH}" "${DST_REPO_DIR}/${DESTINATION_DIR}/${ITEM_BASENAME}"
     done
 
@@ -181,6 +179,7 @@ then
         ITEM_BASENAME="$(basename "${ITEM_PATH}")"
         DESTINATION_DIR="states/${PROJECT_NAME}"
         echo "ADD: file : ${ITEM_PATH} => ${DESTINATION_DIR}/${ITEM_BASENAME}" 1>&2
+        mkdir -p "$(dirname "${DST_REPO_DIR}/${DESTINATION_DIR}/${ITEM_BASENAME}")"
         cp -pr "${RUNTIME_DIR}/${COMMON_SALT_STATES_REPO_ROOT_DIR}/${ITEM_PATH}" "${DST_REPO_DIR}/${DESTINATION_DIR}/${ITEM_BASENAME}"
     done
 
