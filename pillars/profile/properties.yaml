@@ -59,7 +59,7 @@ symlinks_map:
     #       should point to valid separate source and target pillars repositories.
     # Example map entry:
     #     '/path/to/symlink': '/path/to/target'
-    '/home/username/Works/common-salt-states.git': '/home/username/Works/project_name-root.git/salt/common-salt-pillars.git'
+    '/home/username/Works/common-salt-states.git': '/home/username/Works/project_name-root.git/salt/common-salt-states.git'
 
 # Developer mode sets priority to deploy locally build binaries
 # (rather than those which are supplied by dynamic build descriptor).
@@ -80,11 +80,11 @@ developer_mode: False
 # known by Salt (in `/srv` directory) to the required data in repositories.
 repo_path_states: '/home/username/Works/common-salt-states.git'
 
-repo_path_profile_pillars: '/home/username/Works/common-salt-pillars.git'
+repo_path_profile_pillars: '/home/username/Works/project_name-salt-pillars.git'
 
 # The `bootstrap-target` pillars repository is always used if
 # bootstrap package has to be generated.
-repo_path_bootstrap_target_profile_pillars: '/home/username/Works/common-salt-pillars.bootstrap-target.git'
+repo_path_bootstrap_target_profile_pillars: '/home/username/Works/project_name-pillars.bootstrap-target.git'
 
 # Additional symlinks from common states repo to project states repos.
 projects_states_repo_paths:
