@@ -28,7 +28,10 @@ system_features:
             - dos2unix
 
             # This is used by `invoke.py` script from `git-group`.
-            - python-lxml
+            # Before fc25:
+            #- python-lxml
+            # After fc25:
+            - python2-lxml
 
             # This is used by `join_hosts_roles_networks.py` script.
             - python-sqlalchemy
