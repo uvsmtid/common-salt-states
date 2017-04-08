@@ -1,11 +1,14 @@
 # Configure grub (bootloader).
 
+{% set grub_version = pillar['system_platforms'][grains['os_platform_type']] %}
+{% if 'grub_version' in pillar['system_hosts'][grains['id']] %}
+{% set grub_version = pillar['system_hosts'][grains['id']]['grub_version'] %}
+{% endif %}
+
 
 ###############################################################################
 # <<<
-{% if grains['os_platform_type'].startswith('rhel5') %}
-
-# RHEL5 systems use GRUB version 1.
+{% if grub_version == 'grub-1' %}
 
 # Add new kernel command line if it does not contain `vga=` pattern.
 # This is to add default value and make regex for
@@ -53,10 +56,7 @@
 
 ###############################################################################
 # <<<
-{% if grains['os_platform_type'].startswith('rhel7') or grains['os_platform_type'].startswith('fc') %}
-
-# Modern Linux systems use GRUB version 2.
-
+{% if grub_version == 'grub-2' %}
 
 # Add new kernel command line if it does not contain `vga=` pattern.
 # This is to add default value and make regex for

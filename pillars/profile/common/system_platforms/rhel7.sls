@@ -5,7 +5,11 @@
 system_platforms:
 
     rhel7:
+
         os_type: linux
+
+        # Default GRUB version on RHEL7 is 2.
+        grub_version: 'grub-2'
 
 ###############################################################################
 # EOF

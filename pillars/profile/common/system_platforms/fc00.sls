@@ -12,7 +12,12 @@ system_platforms:
     #       Use the same platform definition file (while it makes sense).
     {% for fedora_version in fedora_versions_list %}
     {{ fedora_version }}:
+
         os_type: linux
+
+        # Default GRUB version on latest Fedora-s is 2.
+        grub_version: 'grub-2'
+
     {% endfor %}
 
 ###############################################################################
