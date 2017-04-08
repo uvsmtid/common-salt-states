@@ -6,7 +6,7 @@ system_resources:
 
     ###########################################################################
     # Salt for Fedora 21 = platform `fc21`
-    # TODO: Currently, it is reused for `fc22`, `fc23`, `fc24`, ...
+    # TODO: Currently, it is reused for `fc22`, `fc23`, `fc24`, ..., `fc25`.
     #       add separate packages per platform type.
 
     # TODO: There is own vagrant image: 'uvsmtid/fedora-21-server-minimal'.

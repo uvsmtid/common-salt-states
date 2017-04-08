@@ -31,7 +31,7 @@ system_hosts:
             vagrant_communicator:
                 communicator_type: ssh
 
-        os_platform: fc24
+        os_platform: fc25
 
         hostname: {{ host_id|replace("_", "-") }}
         resolved_in: {{ primary_network['network_name'] }}

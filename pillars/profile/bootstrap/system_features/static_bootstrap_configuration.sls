@@ -65,7 +65,7 @@ system_features:
                         salt-master:
                             resource_type: tar
                             # NOTE: This RPM was created for `fc21` and simply reused here.
-                            # TODO: Generate new resource for `fc24`.
+                            # TODO: Generate new resource for `fc25`.
                             resource_id: salt-master_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
                     {% endfor %}
 
@@ -125,7 +125,7 @@ system_features:
                         salt-master:
                             resource_type: tar
                             # NOTE: This RPM was created for `fc21` and simply reused here.
-                            # TODO: Generate new resource for `fc24`.
+                            # TODO: Generate new resource for `fc25`.
                             resource_id: salt-minion_downloaded_rpms_with_dependencies_2014.7.1-1.fc21.x86_64
                     {% endfor %}
 

@@ -36,8 +36,8 @@ system_hosts:
                 communicator_type: ssh
 
         # NOTE: Fedora is fast-moving distribution.
-        #       Select `fc22`, `fc23`, `fc24`, ...
-        os_platform: fc24
+        #       Select `fc22`, `fc23`, `fc24`, ..., `fc25`.
+        os_platform: fc25
 
         hostname: {{ master_minion_id|replace("_", "-") }}
         # The master minion host is defined in `primary_network`

@@ -1,12 +1,5 @@
-
-###############################################################################
-# List of supported Fedora version.
-
-- 'fc21'
-- 'fc22'
-- 'fc23'
-- 'fc24'
-- 'fc25'
+# Use generic Fedora 20+.
+from platforms.generic_fc20plus import get_instance
 
 ###############################################################################
 # EOF

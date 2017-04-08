@@ -32,7 +32,7 @@ system_features:
 
                     {% for system_platform_id in fedora_versions_list %}
                     {{ system_platform_id }}:
-                    # NOTE: Reusing the same configuration for `fc21` by `fc24`.
+                    # NOTE: Reusing the same configuration for `fc21` by `fc25`.
                         JAVA_HOME: '/usr/java/jdk1.7.0_71/jre'
                         rpm_version: 'jdk-2000:1.7.0_71-fcs.x86_64'
                     {% endfor %}

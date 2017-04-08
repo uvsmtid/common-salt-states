@@ -22,6 +22,7 @@
         'fc22': 22,
         'fc23': 23,
         'fc24': 24,
+        'fc25': 25,
         'rhel5': 5,
         'rhel7': 7,
     }
@@ -78,14 +79,14 @@ system_features:
                         #key_file_path
 
                         # NOTE: Sync only the latest Fedora release.
-                        {% if system_platform_id == 'fc24' %}
+                        {% if system_platform_id == 'fc25' %}
 
                         # NOTE: At the moment Fedora 24 had `dnf` with
                         #       the bug which makes it impossible to
                         #       avoid using proxy per repository.
                         #       See details:
                         #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
-                        {% if system_platform_id == 'fc24' %}
+                        {% if system_platform_id == 'fc25' %}
                         # TODO: It is set back to `TRUE` -
                         #       it seems the issue is resolved.
                         #       This `if` remains until testing confirms
@@ -175,14 +176,14 @@ system_features:
                         #key_file_path
 
                         # NOTE: Sync only the latest Fedora release.
-                        {% if system_platform_id == 'fc24' %}
+                        {% if system_platform_id == 'fc25' %}
 
                         # NOTE: At the moment Fedora 24 had `dnf` with
                         #       the bug which makes it impossible to
                         #       avoid using proxy per repository.
                         #       See details:
                         #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
-                        {% if system_platform_id == 'fc24' %}
+                        {% if system_platform_id == 'fc25' %}
                         # TODO: It is set back to `TRUE` -
                         #       it seems the issue is resolved.
                         #       This `if` remains until testing confirms
