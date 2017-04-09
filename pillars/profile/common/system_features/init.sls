@@ -76,6 +76,8 @@ include:
         'cygwin_settings'
         ,
         'selinux_settings'
+        ,
+        'webserver_configuration'
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:

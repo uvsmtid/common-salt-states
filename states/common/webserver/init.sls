@@ -1,9 +1,10 @@
 #
 
+{% set enable_mod_ssl = pillar['system_features']['webserver_configuration']['enable_mod_ssl'] %}
+
 ###############################################################################
 # <<<
 {% if grains['os_platform_type'].startswith('rhel') or grains['os_platform_type'].startswith('fc') %}
-
 
 webserver:
     pkg.installed:
@@ -18,6 +19,9 @@ webserver:
             - pkg: webserver
             - file: /var/www/html/default/content/default.txt
             - file: /var/log/httpd/hosts/default
+            {% if enable_mod_ssl %}
+            - pkg: mod_ssl_package
+            {% endif %}
 
 /etc/httpd/conf.d/default.conf:
     file.managed:
@@ -63,6 +67,11 @@ webserver:
             - group
             - mode
 
+{% if enable_mod_ssl %}
+mod_ssl_package:
+    pkg.installed:
+        - name: mod_ssl
+{% endif %}
 
 {% endif %}
 # >>>
