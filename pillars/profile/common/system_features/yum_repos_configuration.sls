@@ -60,7 +60,7 @@ system_features:
                 os_platform_configs:
 
                     {% for system_platform_id in fedora_versions_list %}
-                    # NOTE: Reusing the same config for `fc21` by `fc22`.
+                    # NOTE: Reusing the same config for `fc21` by `fc25`.
                     {{ system_platform_id }}:
                         repo_enabled: True
                         skip_if_unavailable: True
@@ -78,29 +78,11 @@ system_features:
                         #key_file_resource_id
                         #key_file_path
 
-                        # NOTE: Sync only the latest Fedora release.
-                        {% if system_platform_id == 'fc25' %}
-
-                        # NOTE: At the moment Fedora 24 had `dnf` with
-                        #       the bug which makes it impossible to
-                        #       avoid using proxy per repository.
-                        #       See details:
-                        #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
-                        {% if system_platform_id == 'fc25' %}
-                        # TODO: It is set back to `TRUE` -
-                        #       it seems the issue is resolved.
-                        #       This `if` remains until testing confirms
-                        #       there is no issues.
-                        use_local_yum_mirrors: True
-                        {% else %}
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
-                        {% endif %}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/releases/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/Everything/x86_64/os/'
                         rsync_mirror_local_destination_path_prefix: 'fedora/linux/releases/'
-
-                        {% endif %}
 
                     {% endfor %}
 
@@ -155,7 +137,7 @@ system_features:
                 os_platform_configs:
 
                     {% for system_platform_id in fedora_versions_list %}
-                    # NOTE: Reusing the same config for `fc21` by `fc22`.
+                    # NOTE: Reusing the same config for `fc21` by `fc25`.
                     {{ system_platform_id }}:
                         # Default is enabled.
                         # Keep it enabled for all updates.
@@ -175,29 +157,11 @@ system_features:
                         #key_file_resource_id
                         #key_file_path
 
-                        # NOTE: Sync only the latest Fedora release.
-                        {% if system_platform_id == 'fc25' %}
-
-                        # NOTE: At the moment Fedora 24 had `dnf` with
-                        #       the bug which makes it impossible to
-                        #       avoid using proxy per repository.
-                        #       See details:
-                        #           https://bugzilla.redhat.com/show_bug.cgi?id=1319786
-                        {% if system_platform_id == 'fc25' %}
-                        # TODO: It is set back to `TRUE` -
-                        #       it seems the issue is resolved.
-                        #       This `if` remains until testing confirms
-                        #       there is no issues.
-                        use_local_yum_mirrors: True
-                        {% else %}
                         use_local_yum_mirrors: {{ use_local_yum_mirrors }}
-                        {% endif %}
 
                         rsync_mirror_internet_source_base_url: 'mirror.0x.sg::fedora/linux/updates/'
                         rsync_mirror_internet_source_rel_path: '{{ os_platform_to_release_ver[system_platform_id] }}/x86_64/'
                         rsync_mirror_local_destination_path_prefix: 'fedora/linux/updates/'
-
-                        {% endif %}
 
                     {% endfor %}
 
@@ -548,7 +512,7 @@ system_features:
                 os_platform_configs:
 
                     {% for system_platform_id in fedora_versions_list %}
-                    # NOTE: Reusing the same config for `fc21` by `fc22`.
+                    # NOTE: Reusing the same config for `fc21` by `fc25`.
                     {{ system_platform_id }}:
                         repo_enabled: False
                         skip_if_unavailable: True
@@ -566,7 +530,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
 
                         # TODO: Use global `use_local_yum_mirrors` switch
-                        #       when rsync-able URL parts are define.
+                        #       when rsync-able URL parts are defined.
                         #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
                         use_local_yum_mirrors: False
 
@@ -593,7 +557,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-RDO-Juno'
 
                         # TODO: Use global `use_local_yum_mirrors` switch
-                        #       when rsync-able URL parts are define.
+                        #       when rsync-able URL parts are defined.
                         #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
                         use_local_yum_mirrors: False
 
@@ -617,7 +581,7 @@ system_features:
                 os_platform_configs:
 
                     {% for system_platform_id in fedora_versions_list %}
-                    # NOTE: Reusing the same config for `fc21` by `fc22`.
+                    # NOTE: Reusing the same config for `fc21` by `fc25`.
                     {{ system_platform_id }}:
                         repo_enabled: True
                         skip_if_unavailable: True
@@ -635,7 +599,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
                         # TODO: Use global `use_local_yum_mirrors` switch
-                        #       when rsync-able URL parts are define.
+                        #       when rsync-able URL parts are defined.
                         #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
                         use_local_yum_mirrors: False
 
@@ -662,7 +626,7 @@ system_features:
                         key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
                         # TODO: Use global `use_local_yum_mirrors` switch
-                        #       when rsync-able URL parts are define.
+                        #       when rsync-able URL parts are defined.
                         #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
                         use_local_yum_mirrors: False
 
@@ -753,7 +717,7 @@ system_features:
                         yum_repo_gpgcheck: False
 
                         # TODO: Use global `use_local_yum_mirrors` switch
-                        #       when rsync-able URL parts are define.
+                        #       when rsync-able URL parts are defined.
                         #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
                         use_local_yum_mirrors: False
 
@@ -793,7 +757,7 @@ system_features:
                         #key_file_path: '/etc/pki/rpm-gpg/RPM-GPG-KEY-jenkins'
 
                         # TODO: Use global `use_local_yum_mirrors` switch
-                        #       when rsync-able URL parts are define.
+                        #       when rsync-able URL parts are defined.
                         #use_local_yum_mirrors: {{ use_local_yum_mirrors }}
                         use_local_yum_mirrors: False
 
