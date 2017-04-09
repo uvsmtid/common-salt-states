@@ -46,7 +46,11 @@ deploy_tmux_resurrect_plugin:
         - source_hash: {{ get_registered_content_item_hash(resource_id) }}
         - archive_format: tar
         # NOTE: Skip first-level directory (which embeds version number).
-        - tar_options: --strip-components=1
+        # NOTE: `tar_options` has been depricated in favour of `options`.
+        - options: --strip-components=1
+        # NOTE: Somehow, Salt believes that archive does not have
+        #       top-level directory. However, it clearly has.
+        - enforce_toplevel: False
         - require:
             - file: opt_dir_for_tmux-resurrec_exists
 
