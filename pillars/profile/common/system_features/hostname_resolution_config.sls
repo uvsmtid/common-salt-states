@@ -21,6 +21,9 @@ system_features:
         # The DNS server is configured in `hostname_resolver_role` role. See `system_host_roles`.
         domain_name: {{ project_name }}.example.com
 
+        # Default domain administration email:
+        admin_email: 'admin@{{ project_name }}.example.com'
+
         # TODO: It is better to use role name to select host (with IP)
         #       rather than specify raw IP address.
         # X server (where X applications can open display).
