@@ -30,49 +30,11 @@ system_features:
             # - if absolute, it is single for all checkouts;
             # - if relative, it is single per job (control scripts).
 
-            # Main repository with submodules.
-
-            {% if props['parent_repo_name'] %}
-            '{{ props['parent_repo_name'] }}': '/environment.sources/{{ props['parent_repo_name'] }}'
-            {% endif %}
-
-            # Salt states.
-
-            'common-salt-states': '/environment.sources/common-salt-states.git'
-
-            {% if project_name != 'common' %}
-            '{{ project_name }}-salt-states': '/environment.sources/{{ project_name }}-salt-states.git'
-            {% endif %}
-
             # Salt resources.
-
-            'common-salt-resources': '/environment.sources/common-salt-resources.git'
 
             {% if project_name != 'common' %}
             '{{ project_name }}-salt-resources': '/environment.sources/{{ project_name }}-salt-resources.git'
             {% endif %}
-
-            # Salt pillars.
-
-            '{{ project_name }}-salt-pillars': '/environment.sources/{{ project_name }}-salt-pillars.git'
-
-            '{{ project_name }}-salt-pillars.bootstrap-target': '/environment.sources/{{ project_name }}-salt-pillars.bootstrap-target.git'
-
-            # Repository with build history.
-
-            '{{ project_name }}-build-history': '/environment.sources/{{ project_name }}-build-history.git'
-
-            # Maven repositories.
-
-            {% for maven_repo_name in maven_repo_names %}
-
-            '{{ maven_repo_name }}': '/environment.sources/{{ maven_repo_name }}.git'
-
-            {% endfor %}
-
-            # Other repositories.
-
-            # ...
 
 ###############################################################################
 # EOF

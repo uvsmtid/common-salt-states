@@ -5,7 +5,23 @@
 include:
 
 {% for sub_item in [
-        'main'
+        'parent_repo_name'
+        ,
+        'common-salt-states'
+        ,
+        'project_name-salt-states'
+        ,
+        'common-salt-resources' 
+        ,
+        'project_name-salt-resources'
+        ,
+        'project_name-salt-pillars'
+        ,
+        'project_name-salt-pillars.bootstrap-target'
+        ,
+        'project_name-build-history'
+        ,
+        'maven_repo_names' 
     ]
 %}
     - {{ this_pillar }}.{{ sub_item }}:
