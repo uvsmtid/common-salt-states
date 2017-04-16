@@ -21,39 +21,12 @@ system_features:
 
         repository_roles:
 
-            top_level_parent_role:
-                {% if props['parent_repo_name'] %}
-                - {{ props['parent_repo_name'] }}
-                {% else %}
-                []
-                {% endif %}
-
-            build_history_role:
-                - '{{ project_name }}-build-history'
-
-            source_profile_pillars_role:
-                - '{{ project_name }}-salt-pillars'
-
-            target_profile_pillars_role:
-                - '{{ project_name }}-salt-pillars.bootstrap-target'
-
             taggable_repository_role:
                 - '{{ project_name }}-salt-states'
                 - '{{ project_name }}-build-history'
                 {% if props['parent_repo_name'] %}
                 - {{ props['parent_repo_name'] }}
                 {% endif %}
-
-            project_states_role:
-                - '{{ project_name }}-salt-states'
-
-            maven_project_container_role:
-                # NOTE: We ignore the fact that there can be parent pom
-                #       file which spans all others for multi-module
-                #       reactor build.
-                {% for maven_repo_name in maven_repo_names %}
-                - '{{ maven_repo_name }}'
-                {% endfor %}
 
 ###############################################################################
 # EOF
