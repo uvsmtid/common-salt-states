@@ -10,11 +10,6 @@
 {% set master_minion_id = props['master_minion_id'] %}
 {% set profile_name = props['profile_name'] %}
 
-# Import `maven_repo_names`.
-{% set maven_repo_names_path = profile_root.replace('.', '/') + '/common/system_maven_artifacts/maven_repo_names.yaml' %}
-{% import_yaml maven_repo_names_path as maven_repo_names %}
-# TODO: Use `maven_repo_names` subkey in `maven_repo_names.yaml`.
-
 system_features:
 
     deploy_environment_sources:

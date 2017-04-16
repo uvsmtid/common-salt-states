@@ -1,6 +1,16 @@
 
 ###############################################################################
 #
+# This is passed to override descriptor configuration on control
+# scripts command line. It could probably be placed directly in
+# Git configuration below (as it is in descriptor), but composing
+# this data in templates is awkward while this makes it is ready to
+# use (just like another similar override config `source_repo_types`)
+# via rendering into JSON.
+#
+# Local path per Git repo:
+# - if absolute, it is single for all checkouts;
+# - if relative, it is single per job (control scripts).
 
 include:
 
