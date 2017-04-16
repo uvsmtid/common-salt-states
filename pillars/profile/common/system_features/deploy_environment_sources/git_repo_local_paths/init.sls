@@ -17,7 +17,7 @@ include:
         ,
         'project_name-salt-pillars'
         ,
-        'project_name-salt-pillars.bootstrap-target'
+        'project_name-salt-pillars_bootstrap-target'
         ,
         'project_name-build-history'
         ,
